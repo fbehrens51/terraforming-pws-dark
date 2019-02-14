@@ -1,14 +1,15 @@
 variable "env_name" {}
 
+variable "use_route53" {
+  default = true
+  description = "Indicate whether or not to enabled route53"
+}
+
 variable "dns_suffix" {}
 
 variable "hosted_zone" {
   default = ""
 }
-
-variable "access_key" {}
-
-variable "secret_key" {}
 
 variable "region" {}
 
@@ -21,6 +22,13 @@ variable "vpc_cidr" {
   default = "10.0.0.0/16"
 }
 
+variable "internet_gateway_id" {
+  description = "pre-exsting IGW ID"
+}
+
+variable "vpc_id" {
+  description = "pre-exsting VPC ID"
+}
 /******
 * PAS *
 *******/
@@ -83,9 +91,9 @@ variable "rds_instance_count" {
   default = 0
 }
 
-/*******************
-* SSL Certificates *
-********************/
+/********************
+ * SSL Certificates *
+ ********************/
 
 variable "ssl_cert" {
   type        = "string"
@@ -140,8 +148,8 @@ variable "isoseg_ssl_ca_private_key" {
 }
 
 /********
-* Tags *
-*********/
+ * Tags *
+ *********/
 
 variable "tags" {
   type        = "map"
@@ -150,8 +158,8 @@ variable "tags" {
 }
 
 /**************
-* Deprecated *
-***************/
+ * Deprecated *
+ ***************/
 
 variable "create_isoseg_resources" {
   type        = "string"

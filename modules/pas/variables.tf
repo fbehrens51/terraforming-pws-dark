@@ -48,10 +48,6 @@ variable "create_versioned_pas_buckets" {
   default = false
 }
 
-variable "ops_manager_iam_user_name" {
-  type = "string"
-}
-
 variable "iam_ops_manager_role_name" {
   type = "string"
 }
@@ -63,7 +59,10 @@ variable "create_isoseg_resources" {
 variable "tags" {
   type = "map"
 }
-
+variable "use_route53" {
+  default = true
+  description = "Indicate whether or not to enabled route53"
+}
 locals {
   pas_cidr      = "${cidrsubnet(var.vpc_cidr, 6, 1)}"
   services_cidr = "${cidrsubnet(var.vpc_cidr, 6, 2)}"

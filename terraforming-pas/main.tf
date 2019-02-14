@@ -1,6 +1,4 @@
 provider "aws" {
-  access_key = "${var.access_key}"
-  secret_key = "${var.secret_key}"
   region     = "${var.region}"
 }
 
@@ -40,6 +38,9 @@ module "infra" {
   dns_suffix  = "${var.dns_suffix}"
 
   tags = "${local.actual_tags}"
+  use_route53 = "${var.use_route53}"
+  internet_gateway_id = "${var.internet_gateway_id}"
+  vpc_id = "${var.vpc_id}"
 }
 
 module "ops_manager" {
@@ -63,6 +64,7 @@ module "ops_manager" {
   bucket_suffix            = "${local.bucket_suffix}"
 
   tags = "${local.actual_tags}"
+  use_route53 = "${var.use_route53}"
 }
 
 module "pas_certs" {
@@ -111,12 +113,12 @@ module "pas" {
   create_backup_pas_buckets    = "${var.create_backup_pas_buckets}"
   create_versioned_pas_buckets = "${var.create_versioned_pas_buckets}"
 
-  ops_manager_iam_user_name = "${module.ops_manager.ops_manager_iam_user_name}"
   iam_ops_manager_role_name = "${module.ops_manager.ops_manager_iam_role_name}"
 
   create_isoseg_resources = "${var.create_isoseg_resources}"
 
   tags = "${local.actual_tags}"
+  use_route53 = "${var.use_route53}"
 }
 
 module "rds" {

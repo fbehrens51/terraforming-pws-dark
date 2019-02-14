@@ -1,7 +1,7 @@
 # Bosh Director Subnet
 resource "aws_subnet" "infrastructure_subnets" {
   count             = "${length(var.availability_zones)}"
-  vpc_id            = "${aws_vpc.vpc.id}"
+  vpc_id            = "${data.aws_vpc.vpc.id}"
   cidr_block        = "${cidrsubnet(local.infrastructure_cidr, 2, count.index)}"
   availability_zone = "${element(var.availability_zones, count.index)}"
 
@@ -25,24 +25,22 @@ resource "aws_route_table_association" "route_infrastructure_subnets" {
 }
 
 # Ops Manager Subnet
-resource "aws_internet_gateway" "ig" {
-  vpc_id = "${aws_vpc.vpc.id}"
-
-  tags = "${var.tags}"
+data "aws_internet_gateway" "ig" {
+  internet_gateway_id = "${var.internet_gateway_id}"
 }
 
 resource "aws_route_table" "public_route_table" {
-  vpc_id = "${aws_vpc.vpc.id}"
+  vpc_id = "${data.aws_vpc.vpc.id}"
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = "${aws_internet_gateway.ig.id}"
+    gateway_id = "${data.aws_internet_gateway.ig.id}"
   }
 }
 
 resource "aws_subnet" "public_subnets" {
   count             = "${length(var.availability_zones)}"
-  vpc_id            = "${aws_vpc.vpc.id}"
+  vpc_id            = "${data.aws_vpc.vpc.id}"
   cidr_block        = "${cidrsubnet(local.public_cidr, 2, count.index)}"
   availability_zone = "${element(var.availability_zones, count.index)}"
 
