@@ -18,6 +18,8 @@ variable "vpc_id" {
   type = "string"
 }
 
+variable "use_tcp_routes" {}
+
 variable "route_table_ids" {
   type = "list"
 }
