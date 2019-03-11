@@ -7,7 +7,12 @@ variable "use_route53" {
 
 variable "use_tcp_routes" {
   default = true
-  description = "Indicate whether or not to enable tcp routes and lbs"
+  description = "Indicate whether or not to enable tcp routes and elbs"
+}
+
+variable "use_ssh_routes" {
+  default = true
+  description = "Indicate whether or not to enable ssh routes and elbs"
 }
 
 variable "dns_suffix" {}

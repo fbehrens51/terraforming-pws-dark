@@ -20,6 +20,8 @@ variable "vpc_id" {
 
 variable "use_tcp_routes" {}
 
+variable "use_ssh_routes" {}
+
 variable "route_table_ids" {
   type = "list"
 }
