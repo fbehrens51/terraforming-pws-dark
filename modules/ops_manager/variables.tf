@@ -41,3 +41,5 @@ variable "use_route53" {
   default = true
   description = "Indicate whether or not to enabled route53"
 }
+
+variable "ops_manager_role_name" {}
