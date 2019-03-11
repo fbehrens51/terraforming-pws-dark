@@ -74,6 +74,11 @@ variable "optional_ops_manager" {
   default = false
 }
 
+variable ops_manager_role_name {
+  default = "Director"
+  description = "the role name used for the ops man controlled bosh director"
+}
+
 /******
 * RDS *
 *******/
@@ -90,10 +95,6 @@ variable "rds_instance_count" {
   type    = "string"
   default = 0
 }
-
-/********************
- * SSL Certificates *
- ********************/
 
 variable "ssl_cert" {
   type        = "string"

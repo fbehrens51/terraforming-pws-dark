@@ -62,6 +62,7 @@ module "ops_manager" {
   zone_id                  = "${module.infra.zone_id}"
   additional_iam_roles_arn = ["${module.pas.iam_pas_bucket_role_arn}"]
   bucket_suffix            = "${local.bucket_suffix}"
+  ops_manager_role_name    = "${var.ops_manager_role_name}"
 
   tags = "${local.actual_tags}"
   use_route53 = "${var.use_route53}"
