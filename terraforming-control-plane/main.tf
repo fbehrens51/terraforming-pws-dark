@@ -1,7 +1,6 @@
 provider "aws" {
-  access_key = "${var.access_key}"
-  secret_key = "${var.secret_key}"
   region     = "${var.region}"
+  version =  "< 2.0.0"
 }
 
 terraform {
@@ -20,9 +19,12 @@ module "infra" {
   env_name           = "${var.env_name}"
   availability_zones = "${var.availability_zones}"
   vpc_cidr           = "${var.vpc_cidr}"
+  vpc_id             = "${var.vpc_id}"
+  internet_gateway_id = "${var.internet_gateway_id}"
 
   hosted_zone = "${var.hosted_zone}"
   dns_suffix  = "${var.dns_suffix}"
+  use_route53 = "${var.use_route53}"
 
   internetless = false
   tags         = "${local.actual_tags}"
@@ -43,8 +45,12 @@ module "ops_manager" {
   private       = "${var.ops_manager_private}"
   vpc_id        = "${module.infra.vpc_id}"
   vpc_cidr      = "${var.vpc_cidr}"
+
+  use_route53   = "${var.use_route53}"
   dns_suffix    = "${var.dns_suffix}"
   zone_id       = "${module.infra.zone_id}"
+
+  ops_manager_role_name = "${var.ops_manager_role_name}"
 
   # additional_iam_roles_arn = ["${module.pas.iam_pas_bucket_role_arn}"]
   bucket_suffix = "${local.bucket_suffix}"
@@ -62,6 +68,8 @@ module "control_plane" {
   private_route_table_ids = "${module.infra.deployment_route_table_ids}"
   tags                    = "${local.actual_tags}"
   region                  = "${var.region}"
+
+  use_route53             = "${var.use_route53}"
   dns_suffix              = "${var.dns_suffix}"
   zone_id                 = "${module.infra.zone_id}"
 }

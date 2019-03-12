@@ -1,7 +1,6 @@
 provider "aws" {
-  access_key = "${var.access_key}"
-  secret_key = "${var.secret_key}"
   region     = "${var.region}"
+  version =  "< 2.0.0"
 }
 
 terraform {
@@ -29,14 +28,18 @@ resource "random_integer" "bucket" {
 module "infra" {
   source = "../modules/infra"
 
-  region             = "${var.region}"
-  env_name           = "${var.env_name}"
-  availability_zones = "${var.availability_zones}"
-  vpc_cidr           = "${var.vpc_cidr}"
-  internetless       = false
+  region              = "${var.region}"
+  env_name            = "${var.env_name}"
+  availability_zones  = "${var.availability_zones}"
+  vpc_id              = "${var.vpc_id}"
+  vpc_cidr            = "${var.vpc_cidr}"
+  internet_gateway_id = "${var.internet_gateway_id}"
+  internetless        = false
 
   hosted_zone = "${var.hosted_zone}"
   dns_suffix  = "${var.dns_suffix}"
+
+  use_route53 = "${var.use_route53}"
 
   tags = "${local.actual_tags}"
 }
@@ -60,6 +63,9 @@ module "ops_manager" {
   zone_id                  = "${module.infra.zone_id}"
   bucket_suffix            = "${local.bucket_suffix}"
   additional_iam_roles_arn = ["${module.pks.pks_worker_iam_role_arn}", "${module.pks.pks_master_iam_role_arn}"]
+
+  ops_manager_role_name    = "${var.ops_manager_role_name}"
+  use_route53              = "${var.use_route53}"
 
   tags = "${local.actual_tags}"
 }
@@ -88,8 +94,9 @@ module "pks" {
   private_route_table_ids = "${module.infra.deployment_route_table_ids}"
   public_subnet_ids       = "${module.infra.public_subnet_ids}"
 
-  zone_id    = "${module.infra.zone_id}"
-  dns_suffix = "${var.dns_suffix}"
+  zone_id     = "${module.infra.zone_id}"
+  dns_suffix  = "${var.dns_suffix}"
+  use_route53 = "${var.use_route53}"
 
   tags = "${local.actual_tags}"
 }

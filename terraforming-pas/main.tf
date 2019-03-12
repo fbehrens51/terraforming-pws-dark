@@ -1,5 +1,6 @@
 provider "aws" {
   region     = "${var.region}"
+  version =  "< 2.0.0"
 }
 
 terraform {
@@ -120,6 +121,8 @@ module "pas" {
 
   tags = "${local.actual_tags}"
   use_route53 = "${var.use_route53}"
+  use_tcp_routes = "${var.use_tcp_routes}"
+  use_ssh_routes = "${var.use_ssh_routes}"
 }
 
 module "rds" {

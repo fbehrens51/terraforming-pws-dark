@@ -56,8 +56,6 @@ variable "nat_ami_map" {
 }
 
 variable "use_route53" {
-  default = true
-  description = "Indicate whether or not to enabled route53"
 }
 
 variable "internet_gateway_id" {

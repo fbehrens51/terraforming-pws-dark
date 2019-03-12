@@ -2,7 +2,17 @@ variable "env_name" {}
 
 variable "use_route53" {
   default = true
-  description = "Indicate whether or not to enabled route53"
+  description = "Indicate whether or not to enable route53"
+}
+
+variable "use_tcp_routes" {
+  default = true
+  description = "Indicate whether or not to enable tcp routes and elbs"
+}
+
+variable "use_ssh_routes" {
+  default = true
+  description = "Indicate whether or not to enable ssh routes and elbs"
 }
 
 variable "dns_suffix" {}
@@ -29,6 +39,7 @@ variable "internet_gateway_id" {
 variable "vpc_id" {
   description = "pre-exsting VPC ID"
 }
+
 /******
 * PAS *
 *******/
