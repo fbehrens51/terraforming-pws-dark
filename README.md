@@ -76,8 +76,6 @@ You should fill in the stub values with the correct content.
 
 ```hcl
 env_name              = "some-environment-name"
-access_key            = "access-key-id"
-secret_key            = "secret-access-key"
 region                = "us-west-1"
 availability_zones    = ["us-west-1a", "us-west-1c"]
 ops_manager_ami       = "ami-4f291f2f"
@@ -85,6 +83,8 @@ rds_instance_count    = 1
 dns_suffix            = "example.com"
 vpc_cidr              = "10.0.0.0/16"
 use_route53           = true
+use_ssh_routes        = true
+use_tcp_routes        = true
 internet_gateway_id   = "igw-askdjlkas"
 vpc_id                = "ID of the targeted pre-existing VPC"
 ops_manager_role_name = "name to be given to the ops manager role, or the name of the existing role to use therein."

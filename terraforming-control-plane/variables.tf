@@ -1,12 +1,24 @@
 variable "env_name" {}
 
 variable "dns_suffix" {}
-variable "access_key" {}
-variable "secret_key" {}
+
 variable "region" {}
+
+variable "use_route53" {
+  default = true
+  description = "Indicate whether or not to enable route53"
+}
 
 variable "availability_zones" {
   type = "list"
+}
+
+variable "vpc_id" {
+  description = "pre-exsting VPC ID"
+}
+
+variable "internet_gateway_id" {
+  description = "pre-exsting IGW ID"
 }
 
 variable "vpc_cidr" {
@@ -21,6 +33,7 @@ variable "hosted_zone" {
 /**************
 * Ops Manager *
 ***************/
+
 variable "ops_manager_ami" {
   default = ""
 }
@@ -44,6 +57,11 @@ variable "ops_manager_vm" {
 
 variable "optional_ops_manager" {
   default = false
+}
+
+variable ops_manager_role_name {
+  default = "Director"
+  description = "the role name used for the ops man controlled bosh director"
 }
 
 /******

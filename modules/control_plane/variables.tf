@@ -18,6 +18,9 @@ variable "region" {
   type = "string"
 }
 
+variable "use_route53" {
+}
+
 variable "zone_id" {
   type = "string"
 }

@@ -39,6 +39,7 @@ variable "internet_gateway_id" {
 variable "vpc_id" {
   description = "pre-exsting VPC ID"
 }
+
 /******
 * PAS *
 *******/

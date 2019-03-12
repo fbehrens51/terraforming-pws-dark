@@ -6,19 +6,28 @@ variable "hosted_zone" {
   default = ""
 }
 
-variable "access_key" {}
-
-variable "secret_key" {}
-
 variable "region" {}
 
 variable "availability_zones" {
   type = "list"
 }
 
+variable "vpc_id" {
+  description = "pre-exsting VPC ID"
+}
+
 variable "vpc_cidr" {
   type    = "string"
   default = "10.0.0.0/16"
+}
+
+variable "internet_gateway_id" {
+  description = "pre-exsting IGW ID"
+}
+
+variable "use_route53" {
+  default = true
+  description = "Indicate whether or not to enable route53"
 }
 
 /****************
@@ -50,10 +59,6 @@ variable "optional_ops_manager" {
   default = false
 }
 
-/*******************
-* SSL Certificates *
-********************/
-
 variable "ssl_cert" {
   type        = "string"
   description = "the contents of an SSL certificate to be used by the PKS API, optional if `ssl_ca_cert` is provided"
@@ -78,6 +83,11 @@ variable "ssl_ca_private_key" {
   default     = ""
 }
 
+variable ops_manager_role_name {
+  default = "Director"
+  description = "the role name used for the ops man controlled bosh director"
+}
+
 /******
 * RDS *
 *******/
@@ -94,10 +104,6 @@ variable "rds_instance_count" {
   type    = "string"
   default = 0
 }
-
-/*******
-* Tags *
-********/
 
 variable "tags" {
   type        = "map"
