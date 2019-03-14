@@ -66,7 +66,12 @@ variable "tags" {
 variable "use_route53" {
 }
 
+module "cidr_lookup" {
+  source = "../calculate_subnets"
+  vpc_cidr = "${var.vpc_cidr}"
+}
+
 locals {
-  pas_cidr      = "${cidrsubnet(var.vpc_cidr, 6, 1)}"
-  services_cidr = "${cidrsubnet(var.vpc_cidr, 6, 2)}"
+  pas_cidr      =  "${module.cidr_lookup.pas_cidr}"
+  services_cidr =  "${module.cidr_lookup.services_cidr}"
 }

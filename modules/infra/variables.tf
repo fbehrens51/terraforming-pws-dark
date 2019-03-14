@@ -66,7 +66,12 @@ variable "vpc_id" {
   description = "pre-exsting VPC ID"
 }
 
+module "cidr_lookup" {
+  source = "../calculate_subnets"
+  vpc_cidr = "${var.vpc_cidr}"
+}
+
 locals {
-  infrastructure_cidr = "${cidrsubnet(var.vpc_cidr, 10, 64)}"
-  public_cidr         = "${cidrsubnet(var.vpc_cidr, 6, 0)}"
+  infrastructure_cidr = "${module.cidr_lookup.infrastructure_cidr}"
+  public_cidr         = "${module.cidr_lookup.public_cidr}"
 }

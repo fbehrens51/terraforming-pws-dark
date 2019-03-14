@@ -1,10 +1,22 @@
 provider "aws" {
   region     = "${var.region}"
-  version =  "< 2.0.0"
+  version = "~> 1.60"
 }
 
 terraform {
   required_version = "< 0.12.0"
+}
+
+provider "random" {
+  version = "~> 2.0"
+}
+
+provider "template" {
+  version = "~> 1.0"
+}
+
+provider "tls" {
+  version = "~> 1.2"
 }
 
 resource "random_integer" "bucket" {
