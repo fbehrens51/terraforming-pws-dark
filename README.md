@@ -123,6 +123,8 @@ tags = {
 - tags: **(optional)** A map of AWS tags that are applied to the created resources. By default, the following tags are set: Application = Cloud Foundry, Environment = $env_name
 - vpc_cidr: **(default: 10.0.0.0/16)** Internal CIDR block for the AWS VPC.
 - use_route53: **(default: true)** Use route53 for DNS
+- use_ssh_routes: **(default: true)** Enable ssh routing
+- use_tcp_routes: **(default: true)** Enable TCP routing
 - internet_gateway_id: **(required)** IGW to use for Public Subnet
 - vpc_id: **(required)** ID of the VPC to target
 

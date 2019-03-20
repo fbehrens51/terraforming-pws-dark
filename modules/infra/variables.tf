@@ -58,9 +58,6 @@ variable "nat_ami_map" {
   }
 }
 
-variable "use_route53" {
-}
-
 variable "internet_gateway_id" {
   description = "pre-exsting IGW ID"
 }

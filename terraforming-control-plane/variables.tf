@@ -4,11 +4,6 @@ variable "dns_suffix" {}
 
 variable "region" {}
 
-variable "use_route53" {
-  default = true
-  description = "Indicate whether or not to enable route53"
-}
-
 variable "availability_zones" {
   type = "list"
 }

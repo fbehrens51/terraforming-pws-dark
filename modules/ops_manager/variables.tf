@@ -39,6 +39,4 @@ variable "tags" {
   type = "map"
 }
 
-variable "use_route53" {}
-
 variable "ops_manager_role_name" {}

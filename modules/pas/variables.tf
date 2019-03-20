@@ -66,8 +66,6 @@ variable "create_isoseg_resources" {
 variable "tags" {
   type = "map"
 }
-variable "use_route53" {
-}
 
 module "cidr_lookup" {
   source = "../calculate_subnets"
