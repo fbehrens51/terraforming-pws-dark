@@ -58,7 +58,6 @@ module "ops_manager" {
   vpc_id        = "${module.infra.vpc_id}"
   vpc_cidr      = "${var.vpc_cidr}"
 
-  use_route53   = "${var.use_route53}"
   dns_suffix    = "${var.dns_suffix}"
   zone_id       = "${module.infra.zone_id}"
   use_route53   = "${var.use_route53}"
@@ -82,7 +81,6 @@ module "control_plane" {
   tags                    = "${local.actual_tags}"
   region                  = "${var.region}"
 
-  use_route53             = "${var.use_route53}"
   dns_suffix              = "${var.dns_suffix}"
   zone_id                 = "${module.infra.zone_id}"
   use_route53             = "${var.use_route53}"

@@ -52,8 +52,6 @@ module "infra" {
   dns_suffix  = "${var.dns_suffix}"
   use_route53 = "${var.use_route53}"
 
-  use_route53 = "${var.use_route53}"
-
   tags = "${local.actual_tags}"
 }
 
@@ -79,7 +77,6 @@ module "ops_manager" {
   additional_iam_roles_arn = ["${module.pks.pks_worker_iam_role_arn}", "${module.pks.pks_master_iam_role_arn}"]
 
   ops_manager_role_name    = "${var.ops_manager_role_name}"
-  use_route53              = "${var.use_route53}"
 
   tags = "${local.actual_tags}"
 }
