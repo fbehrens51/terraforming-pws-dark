@@ -61,6 +61,7 @@ module "ops_manager" {
   use_route53   = "${var.use_route53}"
   dns_suffix    = "${var.dns_suffix}"
   zone_id       = "${module.infra.zone_id}"
+  use_route53   = "${var.use_route53}"
 
   ops_manager_role_name = "${var.ops_manager_role_name}"
 
@@ -84,6 +85,7 @@ module "control_plane" {
   use_route53             = "${var.use_route53}"
   dns_suffix              = "${var.dns_suffix}"
   zone_id                 = "${module.infra.zone_id}"
+  use_route53             = "${var.use_route53}"
 }
 
 module "rds" {

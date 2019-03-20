@@ -1,10 +1,5 @@
 variable "env_name" {}
 
-variable "use_route53" {
-  default = true
-  description = "Indicate whether or not to enable route53"
-}
-
 variable "use_tcp_routes" {
   default = true
   description = "Indicate whether or not to enable tcp routes and elbs"
@@ -38,6 +33,11 @@ variable "internet_gateway_id" {
 
 variable "vpc_id" {
   description = "pre-exsting VPC ID"
+}
+
+variable "use_route53" {
+  default = true
+  description = "Indicate whether or not to enable route53"
 }
 
 /******

@@ -1,5 +1,4 @@
 resource "aws_route53_record" "control_plane" {
-
   count   = "${var.use_route53}"
 
   zone_id = "${var.zone_id}"
