@@ -59,6 +59,10 @@ variable "iam_ops_manager_role_name" {
   type = "string"
 }
 
+variable "pas_bucket_role_name" {
+  type = "string"
+}
+
 variable "create_isoseg_resources" {
   default = 0
 }

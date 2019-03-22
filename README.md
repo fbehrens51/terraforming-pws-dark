@@ -88,6 +88,7 @@ use_tcp_routes        = true
 internet_gateway_id   = "igw-askdjlkas"
 vpc_id                = "ID of the targeted pre-existing VPC"
 ops_manager_role_name = "name to be given to the ops manager role, or the name of the existing role to use therein."
+pas_bucket_role_name  = "name to be given to the pas s3 bucket access role, or the name of the existing role to use thereupon."
 
 ssl_cert = <<EOF
 -----BEGIN CERTIFICATE-----

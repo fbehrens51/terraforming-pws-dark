@@ -22,9 +22,9 @@ data "aws_kms_key" "blobstore_kms_key" {
 }
 
 data "aws_iam_role" "pas_bucket_access" {
-  name = "pas_om_bucket_role"
+  name = "${var.pas_bucket_role_name}"
 }
 
 data "aws_iam_instance_profile" "pas_bucket_access" {
-    name = "pas_om_bucket_role"
+    name = "${var.pas_bucket_role_name}"
 }
