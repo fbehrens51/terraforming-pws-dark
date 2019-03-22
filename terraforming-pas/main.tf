@@ -128,6 +128,7 @@ module "pas" {
   create_versioned_pas_buckets = "${var.create_versioned_pas_buckets}"
 
   iam_ops_manager_role_name = "${module.ops_manager.ops_manager_iam_role_name}"
+  pas_bucket_role_name      = "${var.pas_bucket_role_name}"
 
   create_isoseg_resources = "${var.create_isoseg_resources}"
 

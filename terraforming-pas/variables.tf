@@ -87,7 +87,12 @@ variable "optional_ops_manager" {
 
 variable ops_manager_role_name {
   default = "Director"
-  description = "the role name used for the ops man controlled bosh director"
+  description = "the role name used for the opsman controlled bosh director"
+}
+
+variable pas_bucket_role_name {
+  default = "pas_om_bucket_role"
+  description = "the role name used by pas for access to s3 buckets"
 }
 
 /******
