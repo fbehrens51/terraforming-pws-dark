@@ -5,6 +5,15 @@ provider "aws" {
 
 terraform {
   required_version = "< 0.12.0"
+
+  backend "s3" {
+    bucket = "eagle-state"
+    key    = "dev/terraform.tfstate"
+    region = "us-east-1"
+    encrypt = true
+    kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
+    dynamodb_table = "state_lock"
+  }
 }
 
 provider "random" {
