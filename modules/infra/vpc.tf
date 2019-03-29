@@ -24,9 +24,11 @@ resource "aws_security_group" "vms_security_group" {
   tags = "${merge(var.tags, map("Name", "${var.env_name}-vms-security-group"))}"
 }
 
+data "aws_region" "current" {}
+
 locals {
-  ec2_address = "com.amazonaws.${var.region}.ec2"
-  lb_api_address = "com.amazonaws.${var.region}.elasticloadbalancing"
+  ec2_address = "com.amazonaws.${data.aws_region.current.name}.ec2"
+  lb_api_address = "com.amazonaws.${data.aws_region.current.name}.elasticloadbalancing"
 }
 
 resource "aws_vpc_endpoint" "ec2" {

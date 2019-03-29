@@ -1,33 +1,3 @@
-provider "aws" {
-  region     = "${var.region}"
-  version = "~> 1.60"
-}
-
-terraform {
-  required_version = "< 0.12.0"
-
-  backend "s3" {
-    bucket = "eagle-state"
-    key    = "dev/terraform.tfstate"
-    region = "us-east-1"
-    encrypt = true
-    kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
-    dynamodb_table = "state_lock"
-  }
-}
-
-provider "random" {
-  version = "~> 2.0"
-}
-
-provider "template" {
-  version = "~> 1.0"
-}
-
-provider "tls" {
-  version = "~> 1.2"
-}
-
 locals {
   ops_man_subnet_id = "${var.ops_manager_private ? element(module.infra.infrastructure_subnet_ids, 0) : element(module.infra.public_subnet_ids, 0)}"
 
@@ -49,7 +19,6 @@ resource "random_integer" "bucket" {
 module "infra" {
   source = "../modules/infra"
 
-  region             = "${var.region}"
   env_name           = "${var.env_name}"
   availability_zones = "${var.availability_zones}"
   vpc_cidr           = "${var.vpc_cidr}"
@@ -73,7 +42,6 @@ module "ops_manager" {
   subnet_id      = "${local.ops_man_subnet_id}"
 
   env_name                 = "${var.env_name}"
-  region                   = "${var.region}"
   ami                      = "${var.ops_manager_ami}"
   optional_ami             = "${var.optional_ops_manager_ami}"
   instance_type            = "${var.ops_manager_instance_type}"
@@ -121,7 +89,6 @@ module "pas" {
   source = "../modules/pas"
 
   env_name           = "${var.env_name}"
-  region             = "${var.region}"
   availability_zones = "${var.availability_zones}"
   vpc_cidr           = "${var.vpc_cidr}"
   vpc_id             = "${module.infra.vpc_id}"

@@ -212,10 +212,6 @@ output "ops_manager_ssh_public_key" {
   value = "${module.ops_manager.ssh_public_key}"
 }
 
-output "region" {
-  value = "${var.region}"
-}
-
 output "azs" {
   value = "${var.availability_zones}"
 }
