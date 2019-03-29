@@ -21,7 +21,6 @@ module "infra" {
 
   env_name           = "${var.env_name}"
   availability_zones = "${var.availability_zones}"
-  vpc_cidr           = "${var.vpc_cidr}"
 
   internetless = "${var.internetless}"
 
@@ -47,7 +46,6 @@ module "ops_manager" {
   instance_type            = "${var.ops_manager_instance_type}"
   private                  = "${var.ops_manager_private}"
   vpc_id                   = "${module.infra.vpc_id}"
-  vpc_cidr                 = "${var.vpc_cidr}"
   dns_suffix               = "${var.dns_suffix}"
   zone_id                  = "${module.infra.zone_id}"
   additional_iam_roles_arn = ["${module.pas.iam_pas_bucket_role_arn}"]
@@ -90,7 +88,6 @@ module "pas" {
 
   env_name           = "${var.env_name}"
   availability_zones = "${var.availability_zones}"
-  vpc_cidr           = "${var.vpc_cidr}"
   vpc_id             = "${module.infra.vpc_id}"
   route_table_ids    = "${module.infra.deployment_route_table_ids}"
   public_subnet_ids  = "${module.infra.public_subnet_ids}"
@@ -127,7 +124,6 @@ module "rds" {
 
   env_name           = "${var.env_name}"
   availability_zones = "${var.availability_zones}"
-  vpc_cidr           = "${var.vpc_cidr}"
   vpc_id             = "${module.infra.vpc_id}"
   tags               = "${local.actual_tags}"
 }

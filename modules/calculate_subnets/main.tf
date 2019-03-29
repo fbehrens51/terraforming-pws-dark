@@ -1,6 +1,4 @@
-variable "vpc_cidr" {
-  default = "10.0.0.0/16"
-}
+variable "vpc_cidr" {}
 
 locals {
   cidr_split= "${split("/", var.vpc_cidr)}"

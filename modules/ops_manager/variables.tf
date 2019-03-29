@@ -16,8 +16,6 @@ variable "subnet_id" {}
 
 variable "vpc_id" {}
 
-variable "vpc_cidr" {}
-
 variable "additional_iam_roles_arn" {
   type    = "list"
   default = []

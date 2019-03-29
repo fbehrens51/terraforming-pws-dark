@@ -18,11 +18,6 @@ variable "availability_zones" {
   type = "list"
 }
 
-variable "vpc_cidr" {
-  type    = "string"
-  default = "10.0.0.0/16"
-}
-
 variable "tags" {
   type        = "map"
   default     = {}
@@ -64,7 +59,7 @@ variable "vpc_id" {
 
 module "cidr_lookup" {
   source = "../calculate_subnets"
-  vpc_cidr = "${var.vpc_cidr}"
+  vpc_cidr = "${data.aws_vpc.vpc.cidr_block}"
 }
 
 locals {

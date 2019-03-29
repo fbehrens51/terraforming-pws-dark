@@ -1,3 +1,7 @@
+data "aws_vpc" "vpc" {
+  id = "${var.vpc_id}"
+}
+
 resource "aws_subnet" "rds_subnets" {
   count             = "${var.rds_instance_count > 0 ? length(var.availability_zones) : 0}"
   vpc_id            = "${var.vpc_id}"
@@ -24,14 +28,14 @@ resource "aws_security_group" "rds_security_group" {
   vpc_id      = "${var.vpc_id}"
 
   ingress {
-    cidr_blocks = ["${var.vpc_cidr}"]
+    cidr_blocks = ["${data.aws_vpc.vpc.cidr_block}"]
     protocol    = "tcp"
     from_port   = "${var.db_port}"
     to_port     = "${var.db_port}"
   }
 
   egress {
-    cidr_blocks = ["${var.vpc_cidr}"]
+    cidr_blocks = ["${data.aws_vpc.vpc.cidr_block}"]
     protocol    = "-1"
     from_port   = 0
     to_port     = 0
