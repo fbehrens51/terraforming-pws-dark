@@ -1,12 +1,12 @@
 variable "env_name" {}
 
+variable "region" {}
+
 variable "dns_suffix" {}
 
 variable "hosted_zone" {
   default = ""
 }
-
-variable "region" {}
 
 variable "availability_zones" {
   type = "list"

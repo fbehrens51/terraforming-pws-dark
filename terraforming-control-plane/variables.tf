@@ -1,8 +1,8 @@
 variable "env_name" {}
 
-variable "dns_suffix" {}
-
 variable "region" {}
+
+variable "dns_suffix" {}
 
 variable "availability_zones" {
   type = "list"

@@ -11,7 +11,7 @@ resource "aws_security_group" "nat_security_group" {
   vpc_id      = "${data.aws_vpc.vpc.id}"
 
   ingress {
-    cidr_blocks = ["${var.vpc_cidr}"]
+    cidr_blocks = ["${data.aws_vpc.vpc.cidr_block}"]
     protocol    = "-1"
     from_port   = 0
     to_port     = 0

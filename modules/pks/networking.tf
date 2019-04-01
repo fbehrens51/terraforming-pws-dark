@@ -1,3 +1,7 @@
+data "aws_vpc" "vpc" {
+  id = "${var.vpc_id}"
+}
+
 resource "aws_subnet" "pks_subnets" {
   count             = "${length(var.availability_zones)}"
   vpc_id            = "${var.vpc_id}"

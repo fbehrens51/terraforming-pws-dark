@@ -1,24 +1,3 @@
-provider "aws" {
-  region     = "${var.region}"
-  version = "~> 1.60"
-}
-
-terraform {
-  required_version = "< 0.12.0"
-}
-
-provider "random" {
-  version = "~> 2.0"
-}
-
-provider "template" {
-  version = "~> 1.0"
-}
-
-provider "tls" {
-  version = "~> 1.2"
-}
-
 locals {
   ops_man_subnet_id = "${var.ops_manager_private ? element(module.infra.infrastructure_subnet_ids, 0) : element(module.infra.public_subnet_ids, 0)}"
 
@@ -40,10 +19,8 @@ resource "random_integer" "bucket" {
 module "infra" {
   source = "../modules/infra"
 
-  region             = "${var.region}"
   env_name           = "${var.env_name}"
   availability_zones = "${var.availability_zones}"
-  vpc_cidr           = "${var.vpc_cidr}"
 
   internetless = "${var.internetless}"
 
@@ -64,13 +41,11 @@ module "ops_manager" {
   subnet_id      = "${local.ops_man_subnet_id}"
 
   env_name                 = "${var.env_name}"
-  region                   = "${var.region}"
   ami                      = "${var.ops_manager_ami}"
   optional_ami             = "${var.optional_ops_manager_ami}"
   instance_type            = "${var.ops_manager_instance_type}"
   private                  = "${var.ops_manager_private}"
   vpc_id                   = "${module.infra.vpc_id}"
-  vpc_cidr                 = "${var.vpc_cidr}"
   dns_suffix               = "${var.dns_suffix}"
   zone_id                  = "${module.infra.zone_id}"
   additional_iam_roles_arn = ["${module.pas.iam_pas_bucket_role_arn}"]
@@ -112,9 +87,7 @@ module "pas" {
   source = "../modules/pas"
 
   env_name           = "${var.env_name}"
-  region             = "${var.region}"
   availability_zones = "${var.availability_zones}"
-  vpc_cidr           = "${var.vpc_cidr}"
   vpc_id             = "${module.infra.vpc_id}"
   route_table_ids    = "${module.infra.deployment_route_table_ids}"
   public_subnet_ids  = "${module.infra.public_subnet_ids}"
@@ -151,7 +124,6 @@ module "rds" {
 
   env_name           = "${var.env_name}"
   availability_zones = "${var.availability_zones}"
-  vpc_cidr           = "${var.vpc_cidr}"
   vpc_id             = "${module.infra.vpc_id}"
   tags               = "${local.actual_tags}"
 }

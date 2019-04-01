@@ -1,3 +1,7 @@
+data "aws_vpc" "vpc" {
+  id = "${var.vpc_id}"
+}
+
 resource "aws_subnet" "control_plane" {
   count             = "${length(var.availability_zones)}"
   cidr_block        = "${cidrsubnet(local.control_plane_cidr, 4, count.index)}"
