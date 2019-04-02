@@ -24,20 +24,6 @@ resource "aws_route_table_association" "route_infrastructure_subnets" {
   route_table_id = "${element(aws_route_table.deployment.*.id, count.index)}"
 }
 
-# Ops Manager Subnet
-data "aws_internet_gateway" "ig" {
-  internet_gateway_id = "${var.internet_gateway_id}"
-}
-
-resource "aws_route_table" "public_route_table" {
-  vpc_id = "${data.aws_vpc.vpc.id}"
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = "${data.aws_internet_gateway.ig.id}"
-  }
-}
-
 resource "aws_subnet" "public_subnets" {
   count             = "${length(var.availability_zones)}"
   vpc_id            = "${data.aws_vpc.vpc.id}"
@@ -52,10 +38,4 @@ resource "aws_subnet" "public_subnets" {
   lifecycle {
     ignore_changes = ["tags.%", "tags.kubernetes"]
   }
-}
-
-resource "aws_route_table_association" "route_public_subnets" {
-  count          = "${length(var.availability_zones)}"
-  subnet_id      = "${element(aws_subnet.public_subnets.*.id, count.index)}"
-  route_table_id = "${aws_route_table.public_route_table.id}"
 }

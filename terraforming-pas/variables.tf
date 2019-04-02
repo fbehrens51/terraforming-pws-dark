@@ -25,10 +25,6 @@ variable "vpc_cidr" {
   default = "10.0.0.0/16"
 }
 
-variable "internet_gateway_id" {
-  description = "pre-exsting IGW ID"
-}
-
 variable "vpc_id" {
   description = "pre-exsting VPC ID"
 }
