@@ -1,5 +1,9 @@
 variable "optional_count" {}
 
+variable "om_eip" {}
+
+variable "om_eni" {}
+
 variable "vm_count" {}
 
 variable "private" {}

@@ -1,5 +1,15 @@
 variable "env_name" {}
 
+variable "om_eip" {
+  default = true
+  description = "Creates an EIP for OM"
+}
+
+variable "om_eni" {
+  default = false
+  description = "Creates an ENI for OM"
+}
+
 variable "use_tcp_routes" {
   default = true
   description = "Indicate whether or not to enable tcp routes and elbs"

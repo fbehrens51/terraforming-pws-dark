@@ -50,6 +50,8 @@ module "ops_manager" {
   additional_iam_roles_arn = ["${module.pas.iam_pas_bucket_role_arn}"]
   bucket_suffix            = "${local.bucket_suffix}"
   ops_manager_role_name    = "${var.ops_manager_role_name}"
+  om_eni                   = "${var.om_eni}"
+  om_eip                   = "${var.om_eip}"
 
   tags = "${local.actual_tags}"
   use_route53 = "${var.use_route53}"
