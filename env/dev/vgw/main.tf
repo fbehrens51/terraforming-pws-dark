@@ -40,6 +40,10 @@ module "pas" {
   ops_manager_role_name = "DIRECTOR"
   ops_manager_ami       = "ami-0b4e720c1858f1786"
   internetless          = true
+  ops_manager_private   = false
+  om_eip                = false
+  om_eni                = true
+  om_public_subnet      = true
 }
 
 module "vgw" {
