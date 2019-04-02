@@ -10,6 +10,12 @@ variable "om_eni" {
   description = "Creates an ENI for OM"
 }
 
+variable "om_public_subnet" {
+  default = true
+  description = "if true puts the OM instance in the public subnet. If false, puts it in the infra subnet."
+}
+
+
 variable "use_tcp_routes" {
   default = true
   description = "Indicate whether or not to enable tcp routes and elbs"

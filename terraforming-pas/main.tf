@@ -1,5 +1,5 @@
 locals {
-  ops_man_subnet_id = "${var.ops_manager_private ? element(module.infra.infrastructure_subnet_ids, 0) : element(module.infra.public_subnet_ids, 0)}"
+  ops_man_subnet_id = "${var.om_public_subnet ? element(module.infra.public_subnet_ids, 0) : element(module.infra.infrastructure_subnet_ids, 0)}"
 
   bucket_suffix = "${random_integer.bucket.result}"
 

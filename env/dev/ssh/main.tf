@@ -39,6 +39,8 @@ module "pas" {
   vpc_id                = "${local.vpc_id}"
   ops_manager_role_name = "DIRECTOR"
   ops_manager_ami       = "ami-0b4e720c1858f1786"
+  om_eip                = true
+  om_eni                = true
 }
 
 module "igw" {

@@ -42,7 +42,8 @@ module "pas" {
   internetless          = true
   ops_manager_private   = false
   om_eip                = false
-  om_eni                = false
+  om_eni                = true
+  om_public_subnet      = true
 }
 
 module "vgw" {
