@@ -48,11 +48,6 @@ variable "nat_ami_map" {
     us-west-2      = "ami-40d1f038"
   }
 }
-
-variable "internet_gateway_id" {
-  description = "pre-exsting IGW ID"
-}
-
 variable "vpc_id" {
   description = "pre-exsting VPC ID"
 }

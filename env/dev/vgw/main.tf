@@ -3,7 +3,7 @@ terraform {
 
   backend "s3" {
     bucket = "eagle-state"
-    key    = "dev/ssh/terraform.tfstate"
+    key    = "dev/vgw/terraform.tfstate"
     encrypt = true
     kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
     dynamodb_table = "state_lock"
@@ -31,7 +31,7 @@ module "pas" {
   source              = "../../../terraforming-pas"
   availability_zones  = "${local.availability_zones}"
   dns_suffix          = "jgordon.xyz"
-  env_name            = "ssh"
+  env_name            = "vgw"
   rds_instance_count  = 0
   use_route53           = false
   use_tcp_routes        = false
@@ -39,17 +39,18 @@ module "pas" {
   vpc_id                = "${local.vpc_id}"
   ops_manager_role_name = "DIRECTOR"
   ops_manager_ami       = "ami-0b4e720c1858f1786"
+  internetless          = true
 }
 
-module "igw" {
-  source = "../../../modules/igw/lookup"
-  internet_gateway_id = "igw-031c26ac18e580e2a"
-  vpc_id              = "${local.vpc_id}"
-  availability_zones  = "${local.availability_zones}"
-  public_subnets      = "${module.pas.public_subnets}"
+module "vgw" {
+  source = "../../../modules/vgw/lookup"
+  availability_zones = "${local.availability_zones}"
+  gateway_id = "vgw-03a6980cacc039860"
+  public_subnets = "${module.pas.public_subnets}"
+  vpc_id =  "${local.vpc_id}"
 }
 
 locals {
-  vpc_id = "vpc-053b17e24125579d5"
+  vpc_id = "vpc-0346f70ea7ef6293a"
   availability_zones  = ["us-east-1a", "us-east-1b"]
 }
