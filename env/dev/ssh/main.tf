@@ -42,8 +42,8 @@ module "pas" {
 }
 
 module "igw" {
-  source = "../../../modules/igw/lookup"
-  internet_gateway_id = "igw-031c26ac18e580e2a"
+  source = "../../../modules/gw/lookup"
+  gateway_id = "igw-031c26ac18e580e2a"
   vpc_id              = "${local.vpc_id}"
   availability_zones  = "${local.availability_zones}"
   public_subnets      = "${module.pas.public_subnets}"

@@ -1,8 +1,3 @@
-# Ops Manager Subnet
-data "aws_internet_gateway" "ig" {
-  internet_gateway_id = "${var.internet_gateway_id}"
-}
-
 data "aws_vpc" "vpc" {
   id = "${var.vpc_id}"
 }
@@ -12,7 +7,7 @@ resource "aws_route_table" "public_route_table" {
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = "${var.internet_gateway_id}"
+    gateway_id = "${var.gateway_id}"
   }
 }
 
@@ -30,14 +25,10 @@ variable "public_subnets" {
   type = "list"
 }
 
-variable "internet_gateway_id" {
+variable "gateway_id" {
   type = "string"
 }
 
 variable "vpc_id" {
   type = "string"
-}
-
-output "internet_gateway_id" {
-  value = "${data.aws_internet_gateway.ig.internet_gateway_id}"
 }

@@ -43,7 +43,7 @@ module "pas" {
 }
 
 module "vgw" {
-  source = "../../../modules/vgw/lookup"
+  source = "../../../modules/gw/lookup"
   availability_zones = "${local.availability_zones}"
   gateway_id = "vgw-03a6980cacc039860"
   public_subnets = "${module.pas.public_subnets}"
