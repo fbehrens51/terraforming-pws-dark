@@ -128,3 +128,25 @@ module "rds" {
   vpc_id             = "${module.infra.vpc_id}"
   tags               = "${local.actual_tags}"
 }
+
+module "om_config" {
+  source = "../modules/ops_manager_config"
+
+  pas_subnet_cidrs = "${module.pas.pas_subnet_cidrs}"
+  rds_address = "${module.rds.rds_address}"
+  rds_password = "${module.rds.rds_password}"
+  rds_port = "${module.rds.rds_port}"
+  rds_username = "${module.rds.rds_username}"
+  pas_bucket_iam_instance_profile_name = "${module.pas.pas_bucket_iam_instance_profile_name}"
+  pas_buildpacks_bucket = "${module.pas.pas_buildpacks_bucket}"
+  pas_droplets_bucket = "${module.pas.pas_droplets_bucket}"
+  pas_packages_bucket = "${module.pas.pas_packages_bucket}"
+  pas_resources_bucket = "${module.pas.pas_resources_bucket}"
+  pas_subnet_availability_zones = "${module.pas.pas_subnet_availability_zones}"
+  pas_subnet_gateways = "${module.pas.pas_subnet_gateways}"
+  pas_subnet_ids = "${module.pas.pas_subnet_ids}"
+  vms_security_group_id = "${module.infra.vms_security_group_id}"
+  region = "${module.infra.region}"
+  ops_manager_ssh_public_key_name = "${module.ops_manager.ssh_public_key_name}"
+  ops_manager_ssh_private_key = "${module.ops_manager.ssh_private_key}"
+}
