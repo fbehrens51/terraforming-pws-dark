@@ -199,6 +199,10 @@ output "network_name" {
   value = "${module.infra.vpc_id}"
 }
 
+output "ops_manager_instance_id" {
+  value     = "${module.ops_manager.ops_manager_instance_id}"
+}
+
 output "ops_manager_ssh_private_key" {
   sensitive = true
   value     = "${module.ops_manager.ssh_private_key}"
