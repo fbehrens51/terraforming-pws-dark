@@ -45,13 +45,13 @@ module "pas" {
 
 module "igw" {
   source = "../../../modules/gw/lookup"
-  gateway_id = "igw-031c26ac18e580e2a"
+  gateway_id = "igw-05d456b0f48a49220"
   vpc_id              = "${local.vpc_id}"
   availability_zones  = "${local.availability_zones}"
   public_subnets      = "${module.pas.public_subnets}"
 }
 
 locals {
-  vpc_id = "vpc-053b17e24125579d5"
+  vpc_id = "vpc-0d27315374a12fe98"
   availability_zones  = ["us-east-1a", "us-east-1b"]
 }
