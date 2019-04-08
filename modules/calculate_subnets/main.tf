@@ -8,27 +8,33 @@ locals {
     "16" = {
       "large" = 6
       "small" = 10
-      "infra_index" = 64
+      "infra_index" = 80
     }
     "20" = {
       "large" = 3
       "small" = 6
-      "infra_index" = 32
+      "infra_index" = 40
     }
   }
 
-  newbits_to_large = "${lookup(local.cidr_breakout_map[local.cidr_prefix],"large")}"
-  newbits_to_small = "${lookup(local.cidr_breakout_map[local.cidr_prefix],"small")}"
+  newbits_to_large      = "${lookup(local.cidr_breakout_map[local.cidr_prefix],"large")}"
+  newbits_to_small      = "${lookup(local.cidr_breakout_map[local.cidr_prefix],"small")}"
   index_for_ifra_subnet = "${lookup(local.cidr_breakout_map[local.cidr_prefix],"infra_index")}"
 
-  rds_cidr = "${cidrsubnet(var.vpc_cidr, local.newbits_to_large, 3)}"
-  pas_cidr      = "${cidrsubnet(var.vpc_cidr, local.newbits_to_large, 1)}"
-  services_cidr = "${cidrsubnet(var.vpc_cidr, local.newbits_to_large, 2)}"
-  pks_cidr      = "${cidrsubnet(var.vpc_cidr, local.newbits_to_large, 1)}"
-  pks_services_cidr = "${cidrsubnet(var.vpc_cidr, local.newbits_to_large, 2)}"
-  control_plane_cidr      = "${cidrsubnet(var.vpc_cidr, local.newbits_to_large, 1)}"
-  infrastructure_cidr = "${cidrsubnet(var.vpc_cidr, local.newbits_to_small, local.index_for_ifra_subnet)}"
-  public_cidr         = "${cidrsubnet(var.vpc_cidr, local.newbits_to_large, 0)}"
+  public_cidr           = "${cidrsubnet(var.vpc_cidr, local.newbits_to_large, 0)}"
+
+  pas_cidr              = "${cidrsubnet(var.vpc_cidr, local.newbits_to_large, 1)}"
+  pks_cidr              = "${cidrsubnet(var.vpc_cidr, local.newbits_to_large, 1)}"
+  control_plane_cidr    = "${cidrsubnet(var.vpc_cidr, local.newbits_to_large, 1)}"
+
+  pks_services_cidr     = "${cidrsubnet(var.vpc_cidr, local.newbits_to_large, 2)}"
+  services_cidr         = "${cidrsubnet(var.vpc_cidr, local.newbits_to_large, 2)}"
+
+  rds_cidr              = "${cidrsubnet(var.vpc_cidr, local.newbits_to_large, 3)}"
+
+  portal_cache_cidr     = "${cidrsubnet(var.vpc_cidr, local.newbits_to_large, 4)}"
+
+  infrastructure_cidr   = "${cidrsubnet(var.vpc_cidr, local.newbits_to_small, local.index_for_ifra_subnet)}"
 }
 
 output "public_cidr" {
@@ -42,6 +48,9 @@ output "services_cidr" {
 }
 output "rds_cidr" {
   value = "${local.rds_cidr}"
+}
+output "portal_cache_cidr" {
+  value = "${local.portal_cache_cidr}"
 }
 output "infrastructure_cidr" {
   value = "${local.infrastructure_cidr}"
