@@ -98,8 +98,3 @@ output "isoseg_target_groups" {
     "${element(concat(aws_lb_target_group.isoseg_4443.*.name, list("")), 0)}",
   ]
 }
-
-# ============== KMS ===========================================================
-output "blobstore_kms_key_id" {
-  value = "${data.aws_kms_key.blobstore_kms_key.key_id}"
-}

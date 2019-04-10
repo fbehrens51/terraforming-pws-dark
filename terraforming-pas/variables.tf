@@ -66,6 +66,10 @@ variable "create_backup_pas_buckets" {
   default = false
 }
 
+variable "kms_key_name" {
+  description = "the name of the kms key that will be used for our pas buckets"
+}
+
 /****************
 * Ops Manager *
 *****************/

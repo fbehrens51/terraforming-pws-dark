@@ -13,14 +13,6 @@ data "template_file" "pas_backup_bucket_policy" {
   count = "${var.create_backup_pas_buckets ? 1 : 0}"
 }
 
-data "aws_kms_alias" "blobstore_kms_key_alias" {
-  name          = "alias/pas_kms_key"
-}
-
-data "aws_kms_key" "blobstore_kms_key" {
-  key_id = "${data.aws_kms_alias.blobstore_kms_key_alias.target_key_id}"
-}
-
 data "aws_iam_role" "pas_bucket_access" {
   name = "${var.pas_bucket_role_name}"
 }

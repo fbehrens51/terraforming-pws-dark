@@ -150,3 +150,8 @@ module "om_config" {
   ops_manager_ssh_public_key_name = "${module.ops_manager.ssh_public_key_name}"
   ops_manager_ssh_private_key = "${module.ops_manager.ssh_private_key}"
 }
+
+module "kms" {
+  source = "../modules/kms/lookup"
+  key_name = "${var.kms_key_name}"
+}
