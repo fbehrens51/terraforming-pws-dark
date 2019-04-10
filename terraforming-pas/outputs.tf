@@ -39,7 +39,7 @@ output "pas_resources_backup_bucket" {
 }
 
 output "blobstore_kms_key_id" {
-  value = "${module.pas.blobstore_kms_key_id}"
+  value = "${module.kms.kms_key_id}"
 }
 
 output "ops_manager_public_ip" {
