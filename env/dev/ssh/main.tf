@@ -31,7 +31,7 @@ module "pas" {
   source              = "../../../terraforming-pas"
   availability_zones  = "${local.availability_zones}"
   dns_suffix          = "jgordon.xyz"
-  env_name            = "ssh"
+  env_name            = "${local.env_name}"
   rds_instance_count  = 0
   use_route53           = false
   use_tcp_routes        = false
@@ -41,6 +41,7 @@ module "pas" {
   ops_manager_ami       = "ami-0b4e720c1858f1786"
   om_eip                = false
   om_eni                = false
+  kms_key_name          = "pas_kms_key"
 }
 
 module "igw" {
@@ -52,6 +53,7 @@ module "igw" {
 }
 
 locals {
-  vpc_id = "vpc-0d27315374a12fe98"
+  env_name            = "ssh"
+  vpc_id              = "vpc-0d27315374a12fe98"
   availability_zones  = ["us-east-1a", "us-east-1b"]
 }

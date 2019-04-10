@@ -28,11 +28,11 @@ provider "tls" {
 }
 
 module "pas" {
-  source              = "../../../terraforming-pas"
-  availability_zones  = "${local.availability_zones}"
-  dns_suffix          = "jgordon.xyz"
-  env_name            = "vgw"
-  rds_instance_count  = 0
+  source                = "../../../terraforming-pas"
+  availability_zones    = "${local.availability_zones}"
+  dns_suffix            = "jgordon.xyz"
+  env_name              = "${local.env_name}"
+  rds_instance_count    = 0
   use_route53           = false
   use_tcp_routes        = false
   use_ssh_routes        = false
@@ -44,6 +44,7 @@ module "pas" {
   om_eip                = false
   om_eni                = true
   om_public_subnet      = true
+  kms_key_name          = "pas_kms_key"
 }
 
 module "vgw" {
@@ -55,6 +56,7 @@ module "vgw" {
 }
 
 locals {
-  vpc_id = "vpc-0346f70ea7ef6293a"
+  env_name            = "vgw"
+  vpc_id              = "vpc-0346f70ea7ef6293a"
   availability_zones  = ["us-east-1a", "us-east-1b"]
 }

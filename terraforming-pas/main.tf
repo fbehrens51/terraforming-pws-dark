@@ -153,5 +153,5 @@ module "om_config" {
 
 module "kms" {
   source = "../modules/kms/lookup"
-  key_name = "${var.env_name}"
+  key_name = "${var.kms_key_name}"
 }
