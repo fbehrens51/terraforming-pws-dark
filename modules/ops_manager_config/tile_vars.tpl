@@ -79,3 +79,9 @@ database:
   uaa_username: ${rds_username}
   uaa_password: ${rds_password}
   ca_cert: *rds_ca_cert
+
+redis:
+  host: ${redis_host}
+  password: ${redis_password}
+  port: 6379
+  ca_cert: *redis_ca_cert

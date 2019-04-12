@@ -14,6 +14,12 @@ variable "rds_port" {
 variable "rds_username" {
 }
 
+variable "redis_host" {
+}
+
+variable "redis_password" {
+}
+
 variable "pas_bucket_iam_instance_profile_name" {
 }
 

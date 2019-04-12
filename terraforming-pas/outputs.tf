@@ -268,18 +268,6 @@ output "ops_manager_private_ip" {
   value = "${module.ops_manager.ops_manager_private_ip}"
 }
 
-output "create_db_script_content" {
-  value="${module.om_config.create_db_script_content}"
-}
-
-output "drop_db_script_content" {
-  value="${module.om_config.drop_db_script_content}"
-}
-
-output "ops_manager_infra_vars" {
-  value="${module.om_config.ops_manager_infra_vars}"
-}
-
 /*****************************
  * Deprecated *
  *****************************/

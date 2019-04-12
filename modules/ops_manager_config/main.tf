@@ -12,6 +12,9 @@ data "template_file" "tile_vars" {
     rds_port = "${var.rds_port}"
     rds_username = "${var.rds_username}"
 
+    redis_host = "${var.redis_host}"
+    redis_password = "${var.redis_password}"
+
     pas_bucket_iam_instance_profile_name = "${var.pas_bucket_iam_instance_profile_name}"
     pas_buildpacks_bucket = "${var.pas_buildpacks_bucket}"
     pas_droplets_bucket = "${var.pas_droplets_bucket}"
