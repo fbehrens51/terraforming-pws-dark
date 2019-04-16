@@ -3,7 +3,6 @@ resources:
 - name: terraforming
   type: git
   source:
-    branch: ci
     uri: git@github.com:pivotal-federal-field-engineering/terraforming-aws.git
     private_key: ((eagle_bot_github_user.private_key))
 
