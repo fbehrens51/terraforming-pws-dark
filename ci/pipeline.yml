@@ -57,5 +57,5 @@ jobs:
         region: ((region))
         access_key: ((access_key))
         secret_key: ((secret_key))
-        env_path: terraforming/env/dev/ssh
+        env_path: terraforming/env/dev/air-gapped
 
