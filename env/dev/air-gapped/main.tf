@@ -3,7 +3,7 @@ terraform {
 
   backend "s3" {
     bucket = "eagle-state"
-    key    = "dev/ssh/terraform.tfstate"
+    key    = "dev/air-gapped/terraform.tfstate"
     encrypt = true
     kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
     dynamodb_table = "state_lock"
@@ -53,7 +53,7 @@ module "igw" {
 }
 
 locals {
-  env_name            = "ssh"
+  env_name            = "air-gapped"
   vpc_id              = "vpc-0d27315374a12fe98"
   availability_zones  = ["us-east-1a", "us-east-1b"]
 }

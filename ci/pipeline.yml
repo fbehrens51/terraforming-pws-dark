@@ -4,7 +4,7 @@ resources:
   type: git
   source:
     uri: git@github.com:pivotal-federal-field-engineering/terraforming-aws.git
-    private_key: ((eagle_bot_github_user.private_key))
+    private_key: ((eagle_bot_github_user_key))
 
 jobs:
 - name: key-master
