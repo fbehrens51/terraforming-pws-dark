@@ -29,7 +29,7 @@ provider "tls" {
 
 module "kms" {
   source = "../../../modules/kms/create"
-  key_name = "ssh"
+  key_name = "key-master"
   deletion_window = 8
 }
 

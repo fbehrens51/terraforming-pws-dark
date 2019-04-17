@@ -3,7 +3,7 @@ resources:
 - name: terraforming
   type: git
   source:
-    uri: git@github.com:pivotal-federal-field-engineering/terraforming-aws.git
+    uri: git@github.com:pivotal-federal-field-engineering/terraforming-pws-dark.git
     private_key: ((eagle_bot_github_user_key))
 
 jobs:
@@ -38,7 +38,7 @@ jobs:
   plan:
     - get: terraforming
       trigger: true
-    - task: vgw
+    - task: combine
       file: terraforming/ci/tasks/lifecycle.yml
       params:
         region: ((region))
@@ -46,12 +46,12 @@ jobs:
         secret_key: ((secret_key))
         env_path: terraforming/env/dev/combine
 
-- name: ssh
+- name: air-gapped
   max_in_flight: 1
   plan:
     - get: terraforming
       trigger: true
-    - task: vgw
+    - task: air-gapped
       file: terraforming/ci/tasks/lifecycle.yml
       params:
         region: ((region))

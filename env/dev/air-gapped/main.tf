@@ -38,6 +38,7 @@ module "pas" {
   use_ssh_routes        = false
   vpc_id                = "${local.vpc_id}"
   ops_manager_role_name = "DIRECTOR"
+  pas_bucket_role_name  = "pas_om_bucket_role"
   ops_manager_ami       = "ami-0b4e720c1858f1786"
   om_eip                = false
   om_eni                = false
