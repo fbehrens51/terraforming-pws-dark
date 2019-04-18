@@ -3,6 +3,7 @@ resources:
 - name: terraforming
   type: git
   source:
+    branch: ci
     uri: git@github.com:pivotal-federal-field-engineering/terraforming-pws-dark.git
     private_key: ((eagle_bot_github_user_key))
 
@@ -39,7 +40,7 @@ jobs:
     - get: terraforming
       trigger: true
     - task: combine
-      file: terraforming/ci/tasks/lifecycle.yml
+      file: terraforming/ci/tasks/init_validate_plan.yml
       params:
         region: ((region))
         access_key: ((access_key))

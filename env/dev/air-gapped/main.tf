@@ -6,7 +6,7 @@ terraform {
     key    = "dev/air-gapped/terraform.tfstate"
     encrypt = true
     kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
-    dynamodb_table = "state_lock"
+    dynamodb_table = "air-gapped-state"
   }
 }
 

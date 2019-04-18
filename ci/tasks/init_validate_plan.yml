@@ -1,0 +1,19 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: pcfeagle/terraform
+
+inputs:
+  - name: terraforming
+
+run:
+  path: terraforming/ci/tasks/init_validate_plan.sh
+
+params:
+  region:
+  access_key:
+  secret_key:
+  env_path:
