@@ -3,7 +3,7 @@ resources:
 - name: terraforming
   type: git
   source:
-    branch: ci
+    branch: master
     uri: git@github.com:pivotal-federal-field-engineering/terraforming-pws-dark.git
     private_key: ((eagle_bot_github_user_key))
 
