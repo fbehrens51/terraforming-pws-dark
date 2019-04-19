@@ -22,7 +22,7 @@ external_database:
   host: ${rds_address}
   port: "${rds_port}"
   user: ${rds_username}
-  password: ${rds_password}
+  password: '${rds_password}'
   ca_cert: *rds_ca_cert
 
 iaas_configuration:
@@ -53,35 +53,35 @@ database:
   host: ${rds_address}
   port: ${rds_port}
   account_username: ${rds_username}
-  account_password: ${rds_password}
+  account_password: '${rds_password}'
   app_usage_service_username: ${rds_username}
-  app_usage_service_password: ${rds_password}
+  app_usage_service_password: '${rds_password}'
   autoscale_username: ${rds_username}
-  autoscale_password: ${rds_password}
+  autoscale_password: '${rds_password}'
   ccdb_username: ${rds_username}
-  ccdb_password: ${rds_password}
+  ccdb_password: '${rds_password}'
   credhub_username: ${rds_username}
-  credhub_password: ${rds_password}
+  credhub_password: '${rds_password}'
   diego_username: ${rds_username}
-  diego_password: ${rds_password}
+  diego_password: '${rds_password}'
   locket_username: ${rds_username}
-  locket_password: ${rds_password}
+  locket_password: '${rds_password}'
   networkpolicyserver_username: ${rds_username}
-  networkpolicyserver_password: ${rds_password}
+  networkpolicyserver_password: '${rds_password}'
   nfsvolume_username: ${rds_username}
-  nfsvolume_password: ${rds_password}
+  nfsvolume_password: '${rds_password}'
   notifications_username: ${rds_username}
-  notifications_password: ${rds_password}
+  notifications_password: '${rds_password}'
   routing_username: ${rds_username}
-  routing_password: ${rds_password}
+  routing_password: '${rds_password}'
   silk_username: ${rds_username}
-  silk_password: ${rds_password}
+  silk_password: '${rds_password}'
   uaa_username: ${rds_username}
-  uaa_password: ${rds_password}
+  uaa_password: '${rds_password}'
   ca_cert: *rds_ca_cert
 
 redis:
   host: ${redis_host}
-  password: ${redis_password}
+  password: '${redis_password}'
   port: 6379
   ca_cert: *redis_ca_cert
