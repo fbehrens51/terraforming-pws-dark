@@ -60,3 +60,15 @@ jobs:
         secret_key: ((secret_key))
         env_path: terraforming/env/dev/air-gapped
 
+- name: vanila
+  max_in_flight: 1
+  plan:
+    - get: terraforming
+      trigger: true
+    - task: vanilla
+      file: terraforming/ci/tasks/lifecycle.yml
+      params:
+        region: ((region))
+        access_key: ((access_key))
+        secret_key: ((secret_key))
+        env_path: terraforming/env/dev/vanilla
