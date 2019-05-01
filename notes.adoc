@@ -1,0 +1,138 @@
+= Notes
+
+== Requirements
+
+=== Bastion
+
+* Subnet(s) /28
+** Route Table(s) - create new or add to existing w/route to customer network
+* Instance
+** Bastion
+*** Security Group(s)
+**** Rules to Allow communication in/out of Bastion instance to appropriate customer services
+**** Rules to SSH to MJB, Ent-Svcs hosts, OM
+*** ENI/EIP (not absolutely necessary, more for convenience
+*** disabling/enabling public IP
+*** support passing custom User Data (configuration needed to be passed to set certain values for access)
+*** AMI ID input
+**** Could create module to lookup appropriate AMIs if pattern (naming/tagging) is followed/consistent
+
+
+=== Control Plane
+* Subnets
+** start with /28 with 'public' route
+** Route Table(s) - create new or add to existing w/route to customer network
+* EIP(s)/ENI(s)
+** reserved IP? (not absolutely necessary, more for convenience)
+* Instance(s)
+** MJB_importer
+*** Security Group
+**** rules to allow ssh from CIDR (workstation)
+** MJB
+*** Security Group
+**** rules to allow communication w/OpsMan API
+**** rules to allow communication w/OpsMan SSH
+**** rules to allow inbound ssh from Bastion
+*** support passing UserData
+**** users
+**** CAs
+**** configure custom terraform
+** VM_Importer
+*** Security Group
+**** rules to allow ssh from MJB
+*** Fexible configuration to support private/public IPs
+
+
+=== Enterprise Services
+
+* Subnets
+** Public /28
+** Private /28
+** Route Table(s) - create new or add to existing w/route to customer services
+** reserved IP? (not absolutely necessary, more for convenience)
+* Instance(s)
+** DNS
+*** EIP(s)/ENI(s)
+*** Public subnet
+*** Security Group
+**** rules to allow ssh from MJB
+**** rules to allow DNS inbound from customer's DNS
+*** UserData to configure BindDNS
+*** support passing UserData
+**** users
+**** CAs
+** ClamAV
+*** Private subnet
+*** Security Group
+**** rules to allow ssh from MJB
+**** rules to allow inbound from list of cidrs (any of our CIDRs that need to pull down the defs?) - vms_security_group
+*** UserData to configure ClamAV
+*** support passing UserData
+**** users
+**** CAs
+** Logging
+*** EIP(s)/ENI(s) (not mandatory, but would make it easier to have dns resolve)
+*** Public subnet
+*** Security Group
+**** rules to allow ssh from MJB
+**** rules to allow inbound from list of cidrs (any of our CIDRs that need to log out to this server) - vm_security_group
+**** rules to support Splunk UI
+*** UserData to configure Splunk
+*** support passing UserData
+**** users
+**** CAs
+
+=== PAS
+* Security group rules update?
+** MJB inbound to RDS? or do we ssh to OpsMan and run scripts there? does peering w/ security group rule make this work?
+* Issue with code trying to create VPC endpoints when internetless flag is set
+* Potential changes needed to support >10 minute creation of ELBs (May be moot if move to classic)
+
+== Order of operations
+. Bootstrap Bastion VPC
+. Bootstrap Control Plane VPC
+. Launch MJB
+.. Import MJB AMI
+.. Launch Instance using MJB AMI w/appropriate UserData
+. Import OpsMan/StemCell AMIs
+. Bootstrap Enterprise Services VPC
+. Launch Ent-SVCS instances
+.. Launch DNS
+.. Launch ClamAV
+.. Launch logging
+. Bootstrap PAS (terraform)
+.. Infrastructure
+.. Launch OpsMan
+. Deploy
+.. Configure OpsMan
+.. Launch Director
+.. Deploy PAS
+... Upload PAS product
+... Configure PAS product
+... Deploy
+
+
+== proposed/existing modules
+* subnet creation
+** CP
+** Ent-Svcs
+* Security Group/rules creation/lookups
+** MJB SSH Client
+** Logging Service Client (Potentially for non bosh/PAS VMs)
+** ClamAV Service Client (Potentially for non bosh/PAS VMs)
+* ENI creation/assignment/lookup
+* EIP creation/assignment/lookup
+* AMI Lookups (tagging conventions)
+** Amazon HVM (for importers)
+** Bastion
+** MJB
+** OpsMan
+* module(s) around UserData to support
+** users config
+** CAs
+** other custom reqs
+* separate tf logic into module to create ELBs (classic LB)
+
+
+
+
