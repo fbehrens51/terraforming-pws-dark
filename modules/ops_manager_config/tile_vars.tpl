@@ -46,7 +46,7 @@ blobstore:
   # Same as region entered in iaas_configuration above
   region: ${region}
   # S3 endpoint
-  endpoint: https://s3.us-iso-east-1.c2s.ic.gov
+  endpoint: ${s3_endpoint}
   instance_profile: *blobstore_instance_profile
 
 database:

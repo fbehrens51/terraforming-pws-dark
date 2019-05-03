@@ -58,3 +58,6 @@ variable "ops_manager_ssh_public_key_name" {
 
 variable "ops_manager_ssh_private_key" {
 }
+
+variable "s3_endpoint" {
+}

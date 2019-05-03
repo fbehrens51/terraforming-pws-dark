@@ -3,7 +3,7 @@ terraform {
 
   backend "s3" {
     bucket = "eagle-state"
-    key    = "dev/combine/terraform.tfstate"
+    key = "dev/combine/terraform.tfstate"
     encrypt = true
     kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
     dynamodb_table = "combine-state"
@@ -29,7 +29,6 @@ provider "tls" {
 
 locals {
   vpc_id = "vpc-01c84ecce478d1efa"
-  external_om_elb_name = "combine-external-om-lb"
   internal_om_elb_name = "combine-internal-om-lb"
   combine_proxy_eni = "eni-03b2209b4986c9821"
   availability_zones  = ["us-east-1a", "us-east-1c"]
@@ -38,6 +37,7 @@ locals {
   ops_manager_ami = "ami-0b4e720c1858f1786"
   pas_bucket_role_name  = "pas_om_bucket_role"
   ops_manager_role_name = "DIRECTOR"
+  s3_endpoint = "https://s3.us-east-1.amazonaws.com"
 }
 
 module "pas" {
@@ -59,14 +59,6 @@ module "pas" {
   internetless          = true
   kms_key_name          = "pas_kms_key"
 }
-
-//module "ldap" {
-//  source = "../tf-modules/ldap-server"
-//  env_name = "${local.env_name}"
-//  route_table_id = "rtb-0203f0855e9ca250b"
-//  internal_ldap_elb_name = "combine-2-internal-ldap-lb"
-//  external_ldap_elb_name = "combine-2-external-ldap-lb"
-//}
 
 module "portal_cache" {
   source             = "../../../modules/portal-cache"
@@ -99,6 +91,7 @@ module "om_config" {
   region = "${local.region}"
   ops_manager_ssh_public_key_name = "${module.pas.ops_manager_ssh_public_key_name}"
   ops_manager_ssh_private_key = "${module.pas.ops_manager_ssh_private_key}"
+  s3_endpoint = "${local.s3_endpoint}"
 }
 
 # infrastructure, services, and pas all share common route tables
@@ -122,16 +115,6 @@ resource "aws_route_table_association" "route_public_subnets" {
   count          = "${length(local.availability_zones)}"
   subnet_id      = "${element(module.pas.public_subnets, count.index)}"
   route_table_id = "${element(data.aws_route_table.infra_route_tables.*.id, count.index)}"
-}
-
-resource "aws_elb_attachment" "external_om_elb_attachement" {
-  elb      = "${local.external_om_elb_name}"
-  instance = "${module.pas.ops_manager_instance_id}"
-}
-
-resource "aws_elb_attachment" "internal_om_elb_attachement" {
-  elb      = "${local.internal_om_elb_name}"
-  instance = "${module.pas.ops_manager_instance_id}"
 }
 
 output "create_db_script_content" {

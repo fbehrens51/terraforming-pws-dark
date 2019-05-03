@@ -33,6 +33,7 @@ data "template_file" "tile_vars" {
 
     ssh_key_name = "${var.ops_manager_ssh_public_key_name}"
     ssh_private_key = "${var.ops_manager_ssh_private_key}"
+    s3_endpoint = "${var.s3_endpoint}"
   }
 }
 
