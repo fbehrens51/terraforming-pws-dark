@@ -4,6 +4,7 @@ resource "aws_kms_alias" "kms_key_alias" {
 }
 
 resource "aws_kms_key" "kms_key" {
+
   description             = "${var.key_name} KMS key"
   deletion_window_in_days = "${var.deletion_window}"
 
@@ -20,6 +21,6 @@ output "kms_key_id" {
   value = "${aws_kms_key.kms_key.id}"
 }
 
-output "kms_key_alias" {
-  value = "${aws_kms_alias.kms_key_alias.name}"
+output "kms_key_alias_arn" {
+  value = "${aws_kms_alias.kms_key_alias.arn}"
 }
