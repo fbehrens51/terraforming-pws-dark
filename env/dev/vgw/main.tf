@@ -56,8 +56,23 @@ module "vgw" {
   vpc_id =  "${local.vpc_id}"
 }
 
+module "elb" {
+  source = "../../../modules/elb/create"
+  env_name = "${local.env_name}"
+  internetless = true
+  public_subnet_ids = "${module.pas.public_subnets}"
+  tags = "${local.tags}"
+  vpc_id = "${local.vpc_id}"
+  egress_cidrs = "${module.pas.pas_subnet_cidrs}"
+}
+
 locals {
   env_name            = "vgw"
   vpc_id              = "vpc-0346f70ea7ef6293a"
   availability_zones  = ["us-east-1a", "us-east-1b"]
+
+  tags =  {
+    Team = "Dev"
+    Project = "terraforming-pws-dark-CI"
+  }
 }

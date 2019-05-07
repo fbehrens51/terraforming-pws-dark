@@ -74,23 +74,6 @@ output "pas_resources_backup_bucket" {
   value = "${element(concat(aws_s3_bucket.resources_backup_bucket.*.bucket, list("")), 0)}"
 }
 
-# ============ Load Balancers ==================================================
-
-output "web_target_groups" {
-  value = [
-    "${aws_lb_target_group.web_80.name}",
-    "${aws_lb_target_group.web_443.name}",
-  ]
-}
-
-output "tcp_target_groups" {
-  value = "${aws_lb_target_group.tcp.*.name}"
-}
-
-output "ssh_target_groups" {
-  value = ["${aws_lb_target_group.ssh.*.name}"]
-}
-
 output "isoseg_target_groups" {
   value = [
     "${element(concat(aws_lb_target_group.isoseg_80.*.name, list("")), 0)}",

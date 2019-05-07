@@ -212,18 +212,6 @@ output "azs" {
   value = "${var.availability_zones}"
 }
 
-output "web_target_groups" {
-  value = "${module.pas.web_target_groups}"
-}
-
-output "tcp_target_groups" {
-  value = "${module.pas.tcp_target_groups}"
-}
-
-output "ssh_target_groups" {
-  value = "${module.pas.ssh_target_groups}"
-}
-
 output "ssl_cert" {
   sensitive = true
   value     = "${module.pas_certs.ssl_cert}"

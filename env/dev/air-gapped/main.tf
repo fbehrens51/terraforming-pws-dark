@@ -53,8 +53,23 @@ module "igw" {
   public_subnets      = "${module.pas.public_subnets}"
 }
 
+module "elb" {
+  source = "../../../modules/elb/create"
+  env_name = "${local.env_name}"
+  internetless = false
+  public_subnet_ids = "${module.pas.public_subnets}"
+  tags = "${local.tags}"
+  vpc_id = "${local.vpc_id}"
+  egress_cidrs = "${module.pas.pas_subnet_cidrs}"
+}
+
 locals {
   env_name            = "air-gapped"
   vpc_id              = "vpc-0d27315374a12fe98"
-  availability_zones  = ["us-east-1a", "us-east-1b"]
+  availability_zones  = ["us-east-1a", "us-east-1b", "us-east-1c"]
+
+  tags =  {
+    Team = "Dev"
+    Project = "terraforming-pws-dark-CI"
+  }
 }

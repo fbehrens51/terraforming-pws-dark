@@ -61,6 +61,16 @@ module "igw" {
   tags = "${local.tags}"
 }
 
+module "elb" {
+  source = "../../../modules/elb/create"
+  env_name = "${local.env_name}"
+  internetless = false
+  public_subnet_ids = "${module.pas.public_subnets}"
+  tags = "${local.tags}"
+  vpc_id = "${module.vpc.vpc_id}"
+  egress_cidrs = "${module.pas.pas_subnet_cidrs}"
+}
+
 locals {
   env_name = "vanilla"
   availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c"]
