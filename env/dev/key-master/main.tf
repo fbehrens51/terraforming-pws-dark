@@ -29,10 +29,19 @@ provider "tls" {
 
 module "kms" {
   source = "../../../modules/kms/create"
-  key_name = "key-master"
-  deletion_window = 8
+  key_name = "key-master-${random_integer.key-suffix.result}"
+  deletion_window = 7
+}
+
+resource "random_integer" "key-suffix" {
+  min = 1
+  max = 100000
 }
 
 output "kms_key_id" {
   value = "${module.kms.kms_key_id}"
+}
+
+output "kms_key_alias" {
+  value = "${module.kms.kms_key_alias}"
 }
