@@ -1,7 +1,7 @@
 locals {
   vpc_id="vpc-00525b6ff996566ac"
   region="us-east-1"
-  availability_zones=["us-east-1a"]
+  availability_zone="us-east-1a"
   //hack to fix the path for windows, theoretically this will be fixed in v 0.12 to use same convention on all OS
   module_path = "${replace(path.module, "\\", "/")}"
   local_user_data_path      = "${local.module_path}/other.yml"
@@ -29,6 +29,7 @@ module "bootstrap_bastion" {
   vpc_id = "${local.vpc_id}"
   gateway_id = "${aws_internet_gateway.ig.id}"
   peering_connection_ids = "${local.peering_connection_ids}"
+  availability_zone = "${local.availability_zone}"
 }
 
 data "template_cloudinit_config" "user_data" {
