@@ -1,0 +1,42 @@
+==== volume_to_ami
+
+Takes a given Volume and creates an AMI from it
+
+[cols="1,1,1,2", options="header"]
+.Variables
+|===
+|Name
+|type
+|Default
+|Description
+
+|region
+|string
+|n/a
+|region targeted for AMI
+
+|volume_id
+|string
+|n/a
+|ID of EBS Volume to base AMI on
+
+|ami_name
+|string
+|n/a
+|Name for AMI
+
+|===
+
+
+[cols="1,1,2", options="header"]
+.Outputs
+|===
+|Name
+|type
+|Description
+
+|ami_id
+|string
+|ID of generated MI
+
+|===

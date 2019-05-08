@@ -1,0 +1,87 @@
+==== instance_to_support_image_dd
+
+Used as part of the process to import an AMI from a tarball.  Creates a key pair and then launches an instance with that key pair and a large enough volume to support an import.
+
+[cols="1,1,1,2", options="header"]
+.Variables
+|===
+|Name
+|type
+|Default
+|Description
+
+|region
+|string
+|n/a
+|region targeted for subsequent actions (instance/volume/snapshot creation)
+
+|ami
+|string
+|n/a
+|ID of AMI to use for importer VM
+
+|subnet_id
+|string
+|n/a
+|ID of working subnet (to create vm_importer instance needed to support import process)"
+
+|security_group_ids
+|list
+|n/a
+|security_groups_ids to apply to importer vm
+
+|enable_public_ip
+|boolean (string)
+|true
+|required if running from outside VPC
+
+|instance_role
+|string
+|director
+|Name of instance profile name with necessary privileges
+
+|instance_type
+|string
+|m4.xlarge
+|Instance type used for Instance
+
+|===
+
+
+
+[cols="1,1,2", options="header"]
+.Outputs
+|===
+|Name
+|type
+|Description
+
+|vm_importer_private_key
+|string
+|temporary private key created to access importer instance
+
+|extracted_image_name
+|string
+|name of the image file extracted from tarball
+
+|vm_importer_volume_id
+|string
+|ID of EBS Volume which image has been applied to
+
+|vm_importer_host
+|string
+|Public DNS (if set) of the importer instance
+
+|vm_importer_public_ip
+|string
+|Public IP (if set) of the importer instance
+
+|vm_importer_private_ip
+|string
+|Private IP of the importer instance
+
+|vm_importer_instance_id
+|string
+|ID of the instance launched
+
+|===

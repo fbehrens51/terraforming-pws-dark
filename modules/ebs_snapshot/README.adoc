@@ -1,0 +1,29 @@
+==== ebs_snapshot
+
+Creates a snapshot of the given Volume ID
+
+
+[cols="1,1,1,2", options="header"]
+.Variables
+|===
+|Name
+|type
+|Default
+|Description
+
+|is_linux
+|string
+|n/a
+|indicate whether to run shell scripts or basic terraform steps
+
+|volume_id
+|string
+|n/a
+|ID of volume to snapshot
+
+|triggers
+|string
+|""
+|A map of values which should cause this set of provisioners to re-run. Values are meant to be interpolated references to variables or attributes of other resources.
+
+|===

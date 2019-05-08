@@ -1,0 +1,231 @@
+= Master Jump Box
+
+The master jump box is Ubuntu instance that has been pre-configured with various utilities, artifacts, and scripts.  This is shared via an exported AMI (exported into an .img.tgz file).  This can be brought into air-gapped networks to support the deployment of the PCF platform.
+
+
+== Basic flow
+. get tarball onto s3 bucket accessible by Platform Operator
+. Install and configure terraform
+.. set/export AWS credentials
+... AWS_PROFILE
+... inherited instance profile
+... access keys
+.. set/export AWS_DEFAULT_REGION
+. create a directory and copy provided example terraform env template directories to it
+.. <project-root>/env/dev/ops-sandbox/mjb*
+.. <project-root>/env/dev/ops-sandbox/scripts
+. modify templates to meet the customer's requirements/IAAS configuration (e.g. update local variables)
+. run scripts/terraform
+.. on Linux
+... ./importAndLaunchMJB.sh
+.. on Windows
+... cd <yourenvdir>/mjb-image/import
+... terraform
+.... init
+.... apply
+..... Will most likely fail on snapshot due to known issue with terraform and timeouts with snapshots.  Wait for it to complete (watch via AWS console) before moving on to next step
+... cd <yourenvdir>/mjb-image/export-to-ami
+... terraform
+.... init
+.... apply
+... cd <yourenvdir>/mjb-image/import
+... terraform
+.... destroy
+... cd <yourenvdir>/mjb-launch
+... terraform
+.... init
+.... apply
+
+== Example templates
+
+:sourcedir: ../env/dev/ops-sandbox
+
+.mjb-image/import/main.tf
+[source,hcl]
+----
+locals {
+  external_cidr_blocks = ["0.0.0.0/0"]
+  importer_vm_instance_profile = "DIRECTOR"
+  subnet_id = "subnet-09e63f1dfe8bb616c"
+  s3_object_key = "mjb-1554239502.img.tgz"
+  region="us-east-1"
+}
+
+provider "aws" {
+  region  = "${local.region}"
+  version = "<=1.5.0"
+}
+
+module "providers" {
+  source = "../../../../../modules/dark_providers"
+}
+
+data "aws_subnet" "importer_subnet" {
+  id = "${local.subnet_id}"
+}
+
+data "aws_vpc" "current_vpc" {
+  id = "${data.aws_subnet.importer_subnet.vpc_id}"
+}
+
+//creation of group
+module "importer_sg" {
+  source = "../../../../../modules/importer_security_group/create"
+  vpc_id = "${data.aws_vpc.current_vpc.id}"
+  external_cidr_blocks = "${local.external_cidr_blocks}"
+}
+
+module "amazon_hvm_ami" {
+  source = "../../../../../modules/amis/amazon_hvm_ami"
+  region = "${local.region}"
+}
+
+module "MJB_import" {
+  source = "../../../../../modules/s3_image_tgz_to_volume"
+  bucket_name = "jumpbox-images"
+  s3_object_key = "${local.s3_object_key}"
+  region = "${local.region}"
+  subnet_id = "${local.subnet_id}"
+  ami_id = "${module.amazon_hvm_ami.id}"
+  security_group_ids = ["${module.importer_sg.id}"]
+  enable_public_ip = "true"
+  iam_instance_profile = "${local.importer_vm_instance_profile}"
+  //to improve copy of image to volume, extraction of image to volume, and snapshot, beef up instance to one with higher bandwidth, throughput, and IOPs
+  instance_type = "m4.16xlarge"
+  is_linux = true
+
+}
+
+output "volume_id" {
+  value = "${module.MJB_import.volume_id}"
+}
+----
+
+.mjb-image/export-to-ami/main.tf
+[source,hcl]
+----
+provider "aws" {
+  region  = "${var.region}"
+  version = "<=1.5.0"
+}
+module "providers" {
+  source = "../../../../../modules/dark_providers"
+}
+
+variable "volume_id" {
+  description = "volume ID to create AMI from"
+}
+variable "region" {
+  default = "us-east-1"
+  description = "AWS region"
+}
+variable "naming_prefix" {
+  description = "prefix for MJB AMI naming"
+  default = ""
+}
+
+module "exporter" {
+  source="../../../../../modules/volume_to_ami"
+  ami_name = "${var.naming_prefix}${replace("MJB-${timestamp()}",":",".")}"
+  volume_id = "${var.volume_id}"
+  region = "${var.region}"
+}
+
+output "ami_id" {
+  value = "${module.exporter.ami_id}"
+}
+----
+
+.mjb-launch/main.tf
+[source,hcl]
+----
+provider "aws" {
+  version = "<=1.5.0"
+}
+variable "subnet_id" {
+  description = "subnet to launch MJB in"
+}
+
+locals {
+  vpc_id ="vpc-04268fe779b20e3ad"
+  external_cidr_block = "72.83.230.85/32"
+}
+
+data "aws_vpc" "mjb_vpc" {
+  id = "${local.vpc_id}"
+}
+
+data "aws_subnet" "mjb_subnet" {
+  id = "${var.subnet_id}"
+}
+
+resource "aws_security_group" "mjb_security_group" {
+  name_prefix = "mjb-sg"
+  vpc_id = "${data.aws_subnet.mjb_subnet.vpc_id}"
+
+  tags {
+    Name="mjb-sg"
+  }
+}
+
+resource "aws_security_group_rule" "ingress_ssh" {
+  from_port = 22
+  protocol = "tcp"
+  security_group_id = "${aws_security_group.mjb_security_group.id}"
+  to_port = 22
+  type = "ingress"
+  cidr_blocks = ["${data.aws_subnet.mjb_subnet.cidr_block}",
+                "${local.external_cidr_block}"]
+}
+
+resource "aws_security_group_rule" "egress_everywhere" {
+    type              = "egress"
+    to_port           = 0
+    protocol          = "-1"
+    from_port         = 0
+    cidr_blocks = ["0.0.0.0/0"]
+    security_group_id = "${aws_security_group.mjb_security_group.id}"
+  }
+
+locals {
+  //hack to fix the path for windows, theoretically this will be fixed in v 0.12 to use same convention on all OS
+  module_path = "${replace(path.module, "\\", "/")}"
+  users_file      = "${local.module_path}/users.yml"
+  cas_file      = "${local.module_path}/ca_update.yml"
+}
+
+module "find_mjb_ami" {
+  source = "../../../../modules/master-jump-box/lookup-ami"
+}
+
+module "mjb_instance" {
+  source = "../../../../modules/master-jump-box/launch"
+  ami_id = "${module.find_mjb_ami.id}"
+  instance_type = "m4.xlarge"
+  subnet_id = "${data.aws_subnet.mjb_subnet.id}"
+  instance_profile = "DIRECTOR"
+  security_group_id = "${aws_security_group.mjb_security_group.id}"
+  users_yml = "${local.users_file}"
+  trusted_cas_yml = "${local.cas_file}"
+}
+----
+
+== modules
+
+=== mjb-image/import
+
+include::../modules/importer_security_group/create/README.adoc[]
+
+include::../modules/amis/amazon_hvm_ami/README.adoc[]
+
+include::../modules/s3_image_tgz_to_volume/README.adoc[]
+
+=== mjb-image/export-to-ami
+
+include::../modules/volume_to_ami/README.adoc[]
+
+=== mjb-launch
+
+include::../modules/master-jump-box/lookup-ami/README.adoc[]
+
+include::../modules/master-jump-box/launch/README.adoc[]
