@@ -18,11 +18,9 @@ data "aws_vpc" "cp_vpc" {
   id = "${var.vpc_id}"
 }
 
-
 data "aws_availability_zones" "available" {
   state = "available"
 }
-
 
 locals {
   //TODO: move to a module to support varying sizes of cidrs (currently expecting /24)
@@ -35,10 +33,9 @@ resource "aws_subnet" "public_subnet" {
   vpc_id = "${var.vpc_id}"
   availability_zone = "${local.availability_zone}"
   tags {
-    Name="Bastion public subnet"
+    Name = "Bastion public subnet"
   }
 }
-
 
 resource "aws_route_table" "public_route_table" {
   vpc_id = "${var.vpc_id}"
@@ -55,7 +52,6 @@ data "aws_vpc_peering_connection" "peering_connections" {
   id = "${element(var.peering_connection_ids, count.index)}"
 }
 
-
 resource "aws_route" "peering_connection_route" {
   count = "${length(var.peering_connection_ids)}"
   route_table_id = "${aws_route_table.public_route_table.id}"
@@ -64,7 +60,7 @@ resource "aws_route" "peering_connection_route" {
 }
 
 resource "aws_route_table_association" "route_public_subnet" {
-  subnet_id      = "${aws_subnet.public_subnet.id}"
+  subnet_id = "${aws_subnet.public_subnet.id}"
   route_table_id = "${aws_route_table.public_route_table.id}"
 }
 

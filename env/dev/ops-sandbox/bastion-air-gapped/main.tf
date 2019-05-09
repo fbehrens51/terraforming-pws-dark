@@ -1,3 +1,15 @@
+terraform {
+  required_version = "< 0.12.0"
+
+  backend "s3" {
+    bucket = "eagle-state"
+    key    = "dev/bastion-air-gapped/terraform.tfstate"
+    encrypt = true
+    kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
+    dynamodb_table = "bastion-air-gapped-state"
+  }
+}
+
 locals {
   vpc_id="vpc-00525b6ff996566ac"
   region="us-east-1"
@@ -5,8 +17,10 @@ locals {
   //hack to fix the path for windows, theoretically this will be fixed in v 0.12 to use same convention on all OS
   module_path = "${replace(path.module, "\\", "/")}"
   local_user_data_path      = "${local.module_path}/other.yml"
-  peering_connection_ids = ["pcx-09b5f5a68ef486f47","pcx-00a4c3b08e90325a4","pcx-08c628d99069a37b6"]
+  inbound_customer_required = {"443" = ["0.0.0.100/30", "0.0.1.0/28"], "8080" = ["0.0.0.128/26", "0.0.10.0/24"]}
+  bastion_eip = "eipalloc-0139f756761893ee7"
   inbound_ssh_cidrs = ["0.0.0.0/0"]
+  customer_ingress = { "443" = ["0.0.0.100/30", "0.0.1.0/28"], "8080" = ["0.0.0.128/26", "0.0.10.0/24"] }
 }
 
 provider "aws" {
@@ -28,8 +42,12 @@ module "bootstrap_bastion" {
   source = "../../../../modules/bastion/bootstrap"
   vpc_id = "${local.vpc_id}"
   gateway_id = "${aws_internet_gateway.ig.id}"
-  peering_connection_ids = "${local.peering_connection_ids}"
   availability_zone = "${local.availability_zone}"
+}
+
+resource "aws_eip_association" "eip_assoc" {
+  instance_id   = "${module.bastion_host.bastion_instance_id}"
+  allocation_id = "${local.bastion_eip}"
 }
 
 data "template_cloudinit_config" "user_data" {
@@ -42,17 +60,24 @@ data "template_cloudinit_config" "user_data" {
   }
 }
 
+module "bastion_groups" {
+  source = "../../../../modules/bastion/security_group"
+  customer_ingress = "${local.customer_ingress}"
+  ssh_cidrs = "${local.inbound_ssh_cidrs}"
+  vpc_id = "${local.vpc_id}"
+}
+
+
 module "amazon_ami" {
   source = "../../../../modules/amis/amazon_hvm_ami"
   region = "${local.region}"
 }
 
 module "bastion_host" {
-  source = "../../../../modules/bastion/launch_bastion_instance"
+  source = "../../../../modules/bastion/launch_bastion_airgapped"
   ami_id = "${module.amazon_ami.id}"
   user_data = "${data.template_cloudinit_config.user_data.rendered}"
   subnet_id = "${module.bootstrap_bastion.public_subnet_id}"
-  enable_public_ip = "true"
-  ssh_cidrs = "${local.inbound_ssh_cidrs}"
+  security_group_ids = ["${module.bastion_groups.bastion_security_group_id}"]
 }
 

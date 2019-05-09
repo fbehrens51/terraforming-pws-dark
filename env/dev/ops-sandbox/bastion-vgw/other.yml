@@ -1,0 +1,13 @@
+#cloud-config
+users:
+  - name: user-abc
+    groups: [ wheel ]
+    sudo: [ "ALL=(ALL) NOPASSWD:ALL" ]
+    shell: /bin/bash
+    ssh-authorized-keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCw0TgdxjmFtrnGUwyW7jWXgfHy8BNSpV3VaFtuX25VsewgL/tsY5SBM5pBkuwEpnHDNRKRRPuoL4rbAuUlg869nWGoddpYRFkDAXmWotS7q5B+tvdsZi9xlWWGzpw5HIHu2wcYCvM+mwESCOjyN8bBvof8SssoWTFdMZtyj2n0DPExkc2CjSno/InehkyRK+i2K01gSblu1hWCgM0medRrsQWLooTosMSbXwnpMCD7obszYsOpEXpIT0QaTbyqpNw5KA1Bh7GVZANguF/F6mqeU0NLnMh8lzdOVuqet1BoufLvKi3rFM17O8tJbfqsDQ+AhltBQWu9UtcFJMTyYOUE4jQRifW0mEDX1jtm6o8GblD6QA/iJw44DuhxZaEEHFpcKH57K8GIA75WunipIUG0t65UHHJyNoVhg/58/XiOZ9HMmJMq7eQmYg9NW0kcPfD+RzbTeqqpEdgihaz3GbA1B+uxVrbLCb4mbaai+RVA0DpDXr7bH/SJp8lNx9x83lnEwimT7WNxbou//JzyoO6HRX8vYpoZGGtF+Td1t2CKvQOuuqKSzCxNbBf1n1im2KyCEps7PTtf9K3tLL/3eo9vj1T3JQuebjXL3VBUADj2W0p/pgReA4L3ttSI5MsZPAJaCqR1wf8KCaHP2aAb/WhVFd9ayiAdoO1jzxWBEm8GJQ== user-abc@email.com
+
+runcmd:
+  - touch test.txt
+
+final_message: "The system is finally up, after $UPTIME seconds"

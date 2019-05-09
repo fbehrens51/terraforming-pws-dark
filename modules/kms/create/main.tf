@@ -1,6 +1,7 @@
 resource "aws_kms_alias" "kms_key_alias" {
   name = "alias/${var.key_name}"
   target_key_id = "${aws_kms_key.kms_key.key_id}"
+  depends_on = ["aws_kms_key.kms_key"]
 }
 
 resource "aws_kms_key" "kms_key" {
