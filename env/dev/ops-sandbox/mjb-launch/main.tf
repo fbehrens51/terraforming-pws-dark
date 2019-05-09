@@ -3,13 +3,9 @@ variable "subnet_id" {
 }
 
 locals {
-  vpc_id ="vpc-04268fe779b20e3ad"
   external_cidr_block = "72.83.230.85/32"
 }
 
-data "aws_vpc" "mjb_vpc" {
-  id = "${local.vpc_id}"
-}
 
 data "aws_subnet" "mjb_subnet" {
   id = "${var.subnet_id}"
@@ -48,7 +44,7 @@ locals {
 }
 
 module "providers" {
-  source = "../../../../terraforming-aws/modules/dark_providers"
+  source = "../../../../modules/dark_providers"
 }
 
 module "find_mjb_ami" {

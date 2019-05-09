@@ -1,6 +1,13 @@
-provider "aws" {
-  region  = "${var.region}"
+terraform {
+  backend "s3" {
+    bucket = "eagle-state"
+    key = "dev/mjb-export/terraform.tfstate"
+    encrypt = true
+    kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
+    dynamodb_table = "mjb-export"
+  }
 }
+
 
 module "providers" {
   source = "../../../../../modules/dark_providers"

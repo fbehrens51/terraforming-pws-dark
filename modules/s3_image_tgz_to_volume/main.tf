@@ -37,9 +37,6 @@ variable "instance_type" {
   default = "m4.xlarge"
 }
 
-variable "is_linux" {
-  default = true
-}
 
 locals {
   //TODO: be more flexible, should the two names be parameters, should we allow for non-tarballs, etc?
@@ -127,14 +124,6 @@ resource "null_resource" "apply_image_to_volume" {
   triggers {
     file_id = "${null_resource.extract_file.id}"
   }
-}
-
-//TODO: Need to enhance the snapshot module to return the snapshot ID and move elsewhere?
-module "snapshot" {
-  source = "../ebs_snapshot"
-  volume_id = "${module.importer.vm_importer_volume_id}"
-  is_linux = "${var.is_linux}"
-  triggers = "${null_resource.apply_image_to_volume.id}"
 }
 
 output "priv_key" {

@@ -1,6 +1,6 @@
 ==== s3_image_tgz_to_volume
 
-Used as part of the process to import an AMI from a tarball.  Launches an instance, pulls an image tarball from S3, extracts the tarball, applies it to a volume, and snapshots the volume
+Used as part of the process to import an AMI from a tarball.  Launches an instance, pulls an image tarball from S3, extracts the tarball and applies it to a volume.
 
 [cols="1,1,1,2", options="header"]
 .Variables
@@ -55,10 +55,6 @@ Used as part of the process to import an AMI from a tarball.  Launches an instan
 |m4.xlarge
 |Instance type used for temporary importer VM.  The better suited for writing to disk and creating a snapshot, the better performance/less time it will take to create
 
-|is_linux
-|boolean (string)
-|true
-|indicate whether to run shell script (requires linux)
 
 |===
 

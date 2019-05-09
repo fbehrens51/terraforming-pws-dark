@@ -1,7 +1,17 @@
+terraform {
+  backend "s3" {
+    bucket = "eagle-state"
+    key = "dev/mjb-import/terraform.tfstate"
+    encrypt = true
+    kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
+    dynamodb_table = "mjb-import"
+  }
+}
+
 locals {
   external_cidr_blocks = ["0.0.0.0/0"]
   importer_vm_instance_profile = "DIRECTOR"
-  s3_object_key = "mjb-1554239502.img.tgz"
+  s3_object_key = "mjb-1556914317.img.tgz"
   region="us-east-1"
 }
 
@@ -47,7 +57,6 @@ module "MJB_import" {
   iam_instance_profile = "${local.importer_vm_instance_profile}"
   //to improve copy of image to volume, extraction of image to volume, and snapshot, beef up instance to one with higher bandwidth, throughput, and IOPs
   instance_type = "m4.16xlarge"
-  is_linux = true
 
 }
 

@@ -9,16 +9,35 @@ variable "volume_id" {
   type = "string"
 }
 
+variable "is_linux" {
+  default = true
+}
+
 variable "ami_name" {
   type = "string"
 }
 
-resource "aws_ebs_snapshot" "vm_snapshot" {
-  volume_id = "${var.volume_id}"
+locals {
+  snapshot_tag_name="MJB_AMI_SNAPSHOT-${timestamp()}"
+}
 
-  tags {
-    Name = "MJB_AMI_SNAPSHOT"
+
+module "snapshot" {
+  source = "../ebs_snapshot"
+  volume_id = "${var.volume_id}"
+  is_linux = "${var.is_linux}"
+  triggers = "${local.snapshot_tag_name}"
+  name_tag = "${local.snapshot_tag_name}"
+}
+
+//Are we going to have a problem with timing/eventual consistency?
+data "aws_ebs_snapshot" "vm_snapshot" {
+
+  filter {
+    name   = "tag:Name"
+    values = ["${local.snapshot_tag_name}"]
   }
+  depends_on = ["module.snapshot"]
 }
 
 resource "aws_ami" "vm_ami" {
@@ -28,8 +47,8 @@ resource "aws_ami" "vm_ami" {
 
   ebs_block_device {
     device_name = "/dev/xvda"
-    snapshot_id = "${aws_ebs_snapshot.vm_snapshot.id}"
-    volume_size = 150
+    snapshot_id = "${data.aws_ebs_snapshot.vm_snapshot.id}"
+    volume_size = 64
   }
   //TODO: identify naming/tagging convention typically used by Pivotal and apply here
   //Makes it easier to filter (using Name tag)

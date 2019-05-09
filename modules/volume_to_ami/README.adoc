@@ -1,6 +1,6 @@
 ==== volume_to_ami
 
-Takes a given Volume and creates an AMI from it
+Takes a given Volume, snapshots and creates an AMI from it
 
 [cols="1,1,1,2", options="header"]
 .Variables
@@ -24,6 +24,11 @@ Takes a given Volume and creates an AMI from it
 |string
 |n/a
 |Name for AMI
+
+|is_linux
+|boolean (string)
+|true
+|indicate whether to run shell script (requires linux)
 
 |===
 
