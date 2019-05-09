@@ -45,16 +45,10 @@ Launches instance
 |n/a
 |key pair to use for the mjb instance
 
-|users_yml
+|user_data_yml
 |string
 |n/a
-|Full path to user data file to set up the users
-
-|trusted_cas_yml
-|string
-|n/a
-|Full path to user data file to set up the cas
-
+|Full path to user data file to set up the instance
 
 |===
 

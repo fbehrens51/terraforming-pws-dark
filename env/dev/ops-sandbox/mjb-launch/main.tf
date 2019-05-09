@@ -47,10 +47,7 @@ resource "aws_security_group_rule" "egress_everywhere" {
   }
 
 locals {
-  //hack to fix the path for windows, theoretically this will be fixed in v 0.12 to use same convention on all OS
-  module_path = "${replace(path.module, "\\", "/")}"
-  users_file      = "${local.module_path}/users.yml"
-  cas_file      = "${local.module_path}/ca_update.yml"
+  user_data_file      = "${path.module}/user_data.yml"
 }
 
 module "find_mjb_ami" {
@@ -64,6 +61,5 @@ module "mjb_instance" {
   subnet_id = "${data.aws_subnet.mjb_subnet.id}"
   instance_profile = "DIRECTOR"
   security_group_id = "${aws_security_group.mjb_security_group.id}"
-  users_yml = "${local.users_file}"
-  trusted_cas_yml = "${local.cas_file}"
+  user_data_yml = "${local.user_data_file}"
 }

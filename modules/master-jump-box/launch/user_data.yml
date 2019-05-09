@@ -1,3 +1,12 @@
+cloud_final_modules:
+  - [users-groups,always]
+users:
+  - name: ubuntu
+    groups: [ wheel ]
+    sudo: [ "ALL=(ALL) NOPASSWD:ALL" ]
+    shell: /bin/bash
+    ssh-authorized-keys:
+      - ssh-rsa <YOUR-PUBLIC-KEY-HERE>
 ca-certs:
   # If present and set to True, the 'remove-defaults' parameter will remove
   # all the default trusted CA certificates that are normally shipped with

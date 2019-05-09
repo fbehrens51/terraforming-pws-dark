@@ -27,12 +27,8 @@ variable "key_pair" {
   default = ""
 }
 
-variable "users_yml" {
-  description = "Full path to user data file to set up the users"
-}
-
-variable "trusted_cas_yml" {
-  description = "Full path to user data file to set up the cas"
+variable "user_data_yml" {
+  description = "Full path to user data file to set up the instance"
 }
 
 data "aws_security_group" "security_group" {
@@ -54,9 +50,8 @@ resource "aws_instance" "mjb" {
 }
 
 locals {
-//hack to fix the path for windows, theoretically this will be fixed in v 0.12 to use same convention on all OS
-  local_users_path =  "${replace(var.users_yml, "\\", "/")}"
-  local_ca_path =  "${replace(var.trusted_cas_yml, "\\", "/")}"
+  //hack to fix the path for windows, theoretically this will be fixed in v 0.12 to use same convention on all OS
+  local_user_data_path =  "${replace(var.user_data_yml, "\\", "/")}"
 }
 
 data "template_cloudinit_config" "user_data" {
@@ -73,16 +68,9 @@ EOF
 
   # Main cloud-config configuration file.
   part {
-    filename     = "user.cfg"
+    filename     = "user_data.cfg"
     content_type = "text/cloud-config"
-    content      = "${file("${local.local_users_path}")}"
-  }
-
-  # Main cloud-config configuration file.
-  part {
-    filename     = "ca.cfg"
-    content_type = "text/cloud-config"
-    content      = "${file("${local.local_ca_path}")}"
+    content      = "${file("${local.local_user_data_path}")}"
   }
 }
 
