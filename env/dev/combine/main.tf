@@ -1,6 +1,4 @@
 terraform {
-  required_version = "0.11.13"
-
   backend "s3" {
     bucket = "eagle-state"
     key = "dev/combine/terraform.tfstate"
@@ -12,19 +10,10 @@ terraform {
 
 provider "aws" {
   region     = "${local.region}"
-  version = "~> 1.50"
 }
 
-provider "random" {
-  version = "~> 1.3"
-}
-
-provider "template" {
-  version = "~> 2.0"
-}
-
-provider "tls" {
-  version = "~> 1.2"
+module "providers" {
+  source = "../../../modules/dark_providers"
 }
 
 locals {

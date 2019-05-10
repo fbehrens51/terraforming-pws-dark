@@ -1,6 +1,4 @@
 terraform {
-  required_version = "< 0.12.0"
-
   backend "s3" {
     bucket = "eagle-state"
     key    = "dev/air-gapped/terraform.tfstate"
@@ -12,19 +10,10 @@ terraform {
 
 provider "aws" {
   region     = "us-east-1"
-  version = "~> 1.60"
 }
 
-provider "random" {
-  version = "~> 2.0"
-}
-
-provider "template" {
-  version = "~> 2.0"
-}
-
-provider "tls" {
-  version = "~> 1.2"
+module "providers" {
+  source = "../../../modules/dark_providers"
 }
 
 module "pas" {

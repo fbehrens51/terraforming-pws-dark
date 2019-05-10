@@ -1,6 +1,3 @@
-provider "aws" {
-  version = "<=1.5.0"
-}
 variable "subnet_id" {
   description = "subnet to launch MJB in"
 }
@@ -48,6 +45,10 @@ resource "aws_security_group_rule" "egress_everywhere" {
 
 locals {
   user_data_file      = "${path.module}/user_data.yml"
+}
+
+module "providers" {
+  source = "../../../../terraforming-aws/modules/dark_providers"
 }
 
 module "find_mjb_ami" {

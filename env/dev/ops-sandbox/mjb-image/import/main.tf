@@ -9,7 +9,6 @@ variable "subnet_id" {}
 
 provider "aws" {
   region  = "${local.region}"
-  version = "<=1.5.0"
 }
 
 module "providers" {

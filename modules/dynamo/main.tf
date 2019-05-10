@@ -1,7 +1,3 @@
-terraform {
-  required_version = "< 0.12.0"
-}
-
 resource "aws_dynamodb_table" "basic-dynamodb-table" {
   name           = "state_lock"
   read_capacity  = 20

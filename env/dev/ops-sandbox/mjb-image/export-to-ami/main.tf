@@ -1,7 +1,7 @@
 provider "aws" {
   region  = "${var.region}"
-  version = "<=1.5.0"
 }
+
 module "providers" {
   source = "../../../../../modules/dark_providers"
 }

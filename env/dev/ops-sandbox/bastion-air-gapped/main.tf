@@ -1,6 +1,4 @@
 terraform {
-  required_version = "< 0.12.0"
-
   backend "s3" {
     bucket = "eagle-state"
     key    = "dev/bastion-air-gapped/terraform.tfstate"
@@ -25,10 +23,10 @@ locals {
 
 provider "aws" {
   region     = "us-east-1"
-  version = "<=1.50"
 }
-provider "template" {
-  version = "~> 2.0"
+
+module "providers" {
+  source = "../../../../modules/dark_providers"
 }
 
 resource "aws_internet_gateway" "ig" {
