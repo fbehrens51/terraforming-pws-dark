@@ -14,7 +14,9 @@ provider "template" {
   version = "~> 2.0.0"
 }
 
-provider "null" {}
+provider "null" {
+  version = "~> 2.0.0"
+}
 
 terraform {
   required_version = "< 0.12.0"
