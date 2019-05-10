@@ -30,7 +30,3 @@ resource "random_integer" "key-suffix" {
 output "kms_key_id" {
   value = "${module.kms.kms_key_id}"
 }
-
-output "kms_key_alias_arn" {
-  value = "${module.kms.kms_key_alias_arn}"
-}
