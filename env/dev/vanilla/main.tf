@@ -58,6 +58,7 @@ module "elb" {
   tags = "${local.tags}"
   vpc_id = "${module.vpc.vpc_id}"
   egress_cidrs = "${module.pas.pas_subnet_cidrs}"
+  ops_manager_instance_id = "${module.pas.ops_manager_instance_id}"
 }
 
 locals {
