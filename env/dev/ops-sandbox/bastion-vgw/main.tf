@@ -9,15 +9,20 @@ terraform {
 }
 
 locals {
-  vpc_id = "vpc-0e83a6c1871b0afe2"
-  gw_id = "vgw-0e34270da663b10d4"
+  vpc_cidr = "10.0.0.0/24"
   region = "us-east-1"
   availability_zone = "us-east-1a"
+
   //hack to fix the path for windows, theoretically this will be fixed in v 0.12 to use same convention on all OS
   module_path = "${replace(path.module, "\\", "/")}"
+
   local_user_data_path = "${local.module_path}/other.yml"
   inbound_ssh_cidrs = ["0.0.0.0/0"]
   customer_ingress = { "443" = ["0.0.0.100/30", "0.0.1.0/28"], "8080" = ["0.0.0.128/26", "0.0.10.0/24"] }
+
+  tags = {
+    Name = "bastion vgw"
+  }
 }
 
 provider "aws" {
@@ -28,10 +33,24 @@ module "providers" {
   source = "../../../../modules/dark_providers"
 }
 
+// pre-reqs
+
+resource "aws_vpc" "vpc" {
+  cidr_block = "${local.vpc_cidr}"
+  tags = "${local.tags}"
+}
+
+resource "aws_vpn_gateway" "ig" {
+  vpc_id = "${aws_vpc.vpc.id}"
+  tags = "${local.tags}"
+}
+
+// use case
+
 module "bootstrap_bastion" {
   source = "../../../../modules/bastion/bootstrap"
-  vpc_id = "${local.vpc_id}"
-  gateway_id = "${local.gw_id}"
+  vpc_id = "${aws_vpc.vpc.id}"
+  gateway_id = "${aws_vpn_gateway.ig.id}"
   availability_zone = "${local.availability_zone}"
 }
 
@@ -49,14 +68,14 @@ module "bastion_groups" {
   source = "../../../../modules/bastion/security_group"
   customer_ingress = "${local.customer_ingress}"
   ssh_cidrs = "${local.inbound_ssh_cidrs}"
-  vpc_id = "${local.vpc_id}"
+  vpc_id = "${aws_vpc.vpc.id}"
 }
 
 module "eni" {
   source = "../../../../modules/eni/create"
   eni_security_groups = ["${module.bastion_groups.bastion_security_group_id}"]
   eni_subnet_id = "${module.bootstrap_bastion.public_subnet_id}"
-  tags = {Name="Bastion VGW ENI"}
+  tags = "${local.tags}"
 }
 
 module "amazon_ami" {

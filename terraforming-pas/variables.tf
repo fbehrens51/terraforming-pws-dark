@@ -70,6 +70,8 @@ variable "kms_key_name" {
   description = "the name of the kms key that will be used for our pas buckets"
 }
 
+variable "pas_bucket_role_arn" {}
+
 /****************
 * Ops Manager *
 *****************/

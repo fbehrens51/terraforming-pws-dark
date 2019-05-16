@@ -41,11 +41,3 @@ output "ops_manager_instance_id" {
 output "ops_manager_private_ip" {
   value = "${element(concat(aws_instance.ops_manager.*.private_ip, list("")), 0)}"
 }
-
-output "ops_manager_iam_instance_profile_name" {
-  value = "${data.aws_iam_instance_profile.ops_manager.name}"
-}
-
-output "ops_manager_iam_role_name" {
-  value = "${data.aws_iam_role.ops_manager.name}"
-}

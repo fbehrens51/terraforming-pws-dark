@@ -38,10 +38,6 @@ output "pas_resources_backup_bucket" {
   value = "${module.pas.pas_resources_backup_bucket}"
 }
 
-output "blobstore_kms_key_id" {
-  value = "${module.kms.kms_key_id}"
-}
-
 output "ops_manager_public_ip" {
   value = "${module.ops_manager.public_ip}"
 }
@@ -72,14 +68,6 @@ output "apps_domain" {
 
 output "tcp_domain" {
   value = "tcp.${var.env_name}.${var.dns_suffix}"
-}
-
-output "ops_manager_iam_instance_profile_name" {
-  value = "${module.ops_manager.ops_manager_iam_instance_profile_name}"
-}
-
-output "pas_bucket_iam_instance_profile_name" {
-  value = "${module.pas.pas_bucket_iam_instance_profile_name}"
 }
 
 output "rds_address" {

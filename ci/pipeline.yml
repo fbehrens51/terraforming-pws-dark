@@ -34,19 +34,6 @@ jobs:
         secret_key: ((secret_key))
         env_path: terraforming/env/dev/vgw
 
-- name: combine
-  max_in_flight: 1
-  plan:
-    - get: terraforming
-      trigger: true
-    - task: combine
-      file: terraforming/ci/tasks/init_validate_plan.yml
-      params:
-        region: ((region))
-        access_key: ((access_key))
-        secret_key: ((secret_key))
-        env_path: terraforming/env/dev/combine
-
 - name: air-gapped
   max_in_flight: 1
   plan:
@@ -60,18 +47,18 @@ jobs:
         secret_key: ((secret_key))
         env_path: terraforming/env/dev/air-gapped
 
-- name: vanila
+- name: paperwork
   max_in_flight: 1
   plan:
     - get: terraforming
       trigger: true
-    - task: vanilla
+    - task: paperwork
       file: terraforming/ci/tasks/lifecycle.yml
       params:
         region: ((region))
         access_key: ((access_key))
         secret_key: ((secret_key))
-        env_path: terraforming/env/dev/vanilla
+        env_path: terraforming/env/dev/paperwork
 
 - name: bastion-airgapped
   max_in_flight: 1

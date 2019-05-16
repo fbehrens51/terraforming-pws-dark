@@ -85,10 +85,6 @@ output "optional_ops_manager_dns" {
   value = "${module.ops_manager.optional_dns}"
 }
 
-output "ops_manager_iam_instance_profile_name" {
-  value = "${module.ops_manager.ops_manager_iam_instance_profile_name}"
-}
-
 output "ops_manager_security_group_id" {
   value = "${module.ops_manager.security_group_id}"
 }

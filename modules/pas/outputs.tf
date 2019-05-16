@@ -32,14 +32,6 @@ output "services_subnet_gateways" {
   value = ["${data.template_file.services_subnet_gateways.*.rendered}"]
 }
 
-output "pas_bucket_iam_instance_profile_name" {
-  value = "${data.aws_iam_instance_profile.pas_bucket_access.name}"
-}
-
-output "iam_pas_bucket_role_arn" {
-  value = "${data.aws_iam_role.pas_bucket_access.arn}"
-}
-
 # ========= Buckets ============================================================
 
 output "pas_buildpacks_bucket" {

@@ -22,10 +22,6 @@ output "env_dns_zone_name_servers" {
   value = "${module.infra.name_servers}"
 }
 
-output "ops_manager_iam_instance_profile_name" {
-  value = "${module.ops_manager.ops_manager_iam_instance_profile_name}"
-}
-
 output "ops_manager_security_group_id" {
   value = "${module.ops_manager.security_group_id}"
 }

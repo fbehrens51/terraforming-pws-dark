@@ -12,11 +12,3 @@ data "template_file" "pas_backup_bucket_policy" {
 
   count = "${var.create_backup_pas_buckets ? 1 : 0}"
 }
-
-data "aws_iam_role" "pas_bucket_access" {
-  name = "${var.pas_bucket_role_name}"
-}
-
-data "aws_iam_instance_profile" "pas_bucket_access" {
-    name = "${var.pas_bucket_role_name}"
-}

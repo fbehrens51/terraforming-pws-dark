@@ -47,7 +47,7 @@ module "ops_manager" {
   vpc_id                   = "${module.infra.vpc_id}"
   dns_suffix               = "${var.dns_suffix}"
   zone_id                  = "${module.infra.zone_id}"
-  additional_iam_roles_arn = ["${module.pas.iam_pas_bucket_role_arn}"]
+  additional_iam_roles_arn = ["${var.pas_bucket_role_arn}"]
   bucket_suffix            = "${local.bucket_suffix}"
   ops_manager_role_name    = "${var.ops_manager_role_name}"
   om_eni                   = "${var.om_eni}"
@@ -101,7 +101,7 @@ module "pas" {
   create_backup_pas_buckets    = "${var.create_backup_pas_buckets}"
   create_versioned_pas_buckets = "${var.create_versioned_pas_buckets}"
 
-  iam_ops_manager_role_name = "${module.ops_manager.ops_manager_iam_role_name}"
+  iam_ops_manager_role_name = "${var.ops_manager_role_name}"
   pas_bucket_role_name      = "${var.pas_bucket_role_name}"
 
   create_isoseg_resources = "${var.create_isoseg_resources}"
@@ -127,9 +127,4 @@ module "rds" {
   availability_zones = "${var.availability_zones}"
   vpc_id             = "${module.infra.vpc_id}"
   tags               = "${local.actual_tags}"
-}
-
-module "kms" {
-  source = "../modules/kms/lookup"
-  key_name = "${var.kms_key_name}"
 }
