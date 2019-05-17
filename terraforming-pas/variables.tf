@@ -36,11 +36,6 @@ variable "availability_zones" {
   type = "list"
 }
 
-variable "vpc_cidr" {
-  type    = "string"
-  default = "10.0.0.0/16"
-}
-
 variable "vpc_id" {
   description = "pre-exsting VPC ID"
 }
@@ -65,12 +60,6 @@ variable "create_versioned_pas_buckets" {
 variable "create_backup_pas_buckets" {
   default = false
 }
-
-variable "kms_key_name" {
-  description = "the name of the kms key that will be used for our pas buckets"
-}
-
-variable "pas_bucket_role_arn" {}
 
 /****************
 * Ops Manager *

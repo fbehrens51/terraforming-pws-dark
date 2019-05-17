@@ -20,11 +20,6 @@ variable "subnet_id" {}
 
 variable "vpc_id" {}
 
-variable "additional_iam_roles_arn" {
-  type    = "list"
-  default = []
-}
-
 variable "dns_suffix" {}
 
 variable "use_route53" {}

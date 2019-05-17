@@ -60,7 +60,6 @@ module "ops_manager" {
 
   ops_manager_role_name = "${var.ops_manager_role_name}"
 
-  # additional_iam_roles_arn = ["${module.pas.iam_pas_bucket_role_arn}"]
   bucket_suffix = "${local.bucket_suffix}"
 
   tags = "${local.actual_tags}"

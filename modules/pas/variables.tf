@@ -10,15 +10,9 @@ variable "vpc_id" {
   type = "string"
 }
 
-variable "use_tcp_routes" {}
-
-variable "use_ssh_routes" {}
-
 variable "route_table_ids" {
   type = "list"
 }
-
-variable "internetless" {}
 
 variable "public_subnet_ids" {
   type = "list"
@@ -36,23 +30,12 @@ variable "dns_suffix" {
   type = "string"
 }
 
-variable "use_route53" {
-}
-
 variable "create_backup_pas_buckets" {
   default = false
 }
 
 variable "create_versioned_pas_buckets" {
   default = false
-}
-
-variable "iam_ops_manager_role_name" {
-  type = "string"
-}
-
-variable "pas_bucket_role_name" {
-  type = "string"
 }
 
 variable "create_isoseg_resources" {

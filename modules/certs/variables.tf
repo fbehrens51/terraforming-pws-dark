@@ -2,11 +2,6 @@ variable "env_name" {
   type = "string"
 }
 
-variable "resource_name" {
-  type    = "string"
-  default = ""
-}
-
 variable "dns_suffix" {
   type = "string"
 }

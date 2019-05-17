@@ -43,8 +43,6 @@ module "pas" {
   om_eip = false
   om_eni = true
   om_public_subnet = true
-  kms_key_name = "${module.paperwork.key_id}"
-  pas_bucket_role_arn = "${module.paperwork.bucket_role_arn}"
 }
 
 module "vgw" {

@@ -39,8 +39,6 @@ module "pas" {
   ops_manager_ami = "${local.ops_manager_ami}"
   om_eip = false
   om_eni = false
-  kms_key_name = "${module.paperwork.key_id}"
-  pas_bucket_role_arn = "${module.paperwork.bucket_role_arn}"
 }
 
 module "igw" {

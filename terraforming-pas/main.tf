@@ -47,7 +47,6 @@ module "ops_manager" {
   vpc_id                   = "${module.infra.vpc_id}"
   dns_suffix               = "${var.dns_suffix}"
   zone_id                  = "${module.infra.zone_id}"
-  additional_iam_roles_arn = ["${var.pas_bucket_role_arn}"]
   bucket_suffix            = "${local.bucket_suffix}"
   ops_manager_role_name    = "${var.ops_manager_role_name}"
   om_eni                   = "${var.om_eni}"
@@ -76,7 +75,6 @@ module "isoseg_certs" {
   subdomains    = ["*.iso"]
   env_name      = "${var.env_name}"
   dns_suffix    = "${var.dns_suffix}"
-  resource_name = "isoseg"
 
   ssl_cert           = "${var.isoseg_ssl_cert}"
   ssl_private_key    = "${var.isoseg_ssl_private_key}"
@@ -92,7 +90,6 @@ module "pas" {
   vpc_id             = "${module.infra.vpc_id}"
   route_table_ids    = "${module.infra.deployment_route_table_ids}"
   public_subnet_ids  = "${module.infra.public_subnet_ids}"
-  internetless       = "${var.internetless}"
 
   bucket_suffix = "${local.bucket_suffix}"
   zone_id       = "${module.infra.zone_id}"
@@ -101,15 +98,9 @@ module "pas" {
   create_backup_pas_buckets    = "${var.create_backup_pas_buckets}"
   create_versioned_pas_buckets = "${var.create_versioned_pas_buckets}"
 
-  iam_ops_manager_role_name = "${var.ops_manager_role_name}"
-  pas_bucket_role_name      = "${var.pas_bucket_role_name}"
-
   create_isoseg_resources = "${var.create_isoseg_resources}"
 
   tags = "${local.actual_tags}"
-  use_route53 = "${var.use_route53}"
-  use_tcp_routes = "${var.use_tcp_routes}"
-  use_ssh_routes = "${var.use_ssh_routes}"
 }
 
 module "rds" {
