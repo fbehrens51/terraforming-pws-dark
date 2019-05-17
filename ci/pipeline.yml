@@ -47,19 +47,6 @@ jobs:
         secret_key: ((secret_key))
         env_path: terraforming/env/dev/air-gapped
 
-- name: paperwork
-  max_in_flight: 1
-  plan:
-    - get: terraforming
-      trigger: true
-    - task: paperwork
-      file: terraforming/ci/tasks/lifecycle.yml
-      params:
-        region: ((region))
-        access_key: ((access_key))
-        secret_key: ((secret_key))
-        env_path: terraforming/env/dev/paperwork
-
 - name: bastion-airgapped
   max_in_flight: 1
   plan:
