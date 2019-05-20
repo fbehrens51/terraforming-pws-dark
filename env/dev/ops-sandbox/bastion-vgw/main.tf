@@ -5,11 +5,12 @@ terraform {
     encrypt = true
     kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
     dynamodb_table = "bastion-vgw-state"
+    region = "us-east-1"
   }
 }
 
 locals {
-  vpc_cidr = "10.0.0.0/24"
+  vpc_cidr = "10.60.0.0/24"
   region = "us-east-1"
   availability_zone = "us-east-1a"
 
@@ -21,7 +22,7 @@ locals {
   customer_ingress = { "443" = ["0.0.0.100/30", "0.0.1.0/28"], "8080" = ["0.0.0.128/26", "0.0.10.0/24"] }
 
   tags = {
-    Name = "bastion vgw"
+    Name = "vgw bastion"
   }
 }
 

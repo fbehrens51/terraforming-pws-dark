@@ -5,6 +5,7 @@ terraform {
     encrypt = true
     kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
     dynamodb_table = "bastion-air-gapped-state"
+    region = "us-east-1"
   }
 }
 
@@ -22,7 +23,7 @@ locals {
   customer_ingress = { "443" = ["0.0.0.100/30", "0.0.1.0/28"], "8080" = ["0.0.0.128/26", "0.0.10.0/24"] }
 
   tags = {
-    Name = "bastion air-gapped"
+    Name = "air-gapped bastion"
   }
 }
 
@@ -35,6 +36,7 @@ module "providers" {
 }
 
 // pre-reqs
+
 resource "aws_vpc" "vpc" {
   cidr_block = "${local.vpc_cidr}"
   tags = "${local.tags}"
