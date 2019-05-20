@@ -72,3 +72,29 @@ jobs:
         access_key: ((access_key))
         secret_key: ((secret_key))
         env_path: terraforming/env/dev/ops-sandbox/bastion-vgw
+
+- name: control-plane-air-gapped
+  max_in_flight: 1
+  plan:
+    - get: terraforming
+      trigger: true
+    - task: control-plane-air-gapped
+      file: terraforming/ci/tasks/lifecycle.yml
+      params:
+        region: ((region))
+        access_key: ((access_key))
+        secret_key: ((secret_key))
+        env_path: terraforming/env/dev/ops-sandbox/control-plane-air-gapped
+
+- name: control-plane-vgw
+  max_in_flight: 1
+  plan:
+    - get: terraforming
+      trigger: true
+    - task: control-plane-vgw
+      file: terraforming/ci/tasks/lifecycle.yml
+      params:
+        region: ((region))
+        access_key: ((access_key))
+        secret_key: ((secret_key))
+        env_path: terraforming/env/dev/ops-sandbox/control-plane-vgw

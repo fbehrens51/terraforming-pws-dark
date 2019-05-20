@@ -18,13 +18,10 @@ variable "instance_profile" {
   description = "Instance Profile to assign to MJB"
 }
 
+variable "key_name" {}
+
 variable "security_group_id" {
   description = "security group to apply to MJB"
-}
-
-variable "key_pair" {
-  description = "key pair to use for mjb instance"
-  default = ""
 }
 
 variable "user_data_yml" {
@@ -42,8 +39,8 @@ resource "aws_instance" "mjb" {
   user_data = "${data.template_cloudinit_config.user_data.rendered}"
   associate_public_ip_address = "${var.enable_public_ip}"
   iam_instance_profile = "${var.instance_profile}"
-  security_groups = ["${data.aws_security_group.security_group.*.id}"]
-  key_name = "${var.key_pair}"
+  vpc_security_group_ids = ["${data.aws_security_group.security_group.*.id}"]
+  key_name = "${var.key_name}"
   tags {
     Name="MJB-${timestamp()}"
   }

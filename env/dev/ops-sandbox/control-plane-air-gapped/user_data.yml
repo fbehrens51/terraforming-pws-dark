@@ -1,8 +1,5 @@
 users:
-  - name: ubuntu
-    groups: [ wheel ]
-    sudo: [ "ALL=(ALL) NOPASSWD:ALL" ]
-    shell: /bin/bash
+  - default
   - name: fbehrens
     groups: [ wheel ]
     sudo: [ "ALL=(ALL) NOPASSWD:ALL" ]

@@ -4,7 +4,7 @@ HEADER_FOOTER="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 set -e
 
 #subnet_id to use for importer instance
-SUBNET_ID=subnet-09e63f1dfe8bb616c
+SUBNET_ID=$1
 
 export TF_VAR_subnet_id=${SUBNET_ID}
 

@@ -1,0 +1,73 @@
+users:
+  - default
+  - name: fbehrens
+    groups: [ wheel ]
+    sudo: [ "ALL=(ALL) NOPASSWD:ALL" ]
+    shell: /bin/bash
+    ssh-authorized-keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCw0TgdxjmFtrnGUwyW7jWXgfHy8BNSpV3VaFtuX25VsewgL/tsY5SBM5pBkuwEpnHDNRKRRPuoL4rbAuUlg869nWGoddpYRFkDAXmWotS7q5B+tvdsZi9xlWWGzpw5HIHu2wcYCvM+mwESCOjyN8bBvof8SssoWTFdMZtyj2n0DPExkc2CjSno/InehkyRK+i2K01gSblu1hWCgM0medRrsQWLooTosMSbXwnpMCD7obszYsOpEXpIT0QaTbyqpNw5KA1Bh7GVZANguF/F6mqeU0NLnMh8lzdOVuqet1BoufLvKi3rFM17O8tJbfqsDQ+AhltBQWu9UtcFJMTyYOUE4jQRifW0mEDX1jtm6o8GblD6QA/iJw44DuhxZaEEHFpcKH57K8GIA75WunipIUG0t65UHHJyNoVhg/58/XiOZ9HMmJMq7eQmYg9NW0kcPfD+RzbTeqqpEdgihaz3GbA1B+uxVrbLCb4mbaai+RVA0DpDXr7bH/SJp8lNx9x83lnEwimT7WNxbou//JzyoO6HRX8vYpoZGGtF+Td1t2CKvQOuuqKSzCxNbBf1n1im2KyCEps7PTtf9K3tLL/3eo9vj1T3JQuebjXL3VBUADj2W0p/pgReA4L3ttSI5MsZPAJaCqR1wf8KCaHP2aAb/WhVFd9ayiAdoO1jzxWBEm8GJQ== fbehrens51@gmail.com
+  - name: jgordon
+    groups: [ wheel ]
+    sudo: [ "ALL=(ALL) NOPASSWD:ALL" ]
+    shell: /bin/bash
+    ssh-authorized-keys:
+      - ssh-rsa AAAAB3Nz<your public key>...
+  - name: poyarzun
+    groups: [ wheel ]
+    sudo: [ "ALL=(ALL) NOPASSWD:ALL" ]
+    shell: /bin/bash
+    ssh-authorized-keys:
+      - ssh-rsa AAAAB3Nz<your public key>...
+  - name: jshahid
+    groups: [ wheel ]
+    sudo: [ "ALL=(ALL) NOPASSWD:ALL" ]
+    shell: /bin/bash
+    ssh-authorized-keys:
+      - ssh-rsa AAAAB3Nz<your public key>...
+ca-certs:
+  # If present and set to True, the 'remove-defaults' parameter will remove
+  # all the default trusted CA certificates that are normally shipped with
+  # Ubuntu.
+  # This is mainly for paranoid admins - most users will not need this
+  # functionality.
+  remove-defaults: false
+
+  # If present, the 'trusted' parameter should contain a certificate (or list
+  # of certificates) to add to the system as trusted CA certificates.
+  # Pay close attention to the YAML multiline list syntax.  The example shown
+  # here is for a list of multiline certificates.
+  trusted:
+    - |
+      -----BEGIN CERTIFICATE-----
+      MIIFrTCCA5WgAwIBAgIJALgyVvn5A7fWMA0GCSqGSIb3DQEBCwUAMG0xCzAJBgNV
+      BAYTAlVTMREwDwYDVQQIDAhWaXJnaW5pYTEQMA4GA1UEBwwHQXNoYnVybjEQMA4G
+      A1UECgwHUGl2b3RhbDENMAsGA1UECwwERGFyazEYMBYGA1UEAwwPUGl2b3RhbCBE
+      YXJrIENBMB4XDTE5MDMxMjE0MjAzMFoXDTIxMTIzMDE0MjAzMFowbTELMAkGA1UE
+      BhMCVVMxETAPBgNVBAgMCFZpcmdpbmlhMRAwDgYDVQQHDAdBc2hidXJuMRAwDgYD
+      VQQKDAdQaXZvdGFsMQ0wCwYDVQQLDAREYXJrMRgwFgYDVQQDDA9QaXZvdGFsIERh
+      cmsgQ0EwggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAwggIKAoICAQCwXrijukobS6hV
+      8V/QY2WBrYFjAppX5by/74Gk3gP6Zk1zF3jppTazPKFjmHscCneuxoMeCxNKWR36
+      ZOt83XSV/iKL3OocJxGx6ZJVeSY0oLAZUDZPVLqdA2cWq6ILnWy84/FP250yc4u8
+      1L6CIkh54jARO8TsbXeoeieHB8GzwxqZjCFLdWasz6hL5PxGP7S/Va29mq3KadSo
+      J0U3fzOe3VFQgh6JflbBpXC5QOa8FqQLls1tHZxdAE9F+FlDj8KcMtrmPFRRVL2z
+      IOKTOIfi1/sOhHkFqjiabRwMydMljcpQirRfR0ENI2MuXATIiRhKRLw3oWdM3VeM
+      2HQGKSDXdB241kKvIK+I2MlWHkBfJBdVhdYRNvujTNo27llhfePEDMm7cS7GvDIm
+      nesEA/lnL+dForbsyufw2TREcNt+42s53DsTJuSjEmKrtVsqCGis/844vlbR6uLM
+      xgEBXd8/i+rYOm750zsyPYAGPTOi0a/w8wX4peO37/V1HmfgtU8Rj2IxAiyR6bHy
+      cts8Fb6bATpxTJnyqIAXPbnub6k7G0bOmkVEjHPjyWcoy3gdT6854D6oWKj1BmRE
+      yHLLWTqKhp7jlfuZiO4eXwckivWsYXgV5/dx3TK1RMiVnKTZ9CVuGAqsffZai+6W
+      UTn5zhiZy9FgstkqAhnilwRQnBsEywIDAQABo1AwTjAdBgNVHQ4EFgQUsVuhieqx
+      9HU6EcziORW6Ma6oURUwHwYDVR0jBBgwFoAUsVuhieqx9HU6EcziORW6Ma6oURUw
+      DAYDVR0TBAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAgEASMmuJzO/6xY7ze+8f1DS
+      NzyR0UnKo+CVjtBgxBf57uNFRN0kOanfhOlJ9NCmQfxE/GeFF9t1Y6scfRbD1zWt
+      pW8MH4rY7gZKhNIh5R1gk/uS0JN6IfAwVj4L9x9iLU7jx3x1FobvyXkV85O/XA92
+      XoVj+ZAhiMPxIHKaqKe+dte69AhjNEhKBh/28rzsjBSFVBKD7vJvigPssAK+LTEY
+      sylDf3XrbZfpGRyNnE1tpwS0G0F9JwjUwGMdSTG5dzNvpy1CvN/s5vhobzFFK+6W
+      dXLwCTJFNlUDMnIVMs034E99zkgr4zuv7VswZOPQ4IPr4HRbW2G5JbjCuXnbl5Bp
+      DiF3GmnM5G5JvB0sdORv7gCbe6vKvg8bSk6qqqRgf5gjTvAupVhPPNAkiBthIT5+
+      rtPiiQIfQOTP0M8EIhmVPs+2e/FLm/wbJKWi5mv0uJFe5bnuInLuPSrpS6oNw+Iq
+      3le5YjMTLTGk3IM6KAkcRbwV1M3XM3NGdQT8H0x3aAJkWs3HTeFcZr++q/hunfpG
+      WyPJIyNvZanD9tIBcFx5ApdarybfhDHLXc9ZPb9qgtdFUyeugoS8A1F0AU13WlvH
+      F/Pdqh8UV4ve9P+kDQqeTKvSLw9V33gbyEfMAy2KIKyH8o2zNOwBpAJ22c/93tXP
+      TzCsI/q8mzT33PfFUWCm+I4=
+      -----END CERTIFICATE-----
