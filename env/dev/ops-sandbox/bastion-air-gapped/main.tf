@@ -77,7 +77,7 @@ resource "aws_internet_gateway" "ig" {
 //use case
 
 module "bootstrap_bastion" {
-  source            = "../../../../modules/bastion/bootstrap"
+  source            = "../../../../modules/single_use_subnet"
   availability_zone = "${local.availability_zone}"
   route_table_id    = "${aws_vpc.vpc.default_route_table_id}"
   ingress_rules     = "${local.ingress_rules}"
@@ -103,8 +103,9 @@ module "amazon_ami" {
 }
 
 module "bastion_host" {
-  source         = "../../../../modules/bastion/launch_bastion"
-  ami_id         = "${module.amazon_ami.id}"
-  user_data      = "${data.template_cloudinit_config.user_data.rendered}"
-  bastion_eni_id = "${module.bootstrap_bastion.eni_id}"
+  source    = "../../../../modules/launch"
+  ami_id    = "${module.amazon_ami.id}"
+  user_data = "${data.template_cloudinit_config.user_data.rendered}"
+  eni_id    = "${module.bootstrap_bastion.eni_id}"
+  tags      = "${local.tags}"
 }

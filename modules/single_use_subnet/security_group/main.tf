@@ -8,13 +8,15 @@ variable "egress_rules" {
   type = "list"
 }
 
-resource "aws_security_group" "bastion_security_group" {
-  name_prefix = "bastion_sg-"
-  vpc_id      = "${var.vpc_id}"
+variable "tags" {
+  type = "map"
+}
 
-  tags {
-    Name = "bastion-sg"
-  }
+resource "aws_security_group" "security_group" {
+  vpc_id      = "${var.vpc_id}"
+  name_prefix = "${var.tags["Name"]}"
+
+  tags = "${var.tags}"
 }
 
 resource "aws_security_group_rule" "egress_rules" {
@@ -26,7 +28,7 @@ resource "aws_security_group_rule" "egress_rules" {
   cidr_blocks = "${split(",", lookup(var.egress_rules[count.index], "cidr_blocks"))}"
 
   protocol          = "${lookup(var.egress_rules[count.index], "protocol")}"
-  security_group_id = "${aws_security_group.bastion_security_group.id}"
+  security_group_id = "${aws_security_group.security_group.id}"
   type              = "egress"
 }
 
@@ -39,10 +41,10 @@ resource "aws_security_group_rule" "ingress_rules" {
   cidr_blocks = "${split(",", lookup(var.ingress_rules[count.index], "cidr_blocks"))}"
 
   protocol          = "${lookup(var.ingress_rules[count.index], "protocol")}"
-  security_group_id = "${aws_security_group.bastion_security_group.id}"
+  security_group_id = "${aws_security_group.security_group.id}"
   type              = "ingress"
 }
 
-output "bastion_security_group_id" {
-  value = "${aws_security_group.bastion_security_group.id}"
+output "security_group_id" {
+  value = "${aws_security_group.security_group.id}"
 }

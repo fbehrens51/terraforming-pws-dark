@@ -23,7 +23,7 @@ data "aws_route_table" "route_table" {
   route_table_id = "${var.route_table_id}"
 }
 
-data "aws_vpc" "bastion_vpc" {
+data "aws_vpc" "vpc" {
   id = "${data.aws_route_table.route_table.vpc_id}"
 }
 
@@ -33,31 +33,29 @@ data "aws_availability_zones" "available" {
 
 locals {
   //TODO: move to a module to support varying sizes of cidrs (currently expecting /23)
-  public_subnet_cidr = "${cidrsubnet(data.aws_vpc.bastion_vpc.cidr_block, 5, 0)}"
+  public_subnet_cidr = "${cidrsubnet(data.aws_vpc.vpc.cidr_block, 4, 0)}"
   availability_zone  = "${var.availability_zone != "" ? var.availability_zone : data.aws_availability_zones.available.names[0]}"
 }
 
 resource "aws_subnet" "public_subnet" {
   cidr_block        = "${local.public_subnet_cidr}"
-  vpc_id            = "${data.aws_vpc.bastion_vpc.id}"
+  vpc_id            = "${data.aws_vpc.vpc.id}"
   availability_zone = "${local.availability_zone}"
 
-  tags {
-    Name = "Bastion public subnet"
-  }
+  tags = "${var.tags}"
 }
 
-module "bastion_groups" {
-  source        = "./security_group"
+module "security_groups" {
+  source        = "security_group"
   ingress_rules = "${var.ingress_rules}"
   egress_rules  = "${var.egress_rules}"
-
-  vpc_id = "${aws_subnet.public_subnet.vpc_id}"
+  tags          = "${var.tags}"
+  vpc_id        = "${aws_subnet.public_subnet.vpc_id}"
 }
 
 module "eni" {
-  source              = "../../eni/create"
-  eni_security_groups = ["${module.bastion_groups.bastion_security_group_id}"]
+  source              = "../eni/create"
+  eni_security_groups = ["${module.security_groups.security_group_id}"]
   eni_subnet_id       = "${aws_subnet.public_subnet.id}"
   tags                = "${var.tags}"
 }
