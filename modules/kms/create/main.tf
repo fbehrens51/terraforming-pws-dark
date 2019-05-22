@@ -1,7 +1,7 @@
 resource "aws_kms_alias" "kms_key_alias" {
-  name          = "alias/${var.key_name}"
   target_key_id = "${aws_kms_key.kms_key.key_id}"
   depends_on    = ["aws_kms_key.kms_key"]
+  name_prefix   = "alias/${var.key_name}"
 }
 
 resource "aws_kms_key" "kms_key" {
@@ -19,4 +19,8 @@ variable "deletion_window" {
 
 output "kms_key_id" {
   value = "${aws_kms_key.kms_key.id}"
+}
+
+output "key_arn" {
+  value = "${aws_kms_key.kms_key.arn}"
 }
