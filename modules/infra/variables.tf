@@ -11,8 +11,7 @@ variable "dns_suffix" {
   type = "string"
 }
 
-variable "use_route53" {
-}
+variable "use_route53" {}
 
 variable "availability_zones" {
   type = "list"
@@ -54,7 +53,7 @@ variable "vpc_id" {
 }
 
 module "cidr_lookup" {
-  source = "../calculate_subnets"
+  source   = "../calculate_subnets"
   vpc_cidr = "${data.aws_vpc.vpc.cidr_block}"
 }
 

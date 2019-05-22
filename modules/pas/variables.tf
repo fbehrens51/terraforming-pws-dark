@@ -47,11 +47,11 @@ variable "tags" {
 }
 
 module "cidr_lookup" {
-  source = "../calculate_subnets"
+  source   = "../calculate_subnets"
   vpc_cidr = "${data.aws_vpc.vpc.cidr_block}"
 }
 
 locals {
-  pas_cidr      =  "${module.cidr_lookup.pas_cidr}"
-  services_cidr =  "${module.cidr_lookup.services_cidr}"
+  pas_cidr      = "${module.cidr_lookup.pas_cidr}"
+  services_cidr = "${module.cidr_lookup.services_cidr}"
 }

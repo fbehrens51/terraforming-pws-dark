@@ -8,26 +8,37 @@ provider "aws" {
 
 data "aws_ami" "amazon_linux_hvm_ami" {
   most_recent = true
+
   filter {
     name = "owner-alias"
+
     values = [
-      "amazon"]
+      "amazon",
+    ]
   }
 
   filter {
     name = "name"
+
     values = [
-      "amzn-ami-hvm*"]
+      "amzn-ami-hvm*",
+    ]
   }
+
   filter {
     name = "virtualization-type"
+
     values = [
-      "hvm"]
+      "hvm",
+    ]
   }
+
   filter {
     name = "root-device-type"
+
     values = [
-      "ebs"]
+      "ebs",
+    ]
   }
 }
 

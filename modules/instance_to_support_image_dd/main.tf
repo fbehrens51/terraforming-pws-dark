@@ -1,5 +1,4 @@
-variable "region" {
-}
+variable "region" {}
 
 provider "aws" {
   region = "${var.region}"
@@ -14,17 +13,17 @@ variable "subnet_id" {
 }
 
 variable "security_group_ids" {
-  type = "list"
+  type        = "list"
   description = "List of security groups to allow ssh to importer"
 }
 
 variable "enable_public_ip" {
   description = "Required if running from outside of VPC"
-  default = false
+  default     = false
 }
 
 variable "instance_role" {
-  default = ""
+  default     = ""
   description = "instance profile name with necessary privileges"
 }
 
@@ -41,38 +40,44 @@ data "aws_ebs_volume" "vm_importer_volume" {
 
   filter {
     name = "attachment.instance-id"
+
     values = [
-      "${aws_instance.vm_importer.id}"]
+      "${aws_instance.vm_importer.id}",
+    ]
   }
 
   filter {
     name = "attachment.device"
+
     values = [
-      "/dev/xvdf"]
+      "/dev/xvdf",
+    ]
   }
 }
 
 resource "tls_private_key" "vm_importer" {
   algorithm = "RSA"
-  rsa_bits = "4096"
+  rsa_bits  = "4096"
 }
 
 resource "aws_key_pair" "vm_importer" {
   key_name_prefix = "vm_importer_key-"
-  public_key = "${tls_private_key.vm_importer.public_key_openssh}"
+  public_key      = "${tls_private_key.vm_importer.public_key_openssh}"
 }
 
 resource "aws_instance" "vm_importer" {
   availability_zone = "${data.aws_subnet.vm_subnet.availability_zone}"
-  ami = "${var.ami}"
-  instance_type = "${var.instance_type}"
-  key_name = "${aws_key_pair.vm_importer.key_name}"
-  vpc_security_group_ids = [
-    "${var.security_group_ids}"]
-  subnet_id = "${var.subnet_id}"
-  associate_public_ip_address = "${var.enable_public_ip}"
-  iam_instance_profile = "${var.instance_role}"
+  ami               = "${var.ami}"
+  instance_type     = "${var.instance_type}"
+  key_name          = "${aws_key_pair.vm_importer.key_name}"
 
+  vpc_security_group_ids = [
+    "${var.security_group_ids}",
+  ]
+
+  subnet_id                   = "${var.subnet_id}"
+  associate_public_ip_address = "${var.enable_public_ip}"
+  iam_instance_profile        = "${var.instance_role}"
 
   root_block_device {
     volume_type = "gp2"

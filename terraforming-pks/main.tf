@@ -1,5 +1,5 @@
 provider "aws" {
-  region     = "${var.region}"
+  region  = "${var.region}"
   version = "~> 1.60"
 }
 
@@ -60,18 +60,18 @@ module "ops_manager" {
   optional_count = "${var.optional_ops_manager ? 1 : 0}"
   subnet_id      = "${local.ops_man_subnet_id}"
 
-  env_name                 = "${var.env_name}"
-  ami                      = "${var.ops_manager_ami}"
-  optional_ami             = "${var.optional_ops_manager_ami}"
-  instance_type            = "${var.ops_manager_instance_type}"
-  private                  = "${var.ops_manager_private}"
-  vpc_id                   = "${module.infra.vpc_id}"
-  dns_suffix               = "${var.dns_suffix}"
-  zone_id                  = "${module.infra.zone_id}"
-  use_route53              = "${var.use_route53}"
-  bucket_suffix            = "${local.bucket_suffix}"
+  env_name      = "${var.env_name}"
+  ami           = "${var.ops_manager_ami}"
+  optional_ami  = "${var.optional_ops_manager_ami}"
+  instance_type = "${var.ops_manager_instance_type}"
+  private       = "${var.ops_manager_private}"
+  vpc_id        = "${module.infra.vpc_id}"
+  dns_suffix    = "${var.dns_suffix}"
+  zone_id       = "${module.infra.zone_id}"
+  use_route53   = "${var.use_route53}"
+  bucket_suffix = "${local.bucket_suffix}"
 
-  ops_manager_role_name    = "${var.ops_manager_role_name}"
+  ops_manager_role_name = "${var.ops_manager_role_name}"
 
   tags = "${local.actual_tags}"
 }

@@ -11,31 +11,29 @@ variable "user_data" {
   description = "user data"
 }
 
-variable "subnet_id" {
-}
+variable "subnet_id" {}
 
 variable "security_group_ids" {
-  type = "list"
+  type    = "list"
   default = []
 }
 
-
 locals {
-  createdTimestamp="${timestamp()}"
+  createdTimestamp = "${timestamp()}"
 }
 
 resource "aws_instance" "bastion" {
   subnet_id = "${var.subnet_id}"
 
-  ami = "${var.ami_id}"
-  instance_type = "${var.instance_type}"
-  user_data = "${var.user_data}"
+  ami                    = "${var.ami_id}"
+  instance_type          = "${var.instance_type}"
+  user_data              = "${var.user_data}"
   vpc_security_group_ids = ["${var.security_group_ids}"]
 
   tags {
-    Name="BASTION ${local.createdTimestamp}"
-    CreatedTimestamp="${local.createdTimestamp}"
-    SourceAmiId="${var.ami_id}"
+    Name             = "BASTION ${local.createdTimestamp}"
+    CreatedTimestamp = "${local.createdTimestamp}"
+    SourceAmiId      = "${var.ami_id}"
   }
 
   lifecycle {

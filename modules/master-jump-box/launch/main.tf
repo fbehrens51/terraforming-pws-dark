@@ -1,6 +1,7 @@
 variable "ami_id" {
   description = "id for AMI"
 }
+
 variable "instance_type" {
   description = "Instance Type to use for Master Jump Box"
 }
@@ -10,7 +11,7 @@ variable "subnet_id" {
 }
 
 variable "enable_public_ip" {
-  default = true
+  default     = true
   description = "enable a public IP on the MJB"
 }
 
@@ -33,30 +34,33 @@ data "aws_security_group" "security_group" {
 }
 
 resource "aws_instance" "mjb" {
-  ami = "${var.ami_id}"
-  instance_type = "${var.instance_type}"
-  subnet_id = "${var.subnet_id}"
-  user_data = "${data.template_cloudinit_config.user_data.rendered}"
+  ami                         = "${var.ami_id}"
+  instance_type               = "${var.instance_type}"
+  subnet_id                   = "${var.subnet_id}"
+  user_data                   = "${data.template_cloudinit_config.user_data.rendered}"
   associate_public_ip_address = "${var.enable_public_ip}"
-  iam_instance_profile = "${var.instance_profile}"
-  vpc_security_group_ids = ["${data.aws_security_group.security_group.*.id}"]
-  key_name = "${var.key_name}"
+  iam_instance_profile        = "${var.instance_profile}"
+  vpc_security_group_ids      = ["${data.aws_security_group.security_group.*.id}"]
+  key_name                    = "${var.key_name}"
+
   tags {
-    Name="MJB-${timestamp()}"
+    Name = "MJB-${timestamp()}"
   }
 }
 
 locals {
   //hack to fix the path for windows, theoretically this will be fixed in v 0.12 to use same convention on all OS
-  local_user_data_path =  "${replace(var.user_data_yml, "\\", "/")}"
+  local_user_data_path = "${replace(var.user_data_yml, "\\", "/")}"
 }
 
 data "template_cloudinit_config" "user_data" {
   base64_encode = false
-  gzip = false
+  gzip          = false
+
   part {
     content_type = "text/cloud-config"
-    content      = <<EOF
+
+    content = <<EOF
 #cloud-config
 runcmd:
   - sudo touch /cloud-init-is-working.txt

@@ -6,8 +6,7 @@ resource "aws_vpc" "vpc" {
   tags = "${merge(var.tags, map("Name", "${var.name_prefix}-vpc"))}"
 }
 
-variable "name_prefix" {
-}
+variable "name_prefix" {}
 
 variable "tags" {
   type = "map"

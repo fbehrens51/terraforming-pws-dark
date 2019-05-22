@@ -180,7 +180,7 @@ output "network_name" {
 }
 
 output "ops_manager_instance_id" {
-  value     = "${module.ops_manager.ops_manager_instance_id}"
+  value = "${module.ops_manager.ops_manager_instance_id}"
 }
 
 output "ops_manager_ssh_private_key" {

@@ -1,4 +1,3 @@
-
 variable "pas_vpc_id" {}
 variable "bastion_vpc_id" {}
 variable "es_vpc_id" {}
@@ -16,6 +15,7 @@ resource "aws_route_table" "pas_private_route_table" {
 module "pas_public_vpc_route_table" {
   source = "../vpc_route_table"
   vpc_id = "${var.pas_vpc_id}"
+
   tags = {
     Name = "${var.env_name} | PAS PUBLIC"
   }

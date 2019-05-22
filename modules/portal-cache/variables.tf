@@ -1,21 +1,18 @@
-variable "vpc_id" {
-}
+variable "vpc_id" {}
 
 variable "availability_zones" {
   type = "list"
 }
-
 
 variable "tags" {
   type    = "map"
   default = {}
 }
 
-variable "env_name" {
-}
+variable "env_name" {}
 
 module "cidr_lookup" {
-  source = "../calculate_subnets"
+  source   = "../calculate_subnets"
   vpc_cidr = "${data.aws_vpc.vpc.cidr_block}"
 }
 

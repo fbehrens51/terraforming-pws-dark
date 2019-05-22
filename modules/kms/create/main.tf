@@ -1,11 +1,10 @@
 resource "aws_kms_alias" "kms_key_alias" {
-  name = "alias/${var.key_name}"
+  name          = "alias/${var.key_name}"
   target_key_id = "${aws_kms_key.kms_key.key_id}"
-  depends_on = ["aws_kms_key.kms_key"]
+  depends_on    = ["aws_kms_key.kms_key"]
 }
 
 resource "aws_kms_key" "kms_key" {
-
   description             = "${var.key_name} KMS key"
   deletion_window_in_days = "${var.deletion_window}"
 

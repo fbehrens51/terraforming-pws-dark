@@ -4,7 +4,7 @@ data "aws_vpc" "vpc" {
 
 resource "aws_internet_gateway" "ig" {
   vpc_id = "${data.aws_vpc.vpc.id}"
-  tags = "${merge(var.tags, map("Name", "${var.name_prefix}-igw"))}"
+  tags   = "${merge(var.tags, map("Name", "${var.name_prefix}-igw"))}"
 }
 
 resource "aws_route_table" "public_route_table" {
@@ -22,8 +22,7 @@ resource "aws_route_table_association" "route_public_subnets" {
   route_table_id = "${aws_route_table.public_route_table.id}"
 }
 
-variable "name_prefix" {
-}
+variable "name_prefix" {}
 
 variable "tags" {
   type = "map"

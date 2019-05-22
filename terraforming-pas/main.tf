@@ -27,9 +27,9 @@ module "infra" {
   hosted_zone = "${var.hosted_zone}"
   dns_suffix  = "${var.dns_suffix}"
 
-  tags = "${local.actual_tags}"
+  tags        = "${local.actual_tags}"
   use_route53 = "${var.use_route53}"
-  vpc_id = "${var.vpc_id}"
+  vpc_id      = "${var.vpc_id}"
 }
 
 module "ops_manager" {
@@ -39,20 +39,20 @@ module "ops_manager" {
   optional_count = "${var.optional_ops_manager ? 1 : 0}"
   subnet_id      = "${local.ops_man_subnet_id}"
 
-  env_name                 = "${var.env_name}"
-  ami                      = "${var.ops_manager_ami}"
-  optional_ami             = "${var.optional_ops_manager_ami}"
-  instance_type            = "${var.ops_manager_instance_type}"
-  private                  = "${var.ops_manager_private}"
-  vpc_id                   = "${module.infra.vpc_id}"
-  dns_suffix               = "${var.dns_suffix}"
-  zone_id                  = "${module.infra.zone_id}"
-  bucket_suffix            = "${local.bucket_suffix}"
-  ops_manager_role_name    = "${var.ops_manager_role_name}"
-  om_eni                   = "${var.om_eni}"
-  om_eip                   = "${var.om_eip}"
+  env_name              = "${var.env_name}"
+  ami                   = "${var.ops_manager_ami}"
+  optional_ami          = "${var.optional_ops_manager_ami}"
+  instance_type         = "${var.ops_manager_instance_type}"
+  private               = "${var.ops_manager_private}"
+  vpc_id                = "${module.infra.vpc_id}"
+  dns_suffix            = "${var.dns_suffix}"
+  zone_id               = "${module.infra.zone_id}"
+  bucket_suffix         = "${local.bucket_suffix}"
+  ops_manager_role_name = "${var.ops_manager_role_name}"
+  om_eni                = "${var.om_eni}"
+  om_eip                = "${var.om_eip}"
 
-  tags = "${local.actual_tags}"
+  tags        = "${local.actual_tags}"
   use_route53 = "${var.use_route53}"
 }
 
@@ -72,9 +72,9 @@ module "pas_certs" {
 module "isoseg_certs" {
   source = "../modules/certs"
 
-  subdomains    = ["*.iso"]
-  env_name      = "${var.env_name}"
-  dns_suffix    = "${var.dns_suffix}"
+  subdomains = ["*.iso"]
+  env_name   = "${var.env_name}"
+  dns_suffix = "${var.dns_suffix}"
 
   ssl_cert           = "${var.isoseg_ssl_cert}"
   ssl_private_key    = "${var.isoseg_ssl_private_key}"

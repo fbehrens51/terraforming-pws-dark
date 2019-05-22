@@ -30,19 +30,18 @@ variable "dns_suffix" {
   type = "string"
 }
 
-variable "use_route53" {
-}
+variable "use_route53" {}
 
 variable "tags" {
   type = "map"
 }
 
 module "cidr_lookup" {
-  source = "../calculate_subnets"
+  source   = "../calculate_subnets"
   vpc_cidr = "${data.aws_vpc.vpc.cidr_block}"
 }
 
 locals {
-  pks_cidr = "${module.cidr_lookup.pks_cidr}"
+  pks_cidr          = "${module.cidr_lookup.pks_cidr}"
   pks_services_cidr = "${module.cidr_lookup.pks_services_cidr}"
 }

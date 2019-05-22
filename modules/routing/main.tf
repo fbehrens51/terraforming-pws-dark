@@ -2,7 +2,7 @@ variable "requester_route_table_id" {}
 variable "accepter_route_table_id" {}
 
 data "aws_vpc_peering_connection" "peering_connection" {
-  vpc_id = "${data.aws_vpc.requester_vpc.id}"
+  vpc_id      = "${data.aws_vpc.requester_vpc.id}"
   peer_vpc_id = "${data.aws_vpc.accepter_vpc.id}"
 }
 

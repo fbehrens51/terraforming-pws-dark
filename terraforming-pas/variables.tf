@@ -1,28 +1,27 @@
 variable "env_name" {}
 
 variable "om_eip" {
-  default = true
+  default     = true
   description = "Creates an EIP for OM"
 }
 
 variable "om_eni" {
-  default = false
+  default     = false
   description = "Creates an ENI for OM"
 }
 
 variable "om_public_subnet" {
-  default = true
+  default     = true
   description = "if true puts the OM instance in the public subnet. If false, puts it in the infra subnet."
 }
 
-
 variable "use_tcp_routes" {
-  default = true
+  default     = true
   description = "Indicate whether or not to enable tcp routes and elbs"
 }
 
 variable "use_ssh_routes" {
-  default = true
+  default     = true
   description = "Indicate whether or not to enable ssh routes and elbs"
 }
 
@@ -41,7 +40,7 @@ variable "vpc_id" {
 }
 
 variable "use_route53" {
-  default = true
+  default     = true
   description = "Indicate whether or not to enable route53"
 }
 

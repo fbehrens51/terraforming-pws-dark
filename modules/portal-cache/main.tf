@@ -15,9 +15,8 @@ resource "aws_subnet" "portal_cache_subnets" {
   tags = "${merge(var.tags, map("Name", "${var.env_name}-portal-cache-subnet${count.index}"))}"
 }
 
-
 resource "aws_elasticache_subnet_group" "portal_cache_subnet_group" {
-  name = "${var.env_name}-portal-cache-subnet-group"
+  name        = "${var.env_name}-portal-cache-subnet-group"
   description = "Portal Redis cache Subnet Group"
 
   subnet_ids = ["${aws_subnet.portal_cache_subnets.*.id}"]
@@ -42,7 +41,7 @@ resource "aws_security_group" "portal_cache_security_group" {
     to_port     = 0
   }
 
-  tags  = "${merge(var.tags, map("Name", "${var.env_name}-portal-cache-security-group"))}"
+  tags = "${merge(var.tags, map("Name", "${var.env_name}-portal-cache-security-group"))}"
 }
 
 resource "aws_elasticache_replication_group" "portal_cache" {

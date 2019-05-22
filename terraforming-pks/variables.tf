@@ -26,7 +26,7 @@ variable "internet_gateway_id" {
 }
 
 variable "use_route53" {
-  default = true
+  default     = true
   description = "Indicate whether or not to enable route53"
 }
 
@@ -84,7 +84,7 @@ variable "ssl_ca_private_key" {
 }
 
 variable ops_manager_role_name {
-  default = "Director"
+  default     = "Director"
   description = "the role name used for the ops man controlled bosh director"
 }
 

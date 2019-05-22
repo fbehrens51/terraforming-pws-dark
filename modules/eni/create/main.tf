@@ -3,15 +3,18 @@ variable "eni_security_groups" {
 }
 
 variable "tags" {
-  type = "map"
+  type    = "map"
   default = {}
 }
+
 variable "eni_subnet_id" {}
 
 resource "aws_network_interface" "eni" {
   subnet_id = "${var.eni_subnet_id}"
+
   security_groups = [
-    "${var.eni_security_groups}"]
+    "${var.eni_security_groups}",
+  ]
 
   tags = "${var.tags}"
 }

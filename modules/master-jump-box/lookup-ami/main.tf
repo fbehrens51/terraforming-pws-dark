@@ -1,15 +1,16 @@
 data "aws_caller_identity" "self" {}
 
 data "aws_ami" "mjb_ami" {
-  most_recent      = true
-  owners= ["${data.aws_caller_identity.self.account_id}"]
+  most_recent = true
+  owners      = ["${data.aws_caller_identity.self.account_id}"]
+
   filter {
-    name = "root-device-type"
+    name   = "root-device-type"
     values = ["ebs"]
   }
 
   filter {
-    name = "virtualization-type"
+    name   = "virtualization-type"
     values = ["hvm"]
   }
 
@@ -17,7 +18,6 @@ data "aws_ami" "mjb_ami" {
     name   = "tag:Name"
     values = ["MJB_AMI"]
   }
-
 }
 
 output "id" {

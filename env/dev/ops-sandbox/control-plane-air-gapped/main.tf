@@ -1,22 +1,22 @@
 terraform {
   backend "s3" {
-    bucket = "eagle-state"
-    key = "dev/cp-air-gapped/terraform.tfstate"
-    encrypt = true
-    kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
+    bucket         = "eagle-state"
+    key            = "dev/cp-air-gapped/terraform.tfstate"
+    encrypt        = true
+    kms_key_id     = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
     dynamodb_table = "cp-air-gapped-state"
-    region = "us-east-1"
+    region         = "us-east-1"
   }
 }
 
 locals {
-  env_name = "air-gapped control plane"
-  instance_type = "m4.xlarge"
-  instance_profile = "DIRECTOR"
-  user_data_file = "${path.module}/user_data.yml"
-  enable_public_ip = true
-  vpc_cidr = "10.150.0.0/24"
-  availability_zone = "us-east-1a"
+  env_name             = "air-gapped control plane"
+  instance_type        = "m4.xlarge"
+  instance_profile     = "DIRECTOR"
+  user_data_file       = "${path.module}/user_data.yml"
+  enable_public_ip     = true
+  vpc_cidr             = "10.150.0.0/24"
+  availability_zone    = "us-east-1a"
   external_cidr_blocks = ["72.83.230.85/32", "0.0.0.0/0"]
 }
 
@@ -32,18 +32,19 @@ module "dark_providers" {
 
 resource "aws_vpc" "vpc" {
   cidr_block = "${local.vpc_cidr}"
-  tags = "${var.tags}"
+  tags       = "${var.tags}"
 }
 
 resource "aws_internet_gateway" "ig" {
   vpc_id = "${aws_vpc.vpc.id}"
-  tags = "${var.tags}"
+  tags   = "${var.tags}"
 }
 
 // use case
 
 variable "tags" {
   type = "map"
+
   default = {
     "Name" = "control plane air-gapped"
   }
@@ -60,10 +61,10 @@ resource "tls_private_key" "mjb_private_key" {
 }
 
 module "bootstrapper" {
-  source = "../../../../modules/control_plane"
-  gateway_id = "${aws_internet_gateway.ig.id}"
-  vpc_id = "${aws_vpc.vpc.id}"
-  availability_zone = "${local.availability_zone}"
+  source              = "../../../../modules/control_plane"
+  gateway_id          = "${aws_internet_gateway.ig.id}"
+  vpc_id              = "${aws_vpc.vpc.id}"
+  availability_zone   = "${local.availability_zone}"
   ingress_cidr_blocks = "${local.external_cidr_blocks}"
 }
 
@@ -72,15 +73,15 @@ module "find_mjb_ami" {
 }
 
 module "mjb_instance" {
-  source = "../../../../modules/master-jump-box/launch"
-  ami_id = "${module.find_mjb_ami.id}"
-  instance_type = "${local.instance_type}"
-  subnet_id = "${module.bootstrapper.public_subnet_id}"
-  instance_profile = "${local.instance_profile}"
+  source            = "../../../../modules/master-jump-box/launch"
+  ami_id            = "${module.find_mjb_ami.id}"
+  instance_type     = "${local.instance_type}"
+  subnet_id         = "${module.bootstrapper.public_subnet_id}"
+  instance_profile  = "${local.instance_profile}"
   security_group_id = "${module.bootstrapper.mjb_security_group_id}"
-  user_data_yml = "${local.user_data_file}"
-  enable_public_ip = "${local.enable_public_ip}"
-  key_name = "${aws_key_pair.mjb_key_pair.key_name}"
+  user_data_yml     = "${local.user_data_file}"
+  enable_public_ip  = "${local.enable_public_ip}"
+  key_name          = "${aws_key_pair.mjb_key_pair.key_name}"
 }
 
 output "mjb_private_key" {
