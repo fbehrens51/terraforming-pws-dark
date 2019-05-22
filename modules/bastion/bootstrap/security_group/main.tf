@@ -1,10 +1,6 @@
 variable "vpc_id" {}
 
-variable "ssh_cidrs" {
-  type = "list"
-}
-
-variable "customer_ingress" {
+variable "ingress_rules" {
   type = "map"
 }
 
@@ -17,16 +13,6 @@ resource "aws_security_group" "bastion_security_group" {
   }
 }
 
-resource "aws_security_group_rule" "ssh_ingress" {
-  from_port         = 22
-  protocol          = "tcp"
-  security_group_id = "${aws_security_group.bastion_security_group.id}"
-  to_port           = 22
-  type              = "ingress"
-  cidr_blocks       = ["${var.ssh_cidrs}"]
-  depends_on        = ["aws_security_group.bastion_security_group"]
-}
-
 resource "aws_security_group_rule" "ssh_egress" {
   from_port         = 22
   protocol          = "tcp"
@@ -37,13 +23,13 @@ resource "aws_security_group_rule" "ssh_egress" {
   depends_on        = ["aws_security_group.bastion_security_group"]
 }
 
-resource "aws_security_group_rule" "customer_ingress" {
-  count = "${length (var.customer_ingress)}"
+resource "aws_security_group_rule" "ingress_rules" {
+  count = "${length (var.ingress_rules)}"
 
-  from_port = "${element(keys(var.customer_ingress), count.index)}"
-  to_port   = "${element(keys(var.customer_ingress), count.index)}"
+  from_port = "${element(keys(var.ingress_rules), count.index)}"
+  to_port   = "${element(keys(var.ingress_rules), count.index)}"
 
-  cidr_blocks = ["${var.customer_ingress[element(keys(var.customer_ingress), count.index)]}"]
+  cidr_blocks = ["${var.ingress_rules[element(keys(var.ingress_rules), count.index)]}"]
 
   protocol          = "tcp"
   security_group_id = "${aws_security_group.bastion_security_group.id}"

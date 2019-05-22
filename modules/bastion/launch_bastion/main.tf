@@ -13,11 +13,15 @@ variable "user_data" {
 
 variable "bastion_eni_id" {}
 
+variable "key_pair_name" {
+  default = ""
+}
+
 locals {
   createdTimestamp = "${timestamp()}"
 }
 
-resource "aws_instance" "bastion_eni_instance" {
+resource "aws_instance" "bastion_instance" {
   network_interface {
     device_index         = 0
     network_interface_id = "${var.bastion_eni_id}"
@@ -26,6 +30,7 @@ resource "aws_instance" "bastion_eni_instance" {
   ami           = "${var.ami_id}"
   instance_type = "${var.instance_type}"
   user_data     = "${var.user_data}"
+  key_name      = "${var.key_pair_name}"
 
   tags {
     Name             = "BASTION ${local.createdTimestamp}"
@@ -34,10 +39,11 @@ resource "aws_instance" "bastion_eni_instance" {
   }
 
   lifecycle {
-    ignore_changes = ["tags.CreatedTimestamp", "tags.Name", "tags.%"]
+    // We don't want terraform to remove tags applied later by customer processes
+    ignore_changes = ["tags"]
   }
 }
 
 output "bastion_instance_id" {
-  value = "${aws_instance.bastion_eni_instance.id}"
+  value = "${aws_instance.bastion_instance.id}"
 }

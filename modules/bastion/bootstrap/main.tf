@@ -1,21 +1,26 @@
-variable "vpc_id" {
-  description = "Bastion Plane VPC ID"
-}
+variable "route_table_id" {}
 
 variable "availability_zone" {
   description = "AZ, specify or will default to first in list of available"
   default     = ""
 }
 
-variable "gateway_id" {}
-
-variable "peering_connection_ids" {
-  type    = "list"
-  default = []
+variable "ingress_rules" {
+  type = "map"
 }
 
-data "aws_vpc" "cp_vpc" {
-  id = "${var.vpc_id}"
+variable "tags" {
+  type = "map"
+}
+
+variable "create_eip" {}
+
+data "aws_route_table" "route_table" {
+  route_table_id = "${var.route_table_id}"
+}
+
+data "aws_vpc" "bastion_vpc" {
+  id = "${data.aws_route_table.route_table.vpc_id}"
 }
 
 data "aws_availability_zones" "available" {
@@ -23,14 +28,14 @@ data "aws_availability_zones" "available" {
 }
 
 locals {
-  //TODO: move to a module to support varying sizes of cidrs (currently expecting /24)
-  public_subnet_cidr = "${cidrsubnet(data.aws_vpc.cp_vpc.cidr_block,4,0)}"
-  availability_zone  = "${var.availability_zone !="" ? var.availability_zone : data.aws_availability_zones.available.names[0]}"
+  //TODO: move to a module to support varying sizes of cidrs (currently expecting /23)
+  public_subnet_cidr = "${cidrsubnet(data.aws_vpc.bastion_vpc.cidr_block, 5, 0)}"
+  availability_zone  = "${var.availability_zone != "" ? var.availability_zone : data.aws_availability_zones.available.names[0]}"
 }
 
 resource "aws_subnet" "public_subnet" {
   cidr_block        = "${local.public_subnet_cidr}"
-  vpc_id            = "${var.vpc_id}"
+  vpc_id            = "${data.aws_vpc.bastion_vpc.id}"
   availability_zone = "${local.availability_zone}"
 
   tags {
@@ -38,33 +43,47 @@ resource "aws_subnet" "public_subnet" {
   }
 }
 
-resource "aws_route_table" "public_route_table" {
-  vpc_id = "${var.vpc_id}"
+module "bastion_groups" {
+  source        = "./security_group"
+  ingress_rules = "${var.ingress_rules}"
+  vpc_id        = "${aws_subnet.public_subnet.vpc_id}"
 }
 
-resource "aws_route" "route_to_gw" {
-  route_table_id         = "${aws_route_table.public_route_table.id}"
-  gateway_id             = "${var.gateway_id}"
-  destination_cidr_block = "0.0.0.0/0"
+module "eni" {
+  source              = "../../eni/create"
+  eni_security_groups = ["${module.bastion_groups.bastion_security_group_id}"]
+  eni_subnet_id       = "${aws_subnet.public_subnet.id}"
+  tags                = "${var.tags}"
 }
 
-data "aws_vpc_peering_connection" "peering_connections" {
-  count = "${length(var.peering_connection_ids)}"
-  id    = "${element(var.peering_connection_ids, count.index)}"
+resource "aws_eip" "eip" {
+  count = "${var.create_eip ? 1 : 0}"
+  vpc   = true
 }
 
-resource "aws_route" "peering_connection_route" {
-  count                     = "${length(var.peering_connection_ids)}"
-  route_table_id            = "${aws_route_table.public_route_table.id}"
-  vpc_peering_connection_id = "${element(var.peering_connection_ids, count.index)}"
-  destination_cidr_block    = "${data.aws_vpc_peering_connection.peering_connections.*.peer_cidr_block[count.index]}"
+resource "aws_eip_association" "eip_association" {
+  count                = "${var.create_eip ? 1 : 0}"
+  allocation_id        = "${aws_eip.eip.id}"
+  network_interface_id = "${module.eni.eni_id}"
 }
 
 resource "aws_route_table_association" "route_public_subnet" {
   subnet_id      = "${aws_subnet.public_subnet.id}"
-  route_table_id = "${aws_route_table.public_route_table.id}"
+  route_table_id = "${var.route_table_id}"
 }
 
 output "public_subnet_id" {
   value = "${aws_subnet.public_subnet.id}"
+}
+
+output "eni_id" {
+  value = "${module.eni.eni_id}"
+}
+
+output "public_ips" {
+  value = "${aws_eip.eip.*.public_ip}"
+}
+
+output "private_ip" {
+  value = "${module.eni.private_ip}"
 }

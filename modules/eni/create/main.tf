@@ -22,3 +22,7 @@ resource "aws_network_interface" "eni" {
 output "eni_id" {
   value = "${aws_network_interface.eni.id}"
 }
+
+output "private_ip" {
+  value = "${aws_network_interface.eni.private_ip}"
+}

@@ -10,7 +10,7 @@ terraform {
 }
 
 locals {
-  vpc_cidr          = "10.60.0.0/24"
+  vpc_cidr          = "10.60.0.0/23"
   region            = "us-east-1"
   availability_zone = "us-east-1a"
 
@@ -18,12 +18,9 @@ locals {
   module_path = "${replace(path.module, "\\", "/")}"
 
   local_user_data_path = "${local.module_path}/other.yml"
-  inbound_ssh_cidrs    = ["0.0.0.0/0"]
 
-  customer_ingress = {
-    "443" = ["0.0.0.100/30", "0.0.1.0/28"]
-
-    "8080" = ["0.0.0.128/26", "0.0.10.0/24"]
+  ingress_rules = {
+    "22" = ["0.0.0.0/0"]
   }
 
   tags = {
@@ -55,9 +52,11 @@ resource "aws_vpn_gateway" "ig" {
 
 module "bootstrap_bastion" {
   source            = "../../../../modules/bastion/bootstrap"
-  vpc_id            = "${aws_vpc.vpc.id}"
-  gateway_id        = "${aws_vpn_gateway.ig.id}"
   availability_zone = "${local.availability_zone}"
+  route_table_id    = "${aws_vpc.vpc.default_route_table_id}"
+  ingress_rules     = "${local.ingress_rules}"
+  tags              = "${local.tags}"
+  create_eip        = false
 }
 
 data "template_cloudinit_config" "user_data" {
@@ -71,28 +70,14 @@ data "template_cloudinit_config" "user_data" {
   }
 }
 
-module "bastion_groups" {
-  source           = "../../../../modules/bastion/security_group"
-  customer_ingress = "${local.customer_ingress}"
-  ssh_cidrs        = "${local.inbound_ssh_cidrs}"
-  vpc_id           = "${aws_vpc.vpc.id}"
-}
-
-module "eni" {
-  source              = "../../../../modules/eni/create"
-  eni_security_groups = ["${module.bastion_groups.bastion_security_group_id}"]
-  eni_subnet_id       = "${module.bootstrap_bastion.public_subnet_id}"
-  tags                = "${local.tags}"
-}
-
 module "amazon_ami" {
   source = "../../../../modules/amis/amazon_hvm_ami"
   region = "${local.region}"
 }
 
 module "bastion_host" {
-  source         = "../../../../modules/bastion/launch_bastion_vgw"
+  source         = "../../../../modules/bastion/launch_bastion"
   ami_id         = "${module.amazon_ami.id}"
   user_data      = "${data.template_cloudinit_config.user_data.rendered}"
-  bastion_eni_id = "${module.eni.eni_id}"
+  bastion_eni_id = "${module.bootstrap_bastion.eni_id}"
 }
