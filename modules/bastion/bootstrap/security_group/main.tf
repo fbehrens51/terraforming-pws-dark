@@ -1,7 +1,11 @@
 variable "vpc_id" {}
 
 variable "ingress_rules" {
-  type = "map"
+  type = "list"
+}
+
+variable "egress_rules" {
+  type = "list"
 }
 
 resource "aws_security_group" "bastion_security_group" {
@@ -13,25 +17,28 @@ resource "aws_security_group" "bastion_security_group" {
   }
 }
 
-resource "aws_security_group_rule" "ssh_egress" {
-  from_port         = 22
-  protocol          = "tcp"
+resource "aws_security_group_rule" "egress_rules" {
+  count = "${length(var.egress_rules)}"
+
+  from_port = "${lookup(var.egress_rules[count.index], "port")}"
+  to_port   = "${lookup(var.egress_rules[count.index], "port")}"
+
+  cidr_blocks = "${split(",", lookup(var.egress_rules[count.index], "cidr_blocks"))}"
+
+  protocol          = "${lookup(var.egress_rules[count.index], "protocol")}"
   security_group_id = "${aws_security_group.bastion_security_group.id}"
-  to_port           = 22
   type              = "egress"
-  cidr_blocks       = ["0.0.0.0/0"]
-  depends_on        = ["aws_security_group.bastion_security_group"]
 }
 
 resource "aws_security_group_rule" "ingress_rules" {
-  count = "${length (var.ingress_rules)}"
+  count = "${length(var.ingress_rules)}"
 
-  from_port = "${element(keys(var.ingress_rules), count.index)}"
-  to_port   = "${element(keys(var.ingress_rules), count.index)}"
+  from_port = "${lookup(var.ingress_rules[count.index], "port")}"
+  to_port   = "${lookup(var.ingress_rules[count.index], "port")}"
 
-  cidr_blocks = ["${var.ingress_rules[element(keys(var.ingress_rules), count.index)]}"]
+  cidr_blocks = "${split(",", lookup(var.ingress_rules[count.index], "cidr_blocks"))}"
 
-  protocol          = "tcp"
+  protocol          = "${lookup(var.ingress_rules[count.index], "protocol")}"
   security_group_id = "${aws_security_group.bastion_security_group.id}"
   type              = "ingress"
 }

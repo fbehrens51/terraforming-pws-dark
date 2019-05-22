@@ -19,9 +19,26 @@ locals {
 
   local_user_data_path = "${local.module_path}/other.yml"
 
-  ingress_rules = {
-    "22" = ["0.0.0.0/0"]
-  }
+  ingress_rules = [
+    {
+      port        = "22"
+      protocol    = "tcp"
+      cidr_blocks = "0.0.0.0/0"
+    },
+  ]
+
+  egress_rules = [
+    {
+      port        = "22"
+      protocol    = "tcp"
+      cidr_blocks = "0.0.0.0/0"
+    },
+    {
+      port        = "80"
+      protocol    = "tcp"
+      cidr_blocks = "0.0.0.0/0"
+    },
+  ]
 
   tags = {
     Name = "vgw bastion"
@@ -55,6 +72,7 @@ module "bootstrap_bastion" {
   availability_zone = "${local.availability_zone}"
   route_table_id    = "${aws_vpc.vpc.default_route_table_id}"
   ingress_rules     = "${local.ingress_rules}"
+  egress_rules      = "${local.egress_rules}"
   tags              = "${local.tags}"
   create_eip        = false
 }

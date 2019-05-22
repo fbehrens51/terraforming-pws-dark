@@ -6,7 +6,11 @@ variable "availability_zone" {
 }
 
 variable "ingress_rules" {
-  type = "map"
+  type = "list"
+}
+
+variable "egress_rules" {
+  type = "list"
 }
 
 variable "tags" {
@@ -46,7 +50,9 @@ resource "aws_subnet" "public_subnet" {
 module "bastion_groups" {
   source        = "./security_group"
   ingress_rules = "${var.ingress_rules}"
-  vpc_id        = "${aws_subnet.public_subnet.vpc_id}"
+  egress_rules  = "${var.egress_rules}"
+
+  vpc_id = "${aws_subnet.public_subnet.vpc_id}"
 }
 
 module "eni" {
