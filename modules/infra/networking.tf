@@ -39,3 +39,9 @@ resource "aws_subnet" "public_subnets" {
     ignore_changes = ["tags.%", "tags.kubernetes"]
   }
 }
+
+resource "aws_route_table_association" "public_subnet_route_table_assoc" {
+  count          = "${length(var.availability_zones)}"
+  route_table_id = "${var.public_route_table_id}"
+  subnet_id      = "${element(aws_subnet.public_subnets.*.id,count.index)}"
+}

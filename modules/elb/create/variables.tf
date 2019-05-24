@@ -15,5 +15,3 @@ variable "public_subnet_ids" {
 variable "egress_cidrs" {
   type = "list"
 }
-
-variable "ops_manager_instance_id" {}

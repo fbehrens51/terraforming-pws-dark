@@ -57,7 +57,7 @@ resource "aws_db_instance" "rds" {
   instance_class          = "${var.rds_instance_class}"
   engine                  = "${var.engine}"
   engine_version          = "${var.engine_version}"
-  identifier              = "${var.env_name}"
+  identifier              = "${replace(var.env_name," ","-")}"
   username                = "${var.rds_db_username}"
   password                = "${random_string.rds_password.result}"
   db_subnet_group_name    = "${aws_db_subnet_group.rds_subnet_group.name}"

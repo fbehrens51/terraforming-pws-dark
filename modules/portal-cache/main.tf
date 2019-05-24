@@ -3,7 +3,11 @@ data "aws_vpc" "vpc" {
 }
 
 resource "random_string" "redis_password" {
-  length = 16
+  // added specal=false to prevent special characters from being used in the random string,
+  // causes problems for aws_elasticache_replication_group auth_token which is constrained to alpha-numeric
+  special = false
+
+  length = 24
 }
 
 resource "aws_subnet" "portal_cache_subnets" {
@@ -12,11 +16,11 @@ resource "aws_subnet" "portal_cache_subnets" {
   cidr_block        = "${cidrsubnet(local.portal_cache_cidr, 2, count.index)}"
   availability_zone = "${element(var.availability_zones, count.index)}"
 
-  tags = "${merge(var.tags, map("Name", "${var.env_name}-portal-cache-subnet${count.index}"))}"
+  tags = "${merge(var.tags, map("Name", "${local.subnet_name}${count.index}"))}"
 }
 
 resource "aws_elasticache_subnet_group" "portal_cache_subnet_group" {
-  name        = "${var.env_name}-portal-cache-subnet-group"
+  name        = "${local.subnet_name}"
   description = "Portal Redis cache Subnet Group"
 
   subnet_ids = ["${aws_subnet.portal_cache_subnets.*.id}"]
@@ -45,7 +49,7 @@ resource "aws_security_group" "portal_cache_security_group" {
 }
 
 resource "aws_elasticache_replication_group" "portal_cache" {
-  replication_group_id          = "${var.env_name}-portal-db"
+  replication_group_id          = "${local.group_id}"
   replication_group_description = "Cloud Portal Cache"
   node_type                     = "cache.r5.large"
   number_cache_clusters         = "${length(var.availability_zones)}"
@@ -57,4 +61,11 @@ resource "aws_elasticache_replication_group" "portal_cache" {
   at_rest_encryption_enabled    = true
   transit_encryption_enabled    = true
   auth_token                    = "${random_string.redis_password.result}"
+}
+
+locals {
+  elastic_env_name = "${replace(var.env_name, " ", "-")}"
+  group_name       = "${local.elastic_env_name}-portal-db"
+  group_id         = "${length(local.group_name) > 20 ? substr(local.group_name, 0, 20) : local.group_name}"
+  subnet_name      = "${local.elastic_env_name}-portal-cache-subnet-group"
 }
