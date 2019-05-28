@@ -115,6 +115,16 @@ variable "redis_password" {
   type = "string"
 }
 
+variable "smoke_test_client_cert_file" {
+  type        = "string"
+  description = "Client certificate used by smoke test to login.  The certificate must be present in LDAP"
+}
+
+variable "smoke_test_client_key_file" {
+  type        = "string"
+  description = "Client key used by smoke test to login.  The key must be present in LDAP"
+}
+
 # ========================
 # IAAS Configuration
 # ========================

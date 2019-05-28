@@ -15,6 +15,12 @@ product-properties:
         ${indent(8, ldap_tls_client_cert)}
       private_key_pem: |
         ${indent(8, ldap_tls_client_key)}
+  .properties.smoke_test_tls_client_cert:
+    value:
+      cert_pem: |
+        ${indent(8, smoke_test_client_cert)}
+      private_key_pem: |
+        ${indent(8, smoke_test_client_key)}
   .properties.ldap_basedn:
     value: ${ldap_basedn}
   .properties.ldap_dn:
