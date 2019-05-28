@@ -68,7 +68,7 @@ properties-configuration:
     ntp_servers_string: ${ntp_servers}
     post_deploy_enabled: true
     resurrector_enabled: true
-    retry_bosh_deploys: true
+    retry_bosh_deploys: false
     skip_director_drain: true
   dns_configuration:
     excluded_recursors: []
