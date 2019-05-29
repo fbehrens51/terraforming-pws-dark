@@ -131,7 +131,7 @@ variable "smoke_test_client_key_file" {
 
 variable "iaas_configuration_endpoints_ca_cert" {
   type        = "string"
-  description = "CA Certificate used to sign AWS endpoints"
+  description = "CA Certificate used to sign AWS endpoints, as a PEM encoded string"
 }
 
 variable "iaas_configuration_iam_instance_profile" {

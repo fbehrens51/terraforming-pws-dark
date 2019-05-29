@@ -74,10 +74,13 @@ properties-configuration:
     excluded_recursors: []
     handlers: []
   iaas_configuration:
-    additional_cloud_properties:
+    additional_cloud_properties:${iaas_configuration_endpoints_ca_cert != "" ? <<EOF
+
       connection_options:
         ca_cert: |
           ${indent(10, iaas_configuration_endpoints_ca_cert)}
+EOF 
+: "" }
       ec2_endpoint: ${ec2_endpoint}
       elb_endpoint: ${elb_endpoint}
     encrypted: true

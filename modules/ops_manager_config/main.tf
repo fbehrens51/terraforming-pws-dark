@@ -32,7 +32,7 @@ data "template_file" "director_template" {
     smtp_tls                                    = "${var.smtp_tls}"
     env_name                                    = "${var.env_name}"
     ntp_servers                                 = "${join(",", var.ntp_servers)}"
-    iaas_configuration_endpoints_ca_cert        = "${file(var.iaas_configuration_endpoints_ca_cert)}"
+    iaas_configuration_endpoints_ca_cert        = "${var.iaas_configuration_endpoints_ca_cert}"
     iaas_configuration_iam_instance_profile     = "${var.iaas_configuration_iam_instance_profile}"
     iaas_configuration_ssh_key_pair_name        = "${var.ops_manager_ssh_public_key_name}"
     iaas_configuration_region                   = "${var.region}"
