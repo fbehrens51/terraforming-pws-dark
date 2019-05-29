@@ -52,9 +52,9 @@ network-properties:
   network:
     name: pcf-management-network
   other_availability_zones:
-  - name: us-east-1a
+  - name: ${singleton_availability_zone}
   singleton_availability_zone:
-    name: us-east-1a
+    name: ${singleton_availability_zone}
 resource-config:
   delete-all:
     instances: automatic
