@@ -30,6 +30,7 @@ module "infra" {
   tags        = "${local.actual_tags}"
   use_route53 = "${var.use_route53}"
   vpc_id      = "${var.vpc_id}"
+  public_route_table_id = "${var.public_route_table_id}"
 }
 
 module "ops_manager" {

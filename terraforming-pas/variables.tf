@@ -1,5 +1,9 @@
 variable "env_name" {}
 
+variable "public_route_table_id" {
+  description = "Public Route Table ID"
+}
+
 variable "om_eip" {
   default     = true
   description = "Creates an EIP for OM"
