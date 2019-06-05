@@ -89,7 +89,7 @@ module "rds" {
   tags               = "${var.tags}"
 }
 
-module "elb" {
+module "pas_elb" {
   source            = "../../modules/elb/create"
   env_name          = "${var.env_name}"
   internetless      = "${var.internetless}"
@@ -97,21 +97,36 @@ module "elb" {
   tags              = "${var.tags}"
   vpc_id            = "${local.vpc_id}"
   egress_cidrs      = "${module.pas.pas_subnet_cidrs}"
+  short_name        = "pas"
+}
+
+module "om_elb" {
+  source            = "../../modules/elb/create"
+  env_name          = "${var.env_name}"
+  internetless      = "${var.internetless}"
+  public_subnet_ids = "${module.infra.public_subnet_ids}"
+  tags              = "${var.tags}"
+  vpc_id            = "${local.vpc_id}"
+  egress_cidrs      = "${module.infra.infrastructure_subnet_cidrs}"
+  short_name        = "om"
+}
+
+data "aws_vpc" "cp_vpc" {
+  id = "${local.cp_vpc_id}"
+}
+
+data "aws_vpc" "bastion_vpc" {
+  id = "${local.bastion_vpc_id}"
 }
 
 module "ops_manager" {
-  source = "../../modules/ops_manager"
+  source = "../../modules/ops_manager/infra"
 
-  ami                   = "${var.om_ami_id}"
   bucket_suffix         = "${local.bucket_suffix}"
   dns_suffix            = ""
   env_name              = "${var.env_name}"
-  instance_type         = "m4.large"
   om_eip                = false
-  om_eni                = false
   ops_manager_role_name = "${data.terraform_remote_state.paperwork.director_role_name}"
-  optional_ami          = ""
-  optional_count        = "0"
   private               = true
   subnet_id             = "${module.infra.infrastructure_subnet_ids[0]}"
   tags                  = "${var.tags}"
@@ -119,14 +134,13 @@ module "ops_manager" {
   vm_count              = "1"
   vpc_id                = "${local.vpc_id}"
   zone_id               = "${var.availability_zones[0]}"
+  ingress_rules         = ["${local.ingress_rules}"]
 }
 
 resource "random_integer" "bucket" {
   min = 1
   max = 100000
 }
-
-variable "om_ami_id" {}
 
 variable "remote_state_bucket" {}
 variable "remote_state_region" {}
@@ -151,10 +165,25 @@ variable "elb_endpoint" {}
 variable "region" {}
 
 locals {
+  cp_vpc_id      = "${data.terraform_remote_state.paperwork.cp_vpc_id}"
+  bastion_vpc_id = "${data.terraform_remote_state.paperwork.bastion_vpc_id}"
   vpc_id         = "${data.terraform_remote_state.paperwork.pas_vpc_id}"
   route_table_id = "${data.terraform_remote_state.routes.pas_public_vpc_route_table_id}"
   bucket_suffix  = "${random_integer.bucket.result}"
   om_key_name    = "${var.env_name}-om"
+
+  ingress_rules = [
+    {
+      port        = "22"
+      protocol    = "tcp"
+      cidr_blocks = "${data.aws_vpc.cp_vpc.cidr_block},${data.aws_vpc.bastion_vpc.cidr_block}"
+    },
+    {
+      port        = "443"
+      protocol    = "tcp"
+      cidr_blocks = "0.0.0.0/0"
+    },
+  ]
 }
 
 output "public_subnet_ids" {
@@ -162,7 +191,7 @@ output "public_subnet_ids" {
 }
 
 output "pas_elb_id" {
-  value = "${module.elb.pas_elb_id}"
+  value = "${module.pas_elb.my_elb_id}"
 }
 
 output "rds_address" {
@@ -217,8 +246,28 @@ output "vms_security_group_id" {
   value = "${module.infra.vms_security_group_id}"
 }
 
+output "om_eni_id" {
+  value = "${module.ops_manager.om_eni_id}"
+}
+
+output "om_elb_id" {
+  value = "${module.om_elb.my_elb_id}"
+}
+
+output "om_eip_allocation_id" {
+  value = "${module.ops_manager.om_eip_allocation_id}"
+}
+
 output "om_private_key_pem" {
   value = "${module.om_key_pair.private_key_pem}"
+}
+
+output "om_security_group_id" {
+  value = "${module.ops_manager.security_group_id}"
+}
+
+output "om_ssh_public_key_pair_name" {
+  value = "${module.ops_manager.ssh_public_key_name}"
 }
 
 output "redis_host" {

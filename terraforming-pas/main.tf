@@ -9,6 +9,19 @@ locals {
   }
 
   actual_tags = "${merge(var.tags, local.default_tags)}"
+
+  ingress_rules = [
+    {
+      port        = "22"
+      protocol    = "tcp"
+      cidr_blocks = "0.0.0.0/0"
+    },
+    {
+      port        = "443"
+      protocol    = "tcp"
+      cidr_blocks = "0.0.0.0/0"
+    },
+  ]
 }
 
 resource "random_integer" "bucket" {
@@ -27,23 +40,19 @@ module "infra" {
   hosted_zone = "${var.hosted_zone}"
   dns_suffix  = "${var.dns_suffix}"
 
-  tags        = "${local.actual_tags}"
-  use_route53 = "${var.use_route53}"
-  vpc_id      = "${var.vpc_id}"
+  tags                  = "${local.actual_tags}"
+  use_route53           = "${var.use_route53}"
+  vpc_id                = "${var.vpc_id}"
   public_route_table_id = "${var.public_route_table_id}"
 }
 
 module "ops_manager" {
-  source = "../modules/ops_manager"
+  source = "../modules/ops_manager/infra"
 
-  vm_count       = "${var.ops_manager_vm ? 1 : 0}"
-  optional_count = "${var.optional_ops_manager ? 1 : 0}"
-  subnet_id      = "${local.ops_man_subnet_id}"
-
+  vm_count              = "${var.ops_manager_vm ? 1 : 0}"
+  optional_count        = "${var.optional_ops_manager ? 1 : 0}"
+  subnet_id             = "${local.ops_man_subnet_id}"
   env_name              = "${var.env_name}"
-  ami                   = "${var.ops_manager_ami}"
-  optional_ami          = "${var.optional_ops_manager_ami}"
-  instance_type         = "${var.ops_manager_instance_type}"
   private               = "${var.ops_manager_private}"
   vpc_id                = "${module.infra.vpc_id}"
   dns_suffix            = "${var.dns_suffix}"
@@ -52,9 +61,21 @@ module "ops_manager" {
   ops_manager_role_name = "${var.ops_manager_role_name}"
   om_eni                = "${var.om_eni}"
   om_eip                = "${var.om_eip}"
+  tags                  = "${local.actual_tags}"
+  use_route53           = "${var.use_route53}"
+  ingress_rules         = "${local.ingress_rules}"
+}
 
-  tags        = "${local.actual_tags}"
-  use_route53 = "${var.use_route53}"
+module "ops_manager_instance" {
+  source = "../modules/ops_manager/instance"
+
+  env_name         = "${var.env_name}"
+  ami              = "${var.ops_manager_ami}"
+  instance_type    = "${var.ops_manager_instance_type}"
+  eni_id           = "${module.ops_manager.om_eni_id}"
+  instance_profile = "${var.ops_manager_role_name}"
+  key_pair_name    = "${module.ops_manager.ssh_public_key_name}"
+  tags             = "${local.actual_tags}"
 }
 
 module "pas_certs" {

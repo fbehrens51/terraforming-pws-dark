@@ -42,18 +42,6 @@ output "ops_manager_public_ip" {
   value = "${module.ops_manager.public_ip}"
 }
 
-output "ops_manager_dns" {
-  value = "${module.ops_manager.dns}"
-}
-
-output "optional_ops_manager_dns" {
-  value = "${module.ops_manager.optional_dns}"
-}
-
-output "optional_ops_manager_public_ip" {
-  value = "${module.ops_manager.optional_public_ip}"
-}
-
 output "env_dns_zone_name_servers" {
   value = "${module.infra.name_servers}"
 }
@@ -180,7 +168,7 @@ output "network_name" {
 }
 
 output "ops_manager_instance_id" {
-  value = "${module.ops_manager.ops_manager_instance_id}"
+  value = "${module.ops_manager_instance.instance_id}"
 }
 
 output "ops_manager_ssh_private_key" {
@@ -229,11 +217,11 @@ output "dns_zone_id" {
 }
 
 output "ops_manager_ip" {
-  value = "${module.ops_manager.ops_manager_private_ip}"
+  value = "${module.ops_manager_instance.private_ip}"
 }
 
 output "ops_manager_private_ip" {
-  value = "${module.ops_manager.ops_manager_private_ip}"
+  value = "${module.ops_manager_instance.private_ip}"
 }
 
 /*****************************

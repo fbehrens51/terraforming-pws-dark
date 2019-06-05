@@ -6,6 +6,8 @@ variable "tags" {
 
 variable "env_name" {}
 
+variable "short_name" {}
+
 variable "internetless" {}
 
 variable "public_subnet_ids" {

@@ -1,20 +1,10 @@
-variable "optional_count" {}
-
 variable "om_eip" {}
-
-variable "om_eni" {}
 
 variable "vm_count" {}
 
 variable "private" {}
 
 variable "env_name" {}
-
-variable "ami" {}
-
-variable "optional_ami" {}
-
-variable "instance_type" {}
 
 variable "subnet_id" {}
 
@@ -30,6 +20,10 @@ variable "bucket_suffix" {}
 
 variable "tags" {
   type = "map"
+}
+
+variable "ingress_rules" {
+  type = "list"
 }
 
 variable "ops_manager_role_name" {}
