@@ -50,7 +50,6 @@ module "ops_manager" {
   source = "../modules/ops_manager/infra"
 
   vm_count              = "${var.ops_manager_vm ? 1 : 0}"
-  optional_count        = "${var.optional_ops_manager ? 1 : 0}"
   subnet_id             = "${local.ops_man_subnet_id}"
   env_name              = "${var.env_name}"
   private               = "${var.ops_manager_private}"
@@ -59,7 +58,6 @@ module "ops_manager" {
   zone_id               = "${module.infra.zone_id}"
   bucket_suffix         = "${local.bucket_suffix}"
   ops_manager_role_name = "${var.ops_manager_role_name}"
-  om_eni                = "${var.om_eni}"
   om_eip                = "${var.om_eip}"
   tags                  = "${local.actual_tags}"
   use_route53           = "${var.use_route53}"
