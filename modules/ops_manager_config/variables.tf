@@ -420,3 +420,7 @@ variable "vms_security_group_id" {}
 variable "ops_manager_ssh_public_key_name" {}
 
 variable "ops_manager_ssh_private_key" {}
+
+variable "pivnet_api_token" {}
+
+variable "pas_tile_s3_bucket" {}

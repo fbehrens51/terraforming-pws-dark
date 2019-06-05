@@ -1,5 +1,8 @@
 locals {
-  pas_subnet_cidr = "${var.pas_subnet_cidrs[0]}"
+  pas_subnet_cidr     = "${var.pas_subnet_cidrs[0]}"
+  pas_file_glob       = "srt*"
+  pas_product_slug    = "elastic-runtime"
+  pas_product_version = "2.4.8"
 }
 
 data "aws_vpc" "vpc" {
@@ -158,5 +161,18 @@ data "template_file" "drop_db" {
     rds_address  = "${var.rds_address}"
     rds_password = "${var.rds_password}"
     rds_username = "${var.rds_username}"
+  }
+}
+
+data "template_file" "download_pas_config" {
+  template = "${file("${path.module}/download_product_config.tpl")}"
+
+  vars = {
+    pivnet_file_glob    = "${local.pas_file_glob}"
+    pivnet_product_slug = "${local.pas_product_slug}"
+    product_version     = "${local.pas_product_version}"
+
+    pivnet_api_token = "${var.pivnet_api_token}"
+    s3_bucket        = "${var.pas_tile_s3_bucket}"
   }
 }

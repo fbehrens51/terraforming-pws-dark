@@ -52,6 +52,8 @@ variable "internetless" {}
 variable "s3_endpoint" {}
 variable "ec2_endpoint" {}
 variable "elb_endpoint" {}
+variable "pivnet_api_token" {}
+variable "pas_tile_s3_bucket" {}
 
 variable "ntp_servers" {
   type = "list"

@@ -17,3 +17,7 @@ output "director_template" {
 output "portal_template" {
   value = "${data.template_file.portal_template.rendered}"
 }
+
+output "download_pas_config" {
+  value = "${data.template_file.download_pas_config.rendered}"
+}
