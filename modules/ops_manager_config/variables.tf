@@ -423,4 +423,16 @@ variable "ops_manager_ssh_private_key" {}
 
 variable "pivnet_api_token" {}
 
-variable "pas_tile_s3_bucket" {}
+variable "product_blobs_s3_bucket" {}
+
+variable "product_blobs_s3_region" {}
+
+variable "product_blobs_s3_endpoint" {}
+
+variable "portal_product_version" {}
+
+variable "s3_access_key_id" {}
+
+variable "s3_secret_access_key" {}
+
+variable "s3_auth_type" {}

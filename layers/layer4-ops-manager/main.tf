@@ -81,3 +81,7 @@ resource "aws_eip_association" "om_eip_assoc" {
   instance_id   = "${module.ops_manager.instance_id}"
   allocation_id = "${local.om_eip_allocation_id}"
 }
+
+output "ops_manager_private_ip" {
+  value = "${module.ops_manager.private_ip}"
+}

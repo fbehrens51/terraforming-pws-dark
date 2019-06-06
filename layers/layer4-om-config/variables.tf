@@ -53,7 +53,22 @@ variable "s3_endpoint" {}
 variable "ec2_endpoint" {}
 variable "elb_endpoint" {}
 variable "pivnet_api_token" {}
-variable "pas_tile_s3_bucket" {}
+variable "product_blobs_s3_bucket" {}
+variable "product_blobs_s3_endpoint" {}
+variable "product_blobs_s3_region" {}
+variable "portal_product_version" {}
+
+variable "s3_access_key_id" {
+  default = ""
+}
+
+variable "s3_secret_access_key" {
+  default = ""
+}
+
+variable "s3_auth_type" {
+  default = "iam"
+}
 
 variable "ntp_servers" {
   type = "list"

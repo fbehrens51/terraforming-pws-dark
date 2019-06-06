@@ -21,3 +21,7 @@ output "portal_template" {
 output "download_pas_config" {
   value = "${module.om_config.download_pas_config}"
 }
+
+output "download_portal_config" {
+  value = "${module.om_config.download_portal_config}"
+}

@@ -21,3 +21,7 @@ output "portal_template" {
 output "download_pas_config" {
   value = "${data.template_file.download_pas_config.rendered}"
 }
+
+output "download_portal_config" {
+  value = "${data.template_file.download_portal_config.rendered}"
+}

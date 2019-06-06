@@ -147,8 +147,14 @@ module "om_config" {
   redis_ca_cert_file          = "${var.redis_ca_cert_file}"
   redis_password              = "${data.terraform_remote_state.pas.redis_password}"
 
-  pivnet_api_token   = "${var.pivnet_api_token}"
-  pas_tile_s3_bucket = "${var.pas_tile_s3_bucket}"
+  pivnet_api_token          = "${var.pivnet_api_token}"
+  product_blobs_s3_bucket   = "${var.product_blobs_s3_bucket}"
+  product_blobs_s3_endpoint = "${var.product_blobs_s3_endpoint}"
+  product_blobs_s3_region   = "${var.product_blobs_s3_region}"
+  portal_product_version    = "${var.portal_product_version}"
+  s3_access_key_id          = "${var.s3_access_key_id}"
+  s3_secret_access_key      = "${var.s3_secret_access_key}"
+  s3_auth_type              = "${var.s3_auth_type}"
 }
 
 locals {
