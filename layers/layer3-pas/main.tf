@@ -128,7 +128,7 @@ module "ops_manager" {
   env_name              = "${var.env_name}"
   om_eip                = false
   ops_manager_role_name = "${data.terraform_remote_state.paperwork.director_role_name}"
-  private               = true
+  private               = false
   subnet_id             = "${module.infra.infrastructure_subnet_ids[0]}"
   tags                  = "${var.tags}"
   use_route53           = false
