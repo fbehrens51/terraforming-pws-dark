@@ -37,14 +37,15 @@ data "terraform_remote_state" "routes" {
 module "infra" {
   source = "../../modules/infra"
 
-  env_name              = "${var.env_name}"
-  availability_zones    = "${var.availability_zones}"
-  internetless          = "${var.internetless}"
-  dns_suffix            = ""
-  tags                  = "${var.tags}"
-  use_route53           = false
-  vpc_id                = "${local.vpc_id}"
-  public_route_table_id = "${local.route_table_id}"
+  env_name               = "${var.env_name}"
+  availability_zones     = "${var.availability_zones}"
+  internetless           = "${var.internetless}"
+  dns_suffix             = ""
+  tags                   = "${var.tags}"
+  use_route53            = false
+  vpc_id                 = "${local.vpc_id}"
+  public_route_table_id  = "${local.route_table_id}"
+  private_route_table_id = "${data.terraform_remote_state.routes.pas_private_vpc_route_table_id}"
 }
 
 module "pas" {
@@ -53,7 +54,7 @@ module "pas" {
   dns_suffix         = ""
   env_name           = "${var.env_name}"
   public_subnet_ids  = "${module.infra.public_subnet_ids}"
-  route_table_ids    = "${module.infra.deployment_route_table_ids}"
+  route_table_id     = "${data.terraform_remote_state.routes.pas_private_vpc_route_table_id}"
   tags               = "${var.tags}"
   vpc_id             = "${local.vpc_id}"
   zone_id            = "${module.infra.zone_id}"

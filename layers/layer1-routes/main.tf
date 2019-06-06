@@ -31,6 +31,21 @@ module "vpc_route_tables" {
   env_name       = "${var.env_name}"
 }
 
+data "aws_vpc" "bastion_vpc" {
+  id = "${data.terraform_remote_state.paperwork.bastion_vpc_id}"
+}
+
+data "aws_vpc_peering_connection" "pas_bastion_peering_connection" {
+  vpc_id      = "${data.terraform_remote_state.paperwork.pas_vpc_id}"
+  peer_vpc_id = "${data.terraform_remote_state.paperwork.bastion_vpc_id}"
+}
+
+resource "aws_route" "pas_private_to_bastion" {
+  route_table_id            = "${module.vpc_route_tables.pas_private_vpc_route_table_id}"
+  destination_cidr_block    = "${data.aws_vpc.bastion_vpc.cidr_block}"
+  vpc_peering_connection_id = "${data.aws_vpc_peering_connection.pas_bastion_peering_connection.id}"
+}
+
 // We can't know in general which vpc is the accepter vs the requester,
 // so these modules have to be copied in each environment
 module "route_bastion_pas" {

@@ -26,7 +26,7 @@ data "template_file" "pas_subnet_gateways" {
 resource "aws_route_table_association" "route_pas_subnets" {
   count          = "${length(var.availability_zones)}"
   subnet_id      = "${element(aws_subnet.pas_subnets.*.id, count.index)}"
-  route_table_id = "${element(var.route_table_ids, count.index)}"
+  route_table_id = "${var.route_table_id}"
 }
 
 resource "aws_subnet" "services_subnets" {
@@ -51,5 +51,5 @@ data "template_file" "services_subnet_gateways" {
 resource "aws_route_table_association" "route_services_subnets" {
   count          = "${length(var.availability_zones)}"
   subnet_id      = "${element(aws_subnet.services_subnets.*.id, count.index)}"
-  route_table_id = "${element(var.route_table_ids, count.index)}"
+  route_table_id = "${var.route_table_id}"
 }

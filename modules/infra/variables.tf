@@ -13,6 +13,8 @@ variable "dns_suffix" {
 
 variable "public_route_table_id" {}
 
+variable "private_route_table_id" {}
+
 variable "use_route53" {}
 
 variable "availability_zones" {

@@ -1,8 +1,3 @@
-resource "aws_route_table" "deployment" {
-  count  = "${length(var.availability_zones)}"
-  vpc_id = "${data.aws_vpc.vpc.id}"
-}
-
 resource "aws_security_group" "nat_security_group" {
   count = "${var.internetless ? 0 : 1}"
 
@@ -44,9 +39,9 @@ resource "aws_eip" "nat_eip" {
 }
 
 resource "aws_route" "toggle_internet" {
-  count = "${var.internetless ? 0 : length(var.availability_zones)}"
+  count = "${var.internetless ? 0 : 1}"
 
-  route_table_id         = "${element(aws_route_table.deployment.*.id, count.index)}"
+  route_table_id         = "${var.private_route_table_id}"
   nat_gateway_id         = "${aws_nat_gateway.nat.id}"
   destination_cidr_block = "0.0.0.0/0"
 }

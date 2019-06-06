@@ -20,8 +20,8 @@ data "template_file" "infrastructure_subnet_gateways" {
 
 resource "aws_route_table_association" "route_infrastructure_subnets" {
   count          = "${length(var.availability_zones)}"
+  route_table_id = "${var.private_route_table_id}"
   subnet_id      = "${element(aws_subnet.infrastructure_subnets.*.id, count.index)}"
-  route_table_id = "${element(aws_route_table.deployment.*.id, count.index)}"
 }
 
 resource "aws_subnet" "public_subnets" {
