@@ -267,7 +267,7 @@ output "om_security_group_id" {
 }
 
 output "om_ssh_public_key_pair_name" {
-  value = "${module.ops_manager.ssh_public_key_name}"
+  value = "${local.om_key_name}"
 }
 
 output "redis_host" {
