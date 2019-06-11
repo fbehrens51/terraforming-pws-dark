@@ -1,0 +1,9 @@
+dn: cn=pcfExtendedPerson,cn=schema,cn=config
+objectClass: olcSchemaConfig
+cn: pcfExtendedPerson
+olcAttributeTypes: {0}( 1.3.6.1.4.1.4203.666.1.90 NAME 'role' EQUALITY caseI
+ gnoreMatch SUBSTR caseIgnoreSubstringsMatch SYNTAX 1.3.6.1.4.1.1466.115.121
+ .1.15 )
+olcObjectClasses: {0}( 1.3.6.1.4.1.4203.666.1.100 NAME 'pcfExtendedPerson' DESC
+  'Role(s) for Person in Organization' SUP inetOrgPerson STRUCTURAL MUST rol
+ e )

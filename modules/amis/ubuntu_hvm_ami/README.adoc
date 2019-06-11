@@ -1,0 +1,27 @@
+==== amis/amazon_hvm_ami
+looks up the latest Amazon Linux AMI w/HVM within the given region
+
+[cols="1,1,2", options="header"]
+.Variables
+|===
+|Name
+|type
+|Description
+
+|region
+|string
+|region to lookup the Amazon AMI in
+|===
+
+[cols="1,1,2", options="header"]
+.Outputs
+|===
+|Name
+|type
+|Description
+
+|ami_id
+|string
+|ID of Amazon AMI
+|===
+
