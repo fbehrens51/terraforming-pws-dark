@@ -14,10 +14,6 @@ variable "tls_server_key" {
   type = "string"
 }
 
-variable "tls_server_ca_cert" {
-  type = "string"
-}
-
 variable "ssh_private_key_pem" {
   type = "string"
 }

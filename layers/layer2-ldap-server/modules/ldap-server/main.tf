@@ -25,7 +25,7 @@ resource "null_resource" "ldap_configuration" {
     config      = "${data.template_file.configure.rendered}"
     cert        = "${var.tls_server_cert}"
     key         = "${var.tls_server_key}"
-    ca_cert     = "${var.tls_server_ca_cert}"
+    ca_cert     = "${tls_self_signed_cert.user_pki_cert.cert_pem}"
   }
 
   connection {
@@ -47,17 +47,17 @@ resource "null_resource" "ldap_configuration" {
   }
 
   provisioner "file" {
-    source      = "${var.tls_server_cert}"
+    content     = "${var.tls_server_cert}"
     destination = "/tmp/conf/certs/ldap_crt.pem"
   }
 
   provisioner "file" {
-    source      = "${var.tls_server_key}"
+    content     = "${var.tls_server_key}"
     destination = "/tmp/conf/certs/ldap_key.pem"
   }
 
   provisioner "file" {
-    source      = "${var.tls_server_ca_cert}"
+    content     = "${tls_self_signed_cert.user_pki_cert.cert_pem}"
     destination = "/tmp/conf/certs/ldap_ca.pem"
   }
 

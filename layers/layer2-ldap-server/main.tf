@@ -79,15 +79,32 @@ module "ldap_host" {
 module "ldap_configure" {
   source = "./modules/ldap-server"
 
-  tls_server_cert     = "${var.tls_server_cert}"
-  tls_server_key      = "${var.tls_server_key}"
-  tls_server_ca_cert  = "${var.tls_server_ca_cert}"
+  tls_server_cert     = "${data.terraform_remote_state.paperwork.ldap_server_cert}"
+  tls_server_key      = "${data.terraform_remote_state.paperwork.ldap_server_key}"
   ssh_private_key_pem = "${module.ldap_host_key_pair.private_key_pem}"
   ssh_host            = "${module.bootstrap_ldap.public_ips[0]}"
   instance_id         = "${module.ldap_host.instance_id}"
   env_name            = "${local.env_name}"
   users               = "${var.users}"
   domain              = "${var.domain}"
+}
+
+module "ldap_elb" {
+  source = "../../modules/elb/create"
+
+  env_name          = "${local.env_name}"
+  internetless      = false
+  public_subnet_ids = ["${module.bootstrap_ldap.public_subnet_id}"]
+  tags              = "${var.tags}"
+  vpc_id            = "${data.terraform_remote_state.paperwork.es_vpc_id}"
+  egress_cidrs      = ["${module.bootstrap_ldap.private_ip}/32"]
+  short_name        = "ldap"
+  port              = 636
+}
+
+resource "aws_elb_attachment" "ldap_attach" {
+  elb      = "${module.ldap_elb.my_elb_id}"
+  instance = "${module.ldap_host.instance_id}"
 }
 
 output "password" {
@@ -149,15 +166,3 @@ variable "tags" {
 
 variable "ldap_host_key_pair_name" {}
 variable "region" {}
-
-variable "tls_server_cert" {
-  type = "string"
-}
-
-variable "tls_server_key" {
-  type = "string"
-}
-
-variable "tls_server_ca_cert" {
-  type = "string"
-}

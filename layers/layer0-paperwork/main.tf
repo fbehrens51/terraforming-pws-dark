@@ -17,6 +17,7 @@ module "paperwork" {
   key_manager_role_name = "${var.key_manager_role_name}"
 
   env_name = "${var.env_name}"
+  root_domain = "${var.root_domain}"
 }
 
 output "pas_vpc_id" {
@@ -39,6 +40,20 @@ output "director_role_name" {
   value = "${var.director_role_name}"
 }
 
+output "root_ca_cert" {
+  value = "${module.paperwork.root_ca_cert}"
+}
+
+output "ldap_server_cert" {
+  value = "${module.paperwork.ldap_server_cert}"
+  sensitive = true
+}
+
+output "ldap_server_key" {
+  value = "${module.paperwork.ldap_server_key}"
+  sensitive = true
+}
+
 output "bucket_role_name" {
   value = "${var.bucket_role_name}"
 }
@@ -56,6 +71,10 @@ variable "key_manager_role_name" {
 }
 
 variable "env_name" {
+  type = "string"
+}
+
+variable "root_domain" {
   type = "string"
 }
 

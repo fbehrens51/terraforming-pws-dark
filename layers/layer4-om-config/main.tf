@@ -143,7 +143,7 @@ module "om_config" {
   ops_manager_ssh_private_key          = "${data.terraform_remote_state.pas.om_private_key_pem}"
 
   jwt_expiration              = "${var.jwt_expiration}"
-  ldap_tls_ca_cert            = "${data.terraform_remote_state.ldap.ca_cert}"
+  ldap_tls_ca_cert            = "${data.terraform_remote_state.paperwork.root_ca_cert}"
   ldap_tls_client_cert        = "${data.terraform_remote_state.ldap.client_cert}"
   ldap_tls_client_key         = "${data.terraform_remote_state.ldap.client_key}"
   smoke_test_client_cert_file = "${var.smoke_test_client_cert_file}"
