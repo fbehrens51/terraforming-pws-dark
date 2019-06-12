@@ -58,15 +58,15 @@ variable "jwt_expiration" {
   description = "Expiration time of the JWT tokens issued by Portal (in seconds)"
 }
 
-variable "ldap_tls_ca_cert_file" {
+variable "ldap_tls_ca_cert" {
   type = "string"
 }
 
-variable "ldap_tls_client_cert_file" {
+variable "ldap_tls_client_cert" {
   type = "string"
 }
 
-variable "ldap_tls_client_key_file" {
+variable "ldap_tls_client_key" {
   type = "string"
 }
 

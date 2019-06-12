@@ -22,6 +22,18 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
+data "terraform_remote_state" "ldap" {
+  backend = "s3"
+
+  config {
+    bucket     = "${var.remote_state_bucket}"
+    key        = "layer2-ldap-server"
+    region     = "${var.remote_state_region}"
+    encrypt    = true
+    kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
+  }
+}
+
 data "terraform_remote_state" "pas" {
   backend = "s3"
 
@@ -131,17 +143,17 @@ module "om_config" {
   ops_manager_ssh_private_key          = "${data.terraform_remote_state.pas.om_private_key_pem}"
 
   jwt_expiration              = "${var.jwt_expiration}"
-  ldap_tls_ca_cert_file       = "${var.ldap_tls_ca_cert_file}"
-  ldap_tls_client_cert_file   = "${var.ldap_tls_client_cert_file}"
-  ldap_tls_client_key_file    = "${var.ldap_tls_client_key_file}"
+  ldap_tls_ca_cert            = "${data.terraform_remote_state.ldap.ca_cert}"
+  ldap_tls_client_cert        = "${data.terraform_remote_state.ldap.client_cert}"
+  ldap_tls_client_key         = "${data.terraform_remote_state.ldap.client_key}"
   smoke_test_client_cert_file = "${var.smoke_test_client_cert_file}"
   smoke_test_client_key_file  = "${var.smoke_test_client_key_file}"
-  ldap_basedn                 = "${var.ldap_basedn}"
-  ldap_dn                     = "${var.ldap_dn}"
-  ldap_password               = "${var.ldap_password}"
-  ldap_host                   = "${var.ldap_host}"
-  ldap_port                   = "${var.ldap_port}"
-  ldap_role_attr              = "${var.ldap_role_attr}"
+  ldap_basedn                 = "${data.terraform_remote_state.ldap.basedn}"
+  ldap_dn                     = "${data.terraform_remote_state.ldap.dn}"
+  ldap_password               = "${data.terraform_remote_state.ldap.password}"
+  ldap_host                   = "${data.terraform_remote_state.ldap.host}"
+  ldap_port                   = "${data.terraform_remote_state.ldap.port}"
+  ldap_role_attr              = "${data.terraform_remote_state.ldap.role_attr}"
   redis_host                  = "${data.terraform_remote_state.pas.redis_host}"
   redis_port                  = "${data.terraform_remote_state.pas.redis_port}"
   redis_ca_cert_file          = "${var.redis_ca_cert_file}"

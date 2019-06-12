@@ -128,9 +128,9 @@ data "template_file" "portal_template" {
   vars = {
     singleton_availability_zone = "${var.singleton_availability_zone}"
     jwt_expiration              = "${var.jwt_expiration}"
-    ldap_tls_ca_cert            = "${file(var.ldap_tls_ca_cert_file)}"
-    ldap_tls_client_cert        = "${file(var.ldap_tls_client_cert_file)}"
-    ldap_tls_client_key         = "${file(var.ldap_tls_client_key_file)}"
+    ldap_tls_ca_cert            = "${var.ldap_tls_ca_cert}"
+    ldap_tls_client_cert        = "${var.ldap_tls_client_cert}"
+    ldap_tls_client_key         = "${var.ldap_tls_client_key}"
     smoke_test_client_cert      = "${file(var.smoke_test_client_cert_file)}"
     smoke_test_client_key       = "${file(var.smoke_test_client_key_file)}"
     ldap_basedn                 = "${var.ldap_basedn}"

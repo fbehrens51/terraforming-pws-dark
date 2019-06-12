@@ -10,6 +10,18 @@ module "providers" {
   source = "../../modules/dark_providers"
 }
 
+data "terraform_remote_state" "paperwork" {
+  backend = "s3"
+
+  config {
+    bucket     = "${var.remote_state_bucket}"
+    key        = "layer0-paperwork"
+    region     = "${var.remote_state_region}"
+    encrypt    = true
+    kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
+  }
+}
+
 data "terraform_remote_state" "routes" {
   backend = "s3"
 
@@ -76,6 +88,42 @@ module "ldap_configure" {
   env_name            = "${local.env_name}"
   users               = "${var.users}"
   domain              = "${var.domain}"
+}
+
+output "password" {
+  value = "${module.ldap_configure.password}"
+}
+
+output "ca_cert" {
+  value = "${module.ldap_configure.ca_cert}"
+}
+
+output "client_cert" {
+  value = "${module.ldap_configure.client_cert}"
+}
+
+output "client_key" {
+  value = "${module.ldap_configure.client_key}"
+}
+
+output "dn" {
+  value = "${module.ldap_configure.dn}"
+}
+
+output "basedn" {
+  value = "${module.ldap_configure.basedn}"
+}
+
+output "role_attr" {
+  value = "${module.ldap_configure.role_attr}"
+}
+
+output "host" {
+  value = "${module.bootstrap_ldap.public_ips[0]}"
+}
+
+output "port" {
+  value = "636"
 }
 
 variable "domain" {}
