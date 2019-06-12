@@ -8,9 +8,9 @@ resource "aws_elb" "elb" {
   idle_timeout    = 600
 
   listener {
-    instance_port     = 443
+    instance_port     = "${var.port}"
     instance_protocol = "TCP"
-    lb_port           = 443
+    lb_port           = "${var.port}"
     lb_protocol       = "TCP"
   }
 
@@ -18,11 +18,15 @@ resource "aws_elb" "elb" {
     healthy_threshold   = 2
     unhealthy_threshold = 2
     timeout             = 2
-    target              = "TCP:443"
+    target              = "TCP:${var.port}"
     interval            = 5
   }
 
   tags = "${var.elb_tag}"
+}
+
+variable "port" {
+  type = "string"
 }
 
 variable "internetless" {}

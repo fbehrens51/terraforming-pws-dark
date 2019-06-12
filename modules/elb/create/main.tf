@@ -9,4 +9,5 @@ module "my_elb" {
   elb_sg_id         = "${aws_security_group.my_elb_sg.id}"
   internetless      = "${var.internetless}"
   public_subnet_ids = "${var.public_subnet_ids}"
+  port = "${var.port}"
 }

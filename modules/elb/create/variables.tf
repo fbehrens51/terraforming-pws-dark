@@ -17,3 +17,7 @@ variable "public_subnet_ids" {
 variable "egress_cidrs" {
   type = "list"
 }
+
+variable "port" {
+  default = 443
+}
