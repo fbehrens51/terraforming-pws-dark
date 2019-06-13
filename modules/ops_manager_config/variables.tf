@@ -115,12 +115,12 @@ variable "redis_password" {
   type = "string"
 }
 
-variable "smoke_test_client_cert_file" {
+variable "smoke_test_client_cert" {
   type        = "string"
   description = "Client certificate used by smoke test to login.  The certificate must be present in LDAP"
 }
 
-variable "smoke_test_client_key_file" {
+variable "smoke_test_client_key" {
   type        = "string"
   description = "Client key used by smoke test to login.  The key must be present in LDAP"
 }
@@ -219,7 +219,7 @@ variable "router_private_key_pem_file" {
   description = "Server key used by the GoRouter. Must be valid for *.<SYSTEM_DOMAIN> and *.<APPS_DOMAIN>"
 }
 
-variable "router_trusted_ca_certificates_file" {
+variable "router_trusted_ca_certificates" {
   type        = "string"
   description = "Concatenated CA certificates trusted by GoRouter. This certificate controls which client certs will be allowed to attempt authentication via Portal"
 }

@@ -25,3 +25,24 @@ output "ldap_server_cert" {
 output "ldap_server_key" {
   value = "${module.ldap_server_cert.private_key_pem}"
 }
+
+output "ldap_client_cert" {
+  value = "${module.ldap_client_cert.cert_pem}"
+}
+
+output "ldap_client_key" {
+  value = "${module.ldap_client_cert.private_key_pem}"
+}
+
+output "user_certs" {
+  value = "${zipmap(data.template_file.usernames.*.rendered, tls_locally_signed_cert.user_pki_cert.*.cert_pem)}"
+}
+
+output "user_private_keys" {
+  value = "${zipmap(data.template_file.usernames.*.rendered, tls_private_key.user_pki_cert_private_key.*.private_key_pem)}"
+}
+
+data "template_file" "usernames" {
+  count    = "${length(var.users)}"
+  template = "${lookup(var.users[count.index], "username")}"
+}

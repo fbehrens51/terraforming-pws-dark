@@ -1,3 +1,3 @@
-dn: ou=users,dc=pcfeagle,dc=cf-app,dc=com
+dn: ${basedn}
 objectClass: organizationalUnit
 ou: People

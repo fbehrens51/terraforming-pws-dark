@@ -1,3 +1,7 @@
+variable "users" {
+  type = "list"
+}
+
 resource "tls_private_key" "user_pki_cert_private_key" {
   count     = "${length(var.users)}"
   algorithm = "RSA"
@@ -19,8 +23,8 @@ resource "tls_locally_signed_cert" "user_pki_cert" {
   count              = "${length(var.users)}"
   cert_request_pem   = "${tls_cert_request.user_pki_cert_request.*.cert_request_pem[ count.index ]}"
   ca_key_algorithm   = "RSA"
-  ca_private_key_pem = "${tls_private_key.user_pki_root_private_key.private_key_pem}"
-  ca_cert_pem        = "${tls_self_signed_cert.user_pki_cert.cert_pem}"
+  ca_private_key_pem = "${module.ca_cert.private_key_pem}"
+  ca_cert_pem        = "${module.ca_cert.cert_pem}"
 
   allowed_uses = [
     "digital_signature",

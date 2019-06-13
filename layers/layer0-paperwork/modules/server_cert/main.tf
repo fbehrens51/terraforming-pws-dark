@@ -4,7 +4,7 @@ variable "common_name" {}
 variable "env_name" {}
 
 variable "domains" {
-  type = "list"
+  type    = "list"
   default = []
 }
 

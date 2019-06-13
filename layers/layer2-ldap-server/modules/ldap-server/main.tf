@@ -1,6 +1,6 @@
 locals {
-  basedn = "ou=users,dc=${join(",dc=", split(".", var.domain))}"
-  admin  = "cn=admin,dc=${join(",dc=", split(".", var.domain))}"
+  basedn = "ou=users,dc=${join(",dc=", split(".", var.root_domain))}"
+  admin  = "cn=admin,dc=${join(",dc=", split(".", var.root_domain))}"
 }
 
 resource "random_string" "ldap_password" {
@@ -12,10 +12,18 @@ data "template_file" "configure" {
   template = "${file("${path.module}/configure.sh.tpl")}"
 
   vars = {
-    domain   = "${var.domain}"
+    domain   = "${var.root_domain}"
     basedn   = "${local.basedn}"
     admin    = "${local.admin}"
     password = "${random_string.ldap_password.result}"
+  }
+}
+
+data "template_file" "users_schema" {
+  template = "${file("${path.module}/users.ldif.tpl")}"
+
+  vars = {
+    basedn = "${local.basedn}"
   }
 }
 
@@ -25,7 +33,7 @@ resource "null_resource" "ldap_configuration" {
     config      = "${data.template_file.configure.rendered}"
     cert        = "${var.tls_server_cert}"
     key         = "${var.tls_server_key}"
-    ca_cert     = "${tls_self_signed_cert.user_pki_cert.cert_pem}"
+    ca_cert     = "${var.tls_server_ca_cert}"
   }
 
   connection {
@@ -38,6 +46,11 @@ resource "null_resource" "ldap_configuration" {
   provisioner "file" {
     source      = "${path.module}/conf"
     destination = "/tmp"
+  }
+
+  provisioner "file" {
+    content     = "${data.template_file.users_schema.rendered}"
+    destination = "/tmp/conf/users.ldif"
   }
 
   provisioner "remote-exec" {
@@ -57,7 +70,7 @@ resource "null_resource" "ldap_configuration" {
   }
 
   provisioner "file" {
-    content     = "${tls_self_signed_cert.user_pki_cert.cert_pem}"
+    content     = "${var.tls_server_ca_cert}"
     destination = "/tmp/conf/certs/ldap_ca.pem"
   }
 

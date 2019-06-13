@@ -2,7 +2,7 @@ variable "users" {
   type = "list"
 }
 
-variable "domain" {
+variable "root_domain" {
   type = "string"
 }
 
@@ -11,6 +11,10 @@ variable "tls_server_cert" {
 }
 
 variable "tls_server_key" {
+  type = "string"
+}
+
+variable "tls_server_ca_cert" {
   type = "string"
 }
 
@@ -28,4 +32,8 @@ variable "instance_id" {
 
 variable "env_name" {
   type = "string"
+}
+
+variable "user_certs" {
+  type = "map"
 }

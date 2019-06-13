@@ -36,7 +36,7 @@ resource "null_resource" "user_configuration" {
   triggers = {
     server_config = "${data.template_file.configure.rendered}"
     ldif          = "${data.template_file.ldif_file.*.rendered[ count.index ]}"
-    cert          = "${tls_locally_signed_cert.user_pki_cert.*.cert_pem[ count.index ]}"
+    cert          = "${lookup(var.user_certs, lookup(var.users[count.index], "username"))}"
   }
 
   connection {
@@ -54,7 +54,7 @@ resource "null_resource" "user_configuration" {
   }
 
   provisioner "file" {
-    content     = "${tls_locally_signed_cert.user_pki_cert.*.cert_pem[ count.index ]}"
+    content     = "${lookup(var.user_certs, lookup(var.users[count.index], "username"))}}"
     destination = "/tmp/conf/users/${lookup(var.users[count.index], "username")}.pem"
   }
 

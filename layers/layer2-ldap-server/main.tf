@@ -81,12 +81,14 @@ module "ldap_configure" {
 
   tls_server_cert     = "${data.terraform_remote_state.paperwork.ldap_server_cert}"
   tls_server_key      = "${data.terraform_remote_state.paperwork.ldap_server_key}"
+  tls_server_ca_cert  = "${data.terraform_remote_state.paperwork.root_ca_cert}"
+  user_certs          = "${data.terraform_remote_state.paperwork.user_certs}"
   ssh_private_key_pem = "${module.ldap_host_key_pair.private_key_pem}"
   ssh_host            = "${module.bootstrap_ldap.public_ips[0]}"
   instance_id         = "${module.ldap_host.instance_id}"
   env_name            = "${local.env_name}"
   users               = "${var.users}"
-  domain              = "${var.domain}"
+  root_domain         = "${var.root_domain}"
 }
 
 module "ldap_elb" {
@@ -111,18 +113,6 @@ output "password" {
   value = "${module.ldap_configure.password}"
 }
 
-output "ca_cert" {
-  value = "${module.ldap_configure.ca_cert}"
-}
-
-output "client_cert" {
-  value = "${module.ldap_configure.client_cert}"
-}
-
-output "client_key" {
-  value = "${module.ldap_configure.client_key}"
-}
-
 output "dn" {
   value = "${module.ldap_configure.dn}"
 }
@@ -143,7 +133,7 @@ output "port" {
   value = "636"
 }
 
-variable "domain" {}
+variable "root_domain" {}
 variable "remote_state_region" {}
 variable "remote_state_bucket" {}
 variable "singleton_availability_zone" {}
