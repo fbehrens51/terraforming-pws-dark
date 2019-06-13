@@ -1,5 +1,5 @@
-==== amis/amazon_hvm_ami
-looks up the latest Amazon Linux AMI w/HVM within the given region
+==== amis/ubuntu_hvm_ami
+looks up the latest Ubuntu AMI w/HVM within the given region
 
 [cols="1,1,2", options="header"]
 .Variables
@@ -10,7 +10,7 @@ looks up the latest Amazon Linux AMI w/HVM within the given region
 
 |region
 |string
-|region to lookup the Amazon AMI in
+|region to lookup the Ubuntu AMI in
 |===
 
 [cols="1,1,2", options="header"]
@@ -22,6 +22,6 @@ looks up the latest Amazon Linux AMI w/HVM within the given region
 
 |ami_id
 |string
-|ID of Amazon AMI
+|ID of Ubuntu AMI
 |===
 
