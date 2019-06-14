@@ -24,6 +24,7 @@ output "ldap_server_cert" {
 
 output "ldap_server_key" {
   value = "${module.ldap_server_cert.private_key_pem}"
+  sensitive = true
 }
 
 output "ldap_client_cert" {
@@ -32,6 +33,7 @@ output "ldap_client_cert" {
 
 output "ldap_client_key" {
   value = "${module.ldap_client_cert.private_key_pem}"
+  sensitive = true
 }
 
 output "user_certs" {
@@ -40,6 +42,7 @@ output "user_certs" {
 
 output "user_private_keys" {
   value = "${zipmap(data.template_file.usernames.*.rendered, tls_private_key.user_pki_cert_private_key.*.private_key_pem)}"
+  sensitive = true
 }
 
 data "template_file" "usernames" {

@@ -28,7 +28,6 @@ resource "tls_locally_signed_cert" "user_pki_cert" {
 
   allowed_uses = [
     "digital_signature",
-    "server_auth",
     "client_auth",
   ]
 

@@ -111,6 +111,7 @@ resource "aws_elb_attachment" "ldap_attach" {
 
 output "password" {
   value = "${module.ldap_configure.password}"
+  sensitive = true
 }
 
 output "dn" {
