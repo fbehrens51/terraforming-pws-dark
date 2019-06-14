@@ -17,7 +17,7 @@ module "ldap_server_cert" {
 }
 
 module "ldap_client_cert" {
-  source = "../server_cert"
+  source = "../client_cert"
 
   env_name           = "${var.env_name}"
   ca_cert_pem        = "${module.ca_cert.cert_pem}"
