@@ -70,7 +70,7 @@ module "ldap_host_key_pair" {
 module "ldap_host" {
   source        = "../../modules/launch"
   ami_id        = "${module.ubuntu_ami.id}"
-  eni_id        = "${module.bootstrap_ldap.eni_id}"
+  eni_ids        = ["${module.bootstrap_ldap.eni_id}"]
   user_data     = ""
   key_pair_name = "${var.ldap_host_key_pair_name}"
   tags          = "${local.modified_tags}"
@@ -85,7 +85,7 @@ module "ldap_configure" {
   user_certs          = "${data.terraform_remote_state.paperwork.user_certs}"
   ssh_private_key_pem = "${module.ldap_host_key_pair.private_key_pem}"
   ssh_host            = "${module.bootstrap_ldap.public_ips[0]}"
-  instance_id         = "${module.ldap_host.instance_id}"
+  instance_id         = "${module.ldap_host.instance_ids[0]}"
   env_name            = "${local.env_name}"
   users               = "${var.users}"
   root_domain         = "${var.root_domain}"
@@ -106,7 +106,7 @@ module "ldap_elb" {
 
 resource "aws_elb_attachment" "ldap_attach" {
   elb      = "${module.ldap_elb.my_elb_id}"
-  instance = "${module.ldap_host.instance_id}"
+  instance = "${module.ldap_host.instance_ids[0]}"
 }
 
 output "password" {
