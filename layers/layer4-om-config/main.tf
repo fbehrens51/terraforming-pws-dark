@@ -69,8 +69,8 @@ module "om_config" {
   errands_smoke_tests                 = "true"
   errands_test_autoscaling            = "true"
   singleton_availability_zone         = "${var.singleton_availability_zone}"
-  system_domain                       = "${var.system_domain}"
-  apps_domain                         = "${var.apps_domain}"
+  system_domain                       = "${data.terraform_remote_state.paperwork.system_domain}"
+  apps_domain                         = "${data.terraform_remote_state.paperwork.apps_domain}"
 
   password_policies_max_retry            = 5
   password_policies_expires_after_months = 0
@@ -87,9 +87,9 @@ module "om_config" {
     "${data.terraform_remote_state.pas.pas_elb_id}",
   ]
 
-  router_cert_pem_file           = "${var.router_cert_pem_file}"
-  router_private_key_pem_file    = "${var.router_private_key_pem_file}"
-  router_trusted_ca_certificates = "${data.terraform_remote_state.paperwork.root_ca_cert}"
+  router_cert_pem                = "${data.terraform_remote_state.paperwork.router_server_cert}"
+  router_private_key_pem         = "${data.terraform_remote_state.paperwork.router_server_key}"
+  router_trusted_ca_certificates = "${data.terraform_remote_state.paperwork.router_trusted_ca_certs}"
 
   smtp_host       = "${var.smtp_host}"
   smtp_user       = "${var.smtp_user}"
@@ -101,27 +101,26 @@ module "om_config" {
   smtp_domain     = "${var.smtp_domain}"
   smtp_enabled    = "${var.smtp_enabled}"
 
-  //TODO see https://www.pivotaltracker.com/story/show/166098713
   iaas_configuration_endpoints_ca_cert    = "${var.iaas_configuration_endpoints_ca_cert}"
   iaas_configuration_iam_instance_profile = "${data.terraform_remote_state.paperwork.director_role_name}"
   blobstore_instance_profile              = "${data.terraform_remote_state.paperwork.bucket_role_name}"
 
-  uaa_service_provider_key_credentials_cert_pem_file        = "${var.uaa_service_provider_key_credentials_cert_pem_file}"
-  uaa_service_provider_key_credentials_private_key_pem_file = "${var.uaa_service_provider_key_credentials_private_key_pem_file}"
-  apps_manager_global_wrapper_footer_content                = "${var.apps_manager_global_wrapper_footer_content}"
-  apps_manager_global_wrapper_header_content                = "${var.apps_manager_global_wrapper_header_content}"
-  apps_manager_footer_text                                  = "${var.apps_manager_footer_text}"
-  apps_manager_accent_color                                 = "${var.apps_manager_accent_color}"
-  apps_manager_global_wrapper_text_color                    = "${var.apps_manager_global_wrapper_text_color}"
-  apps_manager_company_name                                 = "${var.apps_manager_company_name}"
-  apps_manager_global_wrapper_bg_color                      = "${var.apps_manager_global_wrapper_bg_color}"
-  apps_manager_favicon_file                                 = "${var.apps_manager_favicon_file}"
-  apps_manager_square_logo_file                             = "${var.apps_manager_square_logo_file}"
-  apps_manager_main_logo_file                               = "${var.apps_manager_main_logo_file}"
+  uaa_service_provider_key_credentials_cert_pem        = "${data.terraform_remote_state.paperwork.uaa_server_cert}"
+  uaa_service_provider_key_credentials_private_key_pem = "${data.terraform_remote_state.paperwork.uaa_server_key}"
+  apps_manager_global_wrapper_footer_content           = "${var.apps_manager_global_wrapper_footer_content}"
+  apps_manager_global_wrapper_header_content           = "${var.apps_manager_global_wrapper_header_content}"
+  apps_manager_footer_text                             = "${var.apps_manager_footer_text}"
+  apps_manager_accent_color                            = "${var.apps_manager_accent_color}"
+  apps_manager_global_wrapper_text_color               = "${var.apps_manager_global_wrapper_text_color}"
+  apps_manager_company_name                            = "${var.apps_manager_company_name}"
+  apps_manager_global_wrapper_bg_color                 = "${var.apps_manager_global_wrapper_bg_color}"
+  apps_manager_favicon_file                            = "${var.apps_manager_favicon_file}"
+  apps_manager_square_logo_file                        = "${var.apps_manager_square_logo_file}"
+  apps_manager_main_logo_file                          = "${var.apps_manager_main_logo_file}"
 
   ntp_servers                                 = "${var.ntp_servers}"
   custom_ssh_banner_file                      = "${var.custom_ssh_banner_file}"
-  security_configuration_trusted_certificates = "${var.security_configuration_trusted_certificates}"
+  security_configuration_trusted_certificates = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 
   rds_address      = "${data.terraform_remote_state.pas.rds_address}"
   rds_password     = "${data.terraform_remote_state.pas.rds_password}"

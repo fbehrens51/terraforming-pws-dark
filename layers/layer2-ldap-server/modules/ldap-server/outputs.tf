@@ -11,6 +11,6 @@ output "role_attr" {
 }
 
 output "password" {
-  value = "${random_string.ldap_password.result}"
+  value     = "${random_string.ldap_password.result}"
   sensitive = true
 }

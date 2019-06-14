@@ -162,12 +162,12 @@ variable "ntp_servers" {
 # UAA Configuration
 # ========================
 
-variable "uaa_service_provider_key_credentials_cert_pem_file" {
+variable "uaa_service_provider_key_credentials_cert_pem" {
   type        = "string"
   description = "Server certificate presented by UAA during authentication. Should be valid for login.<SYSTEM_DOMAIN>"
 }
 
-variable "uaa_service_provider_key_credentials_private_key_pem_file" {
+variable "uaa_service_provider_key_credentials_private_key_pem" {
   type        = "string"
   description = "Server key presented by UAA during authentication. Must be valid for login.<SYSTEM_DOMAIN>"
 }
@@ -209,12 +209,12 @@ variable "router_elb_names" {
   description = "List of elb names which GoRouter should be attached to."
 }
 
-variable "router_cert_pem_file" {
+variable "router_cert_pem" {
   type        = "string"
   description = "Server certificate used by the GoRouter. Must be valid for *.<SYSTEM_DOMAIN> and *.<APPS_DOMAIN>"
 }
 
-variable "router_private_key_pem_file" {
+variable "router_private_key_pem" {
   type        = "string"
   description = "Server key used by the GoRouter. Must be valid for *.<SYSTEM_DOMAIN> and *.<APPS_DOMAIN>"
 }

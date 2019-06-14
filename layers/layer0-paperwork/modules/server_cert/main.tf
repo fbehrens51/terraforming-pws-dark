@@ -33,6 +33,7 @@ resource "tls_locally_signed_cert" "server_cert" {
 
   allowed_uses = [
     "digital_signature",
+    "key_encipherment",
     "server_auth",
   ]
 
