@@ -18,6 +18,10 @@ provider "null" {
   version = "~> 2.0.0"
 }
 
+provider "external" {
+  version = "1.1.2"
+}
+
 terraform {
   required_version = "< 0.12.0"
 }

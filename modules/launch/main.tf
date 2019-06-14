@@ -11,7 +11,9 @@ variable "user_data" {
   description = "user data"
 }
 
-variable "eni_id" {}
+variable "eni_ids" {
+  type = "list"
+}
 
 variable "key_pair_name" {
   default = ""
@@ -25,6 +27,11 @@ variable "tags" {
   type = "map"
 }
 
+//allows calling module to set a fixed count since count cannot use a value calculated from something that may not exist yet (e.g. eni_ids)
+variable "instance_count" {
+  default = 1
+}
+
 locals {
   created_timestamp = "${timestamp()}"
 
@@ -35,9 +42,11 @@ locals {
 }
 
 resource "aws_instance" "instance" {
+  count = "${var.instance_count}"
+
   network_interface {
     device_index         = 0
-    network_interface_id = "${var.eni_id}"
+    network_interface_id = "${var.eni_ids[count.index]}"
   }
 
   ami                  = "${var.ami_id}"
@@ -54,6 +63,6 @@ resource "aws_instance" "instance" {
   }
 }
 
-output "instance_id" {
-  value = "${aws_instance.instance.id}"
+output "instance_ids" {
+  value = "${aws_instance.instance.*.id}"
 }

@@ -71,10 +71,11 @@ locals {
 }
 
 module "control_plane_host" {
+  instance_count       = 1
   source               = "../../modules/launch"
   ami_id               = "${module.find_mjb_ami.id}"
   user_data            = "${data.template_cloudinit_config.user_data.rendered}"
-  eni_id               = "${module.bootstrap_control_plane.eni_id}"
+  eni_ids              = ["${module.bootstrap_control_plane.eni_id}"]
   key_pair_name        = "${var.control_plane_host_key_pair_name}"
   iam_instance_profile = "${data.terraform_remote_state.paperwork.director_role_name}"
   instance_type        = "${var.instance_type}"

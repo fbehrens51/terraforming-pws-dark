@@ -25,7 +25,7 @@ resource "aws_security_group_rule" "egress_rules" {
   from_port = "${lookup(var.egress_rules[count.index], "port")}"
   to_port   = "${lookup(var.egress_rules[count.index], "port")}"
 
-  cidr_blocks = "${split(",", lookup(var.egress_rules[count.index], "cidr_blocks"))}"
+  cidr_blocks = ["${split(",", lookup(var.egress_rules[count.index], "cidr_blocks"))}"]
 
   protocol          = "${lookup(var.egress_rules[count.index], "protocol")}"
   security_group_id = "${aws_security_group.security_group.id}"
@@ -38,7 +38,7 @@ resource "aws_security_group_rule" "ingress_rules" {
   from_port = "${lookup(var.ingress_rules[count.index], "port")}"
   to_port   = "${lookup(var.ingress_rules[count.index], "port")}"
 
-  cidr_blocks = "${split(",", lookup(var.ingress_rules[count.index], "cidr_blocks"))}"
+  cidr_blocks = ["${split(",", lookup(var.ingress_rules[count.index], "cidr_blocks"))}"]
 
   protocol          = "${lookup(var.ingress_rules[count.index], "protocol")}"
   security_group_id = "${aws_security_group.security_group.id}"

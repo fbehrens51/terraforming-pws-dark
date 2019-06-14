@@ -91,3 +91,7 @@ output "public_ips" {
 output "private_ip" {
   value = "${module.eni.private_ip}"
 }
+
+output "cidr_block" {
+  value = "${aws_subnet.public_subnet.cidr_block}"
+}

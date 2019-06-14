@@ -22,12 +22,36 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
+data "terraform_remote_state" "keys" {
+  backend = "s3"
+
+  config {
+    bucket     = "${var.remote_state_bucket}"
+    key        = "layer1-keys"
+    region     = "${var.remote_state_region}"
+    encrypt    = true
+    kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
+  }
+}
+
 data "terraform_remote_state" "routes" {
   backend = "s3"
 
   config {
     bucket     = "${var.remote_state_bucket}"
     key        = "layer1-routes"
+    region     = "${var.remote_state_region}"
+    encrypt    = true
+    kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
+  }
+}
+
+data "terraform_remote_state" "bind" {
+  backend = "s3"
+
+  config {
+    bucket     = "${var.remote_state_bucket}"
+    key        = "layer3-bind"
     region     = "${var.remote_state_region}"
     encrypt    = true
     kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
@@ -112,6 +136,33 @@ module "om_elb" {
   short_name        = "om"
 }
 
+# Configure the DNS Provider
+//TODO support running from CI/Dev wks.  From MJB using the master private IP should work, but that won't work from external CI or our WKS.
+provider "dns" {
+  update {
+    server        = "${local.master_dns_ip}"
+    key_name      = "rndc-key."
+    key_algorithm = "hmac-md5"
+    key_secret    = "${local.bind_rndc_secret}"
+  }
+}
+
+//update add testing.pivotal-staging.com 600 CNAME dns1.pivotal-staging.com
+
+resource "dns_cname_record" "om_cname" {
+  zone  = "${local.dns_zone_name}."
+  name  = "om"
+  cname = "${module.om_elb.dns_name}."
+  ttl   = 300
+}
+
+resource "dns_cname_record" "pas_cname" {
+  zone  = "${local.dns_zone_name}."
+  name  = "*"
+  cname = "${module.pas_elb.dns_name}."
+  ttl   = 300
+}
+
 data "aws_vpc" "cp_vpc" {
   id = "${local.cp_vpc_id}"
 }
@@ -166,12 +217,15 @@ variable "elb_endpoint" {}
 variable "region" {}
 
 locals {
-  cp_vpc_id      = "${data.terraform_remote_state.paperwork.cp_vpc_id}"
-  bastion_vpc_id = "${data.terraform_remote_state.paperwork.bastion_vpc_id}"
-  vpc_id         = "${data.terraform_remote_state.paperwork.pas_vpc_id}"
-  route_table_id = "${data.terraform_remote_state.routes.pas_public_vpc_route_table_id}"
-  bucket_suffix  = "${random_integer.bucket.result}"
-  om_key_name    = "${var.env_name}-om"
+  cp_vpc_id        = "${data.terraform_remote_state.paperwork.cp_vpc_id}"
+  bastion_vpc_id   = "${data.terraform_remote_state.paperwork.bastion_vpc_id}"
+  vpc_id           = "${data.terraform_remote_state.paperwork.pas_vpc_id}"
+  route_table_id   = "${data.terraform_remote_state.routes.pas_public_vpc_route_table_id}"
+  bucket_suffix    = "${random_integer.bucket.result}"
+  om_key_name      = "${var.env_name}-om"
+  bind_rndc_secret = "${data.terraform_remote_state.keys.bind_rndc_secret}"
+  master_dns_ip    = "${data.terraform_remote_state.bind.master_public_ip}"
+  dns_zone_name    = "${data.terraform_remote_state.bind.zone_name}"
 
   ingress_rules = [
     {

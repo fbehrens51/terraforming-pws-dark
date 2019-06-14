@@ -46,3 +46,7 @@ variable "name" {}
 output "elb_id" {
   value = "${aws_elb.elb.id}"
 }
+
+output "dns_name" {
+  value = "${aws_elb.elb.dns_name}"
+}

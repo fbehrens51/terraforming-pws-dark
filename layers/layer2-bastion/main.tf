@@ -62,12 +62,13 @@ module "bastion_host_key_pair" {
 }
 
 module "bastion_host" {
-  source        = "../../modules/launch"
-  ami_id        = "${module.amazon_ami.id}"
-  user_data     = "${data.template_cloudinit_config.user_data.rendered}"
-  eni_id        = "${module.bootstrap_bastion.eni_id}"
-  key_pair_name = "${var.bastion_host_key_pair_name}"
-  tags          = "${local.modified_tags}"
+  instance_count = "1"
+  source         = "../../modules/launch"
+  ami_id         = "${module.amazon_ami.id}"
+  user_data      = "${data.template_cloudinit_config.user_data.rendered}"
+  eni_ids        = ["${module.bootstrap_bastion.eni_id}"]
+  key_pair_name  = "${var.bastion_host_key_pair_name}"
+  tags           = "${local.modified_tags}"
 }
 
 variable "remote_state_region" {}

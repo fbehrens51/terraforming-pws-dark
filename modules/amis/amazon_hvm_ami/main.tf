@@ -40,6 +40,8 @@ data "aws_ami" "amazon_linux_hvm_ami" {
       "ebs",
     ]
   }
+
+  owners = []
 }
 
 output "id" {
