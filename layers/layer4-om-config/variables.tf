@@ -35,17 +35,6 @@ variable "custom_ssh_banner_file" {}
 variable "security_configuration_trusted_certificates" {}
 variable "rds_ca_cert_file" {}
 variable "jwt_expiration" {}
-variable "ldap_tls_ca_cert_file" {}
-variable "ldap_tls_client_cert_file" {}
-variable "ldap_tls_client_key_file" {}
-variable "smoke_test_client_cert_file" {}
-variable "smoke_test_client_key_file" {}
-variable "ldap_basedn" {}
-variable "ldap_dn" {}
-variable "ldap_password" {}
-variable "ldap_host" {}
-variable "ldap_port" {}
-variable "ldap_role_attr" {}
 variable "redis_ca_cert_file" {}
 variable "env_name" {}
 variable "internetless" {}
