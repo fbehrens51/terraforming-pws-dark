@@ -14,9 +14,7 @@ variable "egress_rules" {
   type = "list"
 }
 
-data "aws_vpc" "this_vpc" {
-  id = "${var.vpc_id}"
-}
+variable "cidr_block" {}
 
 variable "tags" {
   type = "map"
@@ -24,15 +22,10 @@ variable "tags" {
 
 variable "create_eip" {}
 
-variable "newbits" {
-  default = "4"
-}
-
 module "subnets" {
   source            = "subnet_per_az"
   availablity_zones = "${var.availability_zones}"
-  cidr_block        = "${data.aws_vpc.this_vpc.cidr_block}"
-  newbits           = "${var.newbits}"
+  cidr_block        = "${var.cidr_block}"
   tags              = "${var.tags}"
   vpc_id            = "${var.vpc_id}"
 }

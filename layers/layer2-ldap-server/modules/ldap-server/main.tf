@@ -56,6 +56,7 @@ resource "null_resource" "ldap_configuration" {
   provisioner "remote-exec" {
     inline = [
       "mkdir -p /tmp/conf/users",
+      "mkdir -p /tmp/conf/certs",
     ]
   }
 

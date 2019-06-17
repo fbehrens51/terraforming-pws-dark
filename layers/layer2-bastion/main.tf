@@ -28,9 +28,18 @@ locals {
   modified_tags = "${merge(var.tags, map("Name", "${local.modified_name}"))}"
 }
 
+data "aws_route_table" "route_table" {
+  route_table_id = "${data.terraform_remote_state.routes.bastion_public_vpc_route_table_id}"
+}
+
+data "aws_vpc" "vpc" {
+  id = "${data.aws_route_table.route_table.vpc_id}"
+}
+
 module "bootstrap_bastion" {
   source            = "../../modules/single_use_subnet"
   availability_zone = "${var.singleton_availability_zone}"
+  cidr_block        = "${data.aws_vpc.vpc.cidr_block}"
   route_table_id    = "${data.terraform_remote_state.routes.bastion_public_vpc_route_table_id}"
   ingress_rules     = "${var.ingress_rules}"
   egress_rules      = "${var.egress_rules}"

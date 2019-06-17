@@ -5,15 +5,17 @@ variable "availablity_zones" {
   type = "list"
 }
 
-variable "newbits" {}
-
 variable "tags" {
   type = "map"
 }
 
+locals {
+  newbits = "${ceil(log(length(var.availablity_zones), 2))}"
+}
+
 resource "aws_subnet" "subnet" {
   count      = "${length(var.availablity_zones)}"
-  cidr_block = "${cidrsubnet(var.cidr_block,var.newbits,count.index)}"
+  cidr_block = "${cidrsubnet(var.cidr_block,local.newbits,count.index)}"
   vpc_id     = "${var.vpc_id}"
 
   tags = "${var.tags}"

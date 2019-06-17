@@ -19,6 +19,8 @@ variable "tags" {
 
 variable "create_eip" {}
 
+variable "cidr_block" {}
+
 data "aws_route_table" "route_table" {
   route_table_id = "${var.route_table_id}"
 }
@@ -32,13 +34,11 @@ data "aws_availability_zones" "available" {
 }
 
 locals {
-  //TODO: move to a module to support varying sizes of cidrs (currently expecting /23)
-  public_subnet_cidr = "${cidrsubnet(data.aws_vpc.vpc.cidr_block, 4, 0)}"
-  availability_zone  = "${var.availability_zone != "" ? var.availability_zone : data.aws_availability_zones.available.names[0]}"
+  availability_zone = "${var.availability_zone != "" ? var.availability_zone : data.aws_availability_zones.available.names[0]}"
 }
 
 resource "aws_subnet" "public_subnet" {
-  cidr_block        = "${local.public_subnet_cidr}"
+  cidr_block        = "${var.cidr_block}"
   vpc_id            = "${data.aws_vpc.vpc.id}"
   availability_zone = "${local.availability_zone}"
 

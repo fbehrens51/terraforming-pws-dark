@@ -30,6 +30,10 @@ data "terraform_remote_state" "routes" {
   }
 }
 
+data "aws_vpc" "vpc" {
+  id = "${data.terraform_remote_state.paperwork.cp_vpc_id}"
+}
+
 module "providers" {
   source = "../../modules/dark_providers"
 }
@@ -37,6 +41,7 @@ module "providers" {
 module "bootstrap_control_plane" {
   source            = "../../modules/single_use_subnet"
   availability_zone = "${var.singleton_availability_zone}"
+  cidr_block        = "${data.aws_vpc.vpc.cidr_block}"
   route_table_id    = "${data.terraform_remote_state.routes.cp_public_vpc_route_table_id}"
   ingress_rules     = "${var.ingress_rules}"
   egress_rules      = "${var.egress_rules}"
