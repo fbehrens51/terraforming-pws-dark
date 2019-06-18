@@ -11,7 +11,7 @@ data "terraform_remote_state" "paperwork" {
 
   config {
     bucket     = "${var.remote_state_bucket}"
-    key        = "layer0-paperwork"
+    key        = "paperwork"
     region     = "${var.remote_state_region}"
     encrypt    = true
     kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
@@ -23,7 +23,7 @@ data "terraform_remote_state" "routes" {
 
   config {
     bucket     = "${var.remote_state_bucket}"
-    key        = "layer1-routes"
+    key        = "routes"
     region     = "${var.remote_state_region}"
     encrypt    = true
     kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"

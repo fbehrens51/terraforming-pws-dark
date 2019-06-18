@@ -34,6 +34,7 @@ resource "null_resource" "user_configuration" {
   count = "${length(var.users)}"
 
   triggers = {
+    instance_id   = "${var.instance_id}"
     server_config = "${data.template_file.configure.rendered}"
     ldif          = "${data.template_file.ldif_file.*.rendered[ count.index ]}"
     cert          = "${lookup(var.user_certs, lookup(var.users[count.index], "username"))}"

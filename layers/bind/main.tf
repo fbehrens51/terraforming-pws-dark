@@ -15,7 +15,7 @@ data "terraform_remote_state" "keys" {
 
   config {
     bucket     = "${var.remote_state_bucket}"
-    key        = "layer1-keys"
+    key        = "keys"
     region     = "${var.remote_state_region}"
     encrypt    = true
     kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
@@ -27,7 +27,7 @@ data "terraform_remote_state" "enterprise-services" {
 
   config {
     bucket     = "${var.remote_state_bucket}"
-    key        = "layer2-enterprise-services"
+    key        = "enterprise-services"
     region     = "${var.remote_state_region}"
     encrypt    = true
     kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
@@ -100,7 +100,7 @@ resource "aws_eip_association" "bind_master_eip_assoc" {
 locals {
   //Was trying to do this inline below, but I couldn't get terraform to understand it when trying to use [count.index] afterwards
   //Maybe we should be splitting apart the master vs slave lists earlier in the chain?  potentially create them separately?  The approach we're currently
-  //taking feels a little hackish and brittle.  I have a feeling the eip part would break when we don't create them in layer2-enterprise-services for the other network
+  //taking feels a little hackish and brittle.  I have a feeling the eip part would break when we don't create them in enterprise-services for the other network
   slave_eip_list = ["${data.terraform_remote_state.enterprise-services.bind_eip_ids[1]}", "${data.terraform_remote_state.enterprise-services.bind_eip_ids[2]}"]
 }
 
