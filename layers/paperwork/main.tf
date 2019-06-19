@@ -50,6 +50,10 @@ output "director_role_name" {
   value = "${var.director_role_name}"
 }
 
+output "key_manager_role_name" {
+  value = "${var.key_manager_role_name}"
+}
+
 output "root_ca_cert" {
   value = "${module.paperwork.root_ca_cert}"
 }

@@ -115,6 +115,7 @@ data "template_file" "cf_template" {
     apps_manager_square_logo                             = "${base64encode(file(var.apps_manager_square_logo_file))}"
     apps_manager_main_logo                               = "${base64encode(file(var.apps_manager_main_logo_file))}"
 
+    kms_key_id            = "${var.kms_key_id}"
     pas_buildpacks_bucket = "${var.pas_buildpacks_bucket}"
     pas_droplets_bucket   = "${var.pas_droplets_bucket}"
     pas_packages_bucket   = "${var.pas_packages_bucket}"

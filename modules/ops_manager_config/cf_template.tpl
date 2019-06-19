@@ -260,7 +260,9 @@ product-properties:
   .properties.system_blobstore.external.droplets_bucket:
     value: ${pas_droplets_bucket}
   .properties.system_blobstore.external.encryption:
-    value: false
+    value: true
+  .properties.system_blobstore.external.encryption_kms_key_id:
+    value: ${kms_key_id}
   .properties.system_blobstore.external.endpoint:
     value: ${s3_endpoint}
   .properties.system_blobstore.external.iam_instance_profile_authentication:
