@@ -34,6 +34,14 @@ data "aws_ami" "ubuntu_hvm_ami" {
   }
 
   filter {
+    name = "architecture"
+
+    values = [
+      "x86_64"
+    ]
+  }
+
+  filter {
     name = "root-device-type"
 
     values = [
