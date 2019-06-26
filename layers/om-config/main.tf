@@ -166,10 +166,6 @@ module "om_config" {
   ldap_host              = "${data.terraform_remote_state.paperwork.ldap_host}"
   ldap_port              = "${data.terraform_remote_state.ldap.port}"
   ldap_role_attr         = "${data.terraform_remote_state.ldap.role_attr}"
-  redis_host             = "${data.terraform_remote_state.pas.redis_host}"
-  redis_port             = "${data.terraform_remote_state.pas.redis_port}"
-  redis_ca_cert_file     = "${var.redis_ca_cert_file}"
-  redis_password         = "${data.terraform_remote_state.pas.redis_password}"
 
   pivnet_api_token          = "${var.pivnet_api_token}"
   product_blobs_s3_bucket   = "${var.product_blobs_s3_bucket}"

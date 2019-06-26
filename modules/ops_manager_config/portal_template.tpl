@@ -36,16 +36,20 @@ product-properties:
     value: ${ldap_role_attr}
   .properties.org:
     value: system
-  .properties.redis_host:
-    value: ${redis_host}
-  .properties.redis_port:
-    value: ${redis_port}
-  .properties.redis_tls_ca_cert:
-    value: |
-      ${indent(6, redis_ca_cert)}
-  .properties.redis_password:
+  .properties.mysql_host:
+    value: ${mysql_host}
+  .properties.mysql_port:
+    value: ${mysql_port}
+  .properties.mysql_db_name:
+    value: ${mysql_db_name}
+  .properties.mysql_username:
+    value: ${mysql_username}
+  .properties.mysql_password:
     value:
-      secret: '${redis_password}'
+      secret: '${mysql_password}'
+  .properties.mysql_tls_ca_cert:
+    value: |
+      ${indent(6, mysql_ca_cert)}
   .properties.space:
     value: portal
 network-properties:

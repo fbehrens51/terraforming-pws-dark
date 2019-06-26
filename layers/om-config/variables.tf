@@ -27,7 +27,6 @@ variable "apps_manager_main_logo_file" {}
 variable "custom_ssh_banner_file" {}
 variable "rds_ca_cert_file" {}
 variable "jwt_expiration" {}
-variable "redis_ca_cert_file" {}
 variable "env_name" {}
 variable "internetless" {}
 variable "s3_endpoint" {}

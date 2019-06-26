@@ -98,23 +98,6 @@ variable "ldap_role_attr" {
   description = "Name of the LDAP attribute which has user permissions"
 }
 
-variable "redis_host" {
-  type = "string"
-}
-
-variable "redis_port" {
-  type = "string"
-}
-
-variable "redis_ca_cert_file" {
-  type        = "string"
-  description = "CA Cert which signs the redis server certificate. Should be the AWS CA if using elasticache."
-}
-
-variable "redis_password" {
-  type = "string"
-}
-
 variable "smoke_test_client_cert" {
   type        = "string"
   description = "Client certificate used by smoke test to login.  The certificate must be present in LDAP"

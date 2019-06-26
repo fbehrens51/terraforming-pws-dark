@@ -85,13 +85,6 @@ module "pas" {
   bucket_suffix      = "${local.bucket_suffix}"
 }
 
-module "portal_cache" {
-  source             = "../../modules/portal-cache"
-  availability_zones = "${var.availability_zones}"
-  env_name           = "${var.env_name}"
-  vpc_id             = "${local.vpc_id}"
-}
-
 module "om_key_pair" {
   source = "../../modules/key_pair"
   name   = "${local.om_key_name}"
@@ -323,16 +316,4 @@ output "om_security_group_id" {
 
 output "om_ssh_public_key_pair_name" {
   value = "${local.om_key_name}"
-}
-
-output "redis_host" {
-  value = "${module.portal_cache.redis_host}"
-}
-
-output "redis_port" {
-  value = "${module.portal_cache.redis_port}"
-}
-
-output "redis_password" {
-  value = "${module.portal_cache.redis_password}"
 }

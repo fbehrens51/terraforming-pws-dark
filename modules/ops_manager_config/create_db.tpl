@@ -15,4 +15,5 @@ create database if not exists silk;
 create database if not exists locket;
 create database if not exists uaa;
 create database if not exists credhub;
+create database if not exists portal;
 SQL

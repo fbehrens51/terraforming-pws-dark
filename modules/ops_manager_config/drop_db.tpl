@@ -15,4 +15,5 @@ drop database if exists silk;
 drop database if exists locket;
 drop database if exists uaa;
 drop database if exists credhub;
+drop database if exists portal;
 SQL

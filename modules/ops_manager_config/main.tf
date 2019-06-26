@@ -140,10 +140,13 @@ data "template_file" "portal_template" {
     ldap_host                   = "${var.ldap_host}"
     ldap_port                   = "${var.ldap_port}"
     ldap_role_attr              = "${var.ldap_role_attr}"
-    redis_host                  = "${var.redis_host}"
-    redis_port                  = "${var.redis_port}"
-    redis_ca_cert               = "${file(var.redis_ca_cert_file)}"
-    redis_password              = "${var.redis_password}"
+
+    mysql_host     = "${var.rds_address}"
+    mysql_port     = "${var.rds_port}"
+    mysql_db_name  = "portal"
+    mysql_username = "${var.rds_username}"
+    mysql_password = "${var.rds_password}"
+    mysql_ca_cert  = "${file(var.rds_ca_cert_file)}"
   }
 }
 
