@@ -58,9 +58,9 @@ module "bind_host_key_pair" {
 module "bind_master_user_data" {
   source      = "../../modules/bind_dns/master/user_data"
   client_cidr = "${var.client_cidr}"
-  master_ip   = "${local.master_private_ip}"
+  master_ip   = "${local.master_public_ip}"
   secret      = "${local.bind_rndc_secret}"
-  slave_ips   = ["${data.terraform_remote_state.enterprise-services.bind_eni_ips[1]}", "${data.terraform_remote_state.enterprise-services.bind_eni_ips[2]}"]
+  slave_ips   = ["${data.terraform_remote_state.enterprise-services.bind_eip_ips[1]}", "${data.terraform_remote_state.enterprise-services.bind_eip_ips[2]}"]
   zone_name   = "${var.zone_name}"
 }
 
@@ -77,7 +77,7 @@ module "bind_master_host" {
 module "bind_slave_user_data" {
   source      = "../../modules/bind_dns/slave/user_data"
   client_cidr = "${var.client_cidr}"
-  master_ip   = "${local.master_private_ip}"
+  master_ip   = "${local.master_public_ip}"
   zone_name   = "${var.zone_name}"
 }
 
