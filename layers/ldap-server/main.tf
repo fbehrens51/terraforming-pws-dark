@@ -22,6 +22,30 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
+data "terraform_remote_state" "keys" {
+  backend = "s3"
+
+  config {
+    bucket     = "${var.remote_state_bucket}"
+    key        = "keys"
+    region     = "${var.remote_state_region}"
+    encrypt    = true
+    kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
+  }
+}
+
+data "terraform_remote_state" "bind" {
+  backend = "s3"
+
+  config {
+    bucket     = "${var.remote_state_bucket}"
+    key        = "bind"
+    region     = "${var.remote_state_region}"
+    encrypt    = true
+    kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
+  }
+}
+
 data "terraform_remote_state" "routes" {
   backend = "s3"
 
@@ -50,6 +74,10 @@ locals {
   env_name      = "${var.tags["Name"]}"
   modified_name = "${local.env_name} ldap"
   modified_tags = "${merge(var.tags, map("Name", "${local.modified_name}"))}"
+
+  bind_rndc_secret = "${data.terraform_remote_state.keys.bind_rndc_secret}"
+  master_dns_ip    = "${data.terraform_remote_state.bind.master_public_ip}"
+  dns_zone_name    = "${data.terraform_remote_state.bind.zone_name}"
 }
 
 data "aws_region" "current" {}
@@ -109,6 +137,23 @@ module "ldap_elb" {
 resource "aws_elb_attachment" "ldap_attach" {
   elb      = "${module.ldap_elb.my_elb_id}"
   instance = "${module.ldap_host.instance_ids[0]}"
+}
+
+# Configure the DNS Provider
+provider "dns" {
+  update {
+    server        = "${local.master_dns_ip}"
+    key_name      = "rndc-key."
+    key_algorithm = "hmac-md5"
+    key_secret    = "${local.bind_rndc_secret}"
+  }
+}
+
+resource "dns_cname_record" "ldap_cname" {
+  zone  = "${local.dns_zone_name}."
+  name  = "ldap"
+  cname = "${module.ldap_elb.dns_name}."
+  ttl   = 300
 }
 
 output "password" {
