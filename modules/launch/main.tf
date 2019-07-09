@@ -41,6 +41,11 @@ locals {
   }
 }
 
+variable "root_block_device" {
+  type    = "map"
+  default = {}
+}
+
 resource "aws_instance" "instance" {
   count = "${var.instance_count}"
 
@@ -55,7 +60,8 @@ resource "aws_instance" "instance" {
   key_name             = "${var.key_pair_name}"
   iam_instance_profile = "${var.iam_instance_profile}"
 
-  tags = "${merge(var.tags, local.computed_instance_tags)}"
+  tags              = "${merge(var.tags, local.computed_instance_tags)}"
+  root_block_device = ["${var.root_block_device}"]
 
   lifecycle {
     // We don't want terraform to remove tags applied later by customer processes
@@ -65,4 +71,8 @@ resource "aws_instance" "instance" {
 
 output "instance_ids" {
   value = "${aws_instance.instance.*.id}"
+}
+
+output "private_ips" {
+  value = "${aws_instance.instance.*.private_ip}"
 }
