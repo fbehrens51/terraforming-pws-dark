@@ -21,6 +21,7 @@ module "paperwork" {
   bucket_role_name      = "${var.bucket_role_name}"
   director_role_name    = "${var.director_role_name}"
   key_manager_role_name = "${var.key_manager_role_name}"
+  splunk_role_name = "${var.splunk_role_name}"
 
   env_name      = "${var.env_name}"
   root_domain   = "${var.root_domain}"
@@ -52,6 +53,10 @@ output "director_role_name" {
 
 output "key_manager_role_name" {
   value = "${var.key_manager_role_name}"
+}
+
+output "splunk_role_name" {
+  value = "${var.splunk_role_name}"
 }
 
 output "root_ca_cert" {
@@ -142,6 +147,8 @@ variable "director_role_name" {
 variable "key_manager_role_name" {
   type = "string"
 }
+
+variable "splunk_role_name" {}
 
 variable "env_name" {
   type = "string"

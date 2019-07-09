@@ -3,7 +3,6 @@ variable "region" {
 }
 
 provider "aws" {
-  region = "${var.region}"
 }
 
 data "aws_ami" "amazon_linux_hvm_ami" {

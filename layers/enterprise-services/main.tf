@@ -3,7 +3,6 @@ terraform {
 }
 
 provider "aws" {
-  region = "${var.region}"
 }
 
 module "providers" {
@@ -90,6 +89,35 @@ locals {
     },
   ]
 
+  # TODO: what should this be
+  splunk_ingress_rules = [
+    {
+      port        = "22"
+      protocol    = "tcp"
+      cidr_blocks = "0.0.0.0/0"
+    },
+    {
+      port        = "8088"
+      protocol    = "tcp"
+      cidr_blocks = "0.0.0.0/0"
+    },
+    {
+      port        = "8000"
+      protocol    = "tcp"
+      cidr_blocks = "0.0.0.0/0"
+    },
+  ]
+
+  splunk_egress_rules = [
+    {
+      port        = "0"
+      protocol    = "-1"
+      cidr_blocks = "0.0.0.0/0"
+    },
+  ]
+
+  splunk_volume_tag = "${var.env_name}-SPLUNK_DATA"
+
   ldap_ingress_rules = [
     {
       port        = "22"
@@ -111,8 +139,9 @@ locals {
     },
   ]
 
-  bind_cidr_block = "${cidrsubnet(data.aws_vpc.this_vpc.cidr_block, 2, 0)}"
-  ldap_cidr_block = "${cidrsubnet(data.aws_vpc.this_vpc.cidr_block, 2, 1)}"
+  bind_cidr_block   = "${cidrsubnet(data.aws_vpc.this_vpc.cidr_block, 2, 0)}"
+  ldap_cidr_block   = "${cidrsubnet(data.aws_vpc.this_vpc.cidr_block, 2, 1)}"
+  splunk_cidr_block = "${cidrsubnet(data.aws_vpc.this_vpc.cidr_block, 2, 2)}"
 }
 
 data "aws_vpc" "this_vpc" {
@@ -142,9 +171,29 @@ module "bootstrap_ldap" {
   create_eip        = true
 }
 
+module "bootstrap_splunk" {
+  source            = "../../modules/single_use_subnet"
+  cidr_block        = "${local.splunk_cidr_block}"
+  availability_zone = "${var.singleton_availability_zone}"
+  route_table_id    = "${data.terraform_remote_state.routes.es_public_vpc_route_table_id}"
+  ingress_rules     = "${local.splunk_ingress_rules}"
+  egress_rules      = "${local.splunk_egress_rules}"
+  tags              = "${local.modified_tags}"
+  create_eip        = true
+}
+
 module "amazon_ami" {
   source = "../../modules/amis/amazon_hvm_ami"
   region = "${var.region}"
+}
+
+resource "aws_ebs_volume" "splunk_data" {
+  availability_zone = "${var.singleton_availability_zone}"
+  size = 1000
+
+  tags {
+    Name = "${local.splunk_volume_tag}"
+  }
 }
 
 variable "env_name" {}
@@ -195,4 +244,20 @@ output "ldap_private_ip" {
 
 output "ldap_public_ip" {
   value = "${module.bootstrap_ldap.public_ips[0]}"
+}
+
+output "splunk_eni_id" {
+  value = "${module.bootstrap_splunk.eni_id}"
+}
+
+output "splunk_public_ip" {
+  value = "${module.bootstrap_splunk.public_ips}"
+}
+
+output "splunk_private_ip" {
+  value = "${module.bootstrap_splunk.private_ip}"
+}
+
+output "splunk_volume_tag"{
+  value ="${local.splunk_volume_tag}"
 }
