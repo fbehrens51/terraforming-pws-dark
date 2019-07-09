@@ -23,12 +23,11 @@ data "terraform_remote_state" "paperwork" {
 }
 
 module "kms" {
-  source                = "../../modules/kms/create"
-  key_name              = "${var.kms_key_name}"
-  pas_bucket_role_name  = "${data.terraform_remote_state.paperwork.bucket_role_name}"
-  director_role_name    = "${data.terraform_remote_state.paperwork.director_role_name}"
-  key_manager_role_name = "${data.terraform_remote_state.paperwork.key_manager_role_name}"
-  deletion_window       = 7
+  source               = "../../modules/kms/create"
+  key_name             = "${var.kms_key_name}"
+  pas_bucket_role_name = "${data.terraform_remote_state.paperwork.bucket_role_name}"
+  director_role_name   = "${data.terraform_remote_state.paperwork.director_role_name}"
+  deletion_window      = 7
 }
 
 module "rndc_generator" {
