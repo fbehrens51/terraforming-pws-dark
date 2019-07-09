@@ -67,7 +67,7 @@ module "amazon_ami" {
 
 module "bastion_host_key_pair" {
   source = "../../modules/key_pair"
-  name   = "${var.bastion_host_key_pair_name}"
+  key_name   = "${var.bastion_host_key_pair_name}"
 }
 
 module "bastion_host" {

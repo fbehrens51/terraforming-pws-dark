@@ -55,21 +55,16 @@ data "aws_ebs_volume" "vm_importer_volume" {
   }
 }
 
-resource "tls_private_key" "vm_importer" {
-  algorithm = "RSA"
-  rsa_bits  = "4096"
-}
-
-resource "aws_key_pair" "vm_importer" {
-  key_name_prefix = "vm_importer_key-"
-  public_key      = "${tls_private_key.vm_importer.public_key_openssh}"
+module "key_pair" {
+  source = "../key_pair"
+  key_name = "vm importer"
 }
 
 resource "aws_instance" "vm_importer" {
   availability_zone = "${data.aws_subnet.vm_subnet.availability_zone}"
   ami               = "${var.ami}"
   instance_type     = "${var.instance_type}"
-  key_name          = "${aws_key_pair.vm_importer.key_name}"
+  key_name          = "${module.key_pair.key_name}"
 
   vpc_security_group_ids = [
     "${var.security_group_ids}",
@@ -94,7 +89,7 @@ resource "aws_instance" "vm_importer" {
 }
 
 output "vm_importer_private_key" {
-  value = "${tls_private_key.vm_importer.private_key_pem}"
+  value = "${module.key_pair.private_key_pem}"
 }
 
 output "vm_importer_volume_id" {

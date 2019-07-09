@@ -1,7 +1,7 @@
-variable "name" {}
+variable "key_name" {}
 
 resource "aws_key_pair" "key_pair" {
-  key_name   = "${var.name}"
+  key_name   = "${var.key_name}"
   public_key = "${tls_private_key.private_key.public_key_openssh}"
 }
 
@@ -15,6 +15,10 @@ output "private_key_pem" {
   sensitive = true
 }
 
-output "name" {
+output "key_name" {
   value = "${aws_key_pair.key_pair.key_name}"
+}
+
+output "public_key_openssh" {
+  value = "${tls_private_key.private_key.public_key_openssh}"
 }

@@ -87,7 +87,7 @@ module "pas" {
 
 module "om_key_pair" {
   source = "../../modules/key_pair"
-  name   = "${local.om_key_name}"
+  key_name   = "${local.om_key_name}"
 }
 
 module "rds" {

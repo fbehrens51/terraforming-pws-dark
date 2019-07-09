@@ -94,7 +94,7 @@ module "ubuntu_ami" {
 
 module "ldap_host_key_pair" {
   source = "../../modules/key_pair"
-  name   = "${var.ldap_host_key_pair_name}"
+  key_name   = "${var.ldap_host_key_pair_name}"
 }
 
 module "ldap_host" {
@@ -102,7 +102,7 @@ module "ldap_host" {
   ami_id        = "${module.ubuntu_ami.id}"
   eni_ids       = ["${data.terraform_remote_state.enterprise_services.ldap_eni_id}"]
   user_data     = ""
-  key_pair_name = "${module.ldap_host_key_pair.name}"
+  key_pair_name = "${module.ldap_host_key_pair.key_name}"
   tags          = "${local.modified_tags}"
 }
 
