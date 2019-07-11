@@ -354,10 +354,6 @@ variable "singleton_availability_zone" {
   type = "string"
 }
 
-variable "pas_subnet_cidrs" {
-  type = "list"
-}
-
 variable "rds_address" {}
 
 variable "rds_password" {}
@@ -388,6 +384,10 @@ variable "pas_packages_bucket" {}
 
 variable "pas_resources_bucket" {}
 
+variable "pas_subnet_cidrs" {
+  type = "list"
+}
+
 variable "pas_subnet_availability_zones" {
   type = "list"
 }
@@ -397,6 +397,22 @@ variable "pas_subnet_gateways" {
 }
 
 variable "pas_subnet_ids" {
+  type = "list"
+}
+
+variable "infrastructure_subnet_cidrs" {
+  type = "list"
+}
+
+variable "infrastructure_subnet_availability_zones" {
+  type = "list"
+}
+
+variable "infrastructure_subnet_gateways" {
+  type = "list"
+}
+
+variable "infrastructure_subnet_ids" {
   type = "list"
 }
 

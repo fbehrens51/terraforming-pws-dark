@@ -11,6 +11,64 @@ data "aws_vpc" "vpc" {
   id = "${var.vpc_id}"
 }
 
+data "template_file" "pas_vpc_azs" {
+  count = "${length(var.pas_subnet_availability_zones)}"
+
+  template = <<EOF
+- name: $${pas_subnet_availability_zone}
+EOF
+
+  vars = {
+    pas_subnet_availability_zone = "${var.pas_subnet_availability_zones[count.index]}"
+  }
+}
+
+data "template_file" "pas_subnets" {
+  count = "${length(var.pas_subnet_ids)}"
+
+  template = <<EOF
+- iaas_identifier: $${pas_subnet_id}
+  cidr: $${pas_subnet_cidr}
+  dns: $${pas_vpc_dns}
+  gateway: $${pas_subnet_gateway}
+  reserved_ip_ranges: $${pas_subnet_reserved_ips}
+  availability_zone_names:
+  - $${pas_subnet_availability_zone}
+EOF
+
+  vars = {
+    pas_subnet_id                = "${var.pas_subnet_ids[count.index]}"
+    pas_subnet_availability_zone = "${var.pas_subnet_availability_zones[count.index]}"
+    pas_subnet_cidr              = "${var.pas_subnet_cidrs[count.index]}"
+    pas_subnet_reserved_ips      = "${cidrhost(var.pas_subnet_cidrs[count.index], 1)}-${cidrhost(var.pas_subnet_cidrs[count.index], 4)}"
+    pas_subnet_gateway           = "${var.pas_subnet_gateways[count.index]}"
+    pas_vpc_dns                  = "${cidrhost(data.aws_vpc.vpc.cidr_block, 2)}"
+  }
+}
+
+data "template_file" "infrastructure_subnets" {
+  count = "${length(var.infrastructure_subnet_ids)}"
+
+  template = <<EOF
+    - iaas_identifier: $${infrastructure_subnet_id}
+      cidr: $${infrastructure_subnet_cidr}
+      dns: $${pas_vpc_dns}
+      gateway: $${infrastructure_subnet_gateway}
+      reserved_ip_ranges: $${infrastructure_subnet_reserved_ips}
+      availability_zone_names:
+      - $${infrastructure_subnet_availability_zone}
+EOF
+
+  vars = {
+    infrastructure_subnet_id                = "${var.infrastructure_subnet_ids[count.index]}"
+    infrastructure_subnet_availability_zone = "${var.infrastructure_subnet_availability_zones[count.index]}"
+    infrastructure_subnet_cidr              = "${var.infrastructure_subnet_cidrs[count.index]}"
+    infrastructure_subnet_reserved_ips      = "${cidrhost(var.infrastructure_subnet_cidrs[count.index], 1)}-${cidrhost(var.infrastructure_subnet_cidrs[count.index], 4)}"
+    infrastructure_subnet_gateway           = "${var.infrastructure_subnet_gateways[count.index]}"
+    pas_vpc_dns                             = "${cidrhost(data.aws_vpc.vpc.cidr_block, 2)}"
+  }
+}
+
 data "template_file" "director_template" {
   template = "${file("${path.module}/director_template.tpl")}"
 
@@ -18,8 +76,6 @@ data "template_file" "director_template" {
     ec2_endpoint = "${var.ec2_endpoint}"
     elb_endpoint = "${var.elb_endpoint}"
 
-    availability_zones                          = "[${join(",", var.pas_subnet_availability_zones)}]"
-    singleton_availability_zone                 = "${var.singleton_availability_zone}"
     custom_ssh_banner                           = "${file(var.custom_ssh_banner_file)}"
     rds_database                                = "director"
     rds_address                                 = "${var.rds_address}"
@@ -46,12 +102,10 @@ data "template_file" "director_template" {
     security_configuration_trusted_certificates = "${var.security_configuration_trusted_certificates}"
     blobstore_instance_profile                  = "${var.blobstore_instance_profile}"
 
-    pas_subnet_subnet_id         = "${var.pas_subnet_ids[0]}"
-    pas_subnet_availability_zone = "${var.pas_subnet_availability_zones[0]}"
-    pas_subnet_cidr              = "${var.pas_subnet_cidrs[0]}"
-    pas_subnet_reserved_ips      = "${cidrhost(var.pas_subnet_cidrs[0], 1)}-${cidrhost(var.pas_subnet_cidrs[0], 4)}"
-    pas_subnet_gateway           = "${var.pas_subnet_gateways[0]}"
-    pas_subnet_dns               = "${cidrhost(data.aws_vpc.vpc.cidr_block, 2)}"
+    singleton_availability_zone = "${var.pas_subnet_availability_zones[0]}"
+    infrastructure_subnets      = "${join("", data.template_file.infrastructure_subnets.*.rendered)}"
+    pas_subnets                 = "${indent(4, join("", data.template_file.pas_subnets.*.rendered))}"
+    pas_vpc_azs                 = "${indent(2, join("", data.template_file.pas_vpc_azs.*.rendered))}"
   }
 }
 
@@ -72,7 +126,6 @@ data "template_file" "cf_template" {
     errands_smbbrokerpush               = "${var.errands_smbbrokerpush}"
     errands_smoke_tests                 = "${var.errands_smoke_tests}"
     errands_test_autoscaling            = "${var.errands_test_autoscaling}"
-    singleton_availability_zone         = "${var.singleton_availability_zone}"
     system_domain                       = "${var.system_domain}"
     apps_domain                         = "${var.apps_domain}"
 
@@ -120,6 +173,9 @@ data "template_file" "cf_template" {
     pas_droplets_bucket   = "${var.pas_droplets_bucket}"
     pas_packages_bucket   = "${var.pas_packages_bucket}"
     pas_resources_bucket  = "${var.pas_resources_bucket}"
+
+    pas_vpc_azs                 = "${indent(4, join("", data.template_file.pas_vpc_azs.*.rendered))}"
+    singleton_availability_zone = "${var.singleton_availability_zone}"
   }
 }
 
@@ -127,19 +183,18 @@ data "template_file" "portal_template" {
   template = "${file("${path.module}/portal_template.tpl")}"
 
   vars = {
-    singleton_availability_zone = "${var.singleton_availability_zone}"
-    jwt_expiration              = "${var.jwt_expiration}"
-    ldap_tls_ca_cert            = "${var.ldap_tls_ca_cert}"
-    ldap_tls_client_cert        = "${var.ldap_tls_client_cert}"
-    ldap_tls_client_key         = "${var.ldap_tls_client_key}"
-    smoke_test_client_cert      = "${var.smoke_test_client_cert}"
-    smoke_test_client_key       = "${var.smoke_test_client_key}"
-    ldap_basedn                 = "${var.ldap_basedn}"
-    ldap_dn                     = "${var.ldap_dn}"
-    ldap_password               = "${var.ldap_password}"
-    ldap_host                   = "${var.ldap_host}"
-    ldap_port                   = "${var.ldap_port}"
-    ldap_role_attr              = "${var.ldap_role_attr}"
+    jwt_expiration         = "${var.jwt_expiration}"
+    ldap_tls_ca_cert       = "${var.ldap_tls_ca_cert}"
+    ldap_tls_client_cert   = "${var.ldap_tls_client_cert}"
+    ldap_tls_client_key    = "${var.ldap_tls_client_key}"
+    smoke_test_client_cert = "${var.smoke_test_client_cert}"
+    smoke_test_client_key  = "${var.smoke_test_client_key}"
+    ldap_basedn            = "${var.ldap_basedn}"
+    ldap_dn                = "${var.ldap_dn}"
+    ldap_password          = "${var.ldap_password}"
+    ldap_host              = "${var.ldap_host}"
+    ldap_port              = "${var.ldap_port}"
+    ldap_role_attr         = "${var.ldap_role_attr}"
 
     mysql_host     = "${var.rds_address}"
     mysql_port     = "${var.rds_port}"
@@ -147,6 +202,9 @@ data "template_file" "portal_template" {
     mysql_username = "${var.rds_username}"
     mysql_password = "${var.rds_password}"
     mysql_ca_cert  = "${file(var.rds_ca_cert_file)}"
+
+    pas_vpc_azs                 = "${indent(4, join("", data.template_file.pas_vpc_azs.*.rendered))}"
+    singleton_availability_zone = "${var.singleton_availability_zone}"
   }
 }
 

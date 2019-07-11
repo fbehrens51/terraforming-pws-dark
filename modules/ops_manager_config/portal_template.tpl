@@ -54,9 +54,9 @@ product-properties:
     value: portal
 network-properties:
   network:
-    name: pcf-management-network
+    name: pas
   other_availability_zones:
-  - name: ${singleton_availability_zone}
+    ${pas_vpc_azs}
   singleton_availability_zone:
     name: ${singleton_availability_zone}
 resource-config:

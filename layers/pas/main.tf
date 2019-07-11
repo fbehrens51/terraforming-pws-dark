@@ -86,8 +86,8 @@ module "pas" {
 }
 
 module "om_key_pair" {
-  source = "../../modules/key_pair"
-  key_name   = "${local.om_key_name}"
+  source   = "../../modules/key_pair"
+  key_name = "${local.om_key_name}"
 }
 
 module "rds" {
@@ -272,6 +272,22 @@ output "pas_packages_bucket" {
 
 output "pas_resources_bucket" {
   value = "${module.pas.pas_resources_bucket}"
+}
+
+output "infrastructure_subnet_cidrs" {
+  value = "${module.infra.infrastructure_subnet_cidrs}"
+}
+
+output "infrastructure_subnet_availability_zones" {
+  value = "${module.infra.infrastructure_subnet_availability_zones}"
+}
+
+output "infrastructure_subnet_gateways" {
+  value = "${module.infra.infrastructure_subnet_gateways}"
+}
+
+output "infrastructure_subnet_ids" {
+  value = "${module.infra.infrastructure_subnet_ids}"
 }
 
 output "pas_subnet_cidrs" {
