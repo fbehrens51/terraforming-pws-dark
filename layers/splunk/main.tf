@@ -75,7 +75,7 @@ module "amazon_ami" {
 //accounts should be created as part of user data.  Should we create a module to generate?
 module "splunk_host_key_pair" {
   source = "../../modules/key_pair"
-  name   = "${var.splunk_host_key_pair_name}"
+  key_name   = "${var.splunk_host_key_pair_name}"
 }
 
 module "splunk_user_data" {
@@ -86,7 +86,7 @@ module "splunk" {
   source        = "../../modules/launch"
   ami_id        = "${module.amazon_ami.id}"
   instance_type = "${var.instance_type}"
-  key_pair_name = "${module.splunk_host_key_pair.name}"
+  key_pair_name = "${module.splunk_host_key_pair.key_name}"
   tags          = "${local.tags}"
   iam_instance_profile = "${local.splunk_role_name}"
 
