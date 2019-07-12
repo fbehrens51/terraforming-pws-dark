@@ -125,7 +125,7 @@ module "om_elb" {
   public_subnet_ids = "${module.infra.public_subnet_ids}"
   tags              = "${var.tags}"
   vpc_id            = "${local.vpc_id}"
-  egress_cidrs      = "${module.infra.infrastructure_subnet_cidrs}"
+  egress_cidrs      = "${module.infra.om_subnet_cidrs}"
   short_name        = "om"
 }
 
@@ -173,7 +173,7 @@ module "ops_manager" {
   om_eip                = false
   ops_manager_role_name = "${data.terraform_remote_state.paperwork.director_role_name}"
   private               = false
-  subnet_id             = "${module.infra.infrastructure_subnet_ids[0]}"
+  subnet_id             = "${module.infra.om_subnet_ids[0]}"
   tags                  = "${var.tags}"
   use_route53           = false
   vm_count              = "1"
