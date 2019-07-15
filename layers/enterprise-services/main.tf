@@ -102,6 +102,11 @@ locals {
       cidr_blocks = "0.0.0.0/0"
     },
     {
+      port        = "8089"
+      protocol    = "tcp"
+      cidr_blocks = "0.0.0.0/0"
+    },
+    {
       port        = "8000"
       protocol    = "tcp"
       cidr_blocks = "0.0.0.0/0"
@@ -260,4 +265,12 @@ output "splunk_private_ip" {
 
 output "splunk_volume_tag"{
   value ="${local.splunk_volume_tag}"
+}
+
+output "splunk_subnet_id" {
+  value = "${module.bootstrap_splunk.public_subnet_id}"
+}
+
+output "splunk_subnet_cidr" {
+  value = "${module.bootstrap_splunk.cidr_block}"
 }

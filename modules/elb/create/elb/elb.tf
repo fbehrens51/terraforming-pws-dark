@@ -8,7 +8,7 @@ resource "aws_elb" "elb" {
   idle_timeout    = 600
 
   listener {
-    instance_port     = "${var.port}"
+    instance_port     = "${var.instance_port}"
     instance_protocol = "TCP"
     lb_port           = "${var.port}"
     lb_protocol       = "TCP"
@@ -18,13 +18,14 @@ resource "aws_elb" "elb" {
     healthy_threshold   = 2
     unhealthy_threshold = 2
     timeout             = 2
-    target              = "TCP:${var.port}"
+    target              = "TCP:${var.instance_port}"
     interval            = 5
   }
 
   tags = "${var.elb_tag}"
 }
 
+variable "instance_port" {}
 variable "port" {
   type = "string"
 }

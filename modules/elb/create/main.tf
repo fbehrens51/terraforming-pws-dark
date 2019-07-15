@@ -1,7 +1,7 @@
 locals {
   formatted_env_name = "${replace(var.env_name," ","-")}"
+  instance_listening_port = "${var.instance_port == "" ? var.port : var.instance_port}"
 }
-
 module "my_elb" {
   source            = "../create/elb"
   name              = "${local.formatted_env_name}-${var.short_name}-elb"
@@ -10,4 +10,5 @@ module "my_elb" {
   internetless      = "${var.internetless}"
   public_subnet_ids = "${var.public_subnet_ids}"
   port              = "${var.port}"
+  instance_port     = "${local.instance_listening_port}"
 }

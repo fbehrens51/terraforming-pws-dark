@@ -21,3 +21,5 @@ variable "egress_cidrs" {
 variable "port" {
   default = 443
 }
+
+variable "instance_port" { default = ""}
