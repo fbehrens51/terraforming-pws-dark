@@ -1,6 +1,6 @@
 locals {
   pas_subnet_cidr     = "${var.pas_subnet_cidrs[0]}"
-  pas_file_glob       = "srt*"
+  pas_file_glob       = "cf*.pivotal"
   pas_product_slug    = "elastic-runtime"
   pas_product_version = "2.4.8"
   portal_file_glob    = "pws-dark-portal*"
