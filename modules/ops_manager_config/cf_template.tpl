@@ -443,9 +443,9 @@ product-properties:
 
 network-properties:
   network:
-    name: pcf-management-network
+    name: pas
   other_availability_zones:
-  - name: ${singleton_availability_zone}
+    ${pas_vpc_azs}
   singleton_availability_zone:
     name: ${singleton_availability_zone}
 resource-config:
@@ -456,29 +456,54 @@ resource-config:
     instance_type:
       id: automatic
     internet_connected: false
-  blobstore:
-    instances: 0
-    persistent_disk:
-      size_mb: automatic
-    instance_type:
-      id: automatic
-    internet_connected: false
-  compute:
+  clock_global:
     instances: automatic
     instance_type:
       id: automatic
     internet_connected: false
-  control:
+  cloud_controller:
     instances: automatic
     instance_type:
       id: automatic
     internet_connected: false
     additional_vm_extensions:
     - s3_instance_profile
-  database:
+  cloud_controller_worker:
+    instances: automatic
+    instance_type:
+      id: automatic
+    internet_connected: false
+    additional_vm_extensions:
+    - s3_instance_profile
+  consul_server:
     instances: automatic
     persistent_disk:
       size_mb: automatic
+    instance_type:
+      id: automatic
+    internet_connected: false
+  credhub:
+    instances: automatic
+    instance_type:
+      id: automatic
+    internet_connected: false
+  diego_brain:
+    instances: automatic
+    instance_type:
+      id: automatic
+    internet_connected: false
+  diego_cell:
+    instances: automatic
+    instance_type:
+      id: automatic
+    internet_connected: false
+  diego_database:
+    instances: automatic
+    instance_type:
+      id: automatic
+    internet_connected: false
+  doppler:
+    instances: automatic
     instance_type:
       id: automatic
     internet_connected: false
@@ -487,8 +512,37 @@ resource-config:
     instance_type:
       id: automatic
     internet_connected: false
+  loggregator_trafficcontroller:
+    instances: automatic
+    instance_type:
+      id: automatic
+    internet_connected: false
+  mysql:
+    instances: 0
+    persistent_disk:
+      size_mb: automatic
+    instance_type:
+      id: automatic
+    internet_connected: false
   mysql_monitor:
     instances: 0
+    instance_type:
+      id: automatic
+    internet_connected: false
+  mysql_proxy:
+    instances: 0
+    instance_type:
+      id: automatic
+    internet_connected: false
+  nats:
+    instances: automatic
+    instance_type:
+      id: automatic
+    internet_connected: false
+  nfs_server:
+    instances: 0
+    persistent_disk:
+      size_mb: automatic
     instance_type:
       id: automatic
     internet_connected: false
@@ -498,10 +552,25 @@ resource-config:
       id: automatic
     internet_connected: false
     elb_names: ${router_elb_names}
+  syslog_adapter:
+    instances: automatic
+    instance_type:
+      id: automatic
+    internet_connected: false
+  syslog_scheduler:
+    instances: automatic
+    instance_type:
+      id: automatic
+    internet_connected: false
   tcp_router:
     instances: 0
     persistent_disk:
       size_mb: automatic
+    instance_type:
+      id: automatic
+    internet_connected: false
+  uaa:
+    instances: automatic
     instance_type:
       id: automatic
     internet_connected: false

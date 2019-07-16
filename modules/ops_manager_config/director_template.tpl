@@ -1,28 +1,20 @@
 az-configuration:
-- name: ${pas_subnet_availability_zone}
+  ${pas_vpc_azs}
 network-assignment:
   network:
-    name: pcf-management-network
+    name: infrastructure
   other_availability_zones: []
   singleton_availability_zone:
     name: ${singleton_availability_zone}
 networks-configuration:
   icmp_checks_enabled: false
   networks:
-  - name: pcf-management-network
+  - name: infrastructure
     subnets:
-    - iaas_identifier: ${pas_subnet_subnet_id}
-      cidr: ${pas_subnet_cidr}
-      dns: ${pas_subnet_dns}
-      # Gateway is the first IP address in the CIDR range.  For example, the
-      # gateway for `10.11.12.0/24` is `10.11.12.1`.
-      gateway: ${pas_subnet_gateway}
-      # Reserved ips are the first four IP addresses in the CIDR range.  For
-      # example, the reserved range for `10.11.12.0/24` is `10.11.12.1-10.11.12.4`.
-      reserved_ip_ranges: ${pas_subnet_reserved_ips}
-      # Use singleton_availability_zone from the previous section
-      availability_zone_names:
-      - ${pas_subnet_availability_zone}
+${infrastructure_subnets}
+  - name: pas
+    subnets:
+    ${pas_subnets}
 
 properties-configuration:
   director_configuration:
