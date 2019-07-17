@@ -72,6 +72,12 @@ module "route_pas_private_es" {
   requester_route_table_id = "${module.vpc_route_tables.es_public_vpc_route_table_id}"
 }
 
+module "route_cp_pas_private" {
+  source                   = "../../modules/routing"
+  accepter_route_table_id  = "${module.vpc_route_tables.cp_public_vpc_route_table_id}"
+  requester_route_table_id = "${module.vpc_route_tables.pas_private_vpc_route_table_id}"
+}
+
 variable "remote_state_region" {}
 variable "remote_state_bucket" {}
 
