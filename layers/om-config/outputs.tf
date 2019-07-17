@@ -26,6 +26,10 @@ output "download_portal_config" {
   value = "${module.om_config.download_portal_config}"
 }
 
+output "download_splunk_config" {
+  value = "${module.om_config.download_splunk_config}"
+}
+
 output "download_healthwatch_config" {
   value = "${module.om_config.download_healthwatch_config}"
 }
