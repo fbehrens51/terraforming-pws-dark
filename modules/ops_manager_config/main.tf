@@ -5,6 +5,9 @@ locals {
   pas_product_version = "2.4.8"
   portal_file_glob    = "pws-dark-portal*"
   portal_product_slug = "pws-dark-portal-tile"
+  healthwatch_file_glob = "p-healthwatch*.pivotal"
+  healthwatch_product_slug = "p-healthwatch"
+  healthwatch_product_version = "1.6.1"
 }
 
 data "aws_vpc" "vpc" {
@@ -254,6 +257,25 @@ data "template_file" "download_portal_config" {
     pivnet_file_glob    = "${local.portal_file_glob}"
     pivnet_product_slug = "${local.portal_product_slug}"
     product_version     = "${var.portal_product_version}"
+
+    pivnet_api_token = "${var.pivnet_api_token}"
+    s3_bucket        = "${var.product_blobs_s3_bucket}"
+
+    s3_endpoint          = "${var.product_blobs_s3_endpoint}"
+    s3_region_name       = "${var.product_blobs_s3_region}"
+    s3_access_key_id     = "${var.s3_access_key_id}"
+    s3_secret_access_key = "${var.s3_secret_access_key}"
+    s3_auth_type         = "${var.s3_auth_type}"
+  }
+}
+
+data "template_file" "download_healthwatch_config" {
+  template = "${file("${path.module}/download_product_config.tpl")}"
+
+  vars = {
+    pivnet_file_glob    = "${local.healthwatch_file_glob}"
+    pivnet_product_slug = "${local.healthwatch_product_slug}"
+    product_version     = "${local.healthwatch_product_version}"
 
     pivnet_api_token = "${var.pivnet_api_token}"
     s3_bucket        = "${var.product_blobs_s3_bucket}"
