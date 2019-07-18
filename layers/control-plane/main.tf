@@ -65,8 +65,8 @@ module "find_mjb_ami" {
 }
 
 module "control_plane_host_key_pair" {
-  source = "../../modules/key_pair"
-  key_name   = "${var.control_plane_host_key_pair_name}"
+  source   = "../../modules/key_pair"
+  key_name = "${var.control_plane_host_key_pair_name}"
 }
 
 locals {

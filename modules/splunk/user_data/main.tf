@@ -19,7 +19,7 @@ data "template_cloudinit_config" "splunk_conf_userdata" {
 }
 
 resource "random_string" "splunk_password" {
-  length = "32"
+  length  = "32"
   special = false
 }
 

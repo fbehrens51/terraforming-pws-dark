@@ -93,8 +93,8 @@ module "ubuntu_ami" {
 }
 
 module "ldap_host_key_pair" {
-  source = "../../modules/key_pair"
-  key_name   = "${var.ldap_host_key_pair_name}"
+  source   = "../../modules/key_pair"
+  key_name = "${var.ldap_host_key_pair_name}"
 }
 
 module "ldap_host" {

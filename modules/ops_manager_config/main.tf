@@ -7,8 +7,8 @@ locals {
   portal_file_glob    = "pws-dark-portal*"
   portal_product_slug = "pws-dark-portal-tile"
 
-  healthwatch_file_glob = "p-healthwatch*.pivotal"
-  healthwatch_product_slug = "p-healthwatch"
+  healthwatch_file_glob       = "p-healthwatch*.pivotal"
+  healthwatch_product_slug    = "p-healthwatch"
   healthwatch_product_version = "1.6.1"
 
   splunk_file_glob       = "splunk-nozzle*.pivotal"

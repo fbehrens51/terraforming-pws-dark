@@ -56,7 +56,7 @@ data "aws_ebs_volume" "vm_importer_volume" {
 }
 
 module "key_pair" {
-  source = "../key_pair"
+  source   = "../key_pair"
   key_name = "vm importer"
 }
 

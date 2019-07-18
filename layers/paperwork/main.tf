@@ -21,7 +21,7 @@ module "paperwork" {
   bucket_role_name      = "${var.bucket_role_name}"
   director_role_name    = "${var.director_role_name}"
   key_manager_role_name = "${var.key_manager_role_name}"
-  splunk_role_name = "${var.splunk_role_name}"
+  splunk_role_name      = "${var.splunk_role_name}"
 
   env_name      = "${var.env_name}"
   root_domain   = "${var.root_domain}"

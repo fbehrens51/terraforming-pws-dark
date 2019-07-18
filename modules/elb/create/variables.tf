@@ -22,4 +22,6 @@ variable "port" {
   default = 443
 }
 
-variable "instance_port" { default = ""}
+variable "instance_port" {
+  default = ""
+}

@@ -51,8 +51,8 @@ module "amazon_ami" {
 }
 
 module "bind_host_key_pair" {
-  source = "../../modules/key_pair"
-  key_name   = "${local.modified_name}"
+  source   = "../../modules/key_pair"
+  key_name = "${local.modified_name}"
 }
 
 module "bind_master_user_data" {

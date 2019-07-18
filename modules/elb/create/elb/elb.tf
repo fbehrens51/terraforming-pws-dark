@@ -26,6 +26,7 @@ resource "aws_elb" "elb" {
 }
 
 variable "instance_port" {}
+
 variable "port" {
   type = "string"
 }

@@ -199,18 +199,17 @@ resource "aws_iam_role_policy_attachment" "key_manager_attach" {
   role       = "${aws_iam_role.key_manager.name}"
 }
 
-
-
-
 data "aws_iam_policy_document" "s3_reader" {
   statement {
-    effect    = "Allow"
-    actions   = [ "s3:Get*",
-      "s3:List*"]
+    effect = "Allow"
+
+    actions = ["s3:Get*",
+      "s3:List*",
+    ]
+
     resources = ["*"]
   }
 }
-
 
 resource "aws_iam_policy_attachment" "splunk" {
   name       = "${var.splunk_role_name}"
@@ -219,13 +218,13 @@ resource "aws_iam_policy_attachment" "splunk" {
 }
 
 resource "aws_iam_policy" "splunk_reader" {
-  name = "${var.splunk_role_name}"
-  path = "/"
+  name   = "${var.splunk_role_name}"
+  path   = "/"
   policy = "${data.aws_iam_policy_document.s3_reader.json}"
 }
 
 resource "aws_iam_role" "splunk_role" {
-  name = "${var.splunk_role_name}"
+  name               = "${var.splunk_role_name}"
   assume_role_policy = "${data.aws_iam_policy_document.role_policy.json}"
 }
 

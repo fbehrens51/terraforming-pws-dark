@@ -2,8 +2,7 @@ terraform {
   backend "s3" {}
 }
 
-provider "aws" {
-}
+provider "aws" {}
 
 module "providers" {
   source = "../../modules/dark_providers"
@@ -199,7 +198,7 @@ module "amazon_ami" {
 
 resource "aws_ebs_volume" "splunk_data" {
   availability_zone = "${var.singleton_availability_zone}"
-  size = 1000
+  size              = 1000
 
   tags {
     Name = "${local.splunk_volume_tag}"
@@ -268,8 +267,8 @@ output "splunk_private_ip" {
   value = "${module.bootstrap_splunk.private_ip}"
 }
 
-output "splunk_volume_tag"{
-  value ="${local.splunk_volume_tag}"
+output "splunk_volume_tag" {
+  value = "${local.splunk_volume_tag}"
 }
 
 output "splunk_subnet_id" {
