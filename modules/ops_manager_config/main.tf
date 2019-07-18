@@ -11,6 +11,12 @@ locals {
   healthwatch_product_slug    = "p-healthwatch"
   healthwatch_product_version = "1.6.1"
 
+  clamav_product_slug    = "p-clamav-addon"
+  clamav_product_version = "2.0.0"
+
+  clamav_addon_file_glob  = "p-clamav-[0-9]*.pivotal"
+  clamav_mirror_file_glob = "p-clamav-mirror-[0-9]*.pivotal"
+
   splunk_file_glob       = "splunk-nozzle*.pivotal"
   splunk_product_slug    = "splunk-nozzle"
   splunk_product_version = "1.1.1"
@@ -301,6 +307,44 @@ data "template_file" "download_healthwatch_config" {
     pivnet_file_glob    = "${local.healthwatch_file_glob}"
     pivnet_product_slug = "${local.healthwatch_product_slug}"
     product_version     = "${local.healthwatch_product_version}"
+
+    pivnet_api_token = "${var.pivnet_api_token}"
+    s3_bucket        = "${var.product_blobs_s3_bucket}"
+
+    s3_endpoint          = "${var.product_blobs_s3_endpoint}"
+    s3_region_name       = "${var.product_blobs_s3_region}"
+    s3_access_key_id     = "${var.s3_access_key_id}"
+    s3_secret_access_key = "${var.s3_secret_access_key}"
+    s3_auth_type         = "${var.s3_auth_type}"
+  }
+}
+
+data "template_file" "download_clamav_mirror_config" {
+  template = "${file("${path.module}/download_product_config.tpl")}"
+
+  vars = {
+    pivnet_file_glob    = "${local.clamav_mirror_file_glob}"
+    pivnet_product_slug = "${local.clamav_product_slug}"
+    product_version     = "${local.clamav_product_version}"
+
+    pivnet_api_token = "${var.pivnet_api_token}"
+    s3_bucket        = "${var.product_blobs_s3_bucket}"
+
+    s3_endpoint          = "${var.product_blobs_s3_endpoint}"
+    s3_region_name       = "${var.product_blobs_s3_region}"
+    s3_access_key_id     = "${var.s3_access_key_id}"
+    s3_secret_access_key = "${var.s3_secret_access_key}"
+    s3_auth_type         = "${var.s3_auth_type}"
+  }
+}
+
+data "template_file" "download_clamav_addon_config" {
+  template = "${file("${path.module}/download_product_config.tpl")}"
+
+  vars = {
+    pivnet_file_glob    = "${local.clamav_addon_file_glob}"
+    pivnet_product_slug = "${local.clamav_product_slug}"
+    product_version     = "${local.clamav_product_version}"
 
     pivnet_api_token = "${var.pivnet_api_token}"
     s3_bucket        = "${var.product_blobs_s3_bucket}"

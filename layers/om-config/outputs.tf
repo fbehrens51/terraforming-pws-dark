@@ -33,3 +33,11 @@ output "download_splunk_config" {
 output "download_healthwatch_config" {
   value = "${module.om_config.download_healthwatch_config}"
 }
+
+output "download_clamav_addon_config" {
+  value = "${module.om_config.download_clamav_addon_config}"
+}
+
+output "download_clamav_mirror_config" {
+  value = "${module.om_config.download_clamav_mirror_config}"
+}

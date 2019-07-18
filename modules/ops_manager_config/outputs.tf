@@ -33,3 +33,11 @@ output "download_portal_config" {
 output "download_healthwatch_config" {
   value = "${data.template_file.download_healthwatch_config.rendered}"
 }
+
+output "download_clamav_mirror_config" {
+  value = "${data.template_file.download_clamav_mirror_config.rendered}"
+}
+
+output "download_clamav_addon_config" {
+  value = "${data.template_file.download_clamav_addon_config.rendered}"
+}
