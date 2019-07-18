@@ -8,9 +8,7 @@ variable "availability_zones" {
 
 variable "singleton_availability_zone" {}
 
-variable "network_name" {
-  default = "pcf-management-network"
-}
+variable "network_name" {}
 
 terraform {
   backend "s3" {}
