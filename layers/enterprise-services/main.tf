@@ -111,6 +111,11 @@ locals {
       protocol    = "tcp"
       cidr_blocks = "0.0.0.0/0"
     },
+    {
+      port        = "8090"
+      protocol    = "tcp"
+      cidr_blocks = "0.0.0.0/0"
+    },
   ]
 
   splunk_egress_rules = [
