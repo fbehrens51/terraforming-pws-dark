@@ -46,6 +46,18 @@ data "terraform_remote_state" "ldap" {
   }
 }
 
+data "terraform_remote_state" "splunk" {
+  backend = "s3"
+
+  config {
+    bucket     = "${var.remote_state_bucket}"
+    key        = "splunk"
+    region     = "${var.remote_state_region}"
+    encrypt    = true
+    kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
+  }
+}
+
 data "terraform_remote_state" "pas" {
   backend = "s3"
 
@@ -179,6 +191,9 @@ module "om_config" {
   s3_access_key_id          = "${var.s3_access_key_id}"
   s3_secret_access_key      = "${var.s3_secret_access_key}"
   s3_auth_type              = "${var.s3_auth_type}"
+
+  splunk_syslog_host = "${data.terraform_remote_state.splunk.splunk_syslog_host_name}"
+  splunk_syslog_port = "${data.terraform_remote_state.splunk.splunk_syslog_port}"
 }
 
 locals {

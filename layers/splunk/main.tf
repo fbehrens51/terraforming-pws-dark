@@ -199,6 +199,14 @@ output "splunk_dns_name" {
   value = "${dns_cname_record.splunk_cname.name}.${substr(dns_cname_record.splunk_cname.zone, 0, length(dns_cname_record.splunk_cname.zone) - 1)}"
 }
 
+output "splunk_syslog_host_name" {
+  value = "${module.splunk.private_ips[0]}"
+}
+
+output "splunk_syslog_port" {
+  value = "8090"
+}
+
 output "splunk_private_ips" {
   value = "${module.splunk.private_ips}"
 }

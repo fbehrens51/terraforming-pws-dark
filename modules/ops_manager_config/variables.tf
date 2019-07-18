@@ -437,3 +437,7 @@ variable "s3_access_key_id" {}
 variable "s3_secret_access_key" {}
 
 variable "s3_auth_type" {}
+
+variable "splunk_syslog_host" {}
+
+variable "splunk_syslog_port" {}

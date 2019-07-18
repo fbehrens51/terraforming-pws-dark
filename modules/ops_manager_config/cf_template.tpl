@@ -243,6 +243,12 @@ product-properties:
     value: ${smtp_from}
   .properties.smtp_port:
     value: ${smtp_port}
+  .properties.syslog_host:
+    value: ${splunk_syslog_host}
+  .properties.syslog_port:
+    value: ${splunk_syslog_port}
+  .properties.syslog_protocol:
+    value: tcp
   .properties.syslog_drop_debug:
     value: true
   .properties.syslog_metrics_to_syslog_enabled:
