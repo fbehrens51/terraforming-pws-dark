@@ -68,7 +68,7 @@ output "router_trusted_ca_certs" {
 }
 
 output "trusted_ca_certs" {
-  value = "${module.paperwork.trusted_ca_certs}"
+  value = "${module.paperwork.trusted_ca_certs}${var.additional_trusted_ca_certs}"
 }
 
 output "ldap_server_cert" {
@@ -160,4 +160,9 @@ variable "root_domain" {
 
 variable "region" {
   type = "string"
+}
+
+variable "additional_trusted_ca_certs" {
+  type = "string"
+  default = ""
 }
