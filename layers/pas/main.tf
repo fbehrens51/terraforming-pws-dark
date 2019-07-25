@@ -333,3 +333,7 @@ output "om_security_group_id" {
 output "om_ssh_public_key_pair_name" {
   value = "${local.om_key_name}"
 }
+
+output "om_dns_name" {
+  value = "${dns_cname_record.om_cname.name}.${substr(dns_cname_record.om_cname.zone, 0, length(dns_cname_record.om_cname.zone) - 1)}"
+}
