@@ -10,6 +10,18 @@ module "providers" {
   source = "../../modules/dark_providers"
 }
 
+data "terraform_remote_state" "public-aws-prereqs" {
+  backend = "s3"
+
+  config {
+    bucket     = "${var.remote_state_bucket}"
+    key        = "public-aws-prereqs"
+    region     = "${var.remote_state_region}"
+    encrypt    = true
+    kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
+  }
+}
+
 data "terraform_remote_state" "paperwork" {
   backend = "s3"
 
@@ -78,6 +90,9 @@ locals {
   bind_rndc_secret = "${data.terraform_remote_state.keys.bind_rndc_secret}"
   master_dns_ip    = "${data.terraform_remote_state.bind.master_public_ip}"
   dns_zone_name    = "${data.terraform_remote_state.bind.zone_name}"
+
+  basedn = "ou=users,dc=${join(",dc=", split(".", var.root_domain))}"
+  admin  = "cn=admin,dc=${join(",dc=", split(".", var.root_domain))}"
 }
 
 data "aws_region" "current" {}
@@ -109,16 +124,20 @@ module "ldap_host" {
 module "ldap_configure" {
   source = "./modules/ldap-server"
 
-  tls_server_cert     = "${data.terraform_remote_state.paperwork.ldap_server_cert}"
-  tls_server_key      = "${data.terraform_remote_state.paperwork.ldap_server_key}"
+  tls_server_cert     = "${data.terraform_remote_state.public-aws-prereqs.ldap_server_cert}"
+  tls_server_key      = "${data.terraform_remote_state.public-aws-prereqs.ldap_server_key}"
+  user_certs          = "${data.terraform_remote_state.public-aws-prereqs.user_certs}"
   tls_server_ca_cert  = "${data.terraform_remote_state.paperwork.root_ca_cert}"
-  user_certs          = "${data.terraform_remote_state.paperwork.user_certs}"
   ssh_private_key_pem = "${module.ldap_host_key_pair.private_key_pem}"
   ssh_host            = "${data.terraform_remote_state.enterprise_services.ldap_public_ip}"
   instance_id         = "${module.ldap_host.instance_ids[0]}"
   env_name            = "${local.env_name}"
   users               = "${var.users}"
   root_domain         = "${var.root_domain}"
+
+  basedn = "${data.terraform_remote_state.paperwork.ldap_basedn}"
+  admin = "${data.terraform_remote_state.paperwork.ldap_dn}"
+  password = "${data.terraform_remote_state.paperwork.ldap_password}"
 }
 
 module "ldap_elb" {
@@ -154,31 +173,6 @@ resource "dns_cname_record" "ldap_cname" {
   name  = "ldap"
   cname = "${module.ldap_elb.dns_name}."
   ttl   = 300
-}
-
-output "password" {
-  value     = "${module.ldap_configure.password}"
-  sensitive = true
-}
-
-output "dn" {
-  value = "${module.ldap_configure.dn}"
-}
-
-output "basedn" {
-  value = "${module.ldap_configure.basedn}"
-}
-
-output "role_attr" {
-  value = "${module.ldap_configure.role_attr}"
-}
-
-output "host" {
-  value = "${data.terraform_remote_state.enterprise_services.ldap_public_ip}"
-}
-
-output "port" {
-  value = "636"
 }
 
 variable "root_domain" {}

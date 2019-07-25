@@ -34,18 +34,6 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
-data "terraform_remote_state" "ldap" {
-  backend = "s3"
-
-  config {
-    bucket     = "${var.remote_state_bucket}"
-    key        = "ldap-server"
-    region     = "${var.remote_state_region}"
-    encrypt    = true
-    kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
-  }
-}
-
 data "terraform_remote_state" "splunk" {
   backend = "s3"
 
@@ -174,14 +162,14 @@ module "om_config" {
   ldap_tls_ca_cert       = "${data.terraform_remote_state.paperwork.root_ca_cert}"
   ldap_tls_client_cert   = "${data.terraform_remote_state.paperwork.ldap_client_cert}"
   ldap_tls_client_key    = "${data.terraform_remote_state.paperwork.ldap_client_key}"
-  smoke_test_client_cert = "${lookup(data.terraform_remote_state.paperwork.user_certs, "smoke")}"
-  smoke_test_client_key  = "${lookup(data.terraform_remote_state.paperwork.user_private_keys, "smoke")}"
-  ldap_basedn            = "${data.terraform_remote_state.ldap.basedn}"
-  ldap_dn                = "${data.terraform_remote_state.ldap.dn}"
-  ldap_password          = "${data.terraform_remote_state.ldap.password}"
+  smoke_test_client_cert = "${data.terraform_remote_state.paperwork.portal_smoke_test_cert}"
+  smoke_test_client_key  = "${data.terraform_remote_state.paperwork.portal_smoke_test_key}"
+  ldap_basedn            = "${data.terraform_remote_state.paperwork.ldap_basedn}"
+  ldap_dn                = "${data.terraform_remote_state.paperwork.ldap_dn}"
+  ldap_password          = "${data.terraform_remote_state.paperwork.ldap_password}"
   ldap_host              = "${data.terraform_remote_state.paperwork.ldap_host}"
-  ldap_port              = "${data.terraform_remote_state.ldap.port}"
-  ldap_role_attr         = "${data.terraform_remote_state.ldap.role_attr}"
+  ldap_port              = "${data.terraform_remote_state.paperwork.ldap_port}"
+  ldap_role_attr         = "${data.terraform_remote_state.paperwork.ldap_role_attr}"
 
   pivnet_api_token          = "${var.pivnet_api_token}"
   product_blobs_s3_bucket   = "${var.product_blobs_s3_bucket}"

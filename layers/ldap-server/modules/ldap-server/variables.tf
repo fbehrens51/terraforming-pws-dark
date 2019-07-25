@@ -1,3 +1,15 @@
+variable "basedn" {
+  type = "string"
+}
+
+variable "admin" {
+  type = "string"
+}
+
+variable "password" {
+  type = "string"
+}
+
 variable "users" {
   type = "list"
 }

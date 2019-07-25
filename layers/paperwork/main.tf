@@ -10,41 +10,138 @@ provider "aws" {
   region = "${var.region}"
 }
 
-locals {
-  ldap_domain   = "ldap.${var.root_domain}"
-  system_domain = "run.${var.root_domain}"
-  apps_domain   = "cfapps.${var.root_domain}"
+variable "region" {}
+
+variable "cert_bucket" {}
+
+variable "pas_vpc_id" {}
+
+variable "bastion_vpc_id" {}
+
+variable "es_vpc_id" {}
+
+variable "cp_vpc_id" {}
+
+variable "director_role_name" {}
+
+variable "key_manager_role_name" {}
+
+variable "splunk_role_name" {}
+
+variable "bucket_role_name" {}
+
+variable "ldap_basedn" {}
+
+variable "ldap_dn" {}
+
+variable "ldap_host" {}
+
+variable "ldap_port" {}
+
+variable "ldap_role_attr" {}
+
+variable "system_domain" {}
+
+variable "apps_domain" {}
+
+variable "ldap_password_s3_path" {}
+
+data "aws_s3_bucket_object" "ldap_password" {
+  bucket = "${var.cert_bucket}"
+  key    = "${var.ldap_password_s3_path}"
 }
 
-module "paperwork" {
-  source                = "./modules/paperwork"
-  bucket_role_name      = "${var.bucket_role_name}"
-  director_role_name    = "${var.director_role_name}"
-  key_manager_role_name = "${var.key_manager_role_name}"
-  splunk_role_name      = "${var.splunk_role_name}"
+variable "root_ca_cert_s3_path" {}
 
-  env_name      = "${var.env_name}"
-  root_domain   = "${var.root_domain}"
-  ldap_domain   = "${local.ldap_domain}"
-  system_domain = "${local.system_domain}"
-  apps_domain   = "${local.apps_domain}"
-  users         = "${var.users}"
+data "aws_s3_bucket_object" "root_ca_cert" {
+  bucket = "${var.cert_bucket}"
+  key    = "${var.root_ca_cert_s3_path}"
+}
+
+variable "router_trusted_ca_certs_s3_path" {}
+
+data "aws_s3_bucket_object" "router_trusted_ca_certs" {
+  bucket = "${var.cert_bucket}"
+  key    = "${var.router_trusted_ca_certs_s3_path}"
+}
+
+variable "trusted_ca_certs_s3_path" {}
+
+data "aws_s3_bucket_object" "trusted_ca_certs" {
+  bucket = "${var.cert_bucket}"
+  key    = "${var.trusted_ca_certs_s3_path}"
+}
+
+variable "router_server_cert_s3_path" {}
+
+data "aws_s3_bucket_object" "router_server_cert" {
+  bucket = "${var.cert_bucket}"
+  key    = "${var.router_server_cert_s3_path}"
+}
+
+variable "router_server_key_s3_path" {}
+
+data "aws_s3_bucket_object" "router_server_key" {
+  bucket = "${var.cert_bucket}"
+  key    = "${var.router_server_key_s3_path}"
+}
+
+variable "uaa_server_cert_s3_path" {}
+
+data "aws_s3_bucket_object" "uaa_server_cert" {
+  bucket = "${var.cert_bucket}"
+  key    = "${var.uaa_server_cert_s3_path}"
+}
+
+variable "uaa_server_key_s3_path" {}
+
+data "aws_s3_bucket_object" "uaa_server_key" {
+  bucket = "${var.cert_bucket}"
+  key    = "${var.uaa_server_key_s3_path}"
+}
+
+variable "ldap_client_cert_s3_path" {}
+
+data "aws_s3_bucket_object" "ldap_client_cert" {
+  bucket = "${var.cert_bucket}"
+  key    = "${var.ldap_client_cert_s3_path}"
+}
+
+variable "ldap_client_key_s3_path" {}
+
+data "aws_s3_bucket_object" "ldap_client_key" {
+  bucket = "${var.cert_bucket}"
+  key    = "${var.ldap_client_key_s3_path}"
+}
+
+variable "portal_smoke_test_cert_s3_path" {}
+
+data "aws_s3_bucket_object" "portal_smoke_test_cert" {
+  bucket = "${var.cert_bucket}"
+  key    = "${var.portal_smoke_test_cert_s3_path}"
+}
+
+variable "portal_smoke_test_key_s3_path" {}
+
+data "aws_s3_bucket_object" "portal_smoke_test_key" {
+  bucket = "${var.cert_bucket}"
+  key    = "${var.portal_smoke_test_key_s3_path}"
 }
 
 output "pas_vpc_id" {
-  value = "${module.paperwork.pas_vpc_id}"
+  value = "${var.pas_vpc_id}"
 }
 
 output "bastion_vpc_id" {
-  value = "${module.paperwork.bastion_vpc_id}"
+  value = "${var.bastion_vpc_id}"
 }
 
 output "es_vpc_id" {
-  value = "${module.paperwork.es_vpc_id}"
+  value = "${var.es_vpc_id}"
 }
 
 output "cp_vpc_id" {
-  value = "${module.paperwork.cp_vpc_id}"
+  value = "${var.cp_vpc_id}"
 }
 
 output "director_role_name" {
@@ -60,109 +157,85 @@ output "splunk_role_name" {
 }
 
 output "root_ca_cert" {
-  value = "${module.paperwork.root_ca_cert}"
+  value = "${data.aws_s3_bucket_object.root_ca_cert.body}"
 }
 
 output "router_trusted_ca_certs" {
-  value = "${module.paperwork.router_trusted_ca_certs}"
+  value = "${data.aws_s3_bucket_object.router_trusted_ca_certs.body}"
 }
 
 output "trusted_ca_certs" {
-  value = "${module.paperwork.trusted_ca_certs}${var.additional_trusted_ca_certs}"
-}
-
-output "ldap_server_cert" {
-  value = "${module.paperwork.ldap_server_cert}"
-}
-
-output "ldap_server_key" {
-  value     = "${module.paperwork.ldap_server_key}"
-  sensitive = true
+  value = "${data.aws_s3_bucket_object.trusted_ca_certs.body}"
 }
 
 output "router_server_cert" {
-  value = "${module.paperwork.router_server_cert}"
+  value = "${data.aws_s3_bucket_object.router_server_cert.body}"
 }
 
 output "router_server_key" {
-  value     = "${module.paperwork.router_server_key}"
+  value     = "${data.aws_s3_bucket_object.router_server_key.body}"
   sensitive = true
 }
 
 output "uaa_server_cert" {
-  value = "${module.paperwork.uaa_server_cert}"
+  value = "${data.aws_s3_bucket_object.uaa_server_cert.body}"
 }
 
 output "uaa_server_key" {
-  value     = "${module.paperwork.uaa_server_key}"
+  value     = "${data.aws_s3_bucket_object.uaa_server_key.body}"
   sensitive = true
 }
 
 output "ldap_client_cert" {
-  value = "${module.paperwork.ldap_client_cert}"
+  value = "${data.aws_s3_bucket_object.ldap_client_cert.body}"
 }
 
 output "ldap_client_key" {
-  value     = "${module.paperwork.ldap_client_key}"
+  value     = "${data.aws_s3_bucket_object.ldap_client_key.body}"
   sensitive = true
 }
 
-output "user_private_keys" {
-  value     = "${module.paperwork.user_private_keys}"
-  sensitive = true
+output "portal_smoke_test_cert" {
+  value = "${data.aws_s3_bucket_object.portal_smoke_test_cert.body}"
 }
 
-output "user_certs" {
-  value = "${module.paperwork.user_certs}"
+output "portal_smoke_test_key" {
+  value     = "${data.aws_s3_bucket_object.portal_smoke_test_key.body}"
+  sensitive = true
 }
 
 output "bucket_role_name" {
   value = "${var.bucket_role_name}"
 }
 
+output "ldap_basedn" {
+  value = "${var.ldap_basedn}"
+}
+
+output "ldap_dn" {
+  value = "${var.ldap_dn}"
+}
+
+output "ldap_password" {
+  value = "${data.aws_s3_bucket_object.ldap_password.body}"
+}
+
 output "ldap_host" {
-  value = "${local.ldap_domain}"
+  value = "${var.ldap_host}"
+}
+
+output "ldap_port" {
+  value = "${var.ldap_port}"
+}
+
+output "ldap_role_attr" {
+  value = "${var.ldap_role_attr}"
 }
 
 output "system_domain" {
-  value = "${local.system_domain}"
+  value = "${var.system_domain}"
 }
 
 output "apps_domain" {
-  value = "${local.apps_domain}"
-}
-
-variable "users" {
-  type = "list"
-}
-
-variable "bucket_role_name" {
-  type = "string"
-}
-
-variable "director_role_name" {
-  type = "string"
-}
-
-variable "key_manager_role_name" {
-  type = "string"
-}
-
-variable "splunk_role_name" {}
-
-variable "env_name" {
-  type = "string"
-}
-
-variable "root_domain" {
-  type = "string"
-}
-
-variable "region" {
-  type = "string"
-}
-
-variable "additional_trusted_ca_certs" {
-  type = "string"
-  default = ""
+  value = "${var.apps_domain}"
 }

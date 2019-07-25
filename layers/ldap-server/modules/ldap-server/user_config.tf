@@ -11,7 +11,7 @@ data "template_file" "ldif_file" {
   template = "${file("${path.module}/user.ldif.tpl")}"
 
   vars = {
-    basedn   = "${local.basedn}"
+    basedn   = "${var.basedn}"
     username = "${lookup(var.users[count.index], "username")}"
     name     = "${lookup(var.users[count.index], "name")}"
     email    = "${lookup(var.users[count.index], "email")}"
@@ -25,8 +25,8 @@ data "template_file" "ldapadd" {
   # when = destroy is buggy and doesn't really work. (https://github.com/hashicorp/terraform/issues/13549)
   # instead, always delete / re-add the user when the config changes
   template = <<EOT
-    ldapdelete -D '${local.admin}' -w '${random_string.ldap_password.result}' -H ldap:// 'uid=${lookup(var.users[count.index], "username")},${local.basedn}' || true
-    ldapadd -x -D "${local.admin}" -w '${random_string.ldap_password.result}' -H ldap:// -f /tmp/conf/users/${lookup(var.users[count.index], "username")}.ldif
+    ldapdelete -D '${var.admin}' -w '${var.password}' -H ldap:// 'uid=${lookup(var.users[count.index], "username")},${var.basedn}' || true
+    ldapadd -x -D "${var.admin}" -w '${var.password}' -H ldap:// -f /tmp/conf/users/${lookup(var.users[count.index], "username")}.ldif
 EOT
 }
 

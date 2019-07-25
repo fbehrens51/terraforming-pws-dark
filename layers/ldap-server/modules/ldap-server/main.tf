@@ -1,21 +1,11 @@
-locals {
-  basedn = "ou=users,dc=${join(",dc=", split(".", var.root_domain))}"
-  admin  = "cn=admin,dc=${join(",dc=", split(".", var.root_domain))}"
-}
-
-resource "random_string" "ldap_password" {
-  length  = "16"
-  special = false
-}
-
 data "template_file" "configure" {
   template = "${file("${path.module}/configure.sh.tpl")}"
 
   vars = {
     domain   = "${var.root_domain}"
-    basedn   = "${local.basedn}"
-    admin    = "${local.admin}"
-    password = "${random_string.ldap_password.result}"
+    basedn   = "${var.basedn}"
+    admin    = "${var.admin}"
+    password = "${var.password}"
   }
 }
 
@@ -23,7 +13,7 @@ data "template_file" "users_schema" {
   template = "${file("${path.module}/users.ldif.tpl")}"
 
   vars = {
-    basedn = "${local.basedn}"
+    basedn = "${var.basedn}"
   }
 }
 
