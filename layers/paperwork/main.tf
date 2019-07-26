@@ -6,9 +6,7 @@ module "providers" {
   source = "../../modules/dark_providers"
 }
 
-provider "aws" {
-  region = "${var.region}"
-}
+provider "aws" {}
 
 variable "region" {}
 

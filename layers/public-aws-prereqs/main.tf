@@ -6,9 +6,7 @@ module "providers" {
   source = "../../modules/dark_providers"
 }
 
-provider "aws" {
-  region = "${var.region}"
-}
+provider "aws" {}
 
 locals {
   ldap_domain   = "ldap.${var.root_domain}"

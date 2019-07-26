@@ -193,7 +193,6 @@ module "bootstrap_splunk" {
 
 module "amazon_ami" {
   source = "../../modules/amis/amazon_hvm_ami"
-  region = "${var.region}"
 }
 
 resource "aws_ebs_volume" "splunk_data" {

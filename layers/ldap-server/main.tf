@@ -2,9 +2,7 @@ terraform {
   backend "s3" {}
 }
 
-provider "aws" {
-  region = "${var.region}"
-}
+provider "aws" {}
 
 module "providers" {
   source = "../../modules/dark_providers"

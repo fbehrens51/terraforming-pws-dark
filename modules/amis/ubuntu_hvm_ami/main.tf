@@ -1,11 +1,3 @@
-variable "region" {
-  description = "Region to retrieve AMI for"
-}
-
-provider "aws" {
-  region = "${var.region}"
-}
-
 data "aws_ami" "ubuntu_hvm_ami" {
   most_recent = true
 

@@ -2,9 +2,7 @@ terraform {
   backend "s3" {}
 }
 
-provider "aws" {
-  region = "${var.region}"
-}
+provider "aws" {}
 
 data "terraform_remote_state" "paperwork" {
   backend = "s3"

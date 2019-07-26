@@ -14,9 +14,7 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
-provider "aws" {
-  region = "${var.region}"
-}
+provider "aws" {}
 
 module "providers" {
   source = "../../modules/dark_providers"
