@@ -13,7 +13,7 @@ locals {
   system_domain = "run.${var.root_domain}"
   apps_domain   = "cfapps.${var.root_domain}"
 
-  cert_bucket                     = "pws-dark-ci-certs"
+  cert_bucket                     = "${replace(var.env_name," ","-")}-certs"
   root_ca_cert_s3_path            = "root_ca_cert.pem"
   router_trusted_ca_certs_s3_path = "router_trusted_ca_certs.pem"
   trusted_ca_certs_s3_path        = "trusted_ca_certs.pem"
