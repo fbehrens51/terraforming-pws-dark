@@ -1,4 +1,3 @@
-
 data "aws_ami" "amazon_linux_hvm_ami" {
   most_recent = true
 

@@ -8,8 +8,6 @@ module "providers" {
 
 provider "aws" {}
 
-variable "region" {}
-
 variable "cert_bucket" {}
 
 variable "pas_vpc_id" {}

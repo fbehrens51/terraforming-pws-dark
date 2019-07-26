@@ -176,7 +176,6 @@ resource "dns_cname_record" "ldap_cname" {
 variable "root_domain" {}
 variable "remote_state_region" {}
 variable "remote_state_bucket" {}
-variable "singleton_availability_zone" {}
 
 variable "users" {
   type = "list"
@@ -187,4 +186,3 @@ variable "tags" {
 }
 
 variable "ldap_host_key_pair_name" {}
-variable "region" {}

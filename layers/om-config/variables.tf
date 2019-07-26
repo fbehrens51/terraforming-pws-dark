@@ -1,4 +1,3 @@
-variable "region" {}
 variable "remote_state_bucket" {}
 variable "remote_state_region" {}
 variable "singleton_availability_zone" {}
@@ -28,7 +27,6 @@ variable "custom_ssh_banner_file" {}
 variable "rds_ca_cert_file" {}
 variable "jwt_expiration" {}
 variable "env_name" {}
-variable "internetless" {}
 variable "s3_endpoint" {}
 variable "ec2_endpoint" {}
 variable "elb_endpoint" {}
@@ -51,13 +49,5 @@ variable "s3_auth_type" {
 }
 
 variable "ntp_servers" {
-  type = "list"
-}
-
-variable "tags" {
-  type = "map"
-}
-
-variable "availability_zones" {
   type = "list"
 }

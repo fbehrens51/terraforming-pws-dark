@@ -208,7 +208,6 @@ variable "env_name" {}
 variable "remote_state_region" {}
 variable "remote_state_bucket" {}
 variable "singleton_availability_zone" {}
-variable "region" {}
 
 variable "tags" {
   type = "map"

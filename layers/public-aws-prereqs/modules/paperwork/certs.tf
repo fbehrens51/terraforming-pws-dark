@@ -1,4 +1,3 @@
-variable "root_domain" {}
 variable "ldap_domain" {}
 variable "apps_domain" {}
 variable "system_domain" {}

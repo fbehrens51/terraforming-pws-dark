@@ -96,4 +96,3 @@ variable "tags" {
 }
 
 variable "bastion_host_key_pair_name" {}
-variable "region" {}

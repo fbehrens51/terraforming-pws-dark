@@ -82,5 +82,3 @@ variable "remote_state_bucket" {}
 variable "env_name" {
   type = "string"
 }
-
-variable "region" {}

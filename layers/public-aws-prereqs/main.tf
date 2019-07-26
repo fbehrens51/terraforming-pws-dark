@@ -119,15 +119,9 @@ variable "root_domain" {
   type = "string"
 }
 
-variable "region" {
-  type = "string"
-}
-
 variable "users" {
   type = "list"
 }
-
-variable "cert_bucket_kms_key_id" {}
 
 resource "aws_s3_bucket_object" "router_trusted_ca_certs" {
   key          = "${local.router_trusted_ca_certs_s3_path}"

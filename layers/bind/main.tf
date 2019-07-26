@@ -108,10 +108,8 @@ resource "aws_eip_association" "bind_slave_eip_assoc" {
   allocation_id = "${local.slave_eip_list[count.index]}"
 }
 
-variable "env_name" {}
 variable "remote_state_region" {}
 variable "remote_state_bucket" {}
-variable "region" {}
 
 variable "tags" {
   type = "map"

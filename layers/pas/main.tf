@@ -202,11 +202,6 @@ variable "tags" {
   type = "map"
 }
 
-variable "s3_endpoint" {}
-variable "ec2_endpoint" {}
-variable "elb_endpoint" {}
-variable "region" {}
-
 locals {
   cp_vpc_id        = "${data.terraform_remote_state.paperwork.cp_vpc_id}"
   bastion_vpc_id   = "${data.terraform_remote_state.paperwork.bastion_vpc_id}"

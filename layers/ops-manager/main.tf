@@ -46,7 +46,6 @@ locals {
 
 variable "remote_state_bucket" {}
 variable "remote_state_region" {}
-variable "region" {}
 
 variable "om_ami_id" {}
 

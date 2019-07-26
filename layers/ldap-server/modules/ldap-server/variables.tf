@@ -42,10 +42,6 @@ variable "instance_id" {
   type = "string"
 }
 
-variable "env_name" {
-  type = "string"
-}
-
 variable "user_certs" {
   type = "map"
 }

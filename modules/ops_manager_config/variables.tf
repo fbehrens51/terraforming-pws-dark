@@ -367,8 +367,6 @@ variable "rds_ca_cert_file" {
   description = "CA Cert which signs the rds server certificate."
 }
 
-variable "pas_bucket_iam_instance_profile_name" {}
-
 variable "blobstore_instance_profile" {
   type        = "string"
   description = "An IAM Instance profile which permission to read and write to the buckets specified below"

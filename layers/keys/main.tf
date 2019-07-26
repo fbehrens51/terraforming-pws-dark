@@ -40,7 +40,6 @@ variable "kms_key_name" {
 variable "remote_state_region" {}
 variable "remote_state_bucket" {}
 
-variable "region" {}
 variable "env_name" {}
 
 output "kms_key_id" {
