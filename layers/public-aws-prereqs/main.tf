@@ -44,7 +44,6 @@ module "paperwork" {
   splunk_role_name      = "${var.splunk_role_name}"
 
   env_name      = "${var.env_name}"
-  root_domain   = "${var.root_domain}"
   ldap_domain   = "${local.ldap_domain}"
   system_domain = "${local.system_domain}"
   apps_domain   = "${local.apps_domain}"

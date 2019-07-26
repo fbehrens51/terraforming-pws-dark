@@ -56,11 +56,8 @@ data "template_cloudinit_config" "user_data" {
   }
 }
 
-data "aws_region" "current" {}
-
 module "amazon_ami" {
   source = "../../modules/amis/amazon_hvm_ami"
-  region = "${data.aws_region.current.name}"
 }
 
 module "bastion_host_key_pair" {

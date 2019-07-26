@@ -90,11 +90,8 @@ variable "instance_type" {
   default = "t2.small"
 }
 
-data "aws_region" "current" {}
-
 module "amazon_ami" {
   source = "../../modules/amis/amazon_hvm_ami"
-  region = "${data.aws_region.current.name}"
 }
 
 //TODO: Do not create key pairs or parameterize their creation, they should not be used on location

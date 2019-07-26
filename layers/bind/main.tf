@@ -41,11 +41,8 @@ locals {
   master_public_ip  = "${data.terraform_remote_state.enterprise-services.bind_eip_ips[0]}"
 }
 
-data "aws_region" "current" {}
-
 module "amazon_ami" {
   source = "../../modules/amis/amazon_hvm_ami"
-  region = "${data.aws_region.current.name}"
 }
 
 module "bind_host_key_pair" {

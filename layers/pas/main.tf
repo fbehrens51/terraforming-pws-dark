@@ -166,17 +166,12 @@ module "ops_manager" {
   source = "../../modules/ops_manager/infra"
 
   bucket_suffix         = "${local.bucket_suffix}"
-  dns_suffix            = ""
   env_name              = "${var.env_name}"
   om_eip                = false
-  ops_manager_role_name = "${data.terraform_remote_state.paperwork.director_role_name}"
   private               = false
   subnet_id             = "${module.infra.om_subnet_ids[0]}"
   tags                  = "${var.tags}"
-  use_route53           = false
-  vm_count              = "1"
   vpc_id                = "${local.vpc_id}"
-  zone_id               = "${var.availability_zones[0]}"
   ingress_rules         = ["${local.ingress_rules}"]
 }
 

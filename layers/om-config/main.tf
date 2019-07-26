@@ -139,7 +139,6 @@ module "om_config" {
   rds_ca_cert_file = "${var.rds_ca_cert_file}"
 
   kms_key_id                               = "${data.terraform_remote_state.keys.kms_key_id}"
-  pas_bucket_iam_instance_profile_name     = "${data.terraform_remote_state.paperwork.bucket_role_name}"
   pas_buildpacks_bucket                    = "${data.terraform_remote_state.pas.pas_buildpacks_bucket}"
   pas_droplets_bucket                      = "${data.terraform_remote_state.pas.pas_droplets_bucket}"
   pas_packages_bucket                      = "${data.terraform_remote_state.pas.pas_packages_bucket}"

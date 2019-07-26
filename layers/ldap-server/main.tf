@@ -93,16 +93,12 @@ locals {
   admin  = "cn=admin,dc=${join(",dc=", split(".", var.root_domain))}"
 }
 
-data "aws_region" "current" {}
-
 module "amazon_ami" {
   source = "../../modules/amis/amazon_hvm_ami"
-  region = "${data.aws_region.current.name}"
 }
 
 module "ubuntu_ami" {
   source = "../../modules/amis/ubuntu_hvm_ami"
-  region = "${data.aws_region.current.name}"
 }
 
 module "ldap_host_key_pair" {
@@ -129,7 +125,6 @@ module "ldap_configure" {
   ssh_private_key_pem = "${module.ldap_host_key_pair.private_key_pem}"
   ssh_host            = "${data.terraform_remote_state.enterprise_services.ldap_public_ip}"
   instance_id         = "${module.ldap_host.instance_ids[0]}"
-  env_name            = "${local.env_name}"
   users               = "${var.users}"
   root_domain         = "${var.root_domain}"
 
