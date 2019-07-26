@@ -25,9 +25,9 @@ locals {
   uaa_server_key_s3_path          = "uaa_server_key.pem"
   ldap_client_cert_s3_path        = "ldap_client_cert.pem"
   ldap_client_key_s3_path         = "ldap_client_key.pem"
-  portal_smoke_test_cert_s3_path        = "portal_smoke_test_cert.pem"
-  portal_smoke_test_key_s3_path         = "portal_smoke_test_key.pem"
-  ldap_password_s3_path = "ldap_password.txt"
+  portal_smoke_test_cert_s3_path  = "portal_smoke_test_cert.pem"
+  portal_smoke_test_key_s3_path   = "portal_smoke_test_key.pem"
+  ldap_password_s3_path           = "ldap_password.txt"
 
   basedn = "ou=users,dc=${join(",dc=", split(".", var.root_domain))}"
   admin  = "cn=admin,dc=${join(",dc=", split(".", var.root_domain))}"
@@ -73,11 +73,11 @@ data "template_file" "paperwork_variables" {
     bastion_vpc_id        = "${module.paperwork.bastion_vpc_id}"
     pas_vpc_id            = "${module.paperwork.pas_vpc_id}"
 
-    ldap_basedn    = "${local.basedn}"
-    ldap_dn        = "${local.admin}"
-    ldap_host      = "${local.ldap_domain}"
-    ldap_port      = "636"
-    ldap_role_attr = "role"
+    ldap_basedn           = "${local.basedn}"
+    ldap_dn               = "${local.admin}"
+    ldap_host             = "${local.ldap_domain}"
+    ldap_port             = "636"
+    ldap_role_attr        = "role"
     ldap_password_s3_path = "${local.ldap_password_s3_path}"
 
     cert_bucket                     = "${local.cert_bucket}"
@@ -90,8 +90,8 @@ data "template_file" "paperwork_variables" {
     uaa_server_key_s3_path          = "${local.uaa_server_key_s3_path}"
     ldap_client_cert_s3_path        = "${local.ldap_client_cert_s3_path}"
     ldap_client_key_s3_path         = "${local.ldap_client_key_s3_path}"
-    portal_smoke_test_cert_s3_path        = "${local.portal_smoke_test_cert_s3_path}"
-    portal_smoke_test_key_s3_path         = "${local.portal_smoke_test_key_s3_path}"
+    portal_smoke_test_cert_s3_path  = "${local.portal_smoke_test_cert_s3_path}"
+    portal_smoke_test_key_s3_path   = "${local.portal_smoke_test_key_s3_path}"
   }
 }
 

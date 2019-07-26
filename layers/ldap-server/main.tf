@@ -135,8 +135,8 @@ module "ldap_configure" {
   users               = "${var.users}"
   root_domain         = "${var.root_domain}"
 
-  basedn = "${data.terraform_remote_state.paperwork.ldap_basedn}"
-  admin = "${data.terraform_remote_state.paperwork.ldap_dn}"
+  basedn   = "${data.terraform_remote_state.paperwork.ldap_basedn}"
+  admin    = "${data.terraform_remote_state.paperwork.ldap_dn}"
   password = "${data.terraform_remote_state.paperwork.ldap_password}"
 }
 
