@@ -33,6 +33,10 @@ data "aws_vpc" "bastion_vpc" {
   id = "${data.terraform_remote_state.paperwork.bastion_vpc_id}"
 }
 
+data "aws_vpc" "pas_vpc" {
+  id = "${data.terraform_remote_state.paperwork.pas_vpc_id}"
+}
+
 data "aws_vpc_peering_connection" "pas_bastion_peering_connection" {
   vpc_id      = "${data.terraform_remote_state.paperwork.pas_vpc_id}"
   peer_vpc_id = "${data.terraform_remote_state.paperwork.bastion_vpc_id}"
@@ -42,6 +46,28 @@ resource "aws_route" "pas_private_to_bastion" {
   route_table_id            = "${module.vpc_route_tables.pas_private_vpc_route_table_id}"
   destination_cidr_block    = "${data.aws_vpc.bastion_vpc.cidr_block}"
   vpc_peering_connection_id = "${data.aws_vpc_peering_connection.pas_bastion_peering_connection.id}"
+}
+
+data "aws_vpc_peering_connection" "es_bastion_peering_connection" {
+  vpc_id      = "${data.terraform_remote_state.paperwork.es_vpc_id}"
+  peer_vpc_id = "${data.terraform_remote_state.paperwork.bastion_vpc_id}"
+}
+
+data "aws_vpc_peering_connection" "es_pas_peering_connection" {
+  vpc_id      = "${data.terraform_remote_state.paperwork.es_vpc_id}"
+  peer_vpc_id = "${data.terraform_remote_state.paperwork.pas_vpc_id}"
+}
+
+resource "aws_route" "es_private_to_bastion" {
+  route_table_id            = "${module.vpc_route_tables.es_private_vpc_route_table_id}"
+  destination_cidr_block    = "${data.aws_vpc.bastion_vpc.cidr_block}"
+  vpc_peering_connection_id = "${data.aws_vpc_peering_connection.es_bastion_peering_connection.id}"
+}
+
+resource "aws_route" "es_private_to_pas" {
+  route_table_id            = "${module.vpc_route_tables.es_private_vpc_route_table_id}"
+  destination_cidr_block    = "${data.aws_vpc.pas_vpc.cidr_block}"
+  vpc_peering_connection_id = "${data.aws_vpc_peering_connection.es_pas_peering_connection.id}"
 }
 
 // We can't know in general which vpc is the accepter vs the requester,

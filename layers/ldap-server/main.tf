@@ -91,10 +91,28 @@ locals {
 
   basedn = "ou=users,dc=${join(",dc=", split(".", var.root_domain))}"
   admin  = "cn=admin,dc=${join(",dc=", split(".", var.root_domain))}"
-}
+  public_subnet = "${data.terraform_remote_state.enterprise_services.public_subnet_ids[0]}"
 
-module "amazon_ami" {
-  source = "../../modules/amis/amazon_hvm_ami"
+  ldap_ingress_rules = [
+    {
+      port        = "22"
+      protocol    = "tcp"
+      cidr_blocks = "0.0.0.0/0"
+    },
+    {
+      port        = "636"
+      protocol    = "tcp"
+      cidr_blocks = "0.0.0.0/0"
+    },
+  ]
+
+  ldap_egress_rules = [
+    {
+      port        = "0"
+      protocol    = "-1"
+      cidr_blocks = "0.0.0.0/0"
+    },
+  ]
 }
 
 module "ubuntu_ami" {
@@ -106,10 +124,19 @@ module "ldap_host_key_pair" {
   key_name = "${var.ldap_host_key_pair_name}"
 }
 
+module "bootstrap" {
+  source = "../../modules/eni_per_subnet"
+  ingress_rules = "${local.ldap_ingress_rules}"
+  egress_rules = "${local.ldap_egress_rules}"
+  subnet_ids = ["${local.public_subnet}"]
+  create_eip = "true"
+  tags = "${local.modified_tags}"
+}
+
 module "ldap_host" {
   source        = "../../modules/launch"
   ami_id        = "${module.ubuntu_ami.id}"
-  eni_ids       = ["${data.terraform_remote_state.enterprise_services.ldap_eni_id}"]
+  eni_ids       = "${module.bootstrap.eni_ids}"
   user_data     = ""
   key_pair_name = "${module.ldap_host_key_pair.key_name}"
   tags          = "${local.modified_tags}"
@@ -123,7 +150,7 @@ module "ldap_configure" {
   user_certs          = "${data.terraform_remote_state.public-aws-prereqs.user_certs}"
   tls_server_ca_cert  = "${data.terraform_remote_state.paperwork.root_ca_cert}"
   ssh_private_key_pem = "${module.ldap_host_key_pair.private_key_pem}"
-  ssh_host            = "${data.terraform_remote_state.enterprise_services.ldap_public_ip}"
+  ssh_host            = "${module.bootstrap.public_ips[0]}"
   instance_id         = "${module.ldap_host.instance_ids[0]}"
   users               = "${var.users}"
   root_domain         = "${var.root_domain}"
@@ -131,24 +158,6 @@ module "ldap_configure" {
   basedn   = "${data.terraform_remote_state.paperwork.ldap_basedn}"
   admin    = "${data.terraform_remote_state.paperwork.ldap_dn}"
   password = "${data.terraform_remote_state.paperwork.ldap_password}"
-}
-
-module "ldap_elb" {
-  source = "../../modules/elb/create"
-
-  env_name          = "${local.env_name}"
-  internetless      = false
-  public_subnet_ids = ["${data.terraform_remote_state.enterprise_services.ldap_public_subnet_id}"]
-  tags              = "${var.tags}"
-  vpc_id            = "${data.terraform_remote_state.paperwork.es_vpc_id}"
-  egress_cidrs      = ["${data.terraform_remote_state.enterprise_services.ldap_private_ip}/32"]
-  short_name        = "ldap"
-  port              = 636
-}
-
-resource "aws_elb_attachment" "ldap_attach" {
-  elb      = "${module.ldap_elb.my_elb_id}"
-  instance = "${module.ldap_host.instance_ids[0]}"
 }
 
 # Configure the DNS Provider
@@ -161,10 +170,10 @@ provider "dns" {
   }
 }
 
-resource "dns_cname_record" "ldap_cname" {
+resource "dns_a_record_set" "ldap_a_record" {
   zone  = "${local.dns_zone_name}."
   name  = "ldap"
-  cname = "${module.ldap_elb.dns_name}."
+  addresses = ["${module.bootstrap.public_ips}"]
   ttl   = 300
 }
 
@@ -181,3 +190,7 @@ variable "tags" {
 }
 
 variable "ldap_host_key_pair_name" {}
+
+output "ldap_private_ip" {
+  value = "${module.bootstrap.eni_ips[0]}"
+}

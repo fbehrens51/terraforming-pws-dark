@@ -50,161 +50,92 @@ locals {
   modified_tags = "${merge(var.tags, map("Name", "${local.modified_name}"))}"
   es_vpc_id     = "${data.terraform_remote_state.paperwork.es_vpc_id}"
 
-  //allow dns to reach out anywhere. This is needed for CNAME records to external DNS
-  bind_egress_rules = [
-    {
-      port        = "53"
-      protocol    = "udp"
-      cidr_blocks = "0.0.0.0/0"
-    },
-    {
-      port        = "53"
-      protocol    = "tcp"
-      cidr_blocks = "0.0.0.0/0"
-    },
-    {
-      //yum for bind install
-      port        = "80"
-      protocol    = "tcp"
-      cidr_blocks = "0.0.0.0/0"
-    },
-  ]
-
-  bind_ingress_rules = [
-    {
-      port        = "53"
-      protocol    = "udp"
-      cidr_blocks = "0.0.0.0/0"
-    },
-    {
-      port        = "53"
-      protocol    = "tcp"
-      cidr_blocks = "0.0.0.0/0"
-    },
-    {
-      port        = "22"
-      protocol    = "tcp"
-      cidr_blocks = "${data.terraform_remote_state.bastion.bastion_cidr_block}"
-    },
-  ]
-
-  # TODO: what should this be
-  splunk_ingress_rules = [
-    {
-      port        = "22"
-      protocol    = "tcp"
-      cidr_blocks = "0.0.0.0/0"
-    },
-    {
-      port        = "8088"
-      protocol    = "tcp"
-      cidr_blocks = "0.0.0.0/0"
-    },
-    {
-      port        = "8089"
-      protocol    = "tcp"
-      cidr_blocks = "0.0.0.0/0"
-    },
-    {
-      port        = "8000"
-      protocol    = "tcp"
-      cidr_blocks = "0.0.0.0/0"
-    },
-    {
-      port        = "8090"
-      protocol    = "tcp"
-      cidr_blocks = "0.0.0.0/0"
-    },
-  ]
-
-  splunk_egress_rules = [
-    {
-      port        = "0"
-      protocol    = "-1"
-      cidr_blocks = "0.0.0.0/0"
-    },
-  ]
 
   splunk_volume_tag = "${var.env_name}-SPLUNK_DATA"
 
-  ldap_ingress_rules = [
-    {
-      port        = "22"
-      protocol    = "tcp"
-      cidr_blocks = "0.0.0.0/0"
-    },
-    {
-      port        = "636"
-      protocol    = "tcp"
-      cidr_blocks = "0.0.0.0/0"
-    },
-  ]
 
-  ldap_egress_rules = [
-    {
-      port        = "0"
-      protocol    = "-1"
-      cidr_blocks = "0.0.0.0/0"
-    },
-  ]
-
-  bind_cidr_block   = "${cidrsubnet(data.aws_vpc.this_vpc.cidr_block, 2, 0)}"
-  ldap_cidr_block   = "${cidrsubnet(data.aws_vpc.this_vpc.cidr_block, 2, 1)}"
-  splunk_cidr_block = "${cidrsubnet(data.aws_vpc.this_vpc.cidr_block, 2, 2)}"
+  public_cidr_block  = "${cidrsubnet(data.aws_vpc.this_vpc.cidr_block, 1, 0)}"
+  private_cidr_block = "${cidrsubnet(data.aws_vpc.this_vpc.cidr_block, 1, 1)}"
 }
 
 data "aws_vpc" "this_vpc" {
   id = "${local.es_vpc_id}"
 }
 
-module "bootstrap_es" {
-  source             = "../../modules/multiple_subnet_vpc"
+module "public_subnets" {
+  source            = "../../modules/subnet_per_az"
   availability_zones = "${var.availability_zones}"
-  vpc_id             = "${local.es_vpc_id}"
-  cidr_block         = "${local.bind_cidr_block}"
-  route_table_id     = "${data.terraform_remote_state.routes.es_public_vpc_route_table_id}"
-  ingress_rules      = ["${local.bind_ingress_rules}"]
-  egress_rules       = ["${local.bind_egress_rules}"]
-  tags               = "${local.modified_tags}"
-  create_eip         = true
+  vpc_id            = "${local.es_vpc_id}"
+  cidr_block        = "${local.public_cidr_block}"
+  tags = "${merge(local.modified_tags, map("Name", "${local.modified_name}-public"))}"
 }
 
-module "bootstrap_ldap" {
-  source            = "../../modules/single_use_subnet"
-  cidr_block        = "${local.ldap_cidr_block}"
-  availability_zone = "${var.singleton_availability_zone}"
-  route_table_id    = "${data.terraform_remote_state.routes.es_public_vpc_route_table_id}"
-  ingress_rules     = "${local.ldap_ingress_rules}"
-  egress_rules      = "${local.ldap_egress_rules}"
-  tags              = "${local.modified_tags}"
-  create_eip        = true
+resource "aws_route_table_association" "public_route_table_assoc" {
+  count          = "${length(var.availability_zones)}"
+  subnet_id      = "${module.public_subnets.subnet_ids[count.index]}"
+  route_table_id = "${data.terraform_remote_state.routes.es_public_vpc_route_table_id}"
 }
 
-module "bootstrap_splunk" {
-  source            = "../../modules/single_use_subnet"
-  cidr_block        = "${local.splunk_cidr_block}"
-  availability_zone = "${var.singleton_availability_zone}"
-  route_table_id    = "${data.terraform_remote_state.routes.es_public_vpc_route_table_id}"
-  ingress_rules     = "${local.splunk_ingress_rules}"
-  egress_rules      = "${local.splunk_egress_rules}"
-  tags              = "${local.modified_tags}"
-  create_eip        = true
+module "private_subnets" {
+  source            = "../../modules/subnet_per_az"
+  availability_zones = "${var.availability_zones}"
+  vpc_id            = "${local.es_vpc_id}"
+  cidr_block        = "${local.private_cidr_block}"
+  tags = "${merge(local.modified_tags, map("Name", "${local.modified_name}-private"))}"
 }
 
-module "amazon_ami" {
-  source = "../../modules/amis/amazon_hvm_ami"
+resource "aws_route_table_association" "private_route_table_assoc" {
+  count          = "${length(var.availability_zones)}"
+  subnet_id      = "${module.private_subnets.subnet_ids[count.index]}"
+  route_table_id = "${data.terraform_remote_state.routes.es_private_vpc_route_table_id}"
 }
 
-resource "aws_ebs_volume" "splunk_data" {
-  availability_zone = "${var.singleton_availability_zone}"
-  size              = 1000
-
-  tags {
-    Name = "${local.splunk_volume_tag}"
-  }
+resource "aws_eip" "nat_eip" {
+  count = "${var.internetless ? 0 : 1}"
+  vpc = true
+  tags = "${merge(local.modified_tags, map("Name", "${local.modified_name}-nat"))}"
 }
+
+resource "aws_nat_gateway" "nat" {
+  count         = "${var.internetless ? 0 : 1}"
+  allocation_id = "${aws_eip.nat_eip.id}"
+  subnet_id     = "${element(module.public_subnets.subnet_ids, 0)}"
+
+  tags = "${merge(local.modified_tags, map("Name", "${local.modified_name}-nat"))}"
+}
+
+resource "aws_route" "toggle_internet" {
+  count = "${var.internetless ? 0 : 1}"
+
+  route_table_id         =  "${data.terraform_remote_state.routes.es_private_vpc_route_table_id}"
+  nat_gateway_id         = "${aws_nat_gateway.nat.id}"
+  destination_cidr_block = "0.0.0.0/0"
+}
+
+# module "bootstrap_ldap" {
+#   source            = "../../modules/single_use_subnet"
+#   cidr_block        = "${local.ldap_cidr_block}"
+#   availability_zone = "${var.singleton_availability_zone}"
+#   route_table_id    = "${data.terraform_remote_state.routes.es_public_vpc_route_table_id}"
+#   ingress_rules     = "${local.ldap_ingress_rules}"
+#   egress_rules      = "${local.ldap_egress_rules}"
+#   tags              = "${local.modified_tags}"
+#   create_eip        = true
+# }
+
+# module "bootstrap_splunk" {
+#   source            = "../../modules/single_use_subnet"
+#   cidr_block        = "${local.splunk_cidr_block}"
+#   availability_zone = "${var.singleton_availability_zone}"
+#   route_table_id    = "${data.terraform_remote_state.routes.es_public_vpc_route_table_id}"
+#   ingress_rules     = "${local.splunk_ingress_rules}"
+#   egress_rules      = "${local.splunk_egress_rules}"
+#   tags              = "${local.modified_tags}"
+#   create_eip        = true
+# }
 
 variable "env_name" {}
+variable "internetless" {}
 variable "remote_state_region" {}
 variable "remote_state_bucket" {}
 variable "singleton_availability_zone" {}
@@ -217,62 +148,18 @@ variable "availability_zones" {
   type = "list"
 }
 
-output "es_subnet_ids" {
-  value = "${module.bootstrap_es.subnet_ids}"
+output "public_subnet_ids" {
+  value = "${module.public_subnets.subnet_ids}"
 }
 
-output "bind_eni_ids" {
-  value = "${module.bootstrap_es.eni_ids}"
+output "public_subnet_cidrs" {
+  value = "${module.public_subnets.subnet_cidr_blocks}"
 }
 
-output "bind_eip_ids" {
-  value = "${module.bootstrap_es.eip_ids}"
+output "private_subnet_ids" {
+  value = "${module.private_subnets.subnet_ids}"
 }
 
-output "bind_eni_ips" {
-  value = "${module.bootstrap_es.eni_ips}"
-}
-
-output "bind_eip_ips" {
-  value = "${module.bootstrap_es.public_ips}"
-}
-
-output "ldap_eni_id" {
-  value = "${module.bootstrap_ldap.eni_id}"
-}
-
-output "ldap_public_subnet_id" {
-  value = "${module.bootstrap_ldap.public_subnet_id}"
-}
-
-output "ldap_private_ip" {
-  value = "${module.bootstrap_ldap.private_ip}"
-}
-
-output "ldap_public_ip" {
-  value = "${module.bootstrap_ldap.public_ips[0]}"
-}
-
-output "splunk_eni_id" {
-  value = "${module.bootstrap_splunk.eni_id}"
-}
-
-output "splunk_public_ip" {
-  value = "${module.bootstrap_splunk.public_ips}"
-}
-
-output "splunk_private_ip" {
-  value = "${module.bootstrap_splunk.private_ip}"
-}
-
-output "splunk_volume_tag" {
-  value = "${local.splunk_volume_tag}"
-}
-
-output "splunk_subnet_id" {
-  value = "${module.bootstrap_splunk.public_subnet_id}"
-}
-
-output "splunk_subnet_cidr" {
-  value = "${module.bootstrap_splunk.cidr_block}"
+output "private_subnet_cidrs" {
+  value = "${module.private_subnets.subnet_cidr_blocks}"
 }

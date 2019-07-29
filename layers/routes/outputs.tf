@@ -10,6 +10,10 @@ output "es_public_vpc_route_table_id" {
   value = "${module.vpc_route_tables.es_public_vpc_route_table_id}"
 }
 
+output "es_private_vpc_route_table_id" {
+  value = "${module.vpc_route_tables.es_private_vpc_route_table_id}"
+}
+
 output "pas_public_vpc_route_table_id" {
   value = "${module.vpc_route_tables.pas_public_vpc_route_table_id}"
 }

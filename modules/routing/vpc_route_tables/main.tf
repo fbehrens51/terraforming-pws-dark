@@ -12,6 +12,14 @@ resource "aws_route_table" "pas_private_route_table" {
   }
 }
 
+resource "aws_route_table" "es_private_route_table" {
+  vpc_id = "${var.es_vpc_id}"
+
+  tags {
+    Name = "${var.env_name} | ENT SVCS PRIVATE"
+  }
+}
+
 module "pas_public_vpc_route_table" {
   source = "../vpc_route_table"
   vpc_id = "${var.pas_vpc_id}"
@@ -58,6 +66,10 @@ output "pas_public_vpc_route_table_id" {
 
 output "bastion_public_vpc_route_table_id" {
   value = "${module.bastion_public_vpc_route_table.route_table_id}"
+}
+
+output "es_private_vpc_route_table_id" {
+  value = "${aws_route_table.es_private_route_table.id}"
 }
 
 output "es_public_vpc_route_table_id" {

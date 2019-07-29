@@ -57,21 +57,60 @@ data "terraform_remote_state" "keys" {
 }
 
 data "aws_network_interface" "splunk_eni" {
-  id = "${data.terraform_remote_state.enterprise-services.splunk_eni_id}"
+  id = "${local.splunk_eni_id}"
 }
 
 locals {
-  splunk_eni_id = "${data.terraform_remote_state.enterprise-services.splunk_eni_id}"
+  splunk_eni_id = "${module.bootstrap.eni_ids[0]}"
 
   tags = "${merge(var.tags, map("Name", "${var.env_name}-splunk"))}"
-
-  splunk_data_volume_tag = "${data.terraform_remote_state.enterprise-services.splunk_volume_tag}"
 
   splunk_role_name = "${data.terraform_remote_state.paperwork.splunk_role_name}"
 
   dns_zone_name    = "${data.terraform_remote_state.bind.zone_name}"
   master_dns_ip    = "${data.terraform_remote_state.bind.master_public_ip}"
   bind_rndc_secret = "${data.terraform_remote_state.keys.bind_rndc_secret}"
+  public_subnet = "${data.terraform_remote_state.enterprise-services.public_subnet_ids[0]}"
+
+  private_subnet = "${data.terraform_remote_state.enterprise-services.private_subnet_ids[0]}"
+  private_subnet_cidr = "${data.terraform_remote_state.enterprise-services.private_subnet_cidrs[0]}"
+
+  # TODO: what should this be
+  splunk_ingress_rules = [
+    {
+      port        = "22"
+      protocol    = "tcp"
+      cidr_blocks = "0.0.0.0/0"
+    },
+    {
+      port        = "8088"
+      protocol    = "tcp"
+      cidr_blocks = "0.0.0.0/0"
+    },
+    {
+      port        = "8089"
+      protocol    = "tcp"
+      cidr_blocks = "0.0.0.0/0"
+    },
+    {
+      port        = "8000"
+      protocol    = "tcp"
+      cidr_blocks = "0.0.0.0/0"
+    },
+    {
+      port        = "8090"
+      protocol    = "tcp"
+      cidr_blocks = "0.0.0.0/0"
+    },
+  ]
+
+  splunk_egress_rules = [
+    {
+      port        = "0"
+      protocol    = "-1"
+      cidr_blocks = "0.0.0.0/0"
+    },
+  ]
 }
 
 variable "remote_state_bucket" {}
@@ -92,6 +131,15 @@ variable "instance_type" {
 
 module "amazon_ami" {
   source = "../../modules/amis/amazon_hvm_ami"
+}
+
+module "bootstrap" {
+  source = "../../modules/eni_per_subnet"
+  ingress_rules = "${local.splunk_ingress_rules}"
+  egress_rules = "${local.splunk_egress_rules}"
+  subnet_ids = ["${local.private_subnet}"]
+  create_eip = "${var.internetless}"
+  tags = "${local.tags}"
 }
 
 //TODO: Do not create key pairs or parameterize their creation, they should not be used on location
@@ -120,16 +168,9 @@ module "splunk" {
   user_data = "${module.splunk_user_data.user_data}"
 }
 
-data "aws_ebs_volume" "existing_splunk_data" {
-  filter {
-    name   = "availability-zone"
-    values = ["${data.aws_network_interface.splunk_eni.availability_zone}"]
-  }
-
-  filter {
-    name   = "tag:Name"
-    values = ["${local.splunk_data_volume_tag}"]
-  }
+resource "aws_ebs_volume" "splunk_data" {
+  availability_zone = "${data.aws_network_interface.splunk_eni.availability_zone}"
+    size              = 1000
 }
 
 //TODO: Best way to ensure we stop instance??? (want to ensure we can cleanly detach volume)
@@ -142,12 +183,12 @@ data "aws_ebs_volume" "existing_splunk_data" {
 
 resource "aws_volume_attachment" "splunk_volume_attachment" {
   instance_id = "${module.splunk.instance_ids[0]}"
-  volume_id   = "${data.aws_ebs_volume.existing_splunk_data.id}"
+  volume_id   = "${aws_ebs_volume.splunk_data.id}"
   device_name = "/dev/sdf"
 }
 
 output "splunk_public_ip" {
-  value = "${data.terraform_remote_state.enterprise-services.splunk_public_ip}"
+  value = "${element(concat(module.bootstrap.public_ips, module.bootstrap.eni_ips), 0)}"
 }
 
 output "splunk_password" {
@@ -159,10 +200,10 @@ module "splunk_elb" {
   source            = "../../modules/elb/create"
   env_name          = "${var.env_name}"
   internetless      = "${var.internetless}"
-  public_subnet_ids = ["${data.terraform_remote_state.enterprise-services.splunk_subnet_id}"]
+  public_subnet_ids = ["${local.public_subnet}"]
   tags              = "${var.tags}"
   vpc_id            = "${data.terraform_remote_state.paperwork.es_vpc_id}"
-  egress_cidrs      = ["${data.terraform_remote_state.enterprise-services.splunk_subnet_cidr}"]
+  egress_cidrs      = ["${local.private_subnet_cidr}"]
   short_name        = "splunk"
   port              = "80"
   instance_port     = "8000"

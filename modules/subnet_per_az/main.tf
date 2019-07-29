@@ -1,7 +1,7 @@
 variable "cidr_block" {}
 variable "vpc_id" {}
 
-variable "availablity_zones" {
+variable "availability_zones" {
   type = "list"
 }
 
@@ -10,11 +10,11 @@ variable "tags" {
 }
 
 locals {
-  newbits = "${ceil(log(length(var.availablity_zones), 2))}"
+  newbits = "${ceil(log(length(var.availability_zones), 2))}"
 }
 
 resource "aws_subnet" "subnet" {
-  count      = "${length(var.availablity_zones)}"
+  count      = "${length(var.availability_zones)}"
   cidr_block = "${cidrsubnet(var.cidr_block,local.newbits,count.index)}"
   vpc_id     = "${var.vpc_id}"
 
