@@ -32,12 +32,12 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
-data "terraform_remote_state" "splunk" {
+data "terraform_remote_state" "bootstrap_splunk" {
   backend = "s3"
 
   config {
     bucket     = "${var.remote_state_bucket}"
-    key        = "splunk"
+    key        = "bootstrap_splunk"
     region     = "${var.remote_state_region}"
     encrypt    = true
     kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
@@ -177,8 +177,8 @@ module "om_config" {
   s3_secret_access_key      = "${var.s3_secret_access_key}"
   s3_auth_type              = "${var.s3_auth_type}"
 
-  splunk_syslog_host = "${data.terraform_remote_state.splunk.splunk_syslog_host_name}"
-  splunk_syslog_port = "${data.terraform_remote_state.splunk.splunk_syslog_port}"
+  splunk_syslog_host = "${data.terraform_remote_state.bootstrap_splunk.splunk_syslog_host_name}"
+  splunk_syslog_port = "${data.terraform_remote_state.bootstrap_splunk.splunk_syslog_port}"
 }
 
 locals {

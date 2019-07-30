@@ -32,98 +32,42 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
-data "terraform_remote_state" "bind" {
+data "terraform_remote_state" "bootstrap_splunk" {
   backend = "s3"
 
   config {
     bucket     = "${var.remote_state_bucket}"
-    key        = "bind"
+    key        = "bootstrap_splunk"
     region     = "${var.remote_state_region}"
     encrypt    = true
     kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
   }
-}
-
-data "terraform_remote_state" "keys" {
-  backend = "s3"
-
-  config {
-    bucket     = "${var.remote_state_bucket}"
-    key        = "keys"
-    region     = "${var.remote_state_region}"
-    encrypt    = true
-    kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
-  }
-}
-
-data "aws_network_interface" "splunk_eni" {
-  id = "${local.splunk_eni_id}"
 }
 
 locals {
-  splunk_eni_id = "${module.bootstrap.eni_ids[0]}"
+  splunk_master_eni_id      = "${data.terraform_remote_state.bootstrap_splunk.master_eni_ids[0]}"
+  splunk_indexers_eni_ids   = "${data.terraform_remote_state.bootstrap_splunk.indexers_eni_ids}"
+  splunk_search_head_eni_id = "${data.terraform_remote_state.bootstrap_splunk.search_head_eni_ids[0]}"
+
+  splunk_http_collector_port = "${data.terraform_remote_state.bootstrap_splunk.splunk_http_collector_port}"
+  splunk_mgmt_port           = "${data.terraform_remote_state.bootstrap_splunk.splunk_mgmt_port}"
+  splunk_replication_port    = "${data.terraform_remote_state.bootstrap_splunk.splunk_replication_port}"
+  splunk_syslog_port         = "${data.terraform_remote_state.bootstrap_splunk.splunk_syslog_port}"
+  splunk_web_port            = "${data.terraform_remote_state.bootstrap_splunk.splunk_web_port}"
 
   tags = "${merge(var.tags, map("Name", "${var.env_name}-splunk"))}"
 
   splunk_role_name = "${data.terraform_remote_state.paperwork.splunk_role_name}"
-
-  dns_zone_name    = "${data.terraform_remote_state.bind.zone_name}"
-  master_dns_ip    = "${data.terraform_remote_state.bind.master_public_ip}"
-  bind_rndc_secret = "${data.terraform_remote_state.keys.bind_rndc_secret}"
-  public_subnet = "${data.terraform_remote_state.enterprise-services.public_subnet_ids[0]}"
-
-  private_subnet = "${data.terraform_remote_state.enterprise-services.private_subnet_ids[0]}"
-  private_subnet_cidr = "${data.terraform_remote_state.enterprise-services.private_subnet_cidrs[0]}"
-
-  # TODO: what should this be
-  splunk_ingress_rules = [
-    {
-      port        = "22"
-      protocol    = "tcp"
-      cidr_blocks = "0.0.0.0/0"
-    },
-    {
-      port        = "8088"
-      protocol    = "tcp"
-      cidr_blocks = "0.0.0.0/0"
-    },
-    {
-      port        = "8089"
-      protocol    = "tcp"
-      cidr_blocks = "0.0.0.0/0"
-    },
-    {
-      port        = "8000"
-      protocol    = "tcp"
-      cidr_blocks = "0.0.0.0/0"
-    },
-    {
-      port        = "8090"
-      protocol    = "tcp"
-      cidr_blocks = "0.0.0.0/0"
-    },
-  ]
-
-  splunk_egress_rules = [
-    {
-      port        = "0"
-      protocol    = "-1"
-      cidr_blocks = "0.0.0.0/0"
-    },
-  ]
 }
 
 variable "remote_state_bucket" {}
 variable "remote_state_region" {}
-variable "internetless" {}
 
 variable "env_name" {}
 
 variable "tags" {
   type = "map"
 }
-
-variable "splunk_host_key_pair_name" {}
 
 variable "instance_type" {
   default = "t2.small"
@@ -133,115 +77,229 @@ module "amazon_ami" {
   source = "../../modules/amis/amazon_hvm_ami"
 }
 
-module "bootstrap" {
-  source = "../../modules/eni_per_subnet"
-  ingress_rules = "${local.splunk_ingress_rules}"
-  egress_rules = "${local.splunk_egress_rules}"
-  subnet_ids = ["${local.private_subnet}"]
-  create_eip = "${var.internetless}"
-  tags = "${local.tags}"
-}
+data "template_file" "indexers_server_conf" {
+  template = <<EOF
+[replication_port://$${replication_port}]
 
-//TODO: Do not create key pairs or parameterize their creation, they should not be used on location
-//accounts should be created as part of user data.  Should we create a module to generate?
-module "splunk_host_key_pair" {
-  source   = "../../modules/key_pair"
-  key_name = "${var.splunk_host_key_pair_name}"
-}
+[clustering]
+mode = slave
+master_uri = https://$${master_ip}:$${mgmt_port}
+pass4SymmKey = $${pass4SymmKey}
+EOF
 
-module "splunk_user_data" {
-  source = "../../modules/splunk/user_data"
-}
-
-module "splunk" {
-  source               = "../../modules/launch"
-  ami_id               = "${module.amazon_ami.id}"
-  instance_type        = "${var.instance_type}"
-  key_pair_name        = "${module.splunk_host_key_pair.key_name}"
-  tags                 = "${local.tags}"
-  iam_instance_profile = "${local.splunk_role_name}"
-
-  eni_ids = [
-    "${local.splunk_eni_id}",
-  ]
-
-  user_data = "${module.splunk_user_data.user_data}"
-}
-
-resource "aws_ebs_volume" "splunk_data" {
-  availability_zone = "${data.aws_network_interface.splunk_eni.availability_zone}"
-    size              = 1000
-}
-
-//TODO: Best way to ensure we stop instance??? (want to ensure we can cleanly detach volume)
-//resource "null_resource" "instance_stopper" {
-//  provisioner "local-exec" {
-//    when    = "destroy"
-//    command = "echo aws ec2 stop-instances --instance-ids ${module.splunk.instance_ids[0]} >> /home/ubuntu/stopper.out"
-//  }
-//}
-
-resource "aws_volume_attachment" "splunk_volume_attachment" {
-  instance_id = "${module.splunk.instance_ids[0]}"
-  volume_id   = "${aws_ebs_volume.splunk_data.id}"
-  device_name = "/dev/sdf"
-}
-
-output "splunk_public_ip" {
-  value = "${element(concat(module.bootstrap.public_ips, module.bootstrap.eni_ips), 0)}"
-}
-
-output "splunk_password" {
-  value     = "${module.splunk_user_data.password}"
-  sensitive = true
-}
-
-module "splunk_elb" {
-  source            = "../../modules/elb/create"
-  env_name          = "${var.env_name}"
-  internetless      = "${var.internetless}"
-  public_subnet_ids = ["${local.public_subnet}"]
-  tags              = "${var.tags}"
-  vpc_id            = "${data.terraform_remote_state.paperwork.es_vpc_id}"
-  egress_cidrs      = ["${local.private_subnet_cidr}"]
-  short_name        = "splunk"
-  port              = "80"
-  instance_port     = "8000"
-}
-
-resource "aws_elb_attachment" "splunk_attach" {
-  elb      = "${module.splunk_elb.my_elb_id}"
-  instance = "${module.splunk.instance_ids[0]}"
-}
-
-provider "dns" {
-  update {
-    server        = "${local.master_dns_ip}"
-    key_name      = "rndc-key."
-    key_algorithm = "hmac-md5"
-    key_secret    = "${local.bind_rndc_secret}"
+  vars {
+    replication_port = "${local.splunk_replication_port}"
+    master_ip        = "${data.terraform_remote_state.bootstrap_splunk.master_private_ip}"
+    mgmt_port        = "${local.splunk_mgmt_port}"
+    pass4SymmKey     = "${data.terraform_remote_state.bootstrap_splunk.splunk_pass4SymmKey}"
   }
 }
 
-resource "dns_cname_record" "splunk_cname" {
-  zone  = "${local.dns_zone_name}."
-  name  = "splunk"
-  cname = "${module.splunk_elb.dns_name}."
-  ttl   = 300
+data "template_file" "http_inputs_conf" {
+  template = <<EOF
+
+[http://PCF]
+token = $${http_token}
+indexes = main, summary
+index = main
+
+[http]
+disabled = 0
+enableSSL = 1
+port = $${http_collector_port}
+EOF
+
+  vars {
+    http_token          = "${data.terraform_remote_state.bootstrap_splunk.splunk_http_collector_token}"
+    http_collector_port = "${local.splunk_http_collector_port}"
+  }
 }
 
-output "splunk_dns_name" {
-  value = "${dns_cname_record.splunk_cname.name}.${substr(dns_cname_record.splunk_cname.zone, 0, length(dns_cname_record.splunk_cname.zone) - 1)}"
+data "template_file" "inputs_conf" {
+  template = <<EOF
+[tcp://$${syslog_port}]
+index = main
+sourcetype = pcf
+connection_host = dns
+EOF
+
+  vars {
+    syslog_port = "${local.splunk_syslog_port}"
+  }
 }
 
-output "splunk_syslog_host_name" {
-  value = "${module.splunk.private_ips[0]}"
+data "template_file" "master_server_conf" {
+  template = <<EOF
+[clustering]
+mode = master
+replication_factor = $${replication_factor}
+search_factor = $${search_factor}
+pass4SymmKey = $${pass4SymmKey}
+EOF
+
+  vars {
+    replication_factor = "2"
+    search_factor      = "2"
+    pass4SymmKey       = "${data.terraform_remote_state.bootstrap_splunk.splunk_pass4SymmKey}"
+  }
 }
 
-output "splunk_syslog_port" {
-  value = "8090"
+data "template_file" "search_head_server_conf" {
+  template = <<EOF
+[clustering]
+mode = searchhead
+master_uri = https://$${master_ip}:$${mgmt_port}
+pass4SymmKey = $${pass4SymmKey}
+EOF
+
+  vars {
+    master_ip    = "${data.terraform_remote_state.bootstrap_splunk.master_private_ip}"
+    mgmt_port    = "${local.splunk_mgmt_port}"
+    pass4SymmKey = "${data.terraform_remote_state.bootstrap_splunk.splunk_pass4SymmKey}"
+  }
 }
 
-output "splunk_private_ips" {
-  value = "${module.splunk.private_ips}"
+data "template_file" "web_conf" {
+  template = <<EOF
+[settings]
+httpport        = $${web_port}
+mgmtHostPort    = 127.0.0.1:$${mgmt_port}
+EOF
+
+  vars {
+    mgmt_port = "${local.splunk_mgmt_port}"
+    web_port  = "${local.splunk_web_port}"
+  }
+}
+
+data "template_file" "master_user_data" {
+  template = "${file("${path.module}/user_data.tpl")}"
+
+  vars {
+    password                 = "${data.terraform_remote_state.bootstrap_splunk.splunk_password}"
+    server_conf_content      = "${data.template_file.master_server_conf.rendered}"
+    web_conf_content         = "${data.template_file.web_conf.rendered}"
+    inputs_conf_content      = "${data.template_file.inputs_conf.rendered}"
+    http_inputs_conf_content = "${data.template_file.http_inputs_conf.rendered}"
+    role                     = "splunk-master"
+  }
+}
+
+data "template_file" "search_head_user_data" {
+  template = "${file("${path.module}/user_data.tpl")}"
+
+  vars {
+    password                 = "${data.terraform_remote_state.bootstrap_splunk.splunk_password}"
+    server_conf_content      = "${data.template_file.search_head_server_conf.rendered}"
+    web_conf_content         = "${data.template_file.web_conf.rendered}"
+    inputs_conf_content      = ""
+    http_inputs_conf_content = ""
+    role                     = "splunk-search-head"
+  }
+}
+
+data "template_file" "indexers_user_data" {
+  template = "${file("${path.module}/user_data.tpl")}"
+
+  vars {
+    password                 = "${data.terraform_remote_state.bootstrap_splunk.splunk_password}"
+    server_conf_content      = "${data.template_file.indexers_server_conf.rendered}"
+    web_conf_content         = "${data.template_file.web_conf.rendered}"
+    inputs_conf_content      = "${data.template_file.inputs_conf.rendered}"
+    http_inputs_conf_content = "${data.template_file.http_inputs_conf.rendered}"
+    role                     = "splunk-indexer"
+  }
+}
+
+module "splunk_master" {
+  source               = "../../modules/launch"
+  instance_count       = 1
+  ami_id               = "${module.amazon_ami.id}"
+  instance_type        = "${var.instance_type}"
+  key_pair_name        = "${data.terraform_remote_state.bootstrap_splunk.splunk_ssh_key_pair_name}"
+  tags                 = "${merge(local.tags, map("Name", "${var.env_name}-splunk-master"))}"
+  iam_instance_profile = "${local.splunk_role_name}"
+
+  eni_ids = [
+    "${local.splunk_master_eni_id}",
+  ]
+
+  user_data = "${data.template_file.master_user_data.rendered}"
+}
+
+module "splunk_search_head" {
+  source               = "../../modules/launch"
+  instance_count       = 1
+  ami_id               = "${module.amazon_ami.id}"
+  instance_type        = "${var.instance_type}"
+  key_pair_name        = "${data.terraform_remote_state.bootstrap_splunk.splunk_ssh_key_pair_name}"
+  tags                 = "${merge(local.tags, map("Name", "${var.env_name}-splunk-search-head"))}"
+  iam_instance_profile = "${local.splunk_role_name}"
+
+  eni_ids = [
+    "${local.splunk_search_head_eni_id}",
+  ]
+
+  user_data = "${data.template_file.search_head_user_data.rendered}"
+}
+
+module "splunk_indexers" {
+  source               = "../../modules/launch"
+  instance_count       = "${length(local.indexers_eni_ids)}"
+  ami_id               = "${module.amazon_ami.id}"
+  instance_type        = "${var.instance_type}"
+  key_pair_name        = "${data.terraform_remote_state.bootstrap_splunk.splunk_ssh_key_pair_name}"
+  tags                 = "${merge(local.tags, map("Name", "${var.env_name}-splunk-indexer"))}"
+  iam_instance_profile = "${local.splunk_role_name}"
+
+  eni_ids = "${local.splunk_indexers_eni_ids}"
+
+  user_data = "${data.template_file.indexers_user_data.rendered}"
+}
+
+resource "aws_volume_attachment" "splunk_master_volume_attachment" {
+  skip_destroy = true
+
+  instance_id = "${module.splunk_master.instance_ids[0]}"
+  volume_id   = "${data.terraform_remote_state.bootstrap_splunk.master_data_volume}"
+  device_name = "/dev/sdf"
+}
+
+resource "aws_volume_attachment" "splunk_search_head_volume_attachment" {
+  skip_destroy = true
+
+  instance_id = "${module.splunk_search_head.instance_ids[0]}"
+  volume_id   = "${data.terraform_remote_state.bootstrap_splunk.search_head_data_volume}"
+  device_name = "/dev/sdf"
+}
+
+resource "aws_volume_attachment" "splunk_indexers_volume_attachment" {
+  skip_destroy = true
+
+  count       = "${length(local.indexers_eni_ids)}"
+  instance_id = "${module.splunk_indexers.instance_ids[count.index]}"
+  volume_id   = "${element(data.terraform_remote_state.bootstrap_splunk.indexers_data_volumes, count.index)}"
+  device_name = "/dev/sdf"
+}
+
+resource "aws_elb_attachment" "splunk_master_attach" {
+  elb      = "${data.terraform_remote_state.bootstrap_splunk.splunk_monitor_elb_id}"
+  instance = "${module.splunk_master.instance_ids[0]}"
+}
+
+resource "aws_elb_attachment" "splunk_search_head_attach" {
+  elb      = "${data.terraform_remote_state.bootstrap_splunk.splunk_search_head_elb_id}"
+  instance = "${module.splunk_search_head.instance_ids[0]}"
+}
+
+resource "aws_elb_attachment" "splunk_syslog_attach" {
+  elb      = "${data.terraform_remote_state.bootstrap_splunk.splunk_syslog_elb_id}"
+  count    = "${length(local.indexers_user_data)}"
+  instance = "${module.splunk_indexers.instance_ids[count.index]}"
+}
+
+resource "aws_elb_attachment" "splunk_http_collector_attach" {
+  elb      = "${data.terraform_remote_state.bootstrap_splunk.splunk_http_collector_elb_id}"
+  count    = "${length(local.indexers_user_data)}"
+  instance = "${module.splunk_indexers.instance_ids[count.index]}"
 }

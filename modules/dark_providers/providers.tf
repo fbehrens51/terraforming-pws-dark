@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 provider "random" {
-  version = "~> 1.3.0"
+  version = "~> 2.1.0"
 }
 
 provider "tls" {

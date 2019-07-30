@@ -18,6 +18,8 @@ resource "aws_subnet" "subnet" {
   cidr_block = "${cidrsubnet(var.cidr_block,local.newbits,count.index)}"
   vpc_id     = "${var.vpc_id}"
 
+  availability_zone = "${var.availability_zones[count.index]}"
+
   tags = "${var.tags}"
 }
 

@@ -63,7 +63,7 @@ product-properties:
     value: main
   .properties.splunk_token:
     value:
-      secret: ((splunk_token))
+      secret: ${splunk_token}
 network-properties:
   network:
     name: ${network_name}

@@ -1,5 +1,6 @@
 variable "api_endpoint" {}
 variable "splunk_url" {}
+variable "splunk_token" {}
 variable "network_name" {}
 
 variable "availability_zones" {
@@ -14,6 +15,7 @@ data "template_file" "firehose_config" {
   vars {
     api_endpoint = "${var.api_endpoint}"
     splunk_url   = "${var.splunk_url}"
+    splunk_token = "${var.splunk_token}"
     network_name = "${var.network_name}"
 
     //availability_zones value isn't being used to configure AZs, so hard coding to use singleton_az for now
