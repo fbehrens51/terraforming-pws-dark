@@ -242,7 +242,7 @@ module "splunk_search_head" {
 
 module "splunk_indexers" {
   source               = "../../modules/launch"
-  instance_count       = "${length(local.indexers_eni_ids)}"
+  instance_count       = "${length(local.splunk_indexers_eni_ids)}"
   ami_id               = "${module.amazon_ami.id}"
   instance_type        = "${var.instance_type}"
   key_pair_name        = "${data.terraform_remote_state.bootstrap_splunk.splunk_ssh_key_pair_name}"
@@ -273,7 +273,7 @@ resource "aws_volume_attachment" "splunk_search_head_volume_attachment" {
 resource "aws_volume_attachment" "splunk_indexers_volume_attachment" {
   skip_destroy = true
 
-  count       = "${length(local.indexers_eni_ids)}"
+  count       = "${length(local.splunk_indexers_eni_ids)}"
   instance_id = "${module.splunk_indexers.instance_ids[count.index]}"
   volume_id   = "${element(data.terraform_remote_state.bootstrap_splunk.indexers_data_volumes, count.index)}"
   device_name = "/dev/sdf"
@@ -291,12 +291,12 @@ resource "aws_elb_attachment" "splunk_search_head_attach" {
 
 resource "aws_elb_attachment" "splunk_syslog_attach" {
   elb      = "${data.terraform_remote_state.bootstrap_splunk.splunk_syslog_elb_id}"
-  count    = "${length(local.indexers_user_data)}"
+  count    = "${length(local.splunk_indexers_eni_ids)}"
   instance = "${module.splunk_indexers.instance_ids[count.index]}"
 }
 
 resource "aws_elb_attachment" "splunk_http_collector_attach" {
   elb      = "${data.terraform_remote_state.bootstrap_splunk.splunk_http_collector_elb_id}"
-  count    = "${length(local.indexers_user_data)}"
+  count    = "${length(local.splunk_indexers_eni_ids)}"
   instance = "${module.splunk_indexers.instance_ids[count.index]}"
 }
