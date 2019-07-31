@@ -213,7 +213,8 @@ output "ldap_dn" {
 }
 
 output "ldap_password" {
-  value = "${data.aws_s3_bucket_object.ldap_password.body}"
+  value     = "${data.aws_s3_bucket_object.ldap_password.body}"
+  sensitive = true
 }
 
 output "ldap_host" {

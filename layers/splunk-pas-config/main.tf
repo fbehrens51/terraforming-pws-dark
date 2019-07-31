@@ -54,4 +54,5 @@ module "firehose_config" {
 
 output "firehose_config" {
   value = "${module.firehose_config.firehose_config}"
+  sensitive = true
 }

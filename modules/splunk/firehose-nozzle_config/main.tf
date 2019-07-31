@@ -28,4 +28,5 @@ data "template_file" "firehose_config" {
 
 output "firehose_config" {
   value = "${data.template_file.firehose_config.rendered}"
+  sensitive = true
 }

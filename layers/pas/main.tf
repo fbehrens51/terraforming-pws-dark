@@ -231,7 +231,8 @@ output "rds_address" {
 }
 
 output "rds_password" {
-  value = "${module.rds.rds_password}"
+  value     = "${module.rds.rds_password}"
+  sensitive = true
 }
 
 output "rds_port" {
@@ -307,7 +308,8 @@ output "om_eip_allocation_id" {
 }
 
 output "om_private_key_pem" {
-  value = "${module.om_key_pair.private_key_pem}"
+  value     = "${module.om_key_pair.private_key_pem}"
+  sensitive = true
 }
 
 output "om_security_group_id" {

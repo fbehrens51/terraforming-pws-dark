@@ -84,7 +84,8 @@ output "reverse_content" {
 }
 
 output "rndc_key_content" {
-  value = "${data.template_file.rndc_key_content.rendered}"
+  value     = "${data.template_file.rndc_key_content.rendered}"
+  sensitive = true
 }
 
 output "reverse_name" {

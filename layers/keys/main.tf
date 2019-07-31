@@ -43,7 +43,6 @@ variable "env_name" {}
 
 output "kms_key_id" {
   value     = "${module.kms.kms_key_id}"
-  sensitive = true
 }
 
 output "bind_rndc_secret" {

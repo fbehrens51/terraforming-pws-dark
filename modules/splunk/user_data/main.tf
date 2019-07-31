@@ -29,5 +29,6 @@ output "user_data" {
 }
 
 output "password" {
-  value = "${random_string.splunk_password.result}"
+  value     = "${random_string.splunk_password.result}"
+  sensitive = true
 }

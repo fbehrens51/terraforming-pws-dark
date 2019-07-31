@@ -42,7 +42,8 @@ resource "tls_locally_signed_cert" "client_cert" {
 }
 
 output "private_key_pem" {
-  value = "${tls_private_key.client_private_key.private_key_pem}"
+  value     = "${tls_private_key.client_private_key.private_key_pem}"
+  sensitive = true
 }
 
 output "cert_pem" {

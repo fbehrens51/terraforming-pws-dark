@@ -89,7 +89,8 @@ resource "aws_instance" "vm_importer" {
 }
 
 output "vm_importer_private_key" {
-  value = "${module.key_pair.private_key_pem}"
+  value     = "${module.key_pair.private_key_pem}"
+  sensitive = true
 }
 
 output "vm_importer_volume_id" {
