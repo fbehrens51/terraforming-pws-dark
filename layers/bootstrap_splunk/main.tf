@@ -313,10 +313,6 @@ output "splunk_syslog_host_name" {
   value = "${module.splunk_syslog_elb.dns_name}"
 }
 
-output "splunk_syslog_port" {
-  value = "${local.splunk_syslog_port}"
-}
-
 output "splunk_http_collector_url" {
   value = "https://${module.splunk_http_collector_elb.dns_name}:${local.splunk_http_collector_port}"
 }
