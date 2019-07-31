@@ -50,6 +50,6 @@ module "cidr_lookup" {
 }
 
 locals {
-  pas_cidr      = "${module.cidr_lookup.pas_cidr}"
+  pas_cidrs     = "${module.cidr_lookup.pas_cidrs}"
   services_cidr = "${module.cidr_lookup.services_cidr}"
 }

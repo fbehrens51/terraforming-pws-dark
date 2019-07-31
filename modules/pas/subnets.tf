@@ -5,7 +5,7 @@ data "aws_vpc" "vpc" {
 resource "aws_subnet" "pas_subnets" {
   count             = "${length(var.availability_zones)}"
   vpc_id            = "${var.vpc_id}"
-  cidr_block        = "${cidrsubnet(local.pas_cidr, 2, count.index)}"
+  cidr_block        = "${element(local.pas_cidrs, count.index)}"
   availability_zone = "${element(var.availability_zones, count.index)}"
 
   tags {

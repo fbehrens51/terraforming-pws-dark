@@ -1,84 +1,36 @@
 variable "vpc_cidr" {}
 
 locals {
-  cidr_split  = "${split("/", var.vpc_cidr)}"
-  cidr_prefix = "${local.cidr_split[1]}"
-
-  cidr_breakout_map = {
-    "16" = {
-      "large"       = 6
-      "small"       = 10
-      "infra_index" = 80 # 5th largest subnet is reserved to be broken down into smaller subnets
-      "om_index"    = 81 # 80 = 5 << (10 - 6) = 5 * 2^4
-    }
-
-    "20" = {
-      "large"       = 3
-      "small"       = 6
-      "infra_index" = 40 # 5th largest subnet is reserved to be broken down into smaller subnets
-      "om_index"    = 41 # 40 = 5 << (6 - 3) = 5 * 2^3
-    }
-  }
-
-  newbits_to_large      = "${lookup(local.cidr_breakout_map[local.cidr_prefix],"large")}"
-  newbits_to_small      = "${lookup(local.cidr_breakout_map[local.cidr_prefix],"small")}"
-  index_for_ifra_subnet = "${lookup(local.cidr_breakout_map[local.cidr_prefix],"infra_index")}"
-  index_for_om_subnet   = "${lookup(local.cidr_breakout_map[local.cidr_prefix],"om_index")}"
-
-  public_cidr = "${cidrsubnet(var.vpc_cidr, local.newbits_to_large, 0)}"
-
-  pas_cidr           = "${cidrsubnet(var.vpc_cidr, local.newbits_to_large, 1)}"
-  pks_cidr           = "${cidrsubnet(var.vpc_cidr, local.newbits_to_large, 1)}"
-  control_plane_cidr = "${cidrsubnet(var.vpc_cidr, local.newbits_to_large, 1)}"
-
-  pks_services_cidr = "${cidrsubnet(var.vpc_cidr, local.newbits_to_large, 2)}"
-  services_cidr     = "${cidrsubnet(var.vpc_cidr, local.newbits_to_large, 2)}"
-
-  rds_cidr = "${cidrsubnet(var.vpc_cidr, local.newbits_to_large, 3)}"
-
-  portal_cache_cidr = "${cidrsubnet(var.vpc_cidr, local.newbits_to_large, 4)}"
-
-  infrastructure_cidr = "${cidrsubnet(var.vpc_cidr, local.newbits_to_small, local.index_for_ifra_subnet)}"
-
-  om_cidr = "${cidrsubnet(var.vpc_cidr, local.newbits_to_small, local.index_for_om_subnet)}"
+  pas_cidr_1    = "${cidrsubnet(var.vpc_cidr, 3, 0)}"
+  pas_cidr_2    = "${cidrsubnet(var.vpc_cidr, 3, 1)}"
+  pas_cidr_3    = "${cidrsubnet(var.vpc_cidr, 3, 2)}"
+  om_cidr       = "${cidrsubnet(var.vpc_cidr, 3, 3)}"
+  infra_cidr    = "${cidrsubnet(var.vpc_cidr, 3, 4)}"
+  rds_cidr      = "${cidrsubnet(var.vpc_cidr, 3, 5)}"
+  services_cidr = "${cidrsubnet(var.vpc_cidr, 3, 6)}"
+  public_cidr   = "${cidrsubnet(var.vpc_cidr, 3, 7)}"
 }
 
-output "public_cidr" {
-  value = "${local.public_cidr}"
-}
-
-output "pas_cidr" {
-  value = "${local.pas_cidr}"
-}
-
-output "services_cidr" {
-  value = "${local.services_cidr}"
-}
-
-output "rds_cidr" {
-  value = "${local.rds_cidr}"
-}
-
-output "portal_cache_cidr" {
-  value = "${local.portal_cache_cidr}"
-}
-
-output "infrastructure_cidr" {
-  value = "${local.infrastructure_cidr}"
+output "pas_cidrs" {
+  value = ["${local.pas_cidr_1}", "${local.pas_cidr_2}", "${local.pas_cidr_3}"]
 }
 
 output "om_cidr" {
   value = "${local.om_cidr}"
 }
 
-output "control_plane_cidr" {
-  value = "${local.control_plane_cidr}"
+output "infrastructure_cidr" {
+  value = "${local.infra_cidr}"
 }
 
-output "pks_cidr" {
-  value = "${local.pks_cidr}"
+output "rds_cidr" {
+  value = "${local.rds_cidr}"
 }
 
-output "pks_services_cidr" {
-  value = "${local.pks_services_cidr}"
+output "services_cidr" {
+  value = "${local.services_cidr}"
+}
+
+output "public_cidr" {
+  value = "${local.public_cidr}"
 }
