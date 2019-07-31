@@ -12,11 +12,10 @@ data "terraform_remote_state" "paperwork" {
   backend = "s3"
 
   config {
-    bucket     = "${var.remote_state_bucket}"
-    key        = "paperwork"
-    region     = "${var.remote_state_region}"
-    encrypt    = true
-    kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
+    bucket  = "${var.remote_state_bucket}"
+    key     = "paperwork"
+    region  = "${var.remote_state_region}"
+    encrypt = true
   }
 }
 
