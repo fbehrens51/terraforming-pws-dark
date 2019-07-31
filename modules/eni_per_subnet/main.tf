@@ -46,9 +46,9 @@ resource "aws_eip" "eip" {
 }
 
 resource "aws_eip_association" "eip_association" {
-  count = "${var.create_eip ? length(var.subnet_ids) : 0}"
+  count                = "${var.create_eip ? length(var.subnet_ids) : 0}"
   network_interface_id = "${element(aws_network_interface.eni.*.id, count.index)}"
-  allocation_id = "${element(aws_eip.eip.*.id, count.index)}"
+  allocation_id        = "${element(aws_eip.eip.*.id, count.index)}"
 }
 
 output "public_ips" {

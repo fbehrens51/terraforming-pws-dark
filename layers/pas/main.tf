@@ -165,14 +165,14 @@ data "aws_vpc" "bastion_vpc" {
 module "ops_manager" {
   source = "../../modules/ops_manager/infra"
 
-  bucket_suffix         = "${local.bucket_suffix}"
-  env_name              = "${var.env_name}"
-  om_eip                = false
-  private               = false
-  subnet_id             = "${module.infra.om_subnet_ids[0]}"
-  tags                  = "${var.tags}"
-  vpc_id                = "${local.vpc_id}"
-  ingress_rules         = ["${local.ingress_rules}"]
+  bucket_suffix = "${local.bucket_suffix}"
+  env_name      = "${var.env_name}"
+  om_eip        = false
+  private       = false
+  subnet_id     = "${module.infra.om_subnet_ids[0]}"
+  tags          = "${var.tags}"
+  vpc_id        = "${local.vpc_id}"
+  ingress_rules = ["${local.ingress_rules}"]
 }
 
 resource "random_integer" "bucket" {

@@ -50,11 +50,12 @@ locals {
   modified_tags     = "${merge(var.tags, map("Name", "${local.modified_name}"))}"
   bind_rndc_secret  = "${data.terraform_remote_state.keys.bind_rndc_secret}"
   master_private_ip = "${data.terraform_remote_state.bootstrap_bind.bind_eni_ips[0]}"
+
   // If internetless = true in the bootstrap_bind layer,
   // eip_ips will be empty, and master_public_ip becomes the first eni_ip
-  master_public_ip  = "${element(concat(data.terraform_remote_state.bootstrap_bind.bind_eip_ips, data.terraform_remote_state.bootstrap_bind.bind_eni_ips), 0)}"
+  master_public_ip = "${element(concat(data.terraform_remote_state.bootstrap_bind.bind_eip_ips, data.terraform_remote_state.bootstrap_bind.bind_eni_ips), 0)}"
 
-  slave_ips = "${concat(data.terraform_remote_state.bootstrap_bind.bind_eip_ips, data.terraform_remote_state.bootstrap_bind.bind_eni_ips)}"
+  slave_ips        = "${concat(data.terraform_remote_state.bootstrap_bind.bind_eip_ips, data.terraform_remote_state.bootstrap_bind.bind_eni_ips)}"
   slave_public_ips = ["${element(local.slave_ips, 1)}", "${element(local.slave_ips, 2)}"]
 }
 

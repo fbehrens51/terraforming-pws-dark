@@ -50,9 +50,7 @@ locals {
   modified_tags = "${merge(var.tags, map("Name", "${local.modified_name}"))}"
   es_vpc_id     = "${data.terraform_remote_state.paperwork.es_vpc_id}"
 
-
   splunk_volume_tag = "${var.env_name}-SPLUNK_DATA"
-
 
   public_cidr_block  = "${cidrsubnet(data.aws_vpc.this_vpc.cidr_block, 1, 0)}"
   private_cidr_block = "${cidrsubnet(data.aws_vpc.this_vpc.cidr_block, 1, 1)}"
@@ -63,11 +61,11 @@ data "aws_vpc" "this_vpc" {
 }
 
 module "public_subnets" {
-  source            = "../../modules/subnet_per_az"
+  source             = "../../modules/subnet_per_az"
   availability_zones = "${var.availability_zones}"
-  vpc_id            = "${local.es_vpc_id}"
-  cidr_block        = "${local.public_cidr_block}"
-  tags = "${merge(local.modified_tags, map("Name", "${local.modified_name}-public"))}"
+  vpc_id             = "${local.es_vpc_id}"
+  cidr_block         = "${local.public_cidr_block}"
+  tags               = "${merge(local.modified_tags, map("Name", "${local.modified_name}-public"))}"
 }
 
 resource "aws_route_table_association" "public_route_table_assoc" {
@@ -77,11 +75,11 @@ resource "aws_route_table_association" "public_route_table_assoc" {
 }
 
 module "private_subnets" {
-  source            = "../../modules/subnet_per_az"
+  source             = "../../modules/subnet_per_az"
   availability_zones = "${var.availability_zones}"
-  vpc_id            = "${local.es_vpc_id}"
-  cidr_block        = "${local.private_cidr_block}"
-  tags = "${merge(local.modified_tags, map("Name", "${local.modified_name}-private"))}"
+  vpc_id             = "${local.es_vpc_id}"
+  cidr_block         = "${local.private_cidr_block}"
+  tags               = "${merge(local.modified_tags, map("Name", "${local.modified_name}-private"))}"
 }
 
 resource "aws_route_table_association" "private_route_table_assoc" {
@@ -92,8 +90,8 @@ resource "aws_route_table_association" "private_route_table_assoc" {
 
 resource "aws_eip" "nat_eip" {
   count = "${var.internetless ? 0 : 1}"
-  vpc = true
-  tags = "${merge(local.modified_tags, map("Name", "${local.modified_name}-nat"))}"
+  vpc   = true
+  tags  = "${merge(local.modified_tags, map("Name", "${local.modified_name}-nat"))}"
 }
 
 resource "aws_nat_gateway" "nat" {
@@ -107,7 +105,7 @@ resource "aws_nat_gateway" "nat" {
 resource "aws_route" "toggle_internet" {
   count = "${var.internetless ? 0 : 1}"
 
-  route_table_id         =  "${data.terraform_remote_state.routes.es_private_vpc_route_table_id}"
+  route_table_id         = "${data.terraform_remote_state.routes.es_private_vpc_route_table_id}"
   nat_gateway_id         = "${aws_nat_gateway.nat.id}"
   destination_cidr_block = "0.0.0.0/0"
 }

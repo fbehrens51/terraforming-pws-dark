@@ -89,8 +89,8 @@ locals {
   master_dns_ip    = "${data.terraform_remote_state.bind.master_public_ip}"
   dns_zone_name    = "${data.terraform_remote_state.bind.zone_name}"
 
-  basedn = "ou=users,dc=${join(",dc=", split(".", var.root_domain))}"
-  admin  = "cn=admin,dc=${join(",dc=", split(".", var.root_domain))}"
+  basedn        = "ou=users,dc=${join(",dc=", split(".", var.root_domain))}"
+  admin         = "cn=admin,dc=${join(",dc=", split(".", var.root_domain))}"
   public_subnet = "${data.terraform_remote_state.enterprise_services.public_subnet_ids[0]}"
 
   ldap_ingress_rules = [
@@ -125,12 +125,12 @@ module "ldap_host_key_pair" {
 }
 
 module "bootstrap" {
-  source = "../../modules/eni_per_subnet"
+  source        = "../../modules/eni_per_subnet"
   ingress_rules = "${local.ldap_ingress_rules}"
-  egress_rules = "${local.ldap_egress_rules}"
-  subnet_ids = ["${local.public_subnet}"]
-  create_eip = "true"
-  tags = "${local.modified_tags}"
+  egress_rules  = "${local.ldap_egress_rules}"
+  subnet_ids    = ["${local.public_subnet}"]
+  create_eip    = "true"
+  tags          = "${local.modified_tags}"
 }
 
 module "ldap_host" {
@@ -171,10 +171,10 @@ provider "dns" {
 }
 
 resource "dns_a_record_set" "ldap_a_record" {
-  zone  = "${local.dns_zone_name}."
-  name  = "ldap"
+  zone      = "${local.dns_zone_name}."
+  name      = "ldap"
   addresses = ["${module.bootstrap.public_ips}"]
-  ttl   = 300
+  ttl       = 300
 }
 
 variable "root_domain" {}

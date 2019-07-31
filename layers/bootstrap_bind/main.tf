@@ -71,17 +71,18 @@ locals {
 }
 
 module "bootstrap" {
-  source = "../../modules/eni_per_subnet"
+  source        = "../../modules/eni_per_subnet"
   ingress_rules = "${local.bind_ingress_rules}"
-  egress_rules = "${local.bind_egress_rules}"
-  subnet_ids = "${data.terraform_remote_state.enterprise-services.public_subnet_ids}"
-  create_eip = "${!var.internetless}"
-  tags = "${local.modified_tags}"
+  egress_rules  = "${local.bind_egress_rules}"
+  subnet_ids    = "${data.terraform_remote_state.enterprise-services.public_subnet_ids}"
+  create_eip    = "${!var.internetless}"
+  tags          = "${local.modified_tags}"
 }
 
 variable "remote_state_region" {}
 variable "remote_state_bucket" {}
 variable "internetless" {}
+
 variable "tags" {
   type = "map"
 }
@@ -89,9 +90,11 @@ variable "tags" {
 output "bind_eni_ids" {
   value = "${module.bootstrap.eni_ids}"
 }
+
 output "bind_eni_ips" {
   value = "${module.bootstrap.eni_ips}"
 }
+
 output "bind_eip_ips" {
   value = "${module.bootstrap.public_ips}"
 }
