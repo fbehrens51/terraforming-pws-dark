@@ -85,49 +85,13 @@ resource "aws_route_table_association" "private_route_table_assoc" {
   route_table_id = "${data.terraform_remote_state.routes.es_private_vpc_route_table_id}"
 }
 
-resource "aws_eip" "nat_eip" {
-  count = "${var.internetless ? 0 : 1}"
-  vpc   = true
-  tags  = "${merge(local.modified_tags, map("Name", "${local.modified_name}-nat"))}"
+module "nat" {
+  source                 = "../../modules/nat"
+  private_route_table_id = "${data.terraform_remote_state.routes.es_private_vpc_route_table_id}"
+  tags                   = "${local.modified_tags}"
+  public_subnet_id       = "${element(module.public_subnets.subnet_ids, 0)}"
+  internetless           = "${var.internetless}"
 }
-
-resource "aws_nat_gateway" "nat" {
-  count         = "${var.internetless ? 0 : 1}"
-  allocation_id = "${aws_eip.nat_eip.id}"
-  subnet_id     = "${element(module.public_subnets.subnet_ids, 0)}"
-
-  tags = "${merge(local.modified_tags, map("Name", "${local.modified_name}-nat"))}"
-}
-
-resource "aws_route" "toggle_internet" {
-  count = "${var.internetless ? 0 : 1}"
-
-  route_table_id         = "${data.terraform_remote_state.routes.es_private_vpc_route_table_id}"
-  nat_gateway_id         = "${aws_nat_gateway.nat.id}"
-  destination_cidr_block = "0.0.0.0/0"
-}
-
-# module "bootstrap_ldap" {
-#   source            = "../../modules/single_use_subnet"
-#   cidr_block        = "${local.ldap_cidr_block}"
-#   availability_zone = "${var.singleton_availability_zone}"
-#   route_table_id    = "${data.terraform_remote_state.routes.es_public_vpc_route_table_id}"
-#   ingress_rules     = "${local.ldap_ingress_rules}"
-#   egress_rules      = "${local.ldap_egress_rules}"
-#   tags              = "${local.modified_tags}"
-#   create_eip        = true
-# }
-
-# module "bootstrap_splunk" {
-#   source            = "../../modules/single_use_subnet"
-#   cidr_block        = "${local.splunk_cidr_block}"
-#   availability_zone = "${var.singleton_availability_zone}"
-#   route_table_id    = "${data.terraform_remote_state.routes.es_public_vpc_route_table_id}"
-#   ingress_rules     = "${local.splunk_ingress_rules}"
-#   egress_rules      = "${local.splunk_egress_rules}"
-#   tags              = "${local.modified_tags}"
-#   create_eip        = true
-# }
 
 variable "env_name" {}
 variable "internetless" {}

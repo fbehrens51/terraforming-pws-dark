@@ -16,6 +16,10 @@ variable "tags" {
 
 variable "create_eip" {}
 
+variable "source_dest_check" {
+  default = "true"
+}
+
 data "aws_subnet" "first_subnet" {
   id = "${var.subnet_ids[0]}"
 }
@@ -31,6 +35,7 @@ module "security_group" {
 resource "aws_network_interface" "eni" {
   count     = "${length(var.subnet_ids)}"
   subnet_id = "${var.subnet_ids[count.index]}"
+  source_dest_check = "${var.source_dest_check}"
 
   security_groups = [
     "${module.security_group.security_group_id}",
