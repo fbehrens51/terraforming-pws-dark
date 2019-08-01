@@ -110,6 +110,20 @@ data "aws_s3_bucket_object" "ldap_client_key" {
   key    = "${var.ldap_client_key_s3_path}"
 }
 
+variable "splunk_server_cert_s3_path" {}
+
+data "aws_s3_bucket_object" "splunk_server_cert" {
+  bucket = "${var.cert_bucket}"
+  key    = "${var.splunk_server_cert_s3_path}"
+}
+
+variable "splunk_server_key_s3_path" {}
+
+data "aws_s3_bucket_object" "splunk_server_key" {
+  bucket = "${var.cert_bucket}"
+  key    = "${var.splunk_server_key_s3_path}"
+}
+
 variable "portal_smoke_test_cert_s3_path" {}
 
 data "aws_s3_bucket_object" "portal_smoke_test_cert" {
@@ -188,6 +202,15 @@ output "ldap_client_cert" {
 
 output "ldap_client_key" {
   value     = "${data.aws_s3_bucket_object.ldap_client_key.body}"
+  sensitive = true
+}
+
+output "splunk_server_cert" {
+  value = "${data.aws_s3_bucket_object.splunk_server_cert.body}"
+}
+
+output "splunk_server_key" {
+  value     = "${data.aws_s3_bucket_object.splunk_server_key.body}"
   sensitive = true
 }
 

@@ -156,6 +156,23 @@ EOF
   }
 }
 
+data "template_file" "search_head_web_conf" {
+  template = <<EOF
+[settings]
+httpport           = $${web_port}
+mgmtHostPort       = 127.0.0.1:$${mgmt_port}
+
+enableSplunkWebSSL = true
+serverCert         = /opt/splunk/etc/auth/mycerts/mySplunkWebCertificate.pem
+privKeyPath        = /opt/splunk/etc/auth/mycerts/mySplunkWebPrivateKey.key
+EOF
+
+  vars {
+    mgmt_port = "${local.splunk_mgmt_port}"
+    web_port  = "${local.splunk_web_port}"
+  }
+}
+
 data "template_file" "web_conf" {
   template = <<EOF
 [settings]
@@ -179,6 +196,8 @@ data "template_file" "master_user_data" {
     inputs_conf_content      = "${data.template_file.inputs_conf.rendered}"
     http_inputs_conf_content = "${data.template_file.http_inputs_conf.rendered}"
     role                     = "splunk-master"
+    server_cert_content      = ""
+    server_key_content       = ""
   }
 }
 
@@ -188,10 +207,12 @@ data "template_file" "search_head_user_data" {
   vars {
     password                 = "${data.terraform_remote_state.bootstrap_splunk.splunk_password}"
     server_conf_content      = "${data.template_file.search_head_server_conf.rendered}"
-    web_conf_content         = "${data.template_file.web_conf.rendered}"
+    web_conf_content         = "${data.template_file.search_head_web_conf.rendered}"
     inputs_conf_content      = ""
     http_inputs_conf_content = ""
     role                     = "splunk-search-head"
+    server_cert_content      = "${data.terraform_remote_state.paperwork.splunk_server_cert}"
+    server_key_content       = "${data.terraform_remote_state.paperwork.splunk_server_key}"
   }
 }
 
@@ -205,6 +226,8 @@ data "template_file" "indexers_user_data" {
     inputs_conf_content      = "${data.template_file.inputs_conf.rendered}"
     http_inputs_conf_content = "${data.template_file.http_inputs_conf.rendered}"
     role                     = "splunk-indexer"
+    server_cert_content      = ""
+    server_key_content       = ""
   }
 }
 

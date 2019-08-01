@@ -30,6 +30,15 @@ output "trusted_ca_certs" {
   value = "${module.ca_cert.cert_pem}"
 }
 
+output "splunk_server_cert" {
+  value = "${module.splunk_server_cert.cert_pem}"
+}
+
+output "splunk_server_key" {
+  value     = "${module.splunk_server_cert.private_key_pem}"
+  sensitive = true
+}
+
 output "ldap_server_cert" {
   value = "${module.ldap_server_cert.cert_pem}"
 }

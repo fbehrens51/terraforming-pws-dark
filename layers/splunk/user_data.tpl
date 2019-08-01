@@ -24,6 +24,14 @@ write_files:
   content: |
     ${indent(4, http_inputs_conf_content)}
 
+- path: /tmp/server.crt
+  content: |
+    ${indent(4, server_cert_content)}
+
+- path: /tmp/server.key
+  content: |
+    ${indent(4, server_key_content)}
+
 mounts:
   - [ "/dev/xvdf", "/opt/splunk", "ext4", "defaults,nofail", "0", "2" ]
 
@@ -34,11 +42,18 @@ runcmd:
   - mkdir /opt/splunk
   - aws s3 cp s3://product-blobs/ . --recursive --exclude='*' --include='splunk-7.3.0*'
   - sudo rpm -i splunk-7.3.0*.rpm
-  - cp /tmp/inputs.conf /opt/splunk/etc/system/local/inputs.conf
+
+  - mkdir -p /opt/splunk/etc/auth/mycerts
   - mkdir -p /opt/splunk/etc/apps/splunk_httpinput/local/
+
+  - cp /tmp/server.crt /opt/splunk/etc/auth/mycerts/mySplunkWebCertificate.pem
+  - cp /tmp/server.key /opt/splunk/etc/auth/mycerts/mySplunkWebPrivateKey.key
+
+  - cp /tmp/inputs.conf /opt/splunk/etc/system/local/inputs.conf
   - cp /tmp/http_inputs.conf /opt/splunk/etc/apps/splunk_httpinput/local/inputs.conf
   - cp /tmp/server.conf /opt/splunk/etc/system/local/server.conf
   - cp /tmp/web.conf /opt/splunk/etc/system/local/web.conf
+
   - /opt/splunk/bin/splunk start --no-prompt --accept-license --answer-yes
   - /opt/splunk/bin/splunk cmd splunkd rest --noauth POST /services/authentication/users "name=admin&password=${password}&roles=admin"
   - /opt/splunk/bin/splunk restart

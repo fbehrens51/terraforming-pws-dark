@@ -203,7 +203,7 @@ module "splunk_search_head_elb" {
   vpc_id            = "${data.terraform_remote_state.paperwork.es_vpc_id}"
   egress_cidrs      = ["${local.private_subnet_cidrs}"]
   short_name        = "splunk-sh"
-  port              = "80"
+  port              = "443"
   instance_port     = "8000"
 }
 
@@ -283,6 +283,10 @@ output "search_head_data_volume" {
 
 output "indexers_data_volumes" {
   value = "${aws_ebs_volume.splunk_indexers_data.*.id}"
+}
+
+output "search_head_private_ip" {
+  value = "${module.search_head_bootstrap.eni_ips[0]}"
 }
 
 output "master_private_ip" {

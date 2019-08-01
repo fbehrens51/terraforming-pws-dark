@@ -50,6 +50,10 @@ ldap_client_cert_s3_path = "${ldap_client_cert_s3_path}"
 
 ldap_client_key_s3_path = "${ldap_client_key_s3_path}"
 
+splunk_server_cert_s3_path = "${splunk_server_cert_s3_path}"
+
+splunk_server_key_s3_path = "${splunk_server_key_s3_path}"
+
 portal_smoke_test_cert_s3_path = "${portal_smoke_test_cert_s3_path}"
 
 portal_smoke_test_key_s3_path = "${portal_smoke_test_key_s3_path}"
