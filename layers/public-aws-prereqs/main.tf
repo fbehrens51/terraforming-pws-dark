@@ -9,26 +9,29 @@ module "providers" {
 provider "aws" {}
 
 locals {
-  ldap_domain   = "ldap.${var.root_domain}"
-  splunk_domain = "splunk.${var.root_domain}"
-  system_domain = "run.${var.root_domain}"
-  apps_domain   = "cfapps.${var.root_domain}"
+  ldap_domain           = "ldap.${var.root_domain}"
+  splunk_domain         = "splunk.${var.root_domain}"
+  splunk_monitor_domain = "splunk_monitor.${var.root_domain}"
+  system_domain         = "run.${var.root_domain}"
+  apps_domain           = "cfapps.${var.root_domain}"
 
-  cert_bucket                     = "${replace(var.env_name," ","-")}-secrets"
-  root_ca_cert_s3_path            = "root_ca_cert.pem"
-  router_trusted_ca_certs_s3_path = "router_trusted_ca_certs.pem"
-  trusted_ca_certs_s3_path        = "trusted_ca_certs.pem"
-  router_server_cert_s3_path      = "router_server_cert.pem"
-  router_server_key_s3_path       = "router_server_key.pem"
-  uaa_server_cert_s3_path         = "uaa_server_cert.pem"
-  uaa_server_key_s3_path          = "uaa_server_key.pem"
-  ldap_client_cert_s3_path        = "ldap_client_cert.pem"
-  ldap_client_key_s3_path         = "ldap_client_key.pem"
-  splunk_server_cert_s3_path      = "splunk_server_cert.pem"
-  splunk_server_key_s3_path       = "splunk_server_key.pem"
-  portal_smoke_test_cert_s3_path  = "portal_smoke_test_cert.pem"
-  portal_smoke_test_key_s3_path   = "portal_smoke_test_key.pem"
-  ldap_password_s3_path           = "ldap_password.txt"
+  cert_bucket                        = "${replace(var.env_name," ","-")}-secrets"
+  root_ca_cert_s3_path               = "root_ca_cert.pem"
+  router_trusted_ca_certs_s3_path    = "router_trusted_ca_certs.pem"
+  trusted_ca_certs_s3_path           = "trusted_ca_certs.pem"
+  router_server_cert_s3_path         = "router_server_cert.pem"
+  router_server_key_s3_path          = "router_server_key.pem"
+  uaa_server_cert_s3_path            = "uaa_server_cert.pem"
+  uaa_server_key_s3_path             = "uaa_server_key.pem"
+  ldap_client_cert_s3_path           = "ldap_client_cert.pem"
+  ldap_client_key_s3_path            = "ldap_client_key.pem"
+  splunk_server_cert_s3_path         = "splunk_server_cert.pem"
+  splunk_server_key_s3_path          = "splunk_server_key.pem"
+  splunk_monitor_server_cert_s3_path = "splunk_monitor_server_cert.pem"
+  splunk_monitor_server_key_s3_path  = "splunk_monitor_server_key.pem"
+  portal_smoke_test_cert_s3_path     = "portal_smoke_test_cert.pem"
+  portal_smoke_test_key_s3_path      = "portal_smoke_test_key.pem"
+  ldap_password_s3_path              = "ldap_password.txt"
 
   basedn = "ou=users,dc=${join(",dc=", split(".", var.root_domain))}"
   admin  = "cn=admin,dc=${join(",dc=", split(".", var.root_domain))}"
@@ -46,12 +49,13 @@ module "paperwork" {
   key_manager_role_name = "${var.key_manager_role_name}"
   splunk_role_name      = "${var.splunk_role_name}"
 
-  env_name      = "${var.env_name}"
-  ldap_domain   = "${local.ldap_domain}"
-  splunk_domain = "${local.splunk_domain}"
-  system_domain = "${local.system_domain}"
-  apps_domain   = "${local.apps_domain}"
-  users         = "${var.users}"
+  env_name              = "${var.env_name}"
+  ldap_domain           = "${local.ldap_domain}"
+  splunk_domain         = "${local.splunk_domain}"
+  system_domain         = "${local.system_domain}"
+  splunk_monitor_domain = "${local.splunk_monitor_domain}"
+  apps_domain           = "${local.apps_domain}"
+  users                 = "${var.users}"
 }
 
 resource "aws_s3_bucket" "certs" {
@@ -81,20 +85,22 @@ data "template_file" "paperwork_variables" {
     ldap_role_attr        = "role"
     ldap_password_s3_path = "${local.ldap_password_s3_path}"
 
-    cert_bucket                     = "${local.cert_bucket}"
-    root_ca_cert_s3_path            = "${local.root_ca_cert_s3_path}"
-    router_trusted_ca_certs_s3_path = "${local.router_trusted_ca_certs_s3_path}"
-    trusted_ca_certs_s3_path        = "${local.trusted_ca_certs_s3_path}"
-    router_server_cert_s3_path      = "${local.router_server_cert_s3_path}"
-    router_server_key_s3_path       = "${local.router_server_key_s3_path}"
-    uaa_server_cert_s3_path         = "${local.uaa_server_cert_s3_path}"
-    uaa_server_key_s3_path          = "${local.uaa_server_key_s3_path}"
-    ldap_client_cert_s3_path        = "${local.ldap_client_cert_s3_path}"
-    ldap_client_key_s3_path         = "${local.ldap_client_key_s3_path}"
-    splunk_server_cert_s3_path      = "${local.splunk_server_cert_s3_path}"
-    splunk_server_key_s3_path       = "${local.splunk_server_key_s3_path}"
-    portal_smoke_test_cert_s3_path  = "${local.portal_smoke_test_cert_s3_path}"
-    portal_smoke_test_key_s3_path   = "${local.portal_smoke_test_key_s3_path}"
+    cert_bucket                        = "${local.cert_bucket}"
+    root_ca_cert_s3_path               = "${local.root_ca_cert_s3_path}"
+    router_trusted_ca_certs_s3_path    = "${local.router_trusted_ca_certs_s3_path}"
+    trusted_ca_certs_s3_path           = "${local.trusted_ca_certs_s3_path}"
+    router_server_cert_s3_path         = "${local.router_server_cert_s3_path}"
+    router_server_key_s3_path          = "${local.router_server_key_s3_path}"
+    uaa_server_cert_s3_path            = "${local.uaa_server_cert_s3_path}"
+    uaa_server_key_s3_path             = "${local.uaa_server_key_s3_path}"
+    ldap_client_cert_s3_path           = "${local.ldap_client_cert_s3_path}"
+    ldap_client_key_s3_path            = "${local.ldap_client_key_s3_path}"
+    splunk_server_cert_s3_path         = "${local.splunk_server_cert_s3_path}"
+    splunk_server_key_s3_path          = "${local.splunk_server_key_s3_path}"
+    splunk_monitor_server_cert_s3_path = "${local.splunk_monitor_server_cert_s3_path}"
+    splunk_monitor_server_key_s3_path  = "${local.splunk_monitor_server_key_s3_path}"
+    portal_smoke_test_cert_s3_path     = "${local.portal_smoke_test_cert_s3_path}"
+    portal_smoke_test_key_s3_path      = "${local.portal_smoke_test_key_s3_path}"
   }
 }
 
@@ -189,6 +195,20 @@ resource "aws_s3_bucket_object" "splunk_server_key" {
   bucket       = "${aws_s3_bucket.certs.bucket}"
   content_type = "text/plain"
   content      = "${module.paperwork.splunk_server_key}"
+}
+
+resource "aws_s3_bucket_object" "splunk_monitor_server_cert" {
+  key          = "${local.splunk_monitor_server_cert_s3_path}"
+  bucket       = "${aws_s3_bucket.certs.bucket}"
+  content      = "${module.paperwork.splunk_monitor_server_cert}"
+  content_type = "text/plain"
+}
+
+resource "aws_s3_bucket_object" "splunk_monitor_server_key" {
+  key          = "${local.splunk_monitor_server_key_s3_path}"
+  bucket       = "${aws_s3_bucket.certs.bucket}"
+  content_type = "text/plain"
+  content      = "${module.paperwork.splunk_monitor_server_key}"
 }
 
 resource "aws_s3_bucket_object" "ldap_client_cert" {

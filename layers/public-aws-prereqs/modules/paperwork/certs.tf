@@ -1,4 +1,5 @@
 variable "splunk_domain" {}
+variable "splunk_monitor_domain" {}
 variable "ldap_domain" {}
 variable "apps_domain" {}
 variable "system_domain" {}
@@ -17,6 +18,16 @@ module "splunk_server_cert" {
   ca_private_key_pem = "${module.ca_cert.private_key_pem}"
   common_name        = "splunk"
   domains            = ["${var.splunk_domain}"]
+}
+
+module "splunk_monitor_server_cert" {
+  source = "../server_cert"
+
+  env_name           = "${var.env_name}"
+  ca_cert_pem        = "${module.ca_cert.cert_pem}"
+  ca_private_key_pem = "${module.ca_cert.private_key_pem}"
+  common_name        = "splunk-monitor"
+  domains            = ["${var.splunk_monitor_domain}"]
 }
 
 module "ldap_server_cert" {

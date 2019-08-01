@@ -39,6 +39,15 @@ output "splunk_server_key" {
   sensitive = true
 }
 
+output "splunk_monitor_server_cert" {
+  value = "${module.splunk_monitor_server_cert.cert_pem}"
+}
+
+output "splunk_monitor_server_key" {
+  value     = "${module.splunk_monitor_server_cert.private_key_pem}"
+  sensitive = true
+}
+
 output "ldap_server_cert" {
   value = "${module.ldap_server_cert.cert_pem}"
 }

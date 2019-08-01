@@ -220,7 +220,7 @@ module "splunk_monitor_elb" {
   vpc_id            = "${data.terraform_remote_state.paperwork.es_vpc_id}"
   egress_cidrs      = ["${local.private_subnet_cidrs}"]
   short_name        = "splunk-monitor"
-  port              = "80"
+  port              = "443"
   instance_port     = "8000"
 }
 
