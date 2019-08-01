@@ -25,7 +25,6 @@ product-properties:
     value:
     - HttpStartStop
     - LogMessage
-    - ValueMetric
     - CounterEvent
     - Error
     - ContainerMetric
