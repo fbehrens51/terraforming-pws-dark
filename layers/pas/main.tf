@@ -59,7 +59,7 @@ module "infra" {
   availability_zones     = "${var.availability_zones}"
   internetless           = "${var.internetless}"
   dns_suffix             = ""
-  tags                   = "${var.tags}"
+  tags                   = "${local.modified_tags}"
   use_route53            = false
   vpc_id                 = "${local.vpc_id}"
   public_route_table_id  = "${local.route_table_id}"
@@ -73,7 +73,7 @@ module "pas" {
   env_name           = "${var.env_name}"
   public_subnet_ids  = "${module.infra.public_subnet_ids}"
   route_table_id     = "${data.terraform_remote_state.routes.pas_private_vpc_route_table_id}"
-  tags               = "${var.tags}"
+  tags               = "${local.modified_tags}"
   vpc_id             = "${local.vpc_id}"
   zone_id            = "${module.infra.zone_id}"
   bucket_suffix      = "${local.bucket_suffix}"
@@ -98,7 +98,7 @@ module "rds" {
   env_name           = "${var.env_name}"
   availability_zones = "${var.availability_zones}"
   vpc_id             = "${module.infra.vpc_id}"
-  tags               = "${var.tags}"
+  tags               = "${local.modified_tags}"
 }
 
 module "pas_elb" {
@@ -106,7 +106,7 @@ module "pas_elb" {
   env_name          = "${var.env_name}"
   internetless      = "${var.internetless}"
   public_subnet_ids = "${module.infra.public_subnet_ids}"
-  tags              = "${var.tags}"
+  tags              = "${local.modified_tags}"
   vpc_id            = "${local.vpc_id}"
   egress_cidrs      = "${module.pas.pas_subnet_cidrs}"
   short_name        = "pas"
@@ -117,7 +117,7 @@ module "om_elb" {
   env_name          = "${var.env_name}"
   internetless      = "${var.internetless}"
   public_subnet_ids = "${module.infra.public_subnet_ids}"
-  tags              = "${var.tags}"
+  tags              = "${local.modified_tags}"
   vpc_id            = "${local.vpc_id}"
   egress_cidrs      = "${module.infra.om_subnet_cidrs}"
   short_name        = "om"
@@ -166,7 +166,7 @@ module "ops_manager" {
   om_eip        = false
   private       = false
   subnet_id     = "${module.infra.om_subnet_ids[0]}"
-  tags          = "${var.tags}"
+  tags          = "${local.modified_tags}"
   vpc_id        = "${local.vpc_id}"
   ingress_rules = ["${local.ingress_rules}"]
 }
@@ -194,6 +194,9 @@ variable "tags" {
 }
 
 locals {
+  env_name         = "${var.tags["Name"]}"
+  modified_name    = "${local.env_name} pas"
+  modified_tags    = "${merge(var.tags, map("Name", "${local.modified_name}"))}"
   cp_vpc_id        = "${data.terraform_remote_state.paperwork.cp_vpc_id}"
   bastion_vpc_id   = "${data.terraform_remote_state.paperwork.bastion_vpc_id}"
   vpc_id           = "${data.terraform_remote_state.paperwork.pas_vpc_id}"
