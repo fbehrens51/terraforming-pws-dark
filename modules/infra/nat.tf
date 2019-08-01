@@ -4,4 +4,5 @@ module "nat" {
   tags                   = "${var.tags}"
   public_subnet_id       = "${element(aws_subnet.public_subnets.*.id, 0)}"
   internetless           = "${var.internetless}"
+  instance_type          = "${var.nat_instance_type}"
 }

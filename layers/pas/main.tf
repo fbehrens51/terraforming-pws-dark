@@ -64,6 +64,7 @@ module "infra" {
   vpc_id                 = "${local.vpc_id}"
   public_route_table_id  = "${local.route_table_id}"
   private_route_table_id = "${data.terraform_remote_state.routes.pas_private_vpc_route_table_id}"
+  nat_instance_type      = "${var.nat_instance_type}"
 }
 
 module "pas" {
@@ -174,6 +175,10 @@ module "ops_manager" {
 resource "random_integer" "bucket" {
   min = 1
   max = 100000
+}
+
+variable "nat_instance_type" {
+  default = "t2.small"
 }
 
 variable "remote_state_bucket" {}

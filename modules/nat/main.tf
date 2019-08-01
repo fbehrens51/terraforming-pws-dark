@@ -8,6 +8,10 @@ variable "private_route_table_id" {}
 
 variable "public_subnet_id" {}
 
+variable "instance_type" {
+  default = "t2.small"
+}
+
 locals {
   env_name      = "${var.tags["Name"]}"
   modified_name = "${local.env_name} nat"
@@ -59,7 +63,7 @@ module "eni" {
 }
 
 resource "aws_instance" "nat" {
-  instance_type = "t2.small"
+  instance_type = "${var.instance_type}"
   tags          = "${local.modified_tags}"
   ami           = "${data.aws_ami.nat_ami.image_id}"
 

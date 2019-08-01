@@ -91,6 +91,11 @@ module "nat" {
   tags                   = "${local.modified_tags}"
   public_subnet_id       = "${element(module.public_subnets.subnet_ids, 0)}"
   internetless           = "${var.internetless}"
+  instance_type          = "${var.nat_instance_type}"
+}
+
+variable "nat_instance_type" {
+  default = "t2.small"
 }
 
 variable "env_name" {}
