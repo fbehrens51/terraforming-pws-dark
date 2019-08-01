@@ -42,7 +42,7 @@ variable "remote_state_bucket" {}
 variable "env_name" {}
 
 output "kms_key_id" {
-  value     = "${module.kms.kms_key_id}"
+  value = "${module.kms.kms_key_id}"
 }
 
 output "bind_rndc_secret" {

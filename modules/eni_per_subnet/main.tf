@@ -33,8 +33,8 @@ module "security_group" {
 }
 
 resource "aws_network_interface" "eni" {
-  count     = "${length(var.subnet_ids)}"
-  subnet_id = "${var.subnet_ids[count.index]}"
+  count             = "${length(var.subnet_ids)}"
+  subnet_id         = "${var.subnet_ids[count.index]}"
   source_dest_check = "${var.source_dest_check}"
 
   security_groups = [
