@@ -77,6 +77,7 @@ data "template_file" "paperwork_variables" {
     es_vpc_id             = "${module.paperwork.es_vpc_id}"
     bastion_vpc_id        = "${module.paperwork.bastion_vpc_id}"
     pas_vpc_id            = "${module.paperwork.pas_vpc_id}"
+    pas_vpc_dns           = "${module.paperwork.pas_vpc_dns}"
 
     ldap_basedn           = "${local.basedn}"
     ldap_dn               = "${local.admin}"

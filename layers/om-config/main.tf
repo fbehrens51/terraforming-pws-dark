@@ -57,7 +57,7 @@ data "aws_region" "current" {}
 module "om_config" {
   source = "../../modules/ops_manager_config"
 
-  vpc_id       = "${local.vpc_id}"
+  pas_vpc_dns  = "${local.vpc_dns}"
   env_name     = "${var.env_name}"
   region       = "${data.aws_region.current.name}"
   s3_endpoint  = "${var.s3_endpoint}"
@@ -178,6 +178,6 @@ module "om_config" {
 }
 
 locals {
-  vpc_id      = "${data.terraform_remote_state.paperwork.pas_vpc_id}"
+  vpc_dns     = "${data.terraform_remote_state.paperwork.pas_vpc_dns}"
   om_key_name = "${var.env_name}-om"
 }

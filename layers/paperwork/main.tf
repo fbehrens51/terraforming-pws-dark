@@ -12,6 +12,8 @@ variable "cert_bucket" {}
 
 variable "pas_vpc_id" {}
 
+variable "pas_vpc_dns" {}
+
 variable "bastion_vpc_id" {}
 
 variable "es_vpc_id" {}
@@ -150,6 +152,10 @@ variable "portal_smoke_test_key_s3_path" {}
 data "aws_s3_bucket_object" "portal_smoke_test_key" {
   bucket = "${var.cert_bucket}"
   key    = "${var.portal_smoke_test_key_s3_path}"
+}
+
+output "pas_vpc_dns" {
+  value = "${var.pas_vpc_dns}"
 }
 
 output "pas_vpc_id" {

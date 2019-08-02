@@ -1,3 +1,5 @@
+pas_vpc_dns = "${pas_vpc_dns}"
+
 pas_vpc_id = "${pas_vpc_id}"
 
 bastion_vpc_id = "${bastion_vpc_id}"

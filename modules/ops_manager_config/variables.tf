@@ -2,7 +2,7 @@
 # General Configuration
 # ========================
 
-variable "vpc_id" {
+variable "pas_vpc_dns" {
   type = "string"
 }
 

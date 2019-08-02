@@ -22,10 +22,6 @@ locals {
   splunk_product_version = "1.1.1"
 }
 
-data "aws_vpc" "vpc" {
-  id = "${var.vpc_id}"
-}
-
 data "template_file" "pas_vpc_azs" {
   count = "${length(var.pas_subnet_availability_zones)}"
 
@@ -57,7 +53,7 @@ EOF
     pas_subnet_cidr              = "${var.pas_subnet_cidrs[count.index]}"
     pas_subnet_reserved_ips      = "${cidrhost(var.pas_subnet_cidrs[count.index], 1)}-${cidrhost(var.pas_subnet_cidrs[count.index], 4)}"
     pas_subnet_gateway           = "${var.pas_subnet_gateways[count.index]}"
-    pas_vpc_dns                  = "${cidrhost(data.aws_vpc.vpc.cidr_block, 2)}"
+    pas_vpc_dns                  = "${var.pas_vpc_dns}"
   }
 }
 
@@ -80,7 +76,7 @@ EOF
     infrastructure_subnet_cidr              = "${var.infrastructure_subnet_cidrs[count.index]}"
     infrastructure_subnet_reserved_ips      = "${cidrhost(var.infrastructure_subnet_cidrs[count.index], 1)}-${cidrhost(var.infrastructure_subnet_cidrs[count.index], 4)}"
     infrastructure_subnet_gateway           = "${var.infrastructure_subnet_gateways[count.index]}"
-    pas_vpc_dns                             = "${cidrhost(data.aws_vpc.vpc.cidr_block, 2)}"
+    pas_vpc_dns                             = "${var.pas_vpc_dns}"
   }
 }
 
