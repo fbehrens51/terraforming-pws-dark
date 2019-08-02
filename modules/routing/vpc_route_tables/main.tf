@@ -3,6 +3,7 @@ variable "bastion_vpc_id" {}
 variable "es_vpc_id" {}
 variable "cp_vpc_id" {}
 variable "env_name" {}
+variable "internetless" {}
 
 resource "aws_route_table" "pas_private_route_table" {
   vpc_id = "${var.pas_vpc_id}"
@@ -21,8 +22,9 @@ resource "aws_route_table" "es_private_route_table" {
 }
 
 module "pas_public_vpc_route_table" {
-  source = "../vpc_route_table"
-  vpc_id = "${var.pas_vpc_id}"
+  source       = "../vpc_route_table"
+  internetless = "${var.internetless}"
+  vpc_id       = "${var.pas_vpc_id}"
 
   tags = {
     Name = "${var.env_name} | PAS PUBLIC"
@@ -30,8 +32,9 @@ module "pas_public_vpc_route_table" {
 }
 
 module "bastion_public_vpc_route_table" {
-  source = "../vpc_route_table"
-  vpc_id = "${var.bastion_vpc_id}"
+  source       = "../vpc_route_table"
+  internetless = "${var.internetless}"
+  vpc_id       = "${var.bastion_vpc_id}"
 
   tags = {
     Name = "${var.env_name} | BASTION PUBLIC"
@@ -39,8 +42,9 @@ module "bastion_public_vpc_route_table" {
 }
 
 module "es_public_vpc_route_table" {
-  source = "../vpc_route_table"
-  vpc_id = "${var.es_vpc_id}"
+  source       = "../vpc_route_table"
+  internetless = "${var.internetless}"
+  vpc_id       = "${var.es_vpc_id}"
 
   tags = {
     Name = "${var.env_name} | ENT SVCS PUBLIC"
@@ -48,8 +52,9 @@ module "es_public_vpc_route_table" {
 }
 
 module "cp_public_vpc_route_table" {
-  source = "../vpc_route_table"
-  vpc_id = "${var.cp_vpc_id}"
+  source       = "../vpc_route_table"
+  internetless = "${var.internetless}"
+  vpc_id       = "${var.cp_vpc_id}"
 
   tags = {
     Name = "${var.env_name} | CP PUBLIC"

@@ -26,6 +26,7 @@ module "vpc_route_tables" {
   es_vpc_id      = "${data.terraform_remote_state.paperwork.es_vpc_id}"
   cp_vpc_id      = "${data.terraform_remote_state.paperwork.cp_vpc_id}"
   env_name       = "${var.env_name}"
+  internetless   = "${var.internetless}"
 }
 
 data "aws_vpc" "bastion_vpc" {
@@ -103,6 +104,7 @@ module "route_cp_pas_private" {
 
 variable "remote_state_region" {}
 variable "remote_state_bucket" {}
+variable "internetless" {}
 
 variable "env_name" {
   type = "string"
