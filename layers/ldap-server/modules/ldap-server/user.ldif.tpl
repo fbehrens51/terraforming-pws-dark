@@ -11,7 +11,6 @@ ou: Software Development
 ou: People
 l: DC Metro Area
 uid: ${username}
-mail: ${email}
 telephonenumber: +1 703 111 1111
 facsimiletelephonenumber: +1 703 111 1110
 roomnumber: A17

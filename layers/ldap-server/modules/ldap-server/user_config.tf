@@ -14,7 +14,6 @@ data "template_file" "ldif_file" {
     basedn   = "${var.basedn}"
     username = "${lookup(var.users[count.index], "username")}"
     name     = "${lookup(var.users[count.index], "name")}"
-    email    = "${lookup(var.users[count.index], "email")}"
     roles    = "${data.template_file.ldif_roles.*.rendered[ count.index ]}"
   }
 }
