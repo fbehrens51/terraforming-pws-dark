@@ -1,5 +1,5 @@
-output "bastion_public_ip" {
-  value = "${module.bootstrap_bastion.public_ips[0]}"
+output "bastion_ip" {
+  value = "${element(concat(module.bootstrap_bastion.public_ips, list(module.bootstrap_bastion.private_ip)), 0)}"
 }
 
 output "bastion_private_key" {

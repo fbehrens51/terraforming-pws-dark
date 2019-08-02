@@ -41,7 +41,7 @@ module "bootstrap_bastion" {
   ingress_rules     = "${var.ingress_rules}"
   egress_rules      = "${var.egress_rules}"
   tags              = "${local.modified_tags}"
-  create_eip        = true
+  create_eip        = "${!var.internetless}"
 }
 
 data "template_cloudinit_config" "user_data" {
@@ -78,6 +78,7 @@ variable "remote_state_region" {}
 variable "remote_state_bucket" {}
 variable "user_data_path" {}
 variable "singleton_availability_zone" {}
+variable "internetless" {}
 
 variable "ingress_rules" {
   type = "list"
