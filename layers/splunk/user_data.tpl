@@ -40,8 +40,8 @@ runcmd:
   - echo `hostname` > /etc/hostname
   - sed -i 's/localhost$/localhost '`hostname`'/' /etc/hosts
   - mkdir /opt/splunk
-  - aws s3 cp s3://product-blobs/ . --recursive --exclude='*' --include='splunk-7.3.0*'
-  - sudo rpm -i splunk-7.3.0*.rpm
+  - aws s3 cp s3://${splunk_rpm_s3_bucket}/ . --recursive --exclude='*' --include='splunk-${splunk_rpm_version}*' --region ${splunk_rpm_s3_region}
+  - sudo rpm -i splunk-${splunk_rpm_version}*.rpm
 
   - mkdir -p /opt/splunk/etc/auth/mycerts
   - mkdir -p /opt/splunk/etc/apps/splunk_httpinput/local/

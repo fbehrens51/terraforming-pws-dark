@@ -66,6 +66,10 @@ variable "tags" {
   type = "map"
 }
 
+variable "splunk_rpm_version" {}
+variable "splunk_rpm_s3_bucket" {}
+variable "splunk_rpm_s3_region" {}
+
 variable "instance_type" {
   default = "t2.small"
 }
@@ -198,6 +202,9 @@ data "template_file" "master_user_data" {
     role                     = "splunk-master"
     server_cert_content      = "${data.terraform_remote_state.paperwork.splunk_monitor_server_cert}"
     server_key_content       = "${data.terraform_remote_state.paperwork.splunk_monitor_server_key}"
+    splunk_rpm_version       = "${var.splunk_rpm_version}"
+    splunk_rpm_s3_bucket     = "${var.splunk_rpm_s3_bucket}"
+    splunk_rpm_s3_region     = "${var.splunk_rpm_s3_region}"
   }
 }
 
@@ -213,6 +220,9 @@ data "template_file" "search_head_user_data" {
     role                     = "splunk-search-head"
     server_cert_content      = "${data.terraform_remote_state.paperwork.splunk_server_cert}"
     server_key_content       = "${data.terraform_remote_state.paperwork.splunk_server_key}"
+    splunk_rpm_version       = "${var.splunk_rpm_version}"
+    splunk_rpm_s3_bucket     = "${var.splunk_rpm_s3_bucket}"
+    splunk_rpm_s3_region     = "${var.splunk_rpm_s3_region}"
   }
 }
 
@@ -228,6 +238,9 @@ data "template_file" "indexers_user_data" {
     role                     = "splunk-indexer"
     server_cert_content      = ""
     server_key_content       = ""
+    splunk_rpm_version       = "${var.splunk_rpm_version}"
+    splunk_rpm_s3_bucket     = "${var.splunk_rpm_s3_bucket}"
+    splunk_rpm_s3_region     = "${var.splunk_rpm_s3_region}"
   }
 }
 
