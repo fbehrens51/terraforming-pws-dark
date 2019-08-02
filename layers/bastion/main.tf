@@ -67,11 +67,16 @@ module "bastion_host_key_pair" {
 module "bastion_host" {
   instance_count = "1"
   source         = "../../modules/launch"
-  ami_id         = "${module.amazon_ami.id}"
+  ami_id         = "${var.ami_id == "" ? module.amazon_ami.id : var.ami_id}"
   user_data      = "${data.template_cloudinit_config.user_data.rendered}"
   eni_ids        = ["${module.bootstrap_bastion.eni_id}"]
   key_pair_name  = "${var.bastion_host_key_pair_name}"
   tags           = "${local.modified_tags}"
+}
+
+variable "ami_id" {
+  description = "The AMI id for the bastion host.  If left blank the most recent `amzn-ami-hvm` AMI will be used."
+  default     = ""
 }
 
 variable "remote_state_region" {}
