@@ -74,6 +74,8 @@ variable "instance_type" {
   default = "t2.small"
 }
 
+variable "user_data_path" {}
+
 module "amazon_ami" {
   source = "../../modules/amis/amazon_hvm_ami"
 }
@@ -244,6 +246,57 @@ data "template_file" "indexers_user_data" {
   }
 }
 
+data "template_cloudinit_config" "splunk_master_cloud_init_config" {
+  base64_encode = false
+  gzip          = false
+
+  part {
+    filename     = "install.cfg"
+    content_type = "text/cloud-config"
+    content      = "${data.template_file.master_user_data.rendered}"
+  }
+
+  part {
+    filename     = "custom.cfg"
+    content_type = "text/cloud-config"
+    content      = "${file(var.user_data_path)}"
+  }
+}
+
+data "template_cloudinit_config" "splunk_search_head_cloud_init_config" {
+  base64_encode = false
+  gzip          = false
+
+  part {
+    filename     = "install.cfg"
+    content_type = "text/cloud-config"
+    content      = "${data.template_file.search_head_user_data.rendered}"
+  }
+
+  part {
+    filename     = "custom.cfg"
+    content_type = "text/cloud-config"
+    content      = "${file(var.user_data_path)}"
+  }
+}
+
+data "template_cloudinit_config" "splunk_indexers_cloud_init_config" {
+  base64_encode = false
+  gzip          = false
+
+  part {
+    filename     = "install.cfg"
+    content_type = "text/cloud-config"
+    content      = "${data.template_file.indexers_user_data.rendered}"
+  }
+
+  part {
+    filename     = "custom.cfg"
+    content_type = "text/cloud-config"
+    content      = "${file(var.user_data_path)}"
+  }
+}
+
 module "splunk_master" {
   source               = "../../modules/launch"
   instance_count       = 1
@@ -257,7 +310,7 @@ module "splunk_master" {
     "${local.splunk_master_eni_id}",
   ]
 
-  user_data = "${data.template_file.master_user_data.rendered}"
+  user_data = "${data.template_cloudinit_config.splunk_master_cloud_init_config.rendered}"
 }
 
 module "splunk_search_head" {
@@ -273,7 +326,7 @@ module "splunk_search_head" {
     "${local.splunk_search_head_eni_id}",
   ]
 
-  user_data = "${data.template_file.search_head_user_data.rendered}"
+  user_data = "${data.template_cloudinit_config.splunk_search_head_cloud_init_config.rendered}"
 }
 
 module "splunk_indexers" {
@@ -287,7 +340,7 @@ module "splunk_indexers" {
 
   eni_ids = "${local.splunk_indexers_eni_ids}"
 
-  user_data = "${data.template_file.indexers_user_data.rendered}"
+  user_data = "${data.template_cloudinit_config.splunk_indexers_cloud_init_config.rendered}"
 }
 
 resource "aws_volume_attachment" "splunk_master_volume_attachment" {
