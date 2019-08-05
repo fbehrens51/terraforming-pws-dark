@@ -69,18 +69,6 @@ data "aws_iam_policy_document" "director" {
       "arn:aws:rds:*:*:es:*",
     ]
   }
-
-  statement {
-    effect  = "Allow"
-    actions = ["s3:*"]
-
-    resources = [
-      "arn:aws:s3:::bosh-blobstore/*",
-      "arn:aws:s3:::pws-dark-runtime-blobstore/*",
-      "arn:aws:s3:::bosh-blobstore",
-      "arn:aws:s3:::pws-dark-runtime-blobstore",
-    ]
-  }
 }
 
 data "aws_iam_policy_document" "bucket" {
