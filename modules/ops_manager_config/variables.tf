@@ -346,6 +346,11 @@ variable "apps_manager_main_logo_file" {
   description = "Path to a PNG file"
 }
 
+variable "apps_manager_tools_url" {
+  type        = "string"
+  description = "URL to allow users to download tools (eg cf cli)"
+}
+
 # ========================
 # Infrastructure Configuration
 # ========================

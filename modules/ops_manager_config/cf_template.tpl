@@ -176,6 +176,14 @@ product-properties:
   .properties.nfs_volume_driver:
     selected_option: disable
     value: disable
+  .properties.push_apps_manager_nav_links:
+    value:
+    - name: Marketplace
+      href: /marketplace
+    - name: Docs
+      href: https://docs.pivotal.io/pivotalcf/2-4/pas/intro.html
+    - name: Tools
+      href: ${apps_manager_tools_url}
   .properties.push_apps_manager_app_poll_interval:
     value: 10
   .properties.push_apps_manager_currency_lookup:

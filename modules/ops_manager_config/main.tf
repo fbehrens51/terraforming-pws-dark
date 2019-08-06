@@ -178,6 +178,7 @@ data "template_file" "cf_template" {
     apps_manager_favicon                                 = "${base64encode(file(var.apps_manager_favicon_file))}"
     apps_manager_square_logo                             = "${base64encode(file(var.apps_manager_square_logo_file))}"
     apps_manager_main_logo                               = "${base64encode(file(var.apps_manager_main_logo_file))}"
+    apps_manager_tools_url                               = "${var.apps_manager_tools_url}"
 
     kms_key_id            = "${var.kms_key_id}"
     pas_buildpacks_bucket = "${var.pas_buildpacks_bucket}"

@@ -36,6 +36,11 @@ variable "product_blobs_s3_endpoint" {}
 variable "product_blobs_s3_region" {}
 variable "portal_product_version" {}
 
+variable "apps_manager_tools_url" {
+  description = "The CF CLI tools url.  Defaults to cli.<system_domain>"
+  default     = ""
+}
+
 variable "s3_access_key_id" {
   default = ""
 }
