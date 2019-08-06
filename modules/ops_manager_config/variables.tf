@@ -433,6 +433,8 @@ variable "product_blobs_s3_region" {}
 
 variable "product_blobs_s3_endpoint" {}
 
+variable "cf_tools_product_version" {}
+
 variable "portal_product_version" {}
 
 variable "s3_access_key_id" {}

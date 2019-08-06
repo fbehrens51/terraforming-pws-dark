@@ -18,6 +18,11 @@ output "director_template" {
   sensitive = true
 }
 
+output "cf_tools_template" {
+  value     = "${data.template_file.cf_tools_template.rendered}"
+  sensitive = true
+}
+
 output "portal_template" {
   value     = "${data.template_file.portal_template.rendered}"
   sensitive = true
@@ -30,6 +35,11 @@ output "download_pas_config" {
 
 output "download_splunk_config" {
   value     = "${data.template_file.download_splunk_config.rendered}"
+  sensitive = true
+}
+
+output "download_cf_tools_config" {
+  value     = "${data.template_file.download_cf_tools_config.rendered}"
   sensitive = true
 }
 

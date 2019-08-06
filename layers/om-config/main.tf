@@ -170,6 +170,7 @@ module "om_config" {
   product_blobs_s3_endpoint = "${var.product_blobs_s3_endpoint}"
   product_blobs_s3_region   = "${var.product_blobs_s3_region}"
   portal_product_version    = "${var.portal_product_version}"
+  cf_tools_product_version  = "${var.cf_tools_product_version}"
   s3_access_key_id          = "${var.s3_access_key_id}"
   s3_secret_access_key      = "${var.s3_secret_access_key}"
   s3_auth_type              = "${var.s3_auth_type}"

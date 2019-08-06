@@ -4,6 +4,9 @@ locals {
   pas_product_slug    = "elastic-runtime"
   pas_product_version = "2.4.8"
 
+  cf_tools_file_glob    = "pws-dark-cf-tools*"
+  cf_tools_product_slug = "pws-dark-cf-tools-tile"
+
   portal_file_glob    = "pws-dark-portal*"
   portal_product_slug = "pws-dark-portal-tile"
 
@@ -194,6 +197,15 @@ data "template_file" "cf_template" {
   }
 }
 
+data "template_file" "cf_tools_template" {
+  template = "${file("${path.module}/cf_tools_template.tpl")}"
+
+  vars = {
+    pas_vpc_azs                 = "${indent(4, join("", data.template_file.pas_vpc_azs.*.rendered))}"
+    singleton_availability_zone = "${var.singleton_availability_zone}"
+  }
+}
+
 data "template_file" "portal_template" {
   template = "${file("${path.module}/portal_template.tpl")}"
 
@@ -269,6 +281,25 @@ data "template_file" "download_splunk_config" {
     pivnet_file_glob    = "${local.splunk_file_glob}"
     pivnet_product_slug = "${local.splunk_product_slug}"
     product_version     = "${local.splunk_product_version}"
+
+    pivnet_api_token = "${var.pivnet_api_token}"
+    s3_bucket        = "${var.product_blobs_s3_bucket}"
+
+    s3_endpoint          = "${var.product_blobs_s3_endpoint}"
+    s3_region_name       = "${var.product_blobs_s3_region}"
+    s3_access_key_id     = "${var.s3_access_key_id}"
+    s3_secret_access_key = "${var.s3_secret_access_key}"
+    s3_auth_type         = "${var.s3_auth_type}"
+  }
+}
+
+data "template_file" "download_cf_tools_config" {
+  template = "${file("${path.module}/download_product_config.tpl")}"
+
+  vars = {
+    pivnet_file_glob    = "${local.cf_tools_file_glob}"
+    pivnet_product_slug = "${local.cf_tools_product_slug}"
+    product_version     = "${var.cf_tools_product_version}"
 
     pivnet_api_token = "${var.pivnet_api_token}"
     s3_bucket        = "${var.product_blobs_s3_bucket}"

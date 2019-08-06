@@ -18,6 +18,11 @@ output "director_template" {
   sensitive = true
 }
 
+output "cf_tools_template" {
+  value     = "${module.om_config.cf_tools_template}"
+  sensitive = true
+}
+
 output "portal_template" {
   value     = "${module.om_config.portal_template}"
   sensitive = true
@@ -25,6 +30,11 @@ output "portal_template" {
 
 output "download_pas_config" {
   value     = "${module.om_config.download_pas_config}"
+  sensitive = true
+}
+
+output "download_cf_tools_config" {
+  value     = "${module.om_config.download_cf_tools_config}"
   sensitive = true
 }
 
