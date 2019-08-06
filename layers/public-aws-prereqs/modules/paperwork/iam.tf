@@ -46,6 +46,7 @@ data "aws_iam_policy_document" "director" {
       "dynamodb:PutItem",
       "dynamodb:DeleteItem",
       "dynamodb:GetItem",
+      "dynamodb:DescribeTable",
     ]
 
     resources = ["*"]
