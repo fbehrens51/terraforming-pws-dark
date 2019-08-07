@@ -62,3 +62,13 @@ output "download_clamav_addon_config" {
   value     = "${data.template_file.download_clamav_addon_config.rendered}"
   sensitive = true
 }
+
+output "download_runtime_config_config" {
+  value     = "${data.template_file.download_runtime_config_config.rendered}"
+  sensitive = true
+}
+
+output "runtime_config_template" {
+  value     = "${data.template_file.runtime_config_template.rendered}"
+  sensitive = true
+}

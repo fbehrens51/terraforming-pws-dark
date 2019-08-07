@@ -155,6 +155,10 @@ data "aws_vpc" "cp_vpc" {
   id = "${local.cp_vpc_id}"
 }
 
+data "aws_vpc" "pas_vpc" {
+  id = "${local.vpc_id}"
+}
+
 data "aws_vpc" "bastion_vpc" {
   id = "${local.bastion_vpc_id}"
 }
@@ -224,6 +228,11 @@ locals {
       cidr_blocks = "0.0.0.0/0"
     },
   ]
+}
+
+module "calculated_subnets" {
+  source   = "../../modules/calculate_subnets"
+  vpc_cidr = "${data.aws_vpc.pas_vpc.cidr_block}"
 }
 
 output "public_subnet_ids" {
@@ -330,4 +339,20 @@ output "om_ssh_public_key_pair_name" {
 
 output "om_dns_name" {
   value = "${dns_cname_record.om_cname.name}.${substr(dns_cname_record.om_cname.zone, 0, length(dns_cname_record.om_cname.zone) - 1)}"
+}
+
+output "rds_cidr_block" {
+  value = "${module.calculated_subnets.rds_cidr}"
+}
+
+output "services_cidr_block" {
+  value = "${module.calculated_subnets.services_cidr}"
+}
+
+output "om_cidr_block" {
+  value = "${module.calculated_subnets.om_cidr}"
+}
+
+output "public_cidr_block" {
+  value = "${module.calculated_subnets.public_cidr}"
 }

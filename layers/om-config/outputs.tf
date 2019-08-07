@@ -38,6 +38,16 @@ output "download_cf_tools_config" {
   sensitive = true
 }
 
+output "download_runtime_config_config" {
+  value     = "${module.om_config.download_runtime_config_config}"
+  sensitive = true
+}
+
+output "runtime_config_template" {
+  value     = "${module.om_config.runtime_config_template}"
+  sensitive = true
+}
+
 output "download_portal_config" {
   value     = "${module.om_config.download_portal_config}"
   sensitive = true

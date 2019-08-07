@@ -140,11 +140,11 @@ module "om_config" {
   pas_droplets_bucket                      = "${data.terraform_remote_state.pas.pas_droplets_bucket}"
   pas_packages_bucket                      = "${data.terraform_remote_state.pas.pas_packages_bucket}"
   pas_resources_bucket                     = "${data.terraform_remote_state.pas.pas_resources_bucket}"
-  pas_subnet_cidrs                         = "${data.terraform_remote_state.pas.pas_subnet_cidrs}"
+  pas_subnet_cidrs                         = "${local.pas_ert_subnet_cidrs}"
   pas_subnet_availability_zones            = "${data.terraform_remote_state.pas.pas_subnet_availability_zones}"
   pas_subnet_gateways                      = "${data.terraform_remote_state.pas.pas_subnet_gateways}"
   pas_subnet_ids                           = "${data.terraform_remote_state.pas.pas_subnet_ids}"
-  infrastructure_subnet_cidrs              = "${data.terraform_remote_state.pas.infrastructure_subnet_cidrs}"
+  infrastructure_subnet_cidrs              = "${local.pas_infrastructure_subnet_cidrs}"
   infrastructure_subnet_availability_zones = "${data.terraform_remote_state.pas.infrastructure_subnet_availability_zones}"
   infrastructure_subnet_gateways           = "${data.terraform_remote_state.pas.infrastructure_subnet_gateways}"
   infrastructure_subnet_ids                = "${data.terraform_remote_state.pas.infrastructure_subnet_ids}"
@@ -165,22 +165,53 @@ module "om_config" {
   ldap_port              = "${data.terraform_remote_state.paperwork.ldap_port}"
   ldap_role_attr         = "${data.terraform_remote_state.paperwork.ldap_role_attr}"
 
-  pivnet_api_token          = "${var.pivnet_api_token}"
-  product_blobs_s3_bucket   = "${var.product_blobs_s3_bucket}"
-  product_blobs_s3_endpoint = "${var.product_blobs_s3_endpoint}"
-  product_blobs_s3_region   = "${var.product_blobs_s3_region}"
-  portal_product_version    = "${var.portal_product_version}"
-  cf_tools_product_version  = "${var.cf_tools_product_version}"
-  s3_access_key_id          = "${var.s3_access_key_id}"
-  s3_secret_access_key      = "${var.s3_secret_access_key}"
-  s3_auth_type              = "${var.s3_auth_type}"
+  pivnet_api_token               = "${var.pivnet_api_token}"
+  product_blobs_s3_bucket        = "${var.product_blobs_s3_bucket}"
+  product_blobs_s3_endpoint      = "${var.product_blobs_s3_endpoint}"
+  product_blobs_s3_region        = "${var.product_blobs_s3_region}"
+  portal_product_version         = "${var.portal_product_version}"
+  runtime_config_product_version = "${var.runtime_config_product_version}"
+  cf_tools_product_version       = "${var.cf_tools_product_version}"
+  s3_access_key_id               = "${var.s3_access_key_id}"
+  s3_secret_access_key           = "${var.s3_secret_access_key}"
+  s3_auth_type                   = "${var.s3_auth_type}"
+
+  ipsec_optional = "${var.ipsec_optional}"
+
+  ipsec_subnet_cidrs    = "${local.ipsec_subnet_cidrs}"
+  no_ipsec_subnet_cidrs = "${local.no_ipsec_subnet_cidrs}"
 
   splunk_syslog_host = "${data.terraform_remote_state.bootstrap_splunk.splunk_syslog_host_name}"
   splunk_syslog_port = "${data.terraform_remote_state.bootstrap_splunk.splunk_syslog_port}"
+}
+
+data "aws_vpc" "bastion_vpc" {
+  id = "${data.terraform_remote_state.paperwork.bastion_vpc_id}"
+}
+
+data "aws_vpc" "es_vpc" {
+  id = "${data.terraform_remote_state.paperwork.es_vpc_id}"
+}
+
+data "aws_vpc" "cp_vpc" {
+  id = "${data.terraform_remote_state.paperwork.cp_vpc_id}"
 }
 
 locals {
   vpc_dns                        = "${data.terraform_remote_state.paperwork.pas_vpc_dns}"
   default_apps_manager_tools_url = "${format("https://%s.%s", "cli", data.terraform_remote_state.paperwork.system_domain)}"
   om_key_name                    = "${var.env_name}-om"
+
+  pas_ert_subnet_cidrs            = "${data.terraform_remote_state.pas.pas_subnet_cidrs}"
+  pas_infrastructure_subnet_cidrs = "${data.terraform_remote_state.pas.infrastructure_subnet_cidrs}"
+  pas_rds_cidr_block              = "${data.terraform_remote_state.pas.rds_cidr_block}"
+  pas_services_cidr_block         = "${data.terraform_remote_state.pas.services_cidr_block}"
+  pas_public_cidr_block           = "${data.terraform_remote_state.pas.public_cidr_block}"
+  pas_om_cidr_block               = "${data.terraform_remote_state.pas.om_cidr_block}"
+  enterprise_services_vpc_cidr    = "${data.aws_vpc.es_vpc.cidr_block}"
+  control_plane_vpc_cidr          = "${data.aws_vpc.cp_vpc.cidr_block}"
+  bastion_vpc_cidr                = "${data.aws_vpc.bastion_vpc.cidr_block}"
+
+  ipsec_subnet_cidrs    = "${local.pas_ert_subnet_cidrs}"
+  no_ipsec_subnet_cidrs = "${concat(local.pas_infrastructure_subnet_cidrs, list(local.pas_om_cidr_block, local.pas_public_cidr_block, local.pas_services_cidr_block, local.pas_rds_cidr_block, local.enterprise_services_vpc_cidr, local.control_plane_vpc_cidr, local.bastion_vpc_cidr))}"
 }
