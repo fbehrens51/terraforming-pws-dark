@@ -23,6 +23,15 @@ variable "system_domain" {
 
 variable "region" {}
 
+variable "clamav_cpu_limit" {}
+variable "clamav_enable_on_access_scanning" {}
+
+variable "clamav_no_upstream_mirror" {}
+
+variable "clamav_external_mirrors" {
+  type = "list"
+}
+
 variable "custom_ssh_banner_file" {
   type        = "string"
   description = "Custom SSH Banner to be used on launched VMs"

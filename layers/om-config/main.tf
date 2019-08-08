@@ -183,6 +183,12 @@ module "om_config" {
 
   splunk_syslog_host = "${data.terraform_remote_state.bootstrap_splunk.splunk_syslog_host_name}"
   splunk_syslog_port = "${data.terraform_remote_state.bootstrap_splunk.splunk_syslog_port}"
+
+  clamav_no_upstream_mirror = "${var.clamav_no_upstream_mirror}"
+  clamav_external_mirrors   = "${var.clamav_external_mirrors}"
+
+  clamav_cpu_limit                 = "${var.clamav_cpu_limit}"
+  clamav_enable_on_access_scanning = "${var.clamav_enable_on_access_scanning}"
 }
 
 data "aws_vpc" "bastion_vpc" {

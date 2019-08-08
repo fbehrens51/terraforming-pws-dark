@@ -18,7 +18,7 @@ locals {
   healthwatch_product_version = "1.6.1"
 
   clamav_product_slug    = "p-clamav-addon"
-  clamav_product_version = "2.0.0"
+  clamav_product_version = "2.0.3"
 
   clamav_addon_file_glob  = "p-clamav-[0-9]*.pivotal"
   clamav_mirror_file_glob = "p-clamav-mirror-[0-9]*.pivotal"
@@ -246,6 +246,26 @@ data "template_file" "runtime_config_template" {
     ipsec_subnet_cidrs    = "${join(",",  var.ipsec_subnet_cidrs)}"
     no_ipsec_subnet_cidrs = "${join(",", var.no_ipsec_subnet_cidrs)}"
     ssh_banner            = "${file(var.custom_ssh_banner_file)}"
+  }
+}
+
+data "template_file" "clamav_mirror_template" {
+  template = "${file("${path.module}/clamav_mirror_template.tpl")}"
+
+  vars = {
+    external_mirrors            = "${join(",", var.clamav_external_mirrors)}"
+    no_upstream_mirror          = "${var.clamav_no_upstream_mirror}"
+    pas_vpc_azs                 = "${indent(4, join("", data.template_file.pas_vpc_azs.*.rendered))}"
+    singleton_availability_zone = "${var.singleton_availability_zone}"
+  }
+}
+
+data "template_file" "clamav_addon_template" {
+  template = "${file("${path.module}/clamav_addon_template.tpl")}"
+
+  vars = {
+    cpu_limit          = "${var.clamav_cpu_limit}"
+    on_access_scanning = "${var.clamav_enable_on_access_scanning}"
   }
 }
 

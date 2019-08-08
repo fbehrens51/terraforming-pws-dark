@@ -28,6 +28,16 @@ output "portal_template" {
   sensitive = true
 }
 
+output "clamav_addon_template" {
+  value     = "${module.om_config.clamav_addon_template}"
+  sensitive = true
+}
+
+output "clamav_mirror_template" {
+  value     = "${module.om_config.clamav_mirror_template}"
+  sensitive = true
+}
+
 output "download_pas_config" {
   value     = "${module.om_config.download_pas_config}"
   sensitive = true
