@@ -3,6 +3,7 @@ locals {
   pas_file_glob       = "cf*.pivotal"
   pas_product_slug    = "elastic-runtime"
   pas_product_version = "2.4.8"
+  pas_vpc_dns_subnet  = "${var.pas_vpc_dns}/32"
 
   cf_tools_file_glob    = "pws-dark-cf-tools*"
   cf_tools_product_slug = "pws-dark-cf-tools-tile"
@@ -244,7 +245,7 @@ data "template_file" "runtime_config_template" {
   vars = {
     ipsec_optional        = "${var.ipsec_optional}"
     ipsec_subnet_cidrs    = "${join(",",  var.ipsec_subnet_cidrs)}"
-    no_ipsec_subnet_cidrs = "${join(",", var.no_ipsec_subnet_cidrs)}"
+    no_ipsec_subnet_cidrs = "${join(",", concat(var.no_ipsec_subnet_cidrs, list(local.pas_vpc_dns_subnet)))}"
     ssh_banner            = "${file(var.custom_ssh_banner_file)}"
   }
 }
