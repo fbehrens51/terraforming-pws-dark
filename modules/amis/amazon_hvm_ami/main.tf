@@ -13,7 +13,7 @@ data "aws_ami" "amazon_linux_hvm_ami" {
     name = "name"
 
     values = [
-      "amzn-ami-hvm*",
+      "amzn2-ami-hvm*",
     ]
   }
 
@@ -22,6 +22,14 @@ data "aws_ami" "amazon_linux_hvm_ami" {
 
     values = [
       "hvm",
+    ]
+  }
+
+  filter {
+    name = "architecture"
+
+    values = [
+      "x86_64",
     ]
   }
 
