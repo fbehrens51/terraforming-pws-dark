@@ -123,6 +123,7 @@ module "bootstrap" {
   ingress_rules = "${local.ldap_ingress_rules}"
   egress_rules  = "${local.ldap_egress_rules}"
   subnet_ids    = ["${local.public_subnet}"]
+  eni_count     = "1"
   create_eip    = "true"
   tags          = "${local.modified_tags}"
 }
@@ -141,7 +142,7 @@ module "ldap_configure" {
 
   tls_server_cert     = "${data.terraform_remote_state.public-aws-prereqs.ldap_server_cert}"
   tls_server_key      = "${data.terraform_remote_state.public-aws-prereqs.ldap_server_key}"
-  user_certs          = "${data.terraform_remote_state.public-aws-prereqs.user_certs}"
+  user_certs          = "${zipmap(data.terraform_remote_state.public-aws-prereqs.usernames, data.terraform_remote_state.public-aws-prereqs.user_certs)}"
   tls_server_ca_cert  = "${data.terraform_remote_state.paperwork.root_ca_cert}"
   ssh_private_key_pem = "${module.ldap_host_key_pair.private_key_pem}"
   ssh_host            = "${module.bootstrap.public_ips[0]}"
@@ -186,5 +187,5 @@ variable "tags" {
 variable "ldap_host_key_pair_name" {}
 
 output "ldap_private_ip" {
-  value = "${module.bootstrap.eni_ips[0]}"
+  value = "${element(concat(module.bootstrap.eni_ips, list("")), 0)}"
 }

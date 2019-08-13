@@ -53,6 +53,7 @@ data "terraform_remote_state" "keys" {
 }
 
 locals {
+  indexer_count              = "3"
   splunk_http_collector_port = 8087
   splunk_mgmt_port           = 8089
   splunk_replication_port    = 8088
@@ -130,6 +131,7 @@ module "master_bootstrap" {
   ingress_rules = "${local.splunk_ingress_rules}"
   egress_rules  = "${local.splunk_egress_rules}"
   subnet_ids    = ["${local.master_private_subnet}"]
+  eni_count     = "1"
   create_eip    = "false"
   tags          = "${local.tags}"
 }
@@ -139,6 +141,7 @@ module "indexers_bootstrap" {
   ingress_rules = "${local.splunk_ingress_rules}"
   egress_rules  = "${local.splunk_egress_rules}"
   subnet_ids    = ["${local.private_subnets}"]
+  eni_count     = "${local.indexer_count}"
   create_eip    = "false"
   tags          = "${local.tags}"
 }
@@ -148,6 +151,7 @@ module "search_head_bootstrap" {
   ingress_rules = "${local.splunk_ingress_rules}"
   egress_rules  = "${local.splunk_egress_rules}"
   subnet_ids    = ["${local.search_head_private_subnet}"]
+  eni_count     = "1"
   create_eip    = "false"
   tags          = "${local.tags}"
 }
@@ -188,9 +192,9 @@ resource "aws_ebs_volume" "splunk_search_head_data" {
 }
 
 resource "aws_ebs_volume" "splunk_indexers_data" {
-  count = "${length(local.private_subnets)}"
+  count = "${local.indexer_count}"
 
-  availability_zone = "${element(data.aws_subnet.private_subnets.*.availability_zone, count.index)}"
+  availability_zone = "${element(data.aws_subnet.private_subnets.*.availability_zone, count.index % length(data.aws_subnet.private_subnets.*.availability_zone))}"
   size              = 1000
 }
 
@@ -285,16 +289,8 @@ output "indexers_data_volumes" {
   value = "${aws_ebs_volume.splunk_indexers_data.*.id}"
 }
 
-output "search_head_private_ip" {
-  value = "${module.search_head_bootstrap.eni_ips[0]}"
-}
-
-output "master_private_ip" {
-  value = "${module.master_bootstrap.eni_ips[0]}"
-}
-
-output "indexers_private_ips" {
-  value = "${module.indexers_bootstrap.eni_ips}"
+output "master_private_ips" {
+  value = "${module.master_bootstrap.eni_ips}"
 }
 
 output "master_eni_ids" {

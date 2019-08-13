@@ -1,4 +1,6 @@
 resource "aws_elb" "elb" {
+  count = 1
+
   name                      = "${var.name}"
   cross_zone_load_balancing = true
   internal                  = "${var.internetless}"
@@ -46,9 +48,9 @@ variable "elb_tag" {
 variable "name" {}
 
 output "elb_id" {
-  value = "${aws_elb.elb.id}"
+  value = "${element(concat(aws_elb.elb.*.id, list("")), 0)}"
 }
 
 output "dns_name" {
-  value = "${aws_elb.elb.dns_name}"
+  value = "${element(concat(aws_elb.elb.*.dns_name, list("")), 0)}"
 }

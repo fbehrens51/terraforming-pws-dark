@@ -76,6 +76,8 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
 }
 
 resource "aws_kms_key" "kms_key" {
+  count = 1
+
   description             = "${var.key_name} KMS key"
   deletion_window_in_days = "${var.deletion_window}"
   policy                  = "${data.aws_iam_policy_document.kms_key_policy_document.json}"
@@ -93,9 +95,5 @@ variable "deletion_window" {
 }
 
 output "kms_key_id" {
-  value = "${aws_kms_key.kms_key.id}"
-}
-
-output "key_arn" {
-  value = "${aws_kms_key.kms_key.arn}"
+  value = "${element(concat(aws_kms_key.kms_key.*.id, list("")), 0)}"
 }

@@ -19,17 +19,6 @@ data "terraform_remote_state" "keys" {
   }
 }
 
-data "terraform_remote_state" "enterprise-services" {
-  backend = "s3"
-
-  config {
-    bucket  = "${var.remote_state_bucket}"
-    key     = "enterprise-services"
-    region  = "${var.remote_state_region}"
-    encrypt = true
-  }
-}
-
 data "terraform_remote_state" "bootstrap_bind" {
   backend = "s3"
 
@@ -99,6 +88,16 @@ module "bind_slave_host" {
   eni_ids        = ["${data.terraform_remote_state.bootstrap_bind.bind_eni_ids[1]}", "${data.terraform_remote_state.bootstrap_bind.bind_eni_ids[2]}"]
   key_pair_name  = "${module.bind_host_key_pair.key_name}"
   tags           = "${local.modified_tags}"
+}
+
+resource "null_resource" "wait_for_master" {
+  triggers = {
+    instance_id = "${module.bind_master_host.instance_ids[0]}"
+  }
+
+  provisioner "local-exec" {
+    command = "while ! nc -v -q 0 ${local.master_public_ip} 53 < /dev/null; do sleep 1; done"
+  }
 }
 
 variable "remote_state_region" {}

@@ -59,8 +59,8 @@ module "paperwork" {
 }
 
 resource "aws_s3_bucket" "certs" {
-  bucket = "${local.cert_bucket}"
-  acl    = "private"
+  bucket_prefix = "${local.cert_bucket}"
+  acl           = "private"
 }
 
 data "template_file" "paperwork_variables" {
@@ -86,7 +86,7 @@ data "template_file" "paperwork_variables" {
     ldap_role_attr        = "role"
     ldap_password_s3_path = "${local.ldap_password_s3_path}"
 
-    cert_bucket                        = "${local.cert_bucket}"
+    cert_bucket                        = "${aws_s3_bucket.certs.bucket}"
     root_ca_cert_s3_path               = "${local.root_ca_cert_s3_path}"
     router_trusted_ca_certs_s3_path    = "${local.router_trusted_ca_certs_s3_path}"
     trusted_ca_certs_s3_path           = "${local.trusted_ca_certs_s3_path}"
@@ -229,7 +229,7 @@ resource "aws_s3_bucket_object" "ldap_client_key" {
 resource "aws_s3_bucket_object" "portal_smoke_test_cert" {
   key          = "${local.portal_smoke_test_cert_s3_path}"
   bucket       = "${aws_s3_bucket.certs.bucket}"
-  content      = "${lookup(module.paperwork.user_certs, "smoke")}"
+  content      = "${element(module.paperwork.user_certs, index(module.paperwork.usernames, "smoke"))}"
   content_type = "text/plain"
 }
 
@@ -237,7 +237,7 @@ resource "aws_s3_bucket_object" "portal_smoke_test_key" {
   key          = "${local.portal_smoke_test_key_s3_path}"
   bucket       = "${aws_s3_bucket.certs.bucket}"
   content_type = "text/plain"
-  content      = "${lookup(module.paperwork.user_private_keys, "smoke")}"
+  content      = "${element(module.paperwork.user_private_keys, index(module.paperwork.usernames, "smoke"))}"
 }
 
 resource "aws_s3_bucket_object" "ldap_password" {
@@ -260,6 +260,11 @@ output "ldap_server_cert" {
 
 output "ldap_server_key" {
   value     = "${module.paperwork.ldap_server_key}"
+  sensitive = true
+}
+
+output "usernames" {
+  value     = "${module.paperwork.usernames}"
   sensitive = true
 }
 

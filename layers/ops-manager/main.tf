@@ -106,5 +106,5 @@ resource "aws_eip_association" "om_eip_assoc" {
 }
 
 output "ops_manager_private_ip" {
-  value = "${module.ops_manager.private_ips[0]}"
+  value = "${element(concat(module.ops_manager.private_ips, list("")), 0)}"
 }

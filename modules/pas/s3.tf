@@ -1,4 +1,6 @@
 resource "aws_s3_bucket" "buildpacks_bucket" {
+  count = 1
+
   bucket        = "${local.bucket_env_name}-buildpacks-bucket-${var.bucket_suffix}"
   force_destroy = true
 
@@ -10,6 +12,8 @@ resource "aws_s3_bucket" "buildpacks_bucket" {
 }
 
 resource "aws_s3_bucket" "droplets_bucket" {
+  count = 1
+
   bucket        = "${local.bucket_env_name}-droplets-bucket-${var.bucket_suffix}"
   force_destroy = true
 
@@ -21,6 +25,8 @@ resource "aws_s3_bucket" "droplets_bucket" {
 }
 
 resource "aws_s3_bucket" "packages_bucket" {
+  count = 1
+
   bucket        = "${local.bucket_env_name}-packages-bucket-${var.bucket_suffix}"
   force_destroy = true
 
@@ -32,6 +38,8 @@ resource "aws_s3_bucket" "packages_bucket" {
 }
 
 resource "aws_s3_bucket" "resources_bucket" {
+  count = 1
+
   bucket        = "${local.bucket_env_name}-resources-bucket-${var.bucket_suffix}"
   force_destroy = true
 

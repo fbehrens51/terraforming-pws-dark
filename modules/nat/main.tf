@@ -56,6 +56,7 @@ module "eni" {
   ]
 
   subnet_ids = ["${var.public_subnet_id}"]
+  eni_count = 1
   tags       = "${local.modified_tags}"
   create_eip = "${!var.internetless}"
 

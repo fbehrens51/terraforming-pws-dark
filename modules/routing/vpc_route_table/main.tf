@@ -28,10 +28,12 @@ resource "aws_route" "pas_default_route" {
 }
 
 resource "aws_route_table" "pas_public_route_table" {
+  count = 1
+
   vpc_id = "${var.vpc_id}"
   tags   = "${var.tags}"
 }
 
 output "route_table_id" {
-  value = "${aws_route_table.pas_public_route_table.id}"
+  value = "${element(concat(aws_route_table.pas_public_route_table.*.id, list("")), 0)}"
 }

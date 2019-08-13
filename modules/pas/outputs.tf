@@ -35,19 +35,19 @@ output "services_subnet_gateways" {
 # ========= Buckets ============================================================
 
 output "pas_buildpacks_bucket" {
-  value = "${aws_s3_bucket.buildpacks_bucket.bucket}"
+  value = "${element(concat(aws_s3_bucket.buildpacks_bucket.*.bucket, list("")), 0)}"
 }
 
 output "pas_droplets_bucket" {
-  value = "${aws_s3_bucket.droplets_bucket.bucket}"
+  value = "${element(concat(aws_s3_bucket.droplets_bucket.*.bucket, list("")), 0)}"
 }
 
 output "pas_packages_bucket" {
-  value = "${aws_s3_bucket.packages_bucket.bucket}"
+  value = "${element(concat(aws_s3_bucket.packages_bucket.*.bucket, list("")), 0)}"
 }
 
 output "pas_resources_bucket" {
-  value = "${aws_s3_bucket.resources_bucket.bucket}"
+  value = "${element(concat(aws_s3_bucket.resources_bucket.*.bucket, list("")), 0)}"
 }
 
 output "pas_buildpacks_backup_bucket" {

@@ -10,6 +10,10 @@ variable "subnet_ids" {
   type = "list"
 }
 
+variable "eni_count" {
+  description = "The number of enis to create. They will be distributed (round-robin) across the subnets in var.subnet_ids"
+}
+
 variable "tags" {
   type = "map"
 }
@@ -33,8 +37,8 @@ module "security_group" {
 }
 
 resource "aws_network_interface" "eni" {
-  count             = "${length(var.subnet_ids)}"
-  subnet_id         = "${var.subnet_ids[count.index]}"
+  count             = "${var.eni_count}"
+  subnet_id         = "${var.subnet_ids[count.index % length(var.subnet_ids)]}"
   source_dest_check = "${var.source_dest_check}"
 
   security_groups = [
@@ -45,13 +49,13 @@ resource "aws_network_interface" "eni" {
 }
 
 resource "aws_eip" "eip" {
-  count = "${var.create_eip ? length(var.subnet_ids) : 0}"
+  count = "${var.create_eip ? var.eni_count : 0}"
   vpc   = true
   tags  = "${var.tags}"
 }
 
 resource "aws_eip_association" "eip_association" {
-  count                = "${var.create_eip ? length(var.subnet_ids) : 0}"
+  count                = "${var.create_eip ? var.eni_count : 0}"
   network_interface_id = "${element(aws_network_interface.eni.*.id, count.index)}"
   allocation_id        = "${element(aws_eip.eip.*.id, count.index)}"
 }

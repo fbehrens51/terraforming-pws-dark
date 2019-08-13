@@ -1,11 +1,15 @@
 variable "env_name" {}
 
 resource "tls_private_key" "root_private_key" {
+  count = 1
+
   algorithm = "RSA"
   rsa_bits  = "4096"
 }
 
 resource "tls_self_signed_cert" "root_cert" {
+  count = 1
+
   key_algorithm   = "RSA"
   private_key_pem = "${tls_private_key.root_private_key.private_key_pem}"
 
@@ -27,10 +31,10 @@ resource "tls_self_signed_cert" "root_cert" {
 }
 
 output "private_key_pem" {
-  value     = "${tls_private_key.root_private_key.private_key_pem}"
+  value     = "${element(concat(tls_private_key.root_private_key.*.private_key_pem, list("")), 0)}"
   sensitive = true
 }
 
 output "cert_pem" {
-  value = "${tls_self_signed_cert.root_cert.cert_pem}"
+  value = "${element(concat(tls_self_signed_cert.root_cert.*.cert_pem, list("")), 0)}"
 }

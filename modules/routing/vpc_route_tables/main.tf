@@ -6,6 +6,8 @@ variable "env_name" {}
 variable "internetless" {}
 
 resource "aws_route_table" "pas_private_route_table" {
+  count = 1
+
   vpc_id = "${var.pas_vpc_id}"
 
   tags {
@@ -14,6 +16,8 @@ resource "aws_route_table" "pas_private_route_table" {
 }
 
 resource "aws_route_table" "es_private_route_table" {
+  count = 1
+
   vpc_id = "${var.es_vpc_id}"
 
   tags {
@@ -62,7 +66,7 @@ module "cp_public_vpc_route_table" {
 }
 
 output "pas_private_vpc_route_table_id" {
-  value = "${aws_route_table.pas_private_route_table.id}"
+  value = "${element(concat(aws_route_table.pas_private_route_table.*.id, list("")), 0)}"
 }
 
 output "pas_public_vpc_route_table_id" {
@@ -74,7 +78,7 @@ output "bastion_public_vpc_route_table_id" {
 }
 
 output "es_private_vpc_route_table_id" {
-  value = "${aws_route_table.es_private_route_table.id}"
+  value = "${element(concat(aws_route_table.es_private_route_table.*.id, list("")), 0)}"
 }
 
 output "es_public_vpc_route_table_id" {

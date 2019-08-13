@@ -92,7 +92,7 @@ EOF
 
   vars {
     replication_port = "${local.splunk_replication_port}"
-    master_ip        = "${data.terraform_remote_state.bootstrap_splunk.master_private_ip}"
+    master_ip        = "${data.terraform_remote_state.bootstrap_splunk.master_private_ips[0]}"
     mgmt_port        = "${local.splunk_mgmt_port}"
     pass4SymmKey     = "${data.terraform_remote_state.bootstrap_splunk.splunk_pass4SymmKey}"
   }
@@ -156,7 +156,7 @@ pass4SymmKey = $${pass4SymmKey}
 EOF
 
   vars {
-    master_ip    = "${data.terraform_remote_state.bootstrap_splunk.master_private_ip}"
+    master_ip    = "${data.terraform_remote_state.bootstrap_splunk.master_private_ips[0]}"
     mgmt_port    = "${local.splunk_mgmt_port}"
     pass4SymmKey = "${data.terraform_remote_state.bootstrap_splunk.splunk_pass4SymmKey}"
   }

@@ -7,7 +7,7 @@ output "public_ip" {
 }
 
 output "om_eni_id" {
-  value = "${aws_network_interface.ops_manager_unattached.id}"
+  value = "${element(concat(aws_network_interface.ops_manager_unattached.*.id, list("")), 0)}"
 }
 
 output "om_eip_allocation_id" {

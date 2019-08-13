@@ -3,6 +3,8 @@ data "aws_vpc" "vpc" {
 }
 
 resource "aws_security_group" "vms_security_group" {
+  count = 1
+
   name        = "vms_security_group"
   description = "VMs Security Group"
   vpc_id      = "${data.aws_vpc.vpc.id}"

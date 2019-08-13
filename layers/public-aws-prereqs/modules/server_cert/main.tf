@@ -9,6 +9,8 @@ variable "domains" {
 }
 
 resource "tls_private_key" "server_private_key" {
+  count = 1
+
   algorithm = "RSA"
   rsa_bits  = "4096"
 }
@@ -26,6 +28,8 @@ resource "tls_cert_request" "server_cert_request" {
 }
 
 resource "tls_locally_signed_cert" "server_cert" {
+  count = 1
+
   cert_request_pem   = "${tls_cert_request.server_cert_request.cert_request_pem}"
   ca_key_algorithm   = "RSA"
   ca_private_key_pem = "${var.ca_private_key_pem}"
@@ -43,10 +47,10 @@ resource "tls_locally_signed_cert" "server_cert" {
 }
 
 output "private_key_pem" {
-  value     = "${tls_private_key.server_private_key.private_key_pem}"
+  value     = "${element(concat(tls_private_key.server_private_key.*.private_key_pem, list("")), 0)}"
   sensitive = true
 }
 
 output "cert_pem" {
-  value = "${tls_locally_signed_cert.server_cert.cert_pem}"
+  value = "${element(concat(tls_locally_signed_cert.server_cert.*.cert_pem, list("")), 0)}"
 }

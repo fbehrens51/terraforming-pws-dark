@@ -38,6 +38,8 @@ locals {
 }
 
 resource "aws_subnet" "public_subnet" {
+  count = 1
+
   cidr_block        = "${var.cidr_block}"
   vpc_id            = "${data.aws_vpc.vpc.id}"
   availability_zone = "${local.availability_zone}"
@@ -77,7 +79,7 @@ resource "aws_route_table_association" "route_public_subnet" {
 }
 
 output "public_subnet_id" {
-  value = "${aws_subnet.public_subnet.id}"
+  value = "${element(concat(aws_subnet.public_subnet.*.id, list("")), 0)}"
 }
 
 output "eni_id" {
@@ -93,5 +95,5 @@ output "private_ip" {
 }
 
 output "cidr_block" {
-  value = "${aws_subnet.public_subnet.cidr_block}"
+  value = "${element(concat(aws_subnet.public_subnet.*.cidr_block, list("")), 0)}"
 }

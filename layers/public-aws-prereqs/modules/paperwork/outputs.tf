@@ -88,12 +88,16 @@ output "ldap_client_key" {
   sensitive = true
 }
 
+output "usernames" {
+  value = "${data.template_file.usernames.*.rendered}"
+}
+
 output "user_certs" {
-  value = "${zipmap(data.template_file.usernames.*.rendered, tls_locally_signed_cert.user_pki_cert.*.cert_pem)}"
+  value = "${tls_locally_signed_cert.user_pki_cert.*.cert_pem}"
 }
 
 output "user_private_keys" {
-  value     = "${zipmap(data.template_file.usernames.*.rendered, tls_private_key.user_pki_cert_private_key.*.private_key_pem)}"
+  value     = "${tls_private_key.user_pki_cert_private_key.*.private_key_pem}"
   sensitive = true
 }
 

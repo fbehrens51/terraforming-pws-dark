@@ -5,6 +5,8 @@ resource "random_string" "secret" {
 }
 
 data "external" "hmac" {
+  count = 1
+
   program = ["bash", "${path.module}/hmac.sh"]
 
   query = {
@@ -13,9 +15,13 @@ data "external" "hmac" {
   }
 }
 
-//Using map type lookup to prevent error during plan
-//see https://github.com/hashicorp/terraform/issues/17173
+data "template_file" "keys" {
+  count = 1
+
+  template = "${lookup(data.external.hmac.*.result[count.index], "key")}"
+}
+
 output "value" {
-  value     = "${data.external.hmac.result["key"]}"
+  value     = "${element(concat(data.template_file.keys.*.rendered, list("")), 0)}"
   sensitive = true
 }
