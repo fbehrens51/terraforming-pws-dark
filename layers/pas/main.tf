@@ -92,9 +92,14 @@ module "rds" {
   rds_instance_class = "${var.rds_instance_class}"
   rds_instance_count = "1"
 
-  engine         = "mariadb"
-  engine_version = "10.1.31"
-  db_port        = 3306
+  engine = "mariadb"
+
+  # RDS decided to upgrade the patch version automatically from 10.1.31 to
+  # 10.1.34, which makes terraform see this as a change.  Use a prefix version
+  # to prevent this from happening.
+  engine_version = "10.1"
+
+  db_port = 3306
 
   env_name           = "${var.env_name}"
   availability_zones = "${var.availability_zones}"
