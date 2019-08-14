@@ -22,6 +22,10 @@ provider "external" {
   version = "1.1.2"
 }
 
+provider "dns" {
+  version = "2.1.1"
+}
+
 terraform {
   required_version = "< 0.12.0"
 }
