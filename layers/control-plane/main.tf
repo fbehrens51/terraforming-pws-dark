@@ -56,8 +56,8 @@ data "template_cloudinit_config" "user_data" {
   }
 }
 
-module "find_mjb_ami" {
-  source = "../../modules/master-jump-box/lookup-ami"
+module "find_ami" {
+  source = "../../modules/amis/amazon_hvm_ami"
 }
 
 module "control_plane_host_key_pair" {
@@ -71,16 +71,28 @@ locals {
   modified_tags = "${merge(var.tags, map("Name", "${local.modified_name}"))}"
 }
 
-module "control_plane_host" {
+module "sjb" {
   instance_count       = 1
   source               = "../../modules/launch"
-  ami_id               = "${module.find_mjb_ami.id}"
+  ami_id               = "${module.find_ami.id}"
   user_data            = "${data.template_cloudinit_config.user_data.rendered}"
   eni_ids              = ["${module.bootstrap_control_plane.eni_id}"]
   key_pair_name        = "${var.control_plane_host_key_pair_name}"
   iam_instance_profile = "${data.terraform_remote_state.paperwork.director_role_name}"
   instance_type        = "${var.instance_type}"
   tags                 = "${local.modified_tags}"
+
+  root_block_device = {
+    volume_type = "gp2"
+    volume_size = 64
+  }
+}
+
+resource "aws_eip" "temp_sjb" {}
+
+resource "aws_eip_association" "sjb_assoc" {
+  allocation_id = "${aws_eip.temp_sjb.id}"
+  instance_id   = "${module.sjb.instance_ids[0]}"
 }
 
 variable "singleton_availability_zone" {}

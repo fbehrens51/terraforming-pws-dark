@@ -34,6 +34,19 @@ data "aws_iam_policy_document" "director" {
       "kms:DescribeKey",
       "kms:ListAliases",
       "elasticache:*",
+      "kms:Decrypt",
+      "kms:ListResourceTags",
+      "kms:GetParametersForImport",
+      "kms:DescribeCustomKeyStores",
+      "kms:GetKeyRotationStatus",
+      "kms:Encrypt",
+      "kms:DescribeKey",
+      "kms:ListKeyPolicies",
+      "kms:ListRetirableGrants",
+      "kms:GetKeyPolicy",
+      "kms:ListGrants",
+      "kms:ListKeys",
+      "kms:ListAliases",
     ]
 
     resources = ["*"]
