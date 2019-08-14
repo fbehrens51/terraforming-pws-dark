@@ -289,6 +289,14 @@ output "indexers_data_volumes" {
   value = "${aws_ebs_volume.splunk_indexers_data.*.id}"
 }
 
+output "indexers_private_ips" {
+  value = "${module.indexers_bootstrap.eni_ips}"
+}
+
+output "search_head_private_ips" {
+  value = "${module.search_head_bootstrap.eni_ips}"
+}
+
 output "master_private_ips" {
   value = "${module.master_bootstrap.eni_ips}"
 }
