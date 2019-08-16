@@ -20,6 +20,10 @@ write_files:
   content: |
     ${indent(4, inputs_conf_content)}
 
+- path: /tmp/outputs.conf
+  content: |
+    ${indent(4, outputs_conf_content)}
+
 - path: /tmp/http_inputs.conf
   content: |
     ${indent(4, http_inputs_conf_content)}
@@ -31,6 +35,10 @@ write_files:
 - path: /tmp/server.key
   content: |
     ${indent(4, server_key_content)}
+
+- path: /tmp/splunk_forwarder.conf
+  content: |
+    ${indent(4, splunk_forwarder_app_conf)}
 
 mounts:
   - [ "/dev/xvdf", "/opt/splunk", "ext4", "defaults,nofail", "0", "2" ]
@@ -47,12 +55,15 @@ runcmd:
 
     mkdir -p /opt/splunk/etc/auth/mycerts
     mkdir -p /opt/splunk/etc/apps/splunk_httpinput/local/
+    mkdir -p /opt/splunk/etc/apps/SplunkForwarder/local/
 
     cp /tmp/server.crt /opt/splunk/etc/auth/mycerts/mySplunkWebCertificate.pem
     cp /tmp/server.key /opt/splunk/etc/auth/mycerts/mySplunkWebPrivateKey.key
 
     cp /tmp/inputs.conf /opt/splunk/etc/system/local/inputs.conf
+    cp /tmp/outputs.conf /opt/splunk/etc/system/local/outputs.conf
     cp /tmp/http_inputs.conf /opt/splunk/etc/apps/splunk_httpinput/local/inputs.conf
+    cp /tmp/splunk_forwarder.conf /opt/splunk/etc/apps/SplunkForwarder/local/app.conf
     cp /tmp/server.conf /opt/splunk/etc/system/local/server.conf
     cp /tmp/web.conf /opt/splunk/etc/system/local/web.conf
 

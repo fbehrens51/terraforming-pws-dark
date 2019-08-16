@@ -53,11 +53,12 @@ data "terraform_remote_state" "keys" {
 }
 
 locals {
-  indexer_count              = "3"
+  indexers_count             = "3"
+  forwarders_count           = "1"
   splunk_http_collector_port = 8087
   splunk_mgmt_port           = 8089
   splunk_replication_port    = 8088
-  splunk_syslog_port         = 8090
+  splunk_tcp_port            = 8090
   splunk_web_port            = 8000
 
   tags = "${merge(var.tags, map("Name", "${var.env_name}-splunk"))}"
@@ -94,7 +95,7 @@ locals {
       cidr_blocks = "0.0.0.0/0"
     },
     {
-      port        = "${local.splunk_syslog_port}"
+      port        = "${local.splunk_tcp_port}"
       protocol    = "tcp"
       cidr_blocks = "0.0.0.0/0"
     },
@@ -136,12 +137,22 @@ module "master_bootstrap" {
   tags          = "${local.tags}"
 }
 
+module "forwarders_bootstrap" {
+  source        = "../../modules/eni_per_subnet"
+  ingress_rules = "${local.splunk_ingress_rules}"
+  egress_rules  = "${local.splunk_egress_rules}"
+  subnet_ids    = ["${local.private_subnets}"]
+  eni_count     = "${local.forwarders_count}"
+  create_eip    = "false"
+  tags          = "${local.tags}"
+}
+
 module "indexers_bootstrap" {
   source        = "../../modules/eni_per_subnet"
   ingress_rules = "${local.splunk_ingress_rules}"
   egress_rules  = "${local.splunk_egress_rules}"
   subnet_ids    = ["${local.private_subnets}"]
-  eni_count     = "${local.indexer_count}"
+  eni_count     = "${local.indexers_count}"
   create_eip    = "false"
   tags          = "${local.tags}"
 }
@@ -163,7 +174,12 @@ resource "random_string" "splunk_password" {
   special = false
 }
 
-resource "random_string" "splunk_pass4SymmKey" {
+resource "random_string" "indexers_pass4SymmKey" {
+  length  = "32"
+  special = false
+}
+
+resource "random_string" "forwarders_pass4SymmKey" {
   length  = "32"
   special = false
 }
@@ -192,10 +208,17 @@ resource "aws_ebs_volume" "splunk_search_head_data" {
 }
 
 resource "aws_ebs_volume" "splunk_indexers_data" {
-  count = "${local.indexer_count}"
+  count = "${local.indexers_count}"
 
   availability_zone = "${element(data.aws_subnet.private_subnets.*.availability_zone, count.index % length(data.aws_subnet.private_subnets.*.availability_zone))}"
   size              = 1000
+}
+
+resource "aws_ebs_volume" "splunk_forwarders_data" {
+  count = "${local.forwarders_count}"
+
+  availability_zone = "${element(data.aws_subnet.private_subnets.*.availability_zone, count.index % length(data.aws_subnet.private_subnets.*.availability_zone))}"
+  size              = 100
 }
 
 module "splunk_search_head_elb" {
@@ -228,32 +251,6 @@ module "splunk_monitor_elb" {
   instance_port     = "8000"
 }
 
-module "splunk_syslog_elb" {
-  source            = "../../modules/elb/create"
-  env_name          = "${var.env_name}"
-  internetless      = "true"
-  public_subnet_ids = ["${local.private_subnets}"]
-  tags              = "${var.tags}"
-  vpc_id            = "${data.terraform_remote_state.paperwork.es_vpc_id}"
-  egress_cidrs      = ["${local.private_subnet_cidrs}"]
-  short_name        = "splunk-syslog"
-  port              = "${local.splunk_syslog_port}"
-  instance_port     = "${local.splunk_syslog_port}"
-}
-
-module "splunk_http_collector_elb" {
-  source            = "../../modules/elb/create"
-  env_name          = "${var.env_name}"
-  internetless      = "true"
-  public_subnet_ids = ["${local.private_subnets}"]
-  tags              = "${var.tags}"
-  vpc_id            = "${data.terraform_remote_state.paperwork.es_vpc_id}"
-  egress_cidrs      = ["${local.private_subnet_cidrs}"]
-  short_name        = "splunk-http-col"
-  port              = "${local.splunk_http_collector_port}"
-  instance_port     = "${local.splunk_http_collector_port}"
-}
-
 provider "dns" {
   update {
     server        = "${local.master_dns_ip}"
@@ -277,6 +274,13 @@ resource "dns_cname_record" "splunk_cname" {
   ttl   = 300
 }
 
+resource "dns_a_record_set" "splunk_logs_a_record" {
+  zone      = "${local.dns_zone_name}."
+  name      = "splunk-logs"
+  addresses = ["${module.forwarders_bootstrap.eni_ips}"]
+  ttl       = 300
+}
+
 output "master_data_volume" {
   value = "${aws_ebs_volume.splunk_master_data.id}"
 }
@@ -287,6 +291,10 @@ output "search_head_data_volume" {
 
 output "indexers_data_volumes" {
   value = "${aws_ebs_volume.splunk_indexers_data.*.id}"
+}
+
+output "forwarders_data_volumes" {
+  value = "${aws_ebs_volume.splunk_forwarders_data.*.id}"
 }
 
 output "indexers_private_ips" {
@@ -309,6 +317,14 @@ output "indexers_eni_ids" {
   value = "${module.indexers_bootstrap.eni_ids}"
 }
 
+output "forwarders_private_ips" {
+  value = "${module.forwarders_bootstrap.eni_ips}"
+}
+
+output "forwarders_eni_ids" {
+  value = "${module.forwarders_bootstrap.eni_ids}"
+}
+
 output "search_head_eni_ids" {
   value = "${module.search_head_bootstrap.eni_ids}"
 }
@@ -318,11 +334,11 @@ output "splunk_dns_name" {
 }
 
 output "splunk_syslog_host_name" {
-  value = "${module.splunk_syslog_elb.dns_name}"
+  value = "${dns_a_record_set.splunk_logs_a_record.name}.${substr(dns_a_record_set.splunk_logs_a_record.zone, 0, length(dns_a_record_set.splunk_logs_a_record.zone) - 1)}"
 }
 
 output "splunk_http_collector_url" {
-  value = "https://${module.splunk_http_collector_elb.dns_name}:${local.splunk_http_collector_port}"
+  value = "https://${dns_a_record_set.splunk_logs_a_record.name}.${substr(dns_a_record_set.splunk_logs_a_record.zone, 0, length(dns_a_record_set.splunk_logs_a_record.zone) - 1)}:${local.splunk_http_collector_port}"
 }
 
 output "splunk_ssh_key_pair_name" {
@@ -340,8 +356,13 @@ output "splunk_http_collector_token" {
   sensitive = true
 }
 
-output "splunk_pass4SymmKey" {
-  value     = "${random_string.splunk_pass4SymmKey.result}"
+output "forwarders_pass4SymmKey" {
+  value     = "${random_string.forwarders_pass4SymmKey.result}"
+  sensitive = true
+}
+
+output "indexers_pass4SymmKey" {
+  value     = "${random_string.indexers_pass4SymmKey.result}"
   sensitive = true
 }
 
@@ -358,14 +379,6 @@ output "splunk_search_head_elb_id" {
   value = "${module.splunk_search_head_elb.my_elb_id}"
 }
 
-output "splunk_syslog_elb_id" {
-  value = "${module.splunk_syslog_elb.my_elb_id}"
-}
-
-output "splunk_http_collector_elb_id" {
-  value = "${module.splunk_http_collector_elb.my_elb_id}"
-}
-
 output "splunk_http_collector_port" {
   value = "${local.splunk_http_collector_port}"
 }
@@ -378,8 +391,8 @@ output "splunk_replication_port" {
   value = "${local.splunk_replication_port}"
 }
 
-output "splunk_syslog_port" {
-  value = "${local.splunk_syslog_port}"
+output "splunk_tcp_port" {
+  value = "${local.splunk_tcp_port}"
 }
 
 output "splunk_web_port" {

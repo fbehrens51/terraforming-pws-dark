@@ -44,12 +44,13 @@ data "terraform_remote_state" "bootstrap_splunk" {
 locals {
   splunk_master_eni_id      = "${data.terraform_remote_state.bootstrap_splunk.master_eni_ids[0]}"
   splunk_indexers_eni_ids   = "${data.terraform_remote_state.bootstrap_splunk.indexers_eni_ids}"
+  splunk_forwarders_eni_ids = "${data.terraform_remote_state.bootstrap_splunk.forwarders_eni_ids}"
   splunk_search_head_eni_id = "${data.terraform_remote_state.bootstrap_splunk.search_head_eni_ids[0]}"
 
   splunk_http_collector_port = "${data.terraform_remote_state.bootstrap_splunk.splunk_http_collector_port}"
   splunk_mgmt_port           = "${data.terraform_remote_state.bootstrap_splunk.splunk_mgmt_port}"
   splunk_replication_port    = "${data.terraform_remote_state.bootstrap_splunk.splunk_replication_port}"
-  splunk_syslog_port         = "${data.terraform_remote_state.bootstrap_splunk.splunk_syslog_port}"
+  splunk_tcp_port            = "${data.terraform_remote_state.bootstrap_splunk.splunk_tcp_port}"
   splunk_web_port            = "${data.terraform_remote_state.bootstrap_splunk.splunk_web_port}"
 
   tags = "${merge(var.tags, map("Name", "${var.env_name}-splunk"))}"
@@ -94,11 +95,31 @@ EOF
     replication_port = "${local.splunk_replication_port}"
     master_ip        = "${data.terraform_remote_state.bootstrap_splunk.master_private_ips[0]}"
     mgmt_port        = "${local.splunk_mgmt_port}"
-    pass4SymmKey     = "${data.terraform_remote_state.bootstrap_splunk.splunk_pass4SymmKey}"
+    pass4SymmKey     = "${data.terraform_remote_state.bootstrap_splunk.indexers_pass4SymmKey}"
   }
 }
 
-data "template_file" "http_inputs_conf" {
+data "template_file" "outputs_conf" {
+  template = <<EOF
+[indexer_discovery:SplunkDiscovery]
+pass4SymmKey = $${forwarders_pass4SymmKey}
+master_uri = https://$${master_ip}:$${mgmt_port}
+
+[tcpout:SplunkOutput]
+indexerDiscovery = SplunkDiscovery
+
+[tcpout]
+defaultGroup = SplunkOutput
+EOF
+
+  vars {
+    forwarders_pass4SymmKey = "${data.terraform_remote_state.bootstrap_splunk.forwarders_pass4SymmKey}"
+    master_ip               = "${data.terraform_remote_state.bootstrap_splunk.master_private_ips[0]}"
+    mgmt_port               = "${local.splunk_mgmt_port}"
+  }
+}
+
+data "template_file" "forwarders_http_inputs_conf" {
   template = <<EOF
 
 [http://PCF]
@@ -118,32 +139,48 @@ EOF
   }
 }
 
-data "template_file" "inputs_conf" {
+data "template_file" "forwarders_syslog_inputs_conf" {
   template = <<EOF
-[tcp://$${syslog_port}]
+[tcp://$${tcp_port}]
 index = main
 sourcetype = pcf
 connection_host = dns
 EOF
 
   vars {
-    syslog_port = "${local.splunk_syslog_port}"
+    tcp_port = "${local.splunk_tcp_port}"
+  }
+}
+
+data "template_file" "indexer_inputs_conf" {
+  template = <<EOF
+[splunktcp://$${tcp_port}]
+disabled = 0
+EOF
+
+  vars {
+    tcp_port = "${local.splunk_tcp_port}"
   }
 }
 
 data "template_file" "master_server_conf" {
   template = <<EOF
+[indexer_discovery]
+pass4SymmKey = $${forwarders_pass4SymmKey}
+indexerWeightByDiskCapacity = true
+
 [clustering]
 mode = master
 replication_factor = $${replication_factor}
 search_factor = $${search_factor}
-pass4SymmKey = $${pass4SymmKey}
+pass4SymmKey = $${indexers_pass4SymmKey}
 EOF
 
   vars {
-    replication_factor = "2"
-    search_factor      = "2"
-    pass4SymmKey       = "${data.terraform_remote_state.bootstrap_splunk.splunk_pass4SymmKey}"
+    replication_factor      = "2"
+    search_factor           = "2"
+    indexers_pass4SymmKey   = "${data.terraform_remote_state.bootstrap_splunk.indexers_pass4SymmKey}"
+    forwarders_pass4SymmKey = "${data.terraform_remote_state.bootstrap_splunk.forwarders_pass4SymmKey}"
   }
 }
 
@@ -158,7 +195,7 @@ EOF
   vars {
     master_ip    = "${data.terraform_remote_state.bootstrap_splunk.master_private_ips[0]}"
     mgmt_port    = "${local.splunk_mgmt_port}"
-    pass4SymmKey = "${data.terraform_remote_state.bootstrap_splunk.splunk_pass4SymmKey}"
+    pass4SymmKey = "${data.terraform_remote_state.bootstrap_splunk.indexers_pass4SymmKey}"
   }
 }
 
@@ -192,21 +229,32 @@ EOF
   }
 }
 
+data "template_file" "splunk_forwarder_app_conf" {
+  template = <<EOF
+[install]
+state = enabled
+EOF
+
+  vars {}
+}
+
 data "template_file" "master_user_data" {
   template = "${file("${path.module}/user_data.tpl")}"
 
   vars {
-    password                 = "${data.terraform_remote_state.bootstrap_splunk.splunk_password}"
-    server_conf_content      = "${data.template_file.master_server_conf.rendered}"
-    web_conf_content         = "${data.template_file.secure_web_conf.rendered}"
-    inputs_conf_content      = "${data.template_file.inputs_conf.rendered}"
-    http_inputs_conf_content = "${data.template_file.http_inputs_conf.rendered}"
-    role                     = "splunk-master"
-    server_cert_content      = "${data.terraform_remote_state.paperwork.splunk_monitor_server_cert}"
-    server_key_content       = "${data.terraform_remote_state.paperwork.splunk_monitor_server_key}"
-    splunk_rpm_version       = "${var.splunk_rpm_version}"
-    splunk_rpm_s3_bucket     = "${var.splunk_rpm_s3_bucket}"
-    splunk_rpm_s3_region     = "${var.splunk_rpm_s3_region}"
+    password                  = "${data.terraform_remote_state.bootstrap_splunk.splunk_password}"
+    server_conf_content       = "${data.template_file.master_server_conf.rendered}"
+    web_conf_content          = "${data.template_file.secure_web_conf.rendered}"
+    inputs_conf_content       = "${data.template_file.indexer_inputs_conf.rendered}"
+    splunk_forwarder_app_conf = ""
+    outputs_conf_content      = ""
+    http_inputs_conf_content  = ""
+    role                      = "splunk-master"
+    server_cert_content       = "${data.terraform_remote_state.paperwork.splunk_monitor_server_cert}"
+    server_key_content        = "${data.terraform_remote_state.paperwork.splunk_monitor_server_key}"
+    splunk_rpm_version        = "${var.splunk_rpm_version}"
+    splunk_rpm_s3_bucket      = "${var.splunk_rpm_s3_bucket}"
+    splunk_rpm_s3_region      = "${var.splunk_rpm_s3_region}"
   }
 }
 
@@ -214,17 +262,39 @@ data "template_file" "search_head_user_data" {
   template = "${file("${path.module}/user_data.tpl")}"
 
   vars {
-    password                 = "${data.terraform_remote_state.bootstrap_splunk.splunk_password}"
-    server_conf_content      = "${data.template_file.search_head_server_conf.rendered}"
-    web_conf_content         = "${data.template_file.secure_web_conf.rendered}"
-    inputs_conf_content      = ""
-    http_inputs_conf_content = ""
-    role                     = "splunk-search-head"
-    server_cert_content      = "${data.terraform_remote_state.paperwork.splunk_server_cert}"
-    server_key_content       = "${data.terraform_remote_state.paperwork.splunk_server_key}"
-    splunk_rpm_version       = "${var.splunk_rpm_version}"
-    splunk_rpm_s3_bucket     = "${var.splunk_rpm_s3_bucket}"
-    splunk_rpm_s3_region     = "${var.splunk_rpm_s3_region}"
+    password                  = "${data.terraform_remote_state.bootstrap_splunk.splunk_password}"
+    server_conf_content       = "${data.template_file.search_head_server_conf.rendered}"
+    web_conf_content          = "${data.template_file.secure_web_conf.rendered}"
+    inputs_conf_content       = ""
+    splunk_forwarder_app_conf = ""
+    outputs_conf_content      = ""
+    http_inputs_conf_content  = ""
+    role                      = "splunk-search-head"
+    server_cert_content       = "${data.terraform_remote_state.paperwork.splunk_server_cert}"
+    server_key_content        = "${data.terraform_remote_state.paperwork.splunk_server_key}"
+    splunk_rpm_version        = "${var.splunk_rpm_version}"
+    splunk_rpm_s3_bucket      = "${var.splunk_rpm_s3_bucket}"
+    splunk_rpm_s3_region      = "${var.splunk_rpm_s3_region}"
+  }
+}
+
+data "template_file" "forwarders_user_data" {
+  template = "${file("${path.module}/user_data.tpl")}"
+
+  vars {
+    password                  = "${data.terraform_remote_state.bootstrap_splunk.splunk_password}"
+    server_conf_content       = ""
+    web_conf_content          = "${data.template_file.web_conf.rendered}"
+    inputs_conf_content       = "${data.template_file.forwarders_syslog_inputs_conf.rendered}"
+    splunk_forwarder_app_conf = "${data.template_file.splunk_forwarder_app_conf.rendered}"
+    outputs_conf_content      = "${data.template_file.outputs_conf.rendered}"
+    http_inputs_conf_content  = "${data.template_file.forwarders_http_inputs_conf.rendered}"
+    role                      = "splunk-forwarder"
+    server_cert_content       = ""
+    server_key_content        = ""
+    splunk_rpm_version        = "${var.splunk_rpm_version}"
+    splunk_rpm_s3_bucket      = "${var.splunk_rpm_s3_bucket}"
+    splunk_rpm_s3_region      = "${var.splunk_rpm_s3_region}"
   }
 }
 
@@ -232,17 +302,19 @@ data "template_file" "indexers_user_data" {
   template = "${file("${path.module}/user_data.tpl")}"
 
   vars {
-    password                 = "${data.terraform_remote_state.bootstrap_splunk.splunk_password}"
-    server_conf_content      = "${data.template_file.indexers_server_conf.rendered}"
-    web_conf_content         = "${data.template_file.web_conf.rendered}"
-    inputs_conf_content      = "${data.template_file.inputs_conf.rendered}"
-    http_inputs_conf_content = "${data.template_file.http_inputs_conf.rendered}"
-    role                     = "splunk-indexer"
-    server_cert_content      = ""
-    server_key_content       = ""
-    splunk_rpm_version       = "${var.splunk_rpm_version}"
-    splunk_rpm_s3_bucket     = "${var.splunk_rpm_s3_bucket}"
-    splunk_rpm_s3_region     = "${var.splunk_rpm_s3_region}"
+    password                  = "${data.terraform_remote_state.bootstrap_splunk.splunk_password}"
+    server_conf_content       = "${data.template_file.indexers_server_conf.rendered}"
+    web_conf_content          = "${data.template_file.web_conf.rendered}"
+    inputs_conf_content       = "${data.template_file.indexer_inputs_conf.rendered}"
+    splunk_forwarder_app_conf = ""
+    outputs_conf_content      = ""
+    http_inputs_conf_content  = ""
+    role                      = "splunk-indexer"
+    server_cert_content       = ""
+    server_key_content        = ""
+    splunk_rpm_version        = "${var.splunk_rpm_version}"
+    splunk_rpm_s3_bucket      = "${var.splunk_rpm_s3_bucket}"
+    splunk_rpm_s3_region      = "${var.splunk_rpm_s3_region}"
   }
 }
 
@@ -271,6 +343,23 @@ data "template_cloudinit_config" "splunk_search_head_cloud_init_config" {
     filename     = "install.cfg"
     content_type = "text/cloud-config"
     content      = "${data.template_file.search_head_user_data.rendered}"
+  }
+
+  part {
+    filename     = "custom.cfg"
+    content_type = "text/cloud-config"
+    content      = "${file(var.user_data_path)}"
+  }
+}
+
+data "template_cloudinit_config" "splunk_forwarders_cloud_init_config" {
+  base64_encode = false
+  gzip          = false
+
+  part {
+    filename     = "install.cfg"
+    content_type = "text/cloud-config"
+    content      = "${data.template_file.forwarders_user_data.rendered}"
   }
 
   part {
@@ -329,6 +418,20 @@ module "splunk_search_head" {
   user_data = "${data.template_cloudinit_config.splunk_search_head_cloud_init_config.rendered}"
 }
 
+module "splunk_forwarders" {
+  source               = "../../modules/launch"
+  instance_count       = "${length(local.splunk_forwarders_eni_ids)}"
+  ami_id               = "${module.amazon_ami.id}"
+  instance_type        = "${var.instance_type}"
+  key_pair_name        = "${data.terraform_remote_state.bootstrap_splunk.splunk_ssh_key_pair_name}"
+  tags                 = "${merge(local.tags, map("Name", "${var.env_name}-splunk-forwarder"))}"
+  iam_instance_profile = "${local.splunk_role_name}"
+
+  eni_ids = "${local.splunk_forwarders_eni_ids}"
+
+  user_data = "${data.template_cloudinit_config.splunk_forwarders_cloud_init_config.rendered}"
+}
+
 module "splunk_indexers" {
   source               = "../../modules/launch"
   instance_count       = "${length(local.splunk_indexers_eni_ids)}"
@@ -368,6 +471,15 @@ resource "aws_volume_attachment" "splunk_indexers_volume_attachment" {
   device_name = "/dev/sdf"
 }
 
+resource "aws_volume_attachment" "splunk_forwarders_volume_attachment" {
+  skip_destroy = true
+
+  count       = "${length(local.splunk_forwarders_eni_ids)}"
+  instance_id = "${module.splunk_forwarders.instance_ids[count.index]}"
+  volume_id   = "${element(data.terraform_remote_state.bootstrap_splunk.forwarders_data_volumes, count.index)}"
+  device_name = "/dev/sdf"
+}
+
 resource "aws_elb_attachment" "splunk_master_attach" {
   elb      = "${data.terraform_remote_state.bootstrap_splunk.splunk_monitor_elb_id}"
   instance = "${module.splunk_master.instance_ids[0]}"
@@ -376,16 +488,4 @@ resource "aws_elb_attachment" "splunk_master_attach" {
 resource "aws_elb_attachment" "splunk_search_head_attach" {
   elb      = "${data.terraform_remote_state.bootstrap_splunk.splunk_search_head_elb_id}"
   instance = "${module.splunk_search_head.instance_ids[0]}"
-}
-
-resource "aws_elb_attachment" "splunk_syslog_attach" {
-  elb      = "${data.terraform_remote_state.bootstrap_splunk.splunk_syslog_elb_id}"
-  count    = "${length(local.splunk_indexers_eni_ids)}"
-  instance = "${module.splunk_indexers.instance_ids[count.index]}"
-}
-
-resource "aws_elb_attachment" "splunk_http_collector_attach" {
-  elb      = "${data.terraform_remote_state.bootstrap_splunk.splunk_http_collector_elb_id}"
-  count    = "${length(local.splunk_indexers_eni_ids)}"
-  instance = "${module.splunk_indexers.instance_ids[count.index]}"
 }
