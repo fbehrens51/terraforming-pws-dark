@@ -31,22 +31,8 @@ data "aws_iam_policy_document" "director" {
       "rds:DescribeCertificates",
       "rds:DescribeEventCategories",
       "rds:DescribeAccountAttributes",
-      "kms:DescribeKey",
-      "kms:ListAliases",
+      "kms:*",
       "elasticache:*",
-      "kms:Decrypt",
-      "kms:ListResourceTags",
-      "kms:GetParametersForImport",
-      "kms:DescribeCustomKeyStores",
-      "kms:GetKeyRotationStatus",
-      "kms:Encrypt",
-      "kms:DescribeKey",
-      "kms:ListKeyPolicies",
-      "kms:ListRetirableGrants",
-      "kms:GetKeyPolicy",
-      "kms:ListGrants",
-      "kms:ListKeys",
-      "kms:ListAliases",
     ]
 
     resources = ["*"]
