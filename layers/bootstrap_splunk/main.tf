@@ -391,7 +391,11 @@ output "splunk_replication_port" {
   value = "${local.splunk_replication_port}"
 }
 
-output "splunk_tcp_port" {
+output "splunk_indexers_input_port" {
+  value = "${local.splunk_tcp_port}"
+}
+
+output "splunk_syslog_port" {
   value = "${local.splunk_tcp_port}"
 }
 

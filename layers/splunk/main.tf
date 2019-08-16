@@ -50,7 +50,8 @@ locals {
   splunk_http_collector_port = "${data.terraform_remote_state.bootstrap_splunk.splunk_http_collector_port}"
   splunk_mgmt_port           = "${data.terraform_remote_state.bootstrap_splunk.splunk_mgmt_port}"
   splunk_replication_port    = "${data.terraform_remote_state.bootstrap_splunk.splunk_replication_port}"
-  splunk_tcp_port            = "${data.terraform_remote_state.bootstrap_splunk.splunk_tcp_port}"
+  splunk_indexers_input_port = "${data.terraform_remote_state.bootstrap_splunk.splunk_indexers_input_port}"
+  splunk_syslog_port         = "${data.terraform_remote_state.bootstrap_splunk.splunk_syslog_port}"
   splunk_web_port            = "${data.terraform_remote_state.bootstrap_splunk.splunk_web_port}"
 
   tags = "${merge(var.tags, map("Name", "${var.env_name}-splunk"))}"
@@ -163,13 +164,13 @@ module "splunk_setup" {
 
 module "indexers_inputs_conf" {
   source     = "./modules/inputs-and-outputs/indexers"
-  input_port = "${local.splunk_tcp_port}"
+  input_port = "${local.splunk_indexers_input_port}"
 }
 
 module "forwardes_inputs_outputs_conf" {
   source = "./modules/inputs-and-outputs/forwarders"
 
-  syslog_port         = "${local.splunk_tcp_port}"
+  syslog_port         = "${local.splunk_syslog_port}"
   master_ip           = "${local.master_ip}"
   mgmt_port           = "${local.splunk_mgmt_port}"
   http_token          = "${data.terraform_remote_state.bootstrap_splunk.splunk_http_collector_token}"
