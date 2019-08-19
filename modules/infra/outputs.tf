@@ -45,23 +45,3 @@ output "infrastructure_subnet_cidrs" {
 output "infrastructure_subnet_gateways" {
   value = ["${data.template_file.infrastructure_subnet_gateways.*.rendered}"]
 }
-
-output "om_subnet_ids" {
-  value = ["${aws_subnet.om_subnets.*.id}"]
-}
-
-output "om_subnets" {
-  value = ["${aws_subnet.om_subnets.*.id}"]
-}
-
-output "om_subnet_availability_zones" {
-  value = ["${aws_subnet.om_subnets.*.availability_zone}"]
-}
-
-output "om_subnet_cidrs" {
-  value = ["${aws_subnet.om_subnets.*.cidr_block}"]
-}
-
-output "om_subnet_gateways" {
-  value = ["${data.template_file.om_subnet_gateways.*.rendered}"]
-}

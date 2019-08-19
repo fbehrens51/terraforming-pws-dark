@@ -213,11 +213,10 @@ locals {
   pas_rds_cidr_block              = "${data.terraform_remote_state.pas.rds_cidr_block}"
   pas_services_cidr_block         = "${data.terraform_remote_state.pas.services_cidr_block}"
   pas_public_cidr_block           = "${data.terraform_remote_state.pas.public_cidr_block}"
-  pas_om_cidr_block               = "${data.terraform_remote_state.pas.om_cidr_block}"
   enterprise_services_vpc_cidr    = "${data.aws_vpc.es_vpc.cidr_block}"
   control_plane_vpc_cidr          = "${data.aws_vpc.cp_vpc.cidr_block}"
   bastion_vpc_cidr                = "${data.aws_vpc.bastion_vpc.cidr_block}"
 
   ipsec_subnet_cidrs    = "${local.pas_ert_subnet_cidrs}"
-  no_ipsec_subnet_cidrs = "${concat(local.pas_infrastructure_subnet_cidrs, list(local.pas_om_cidr_block, local.pas_public_cidr_block, local.pas_services_cidr_block, local.pas_rds_cidr_block, local.enterprise_services_vpc_cidr, local.control_plane_vpc_cidr, local.bastion_vpc_cidr))}"
+  no_ipsec_subnet_cidrs = "${concat(local.pas_infrastructure_subnet_cidrs, list(local.pas_public_cidr_block, local.pas_services_cidr_block, local.pas_rds_cidr_block, local.enterprise_services_vpc_cidr, local.control_plane_vpc_cidr, local.bastion_vpc_cidr))}"
 }

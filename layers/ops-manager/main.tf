@@ -35,7 +35,6 @@ locals {
   director_role_name          = "${data.terraform_remote_state.paperwork.director_role_name}"
   om_security_group_id        = "${data.terraform_remote_state.pas.om_security_group_id}"
   om_ssh_public_key_pair_name = "${data.terraform_remote_state.pas.om_ssh_public_key_pair_name}"
-  om_elb_id                   = "${data.terraform_remote_state.pas.om_elb_id}"
   om_eip_allocation_id        = "${data.terraform_remote_state.pas.om_eip_allocation_id}"
   om_eni_id                   = "${data.terraform_remote_state.pas.om_eni_id}"
 
@@ -92,11 +91,6 @@ bootcmd:
   - sudo sed -i 's/^ssl = true/#ssl = true/' /etc/postgresql/*/main/postgresql.conf
 CLOUDINIT
   }
-}
-
-resource "aws_elb_attachment" "opsman_attach" {
-  elb      = "${local.om_elb_id}"
-  instance = "${module.ops_manager.instance_ids[0]}"
 }
 
 resource "aws_eip_association" "om_eip_assoc" {

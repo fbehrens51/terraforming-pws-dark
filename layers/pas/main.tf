@@ -118,17 +118,6 @@ module "pas_elb" {
   short_name        = "pas"
 }
 
-module "om_elb" {
-  source            = "../../modules/elb/create"
-  env_name          = "${var.env_name}"
-  internetless      = "${var.internetless}"
-  public_subnet_ids = "${module.infra.public_subnet_ids}"
-  tags              = "${local.modified_tags}"
-  vpc_id            = "${local.vpc_id}"
-  egress_cidrs      = "${module.infra.om_subnet_cidrs}"
-  short_name        = "om"
-}
-
 # Configure the DNS Provider
 //TODO support running from CI/Dev wks.  From MJB using the master private IP should work, but that won't work from external CI or our WKS.
 provider "dns" {
@@ -142,11 +131,11 @@ provider "dns" {
 
 //update add testing.pivotal-staging.com 600 CNAME dns1.pivotal-staging.com
 
-resource "dns_cname_record" "om_cname" {
-  zone  = "${local.dns_zone_name}."
-  name  = "om"
-  cname = "${module.om_elb.dns_name}."
-  ttl   = 300
+resource "dns_a_record_set" "om_a_record" {
+  zone      = "${local.dns_zone_name}."
+  name      = "om"
+  addresses = ["${module.ops_manager.ip}"]
+  ttl       = 300
 }
 
 resource "dns_cname_record" "pas_cname" {
@@ -173,9 +162,9 @@ module "ops_manager" {
 
   bucket_suffix = "${local.bucket_suffix}"
   env_name      = "${var.env_name}"
-  om_eip        = false
+  om_eip        = "${!var.internetless}"
   private       = false
-  subnet_id     = "${module.infra.om_subnet_ids[0]}"
+  subnet_id     = "${module.infra.public_subnet_ids[0]}"
   tags          = "${local.modified_tags}"
   vpc_id        = "${local.vpc_id}"
   ingress_rules = ["${local.ingress_rules}"]
@@ -321,10 +310,6 @@ output "om_eni_id" {
   value = "${module.ops_manager.om_eni_id}"
 }
 
-output "om_elb_id" {
-  value = "${module.om_elb.my_elb_id}"
-}
-
 output "om_eip_allocation_id" {
   value = "${module.ops_manager.om_eip_allocation_id}"
 }
@@ -343,7 +328,7 @@ output "om_ssh_public_key_pair_name" {
 }
 
 output "om_dns_name" {
-  value = "${dns_cname_record.om_cname.name}.${substr(dns_cname_record.om_cname.zone, 0, length(dns_cname_record.om_cname.zone) - 1)}"
+  value = "${dns_a_record_set.om_a_record.name}.${substr(dns_a_record_set.om_a_record.zone, 0, length(dns_a_record_set.om_a_record.zone) - 1)}"
 }
 
 output "rds_cidr_block" {
@@ -352,10 +337,6 @@ output "rds_cidr_block" {
 
 output "services_cidr_block" {
   value = "${module.calculated_subnets.services_cidr}"
-}
-
-output "om_cidr_block" {
-  value = "${module.calculated_subnets.om_cidr}"
 }
 
 output "public_cidr_block" {

@@ -2,8 +2,8 @@ output "bucket" {
   value = "${element(concat(aws_s3_bucket.ops_manager_bucket.*.bucket, list("")), 0)}"
 }
 
-output "public_ip" {
-  value = "${element(concat(aws_eip.ops_manager_unattached.*.public_ip, list("")), 0)}"
+output "ip" {
+  value = "${element(concat(aws_eip.ops_manager_unattached.*.public_ip, flatten(aws_network_interface.ops_manager_unattached.*.private_ips), list("")), 0)}"
 }
 
 output "om_eni_id" {

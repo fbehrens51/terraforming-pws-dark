@@ -65,6 +65,5 @@ module "cidr_lookup" {
 
 locals {
   infrastructure_cidr = "${module.cidr_lookup.infrastructure_cidr}"
-  om_cidr             = "${module.cidr_lookup.om_cidr}"
   public_cidr         = "${module.cidr_lookup.public_cidr}"
 }
