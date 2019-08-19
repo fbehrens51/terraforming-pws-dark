@@ -19,7 +19,7 @@ locals {
   healthwatch_product_version = "1.6.1"
 
   clamav_product_slug    = "p-clamav-addon"
-  clamav_product_version = "2.0.3"
+  clamav_product_version = "2.0.7"
 
   clamav_addon_file_glob  = "p-clamav-[0-9]*.pivotal"
   clamav_mirror_file_glob = "p-clamav-mirror-[0-9]*.pivotal"
