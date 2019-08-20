@@ -34,6 +34,15 @@ output "trusted_ca_certs" {
   value = "${module.ca_cert.cert_pem}"
 }
 
+output "om_server_cert" {
+  value = "${module.om_server_cert.cert_pem}"
+}
+
+output "om_server_key" {
+  value     = "${module.om_server_cert.private_key_pem}"
+  sensitive = true
+}
+
 output "splunk_server_cert" {
   value = "${module.splunk_server_cert.cert_pem}"
 }

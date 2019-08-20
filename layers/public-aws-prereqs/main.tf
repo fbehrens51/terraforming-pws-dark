@@ -11,6 +11,7 @@ provider "aws" {}
 locals {
   ldap_domain           = "ldap.${var.root_domain}"
   splunk_domain         = "splunk.${var.root_domain}"
+  om_domain             = "om.${var.root_domain}"
   splunk_monitor_domain = "splunk_monitor.${var.root_domain}"
   system_domain         = "run.${var.root_domain}"
   apps_domain           = "cfapps.${var.root_domain}"
@@ -25,6 +26,8 @@ locals {
   uaa_server_key_s3_path             = "uaa_server_key.pem"
   ldap_client_cert_s3_path           = "ldap_client_cert.pem"
   ldap_client_key_s3_path            = "ldap_client_key.pem"
+  om_server_cert_s3_path             = "om_server_cert.pem"
+  om_server_key_s3_path              = "om_server_key.pem"
   splunk_server_cert_s3_path         = "splunk_server_cert.pem"
   splunk_server_key_s3_path          = "splunk_server_key.pem"
   splunk_monitor_server_cert_s3_path = "splunk_monitor_server_cert.pem"
@@ -52,6 +55,7 @@ module "paperwork" {
   env_name              = "${var.env_name}"
   ldap_domain           = "${local.ldap_domain}"
   splunk_domain         = "${local.splunk_domain}"
+  om_domain             = "${local.om_domain}"
   system_domain         = "${local.system_domain}"
   splunk_monitor_domain = "${local.splunk_monitor_domain}"
   apps_domain           = "${local.apps_domain}"
@@ -96,6 +100,8 @@ data "template_file" "paperwork_variables" {
     uaa_server_key_s3_path             = "${local.uaa_server_key_s3_path}"
     ldap_client_cert_s3_path           = "${local.ldap_client_cert_s3_path}"
     ldap_client_key_s3_path            = "${local.ldap_client_key_s3_path}"
+    om_server_cert_s3_path             = "${local.om_server_cert_s3_path}"
+    om_server_key_s3_path              = "${local.om_server_key_s3_path}"
     splunk_server_cert_s3_path         = "${local.splunk_server_cert_s3_path}"
     splunk_server_key_s3_path          = "${local.splunk_server_key_s3_path}"
     splunk_monitor_server_cert_s3_path = "${local.splunk_monitor_server_cert_s3_path}"
@@ -182,6 +188,20 @@ resource "aws_s3_bucket_object" "uaa_server_key" {
   bucket       = "${aws_s3_bucket.certs.bucket}"
   content      = "${module.paperwork.uaa_server_key}"
   content_type = "text/plain"
+}
+
+resource "aws_s3_bucket_object" "om_server_cert" {
+  key          = "${local.om_server_cert_s3_path}"
+  bucket       = "${aws_s3_bucket.certs.bucket}"
+  content      = "${module.paperwork.om_server_cert}"
+  content_type = "text/plain"
+}
+
+resource "aws_s3_bucket_object" "om_server_key" {
+  key          = "${local.om_server_key_s3_path}"
+  bucket       = "${aws_s3_bucket.certs.bucket}"
+  content_type = "text/plain"
+  content      = "${module.paperwork.om_server_key}"
 }
 
 resource "aws_s3_bucket_object" "splunk_server_cert" {

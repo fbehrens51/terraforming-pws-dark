@@ -52,6 +52,10 @@ ldap_client_cert_s3_path = "${ldap_client_cert_s3_path}"
 
 ldap_client_key_s3_path = "${ldap_client_key_s3_path}"
 
+om_server_cert_s3_path = "${om_server_cert_s3_path}"
+
+om_server_key_s3_path = "${om_server_key_s3_path}"
+
 splunk_server_cert_s3_path = "${splunk_server_cert_s3_path}"
 
 splunk_server_key_s3_path = "${splunk_server_key_s3_path}"
