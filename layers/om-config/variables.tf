@@ -164,3 +164,7 @@ variable "tcp_router_instance_type" {
 variable "uaa_instance_type" {
   default = "automatic"
 }
+
+variable "clamav_mirror_instance_type" {
+  default = "automatic"
+}

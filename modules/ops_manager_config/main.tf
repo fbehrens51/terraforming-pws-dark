@@ -281,6 +281,7 @@ data "template_file" "clamav_mirror_template" {
     no_upstream_mirror          = "${var.clamav_no_upstream_mirror}"
     pas_vpc_azs                 = "${indent(4, join("", data.template_file.pas_vpc_azs.*.rendered))}"
     singleton_availability_zone = "${var.singleton_availability_zone}"
+    clamav_mirror_instance_type = "${var.clamav_mirror_instance_type}"
   }
 }
 

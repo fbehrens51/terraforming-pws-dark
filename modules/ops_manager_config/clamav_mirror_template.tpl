@@ -47,5 +47,5 @@ resource-config:
     persistent_disk:
       size_mb: automatic
     instance_type:
-      id: automatic
+      id: ${clamav_mirror_instance_type}
     internet_connected: false

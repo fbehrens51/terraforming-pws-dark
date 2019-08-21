@@ -490,3 +490,5 @@ variable "syslog_adapter_instance_type" {}
 variable "syslog_scheduler_instance_type" {}
 variable "tcp_router_instance_type" {}
 variable "uaa_instance_type" {}
+
+variable "clamav_mirror_instance_type" {}
