@@ -468,24 +468,24 @@ resource-config:
     persistent_disk:
       size_mb: automatic
     instance_type:
-      id: automatic
+      id: ${backup_restore_instance_type}
     internet_connected: false
   clock_global:
     instances: automatic
     instance_type:
-      id: automatic
+      id: ${clock_global_instance_type}
     internet_connected: false
   cloud_controller:
     instances: automatic
     instance_type:
-      id: automatic
+      id: ${cloud_controller_instance_type}
     internet_connected: false
     additional_vm_extensions:
     - s3_instance_profile
   cloud_controller_worker:
     instances: automatic
     instance_type:
-      id: automatic
+      id: ${cloud_controller_worker_instance_type}
     internet_connected: false
     additional_vm_extensions:
     - s3_instance_profile
@@ -494,99 +494,99 @@ resource-config:
     persistent_disk:
       size_mb: automatic
     instance_type:
-      id: automatic
+      id: ${consul_server_instance_type}
     internet_connected: false
   credhub:
     instances: automatic
     instance_type:
-      id: automatic
+      id: ${credhub_instance_type}
     internet_connected: false
   diego_brain:
     instances: automatic
     instance_type:
-      id: automatic
+      id: ${diego_brain_instance_type}
     internet_connected: false
   diego_cell:
     instances: automatic
     instance_type:
-      id: automatic
+      id: ${diego_cell_instance_type}
     internet_connected: false
   diego_database:
     instances: automatic
     instance_type:
-      id: automatic
+      id: ${diego_database_instance_type}
     internet_connected: false
   doppler:
     instances: automatic
     instance_type:
-      id: automatic
+      id: ${doppler_instance_type}
     internet_connected: false
   ha_proxy:
     instances: automatic
     instance_type:
-      id: automatic
+      id: ${ha_proxy_instance_type}
     internet_connected: false
   loggregator_trafficcontroller:
     instances: automatic
     instance_type:
-      id: automatic
+      id: ${loggregator_trafficcontroller_instance_type}
     internet_connected: false
   mysql:
     instances: 0
     persistent_disk:
       size_mb: automatic
     instance_type:
-      id: automatic
+      id: ${mysql_instance_type}
     internet_connected: false
   mysql_monitor:
     instances: 0
     instance_type:
-      id: automatic
+      id: ${mysql_monitor_instance_type}
     internet_connected: false
   mysql_proxy:
     instances: 0
     instance_type:
-      id: automatic
+      id: ${mysql_proxy_instance_type}
     internet_connected: false
   nats:
     instances: automatic
     instance_type:
-      id: automatic
+      id: ${nats_instance_type}
     internet_connected: false
   nfs_server:
     instances: 0
     persistent_disk:
       size_mb: automatic
     instance_type:
-      id: automatic
+      id: ${nfs_server_instance_type}
     internet_connected: false
   router:
     instances: automatic
     instance_type:
-      id: automatic
+      id: ${router_instance_type}
     internet_connected: false
     elb_names: ${router_elb_names}
   syslog_adapter:
     instances: automatic
     instance_type:
-      id: automatic
+      id: ${syslog_adapter_instance_type}
     internet_connected: false
   syslog_scheduler:
     instances: automatic
     instance_type:
-      id: automatic
+      id: ${syslog_scheduler_instance_type}
     internet_connected: false
   tcp_router:
     instances: 0
     persistent_disk:
       size_mb: automatic
     instance_type:
-      id: automatic
+      id: ${tcp_router_instance_type}
     internet_connected: false
   uaa:
     instances: automatic
     instance_type:
-      id: automatic
+      id: ${uaa_instance_type}
     internet_connected: false
 errand-config:
   deploy-autoscaler:

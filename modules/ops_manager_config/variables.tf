@@ -467,3 +467,26 @@ variable "ipsec_subnet_cidrs" {
 variable "no_ipsec_subnet_cidrs" {
   type = "list"
 }
+
+variable "backup_restore_instance_type" {}
+variable "clock_global_instance_type" {}
+variable "cloud_controller_instance_type" {}
+variable "cloud_controller_worker_instance_type" {}
+variable "consul_server_instance_type" {}
+variable "credhub_instance_type" {}
+variable "diego_brain_instance_type" {}
+variable "diego_cell_instance_type" {}
+variable "diego_database_instance_type" {}
+variable "doppler_instance_type" {}
+variable "ha_proxy_instance_type" {}
+variable "loggregator_trafficcontroller_instance_type" {}
+variable "mysql_instance_type" {}
+variable "mysql_monitor_instance_type" {}
+variable "mysql_proxy_instance_type" {}
+variable "nats_instance_type" {}
+variable "nfs_server_instance_type" {}
+variable "router_instance_type" {}
+variable "syslog_adapter_instance_type" {}
+variable "syslog_scheduler_instance_type" {}
+variable "tcp_router_instance_type" {}
+variable "uaa_instance_type" {}
