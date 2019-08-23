@@ -84,6 +84,7 @@ variable "instance_type" {
 }
 
 variable "user_data_path" {}
+variable "license_path" {}
 
 module "amazon_ami" {
   source = "../../modules/amis/amazon_hvm_ami"
@@ -178,6 +179,19 @@ module "forwardes_inputs_outputs_conf" {
   pass4SymmKey        = "${local.forwarders_pass4SymmKey}"
 }
 
+module "slave_license_conf" {
+  source = "./modules/license-conf/slave"
+
+  master_ip = "${local.master_ip}"
+  mgmt_port = "${local.splunk_mgmt_port}"
+}
+
+module "master_license_conf" {
+  source = "./modules/license-conf/master"
+
+  license_path = "${var.license_path}"
+}
+
 module "setup_indexers_hostname" {
   source = "./modules/setup-hostname"
   role   = "splunk-inexer"
@@ -203,6 +217,12 @@ data "template_cloudinit_config" "splunk_master_cloud_init_config" {
     filename     = "setup-hostname.cfg"
     content_type = "text/cloud-config"
     content      = "${module.setup_master_hostname.user_data}"
+  }
+
+  part {
+    filename     = "license.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.master_license_conf.user_data}"
   }
 
   part {
@@ -241,6 +261,12 @@ data "template_cloudinit_config" "splunk_search_head_cloud_init_config" {
   }
 
   part {
+    filename     = "license.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.slave_license_conf.user_data}"
+  }
+
+  part {
     filename     = "setup.cfg"
     content_type = "text/cloud-config"
     content      = "${module.splunk_setup.user_data}"
@@ -273,6 +299,12 @@ data "template_cloudinit_config" "splunk_forwarders_cloud_init_config" {
     filename     = "setup-hostname.cfg"
     content_type = "text/cloud-config"
     content      = "${module.setup_forwarders_hostname.user_data}"
+  }
+
+  part {
+    filename     = "license.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.slave_license_conf.user_data}"
   }
 
   part {
@@ -314,6 +346,12 @@ data "template_cloudinit_config" "splunk_indexers_cloud_init_config" {
     filename     = "setup-hostname.cfg"
     content_type = "text/cloud-config"
     content      = "${module.setup_indexers_hostname.user_data}"
+  }
+
+  part {
+    filename     = "license.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.slave_license_conf.user_data}"
   }
 
   part {
