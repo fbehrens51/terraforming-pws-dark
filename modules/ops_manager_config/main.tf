@@ -266,6 +266,7 @@ data "template_file" "runtime_config_template" {
   template = "${file("${path.module}/runtime_config_template.tpl")}"
 
   vars = {
+    ipsec_log_level       = "${var.ipsec_log_level}"
     ipsec_optional        = "${var.ipsec_optional}"
     ipsec_subnet_cidrs    = "${join(",",  var.ipsec_subnet_cidrs)}"
     no_ipsec_subnet_cidrs = "${join(",", concat(var.no_ipsec_subnet_cidrs, list(local.pas_vpc_dns_subnet)))}"

@@ -199,7 +199,8 @@ module "om_config" {
   s3_secret_access_key           = "${var.s3_secret_access_key}"
   s3_auth_type                   = "${var.s3_auth_type}"
 
-  ipsec_optional = "${var.ipsec_optional}"
+  ipsec_log_level = "${var.ipsec_log_level}"
+  ipsec_optional  = "${var.ipsec_optional}"
 
   ipsec_subnet_cidrs    = "${local.ipsec_subnet_cidrs}"
   no_ipsec_subnet_cidrs = "${local.no_ipsec_subnet_cidrs}"

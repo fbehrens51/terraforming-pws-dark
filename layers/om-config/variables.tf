@@ -37,6 +37,7 @@ variable "product_blobs_s3_region" {}
 variable "portal_product_version" {}
 variable "runtime_config_product_version" {}
 variable "cf_tools_product_version" {}
+variable "ipsec_log_level" {}
 variable "ipsec_optional" {}
 
 variable "apps_manager_tools_url" {

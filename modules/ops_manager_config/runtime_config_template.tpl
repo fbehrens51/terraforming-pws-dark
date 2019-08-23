@@ -17,7 +17,7 @@ product-properties:
   .properties.no_ipsec_subnets:
     value: ${no_ipsec_subnet_cidrs}
   .properties.log_level:
-    value: 1
+    value: ${ipsec_log_level}
   .properties.optional_warn_interval:
     value: 1
   .properties.prestart_timeout:

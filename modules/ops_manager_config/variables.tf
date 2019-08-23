@@ -458,6 +458,7 @@ variable "splunk_syslog_host" {}
 
 variable "splunk_syslog_port" {}
 
+variable "ipsec_log_level" {}
 variable "ipsec_optional" {}
 
 variable "ipsec_subnet_cidrs" {
