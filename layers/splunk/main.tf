@@ -63,7 +63,7 @@ locals {
 
   master_ip = "${data.terraform_remote_state.bootstrap_splunk.master_private_ips[0]}"
 
-  ssh_key_pair_name = "${local.ssh_key_pair_name}"
+  ssh_key_pair_name = "${data.terraform_remote_state.bootstrap_splunk.splunk_ssh_key_pair_name}"
 }
 
 variable "remote_state_bucket" {}
