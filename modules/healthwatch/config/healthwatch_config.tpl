@@ -27,9 +27,9 @@ product-properties:
     value: enable
   .properties.boshtasks.enable.bosh_taskcheck_password:
     value:
-      secret: ((properties_boshtasks_enable_bosh_taskcheck_password.secret))
+      secret: ${bosh_task_uaa_client_secret}
   .properties.boshtasks.enable.bosh_taskcheck_username:
-    value: healthwatch
+    value: healthwatch_client
   .properties.indicators_selector:
     selected_option: inactive
     value: "No"

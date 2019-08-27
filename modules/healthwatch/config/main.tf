@@ -8,6 +8,7 @@ variable "availability_zones" {
 
 variable "singleton_availability_zone" {}
 variable "health_check_availability_zone" {}
+variable "bosh_task_uaa_client_secret" {}
 
 data "template_file" "hw_vpc_azs" {
   count = "${length(var.availability_zones)}"
@@ -39,6 +40,8 @@ data "template_file" "healthwatch_config" {
 
     health_check_availability_zone = "${var.health_check_availability_zone}"
     env_name                       = "${var.env_name}"
+
+    bosh_task_uaa_client_secret = "${var.bosh_task_uaa_client_secret}"
   }
 }
 

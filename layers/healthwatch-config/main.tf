@@ -54,6 +54,7 @@ module "healthwatch_config" {
   singleton_availability_zone    = "${var.singleton_availability_zone}"
   health_check_availability_zone = "${var.singleton_availability_zone}"
   env_name                       = "${var.env_name}"
+  bosh_task_uaa_client_secret    = "${random_string.healthwatch_client_credentials_secret.result}"
 }
 
 resource "random_string" "healthwatch_client_credentials_secret" {
