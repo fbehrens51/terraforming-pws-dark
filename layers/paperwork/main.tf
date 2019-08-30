@@ -24,6 +24,8 @@ variable "director_role_name" {}
 
 variable "key_manager_role_name" {}
 
+variable "kms_key_id" {}
+
 variable "splunk_role_name" {}
 
 variable "bucket_role_name" {}
@@ -194,6 +196,10 @@ output "director_role_name" {
 
 output "key_manager_role_name" {
   value = "${var.key_manager_role_name}"
+}
+
+output "kms_key_id" {
+  value = "${var.kms_key_id}"
 }
 
 output "splunk_role_name" {

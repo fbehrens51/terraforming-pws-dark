@@ -12,6 +12,8 @@ director_role_name = "${director_role_name}"
 
 key_manager_role_name = "${key_manager_role_name}"
 
+kms_key_id = "${kms_key_id}"
+
 splunk_role_name = "${splunk_role_name}"
 
 bucket_role_name = "${bucket_role_name}"

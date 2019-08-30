@@ -47,7 +47,7 @@ resource "random_string" "ldap_password" {
 
 module "paperwork" {
   source                = "./modules/paperwork"
-  bucket_role_name      = "${var.bucket_role_name}"
+  bucket_role_name      = "${var.pas_bucket_role_name}"
   director_role_name    = "${var.director_role_name}"
   key_manager_role_name = "${var.key_manager_role_name}"
   splunk_role_name      = "${var.splunk_role_name}"
@@ -62,6 +62,17 @@ module "paperwork" {
   users                 = "${var.users}"
 }
 
+# We invoke the keys layer here to simulate having a KEYMANAGER role invoke keys
+# "out of band" in the production environment
+module "keys" {
+  source = "../../modules/kms/create"
+
+  key_name             = "${var.kms_key_name}"
+  director_role_name   = "${var.director_role_name}"
+  pas_bucket_role_name = "${var.pas_bucket_role_name}"
+  deletion_window      = "7"
+}
+
 resource "aws_s3_bucket" "certs" {
   bucket_prefix = "${local.cert_bucket}"
   acl           = "private"
@@ -73,9 +84,10 @@ data "template_file" "paperwork_variables" {
   vars {
     apps_domain           = "${local.apps_domain}"
     system_domain         = "${local.system_domain}"
-    bucket_role_name      = "${var.bucket_role_name}"
+    bucket_role_name      = "${var.pas_bucket_role_name}"
     splunk_role_name      = "${var.splunk_role_name}"
     key_manager_role_name = "${var.key_manager_role_name}"
+    kms_key_id            = "${module.keys.kms_key_id}"
     director_role_name    = "${var.director_role_name}"
     cp_vpc_id             = "${module.paperwork.cp_vpc_id}"
     es_vpc_id             = "${module.paperwork.es_vpc_id}"
@@ -115,7 +127,7 @@ variable "paperwork_variable_output_path" {
   type = "string"
 }
 
-variable "bucket_role_name" {
+variable "pas_bucket_role_name" {
   type = "string"
 }
 
@@ -124,6 +136,10 @@ variable "director_role_name" {
 }
 
 variable "key_manager_role_name" {
+  type = "string"
+}
+
+variable "kms_key_name" {
   type = "string"
 }
 

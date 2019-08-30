@@ -8,17 +8,6 @@ module "providers" {
   source = "../../modules/dark_providers"
 }
 
-data "terraform_remote_state" "keys" {
-  backend = "s3"
-
-  config {
-    bucket  = "${var.remote_state_bucket}"
-    key     = "keys"
-    region  = "${var.remote_state_region}"
-    encrypt = true
-  }
-}
-
 data "terraform_remote_state" "paperwork" {
   backend = "s3"
 
@@ -135,7 +124,7 @@ module "om_config" {
   rds_username     = "${data.terraform_remote_state.pas.rds_username}"
   rds_ca_cert_file = "${var.rds_ca_cert_file}"
 
-  kms_key_id                               = "${data.terraform_remote_state.keys.kms_key_id}"
+  kms_key_id                               = "${data.terraform_remote_state.paperwork.kms_key_id}"
   pas_buildpacks_bucket                    = "${data.terraform_remote_state.pas.pas_buildpacks_bucket}"
   pas_droplets_bucket                      = "${data.terraform_remote_state.pas.pas_droplets_bucket}"
   pas_packages_bucket                      = "${data.terraform_remote_state.pas.pas_packages_bucket}"
