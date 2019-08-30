@@ -27,11 +27,6 @@ module "kms" {
   deletion_window      = 7
 }
 
-module "rndc_generator" {
-  source   = "../../modules/bind_dns/rndc"
-  env_name = "${var.env_name}"
-}
-
 variable "kms_key_name" {
   type = "string"
 }
@@ -39,13 +34,6 @@ variable "kms_key_name" {
 variable "remote_state_region" {}
 variable "remote_state_bucket" {}
 
-variable "env_name" {}
-
 output "kms_key_id" {
   value = "${module.kms.kms_key_id}"
-}
-
-output "bind_rndc_secret" {
-  value     = "${module.rndc_generator.value}"
-  sensitive = true
 }

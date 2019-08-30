@@ -19,12 +19,12 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
-data "terraform_remote_state" "keys" {
+data "terraform_remote_state" "bootstrap_bind" {
   backend = "s3"
 
   config {
     bucket  = "${var.remote_state_bucket}"
-    key     = "keys"
+    key     = "bootstrap_bind"
     region  = "${var.remote_state_region}"
     encrypt = true
   }
@@ -206,7 +206,7 @@ locals {
   route_table_id   = "${data.terraform_remote_state.routes.pas_public_vpc_route_table_id}"
   bucket_suffix    = "${random_integer.bucket.result}"
   om_key_name      = "${var.env_name}-om"
-  bind_rndc_secret = "${data.terraform_remote_state.keys.bind_rndc_secret}"
+  bind_rndc_secret = "${data.terraform_remote_state.bootstrap_bind.bind_rndc_secret}"
   master_dns_ip    = "${data.terraform_remote_state.bind.master_public_ip}"
   dns_zone_name    = "${data.terraform_remote_state.bind.zone_name}"
 

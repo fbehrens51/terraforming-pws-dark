@@ -30,12 +30,12 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
-data "terraform_remote_state" "keys" {
+data "terraform_remote_state" "bootstrap_bind" {
   backend = "s3"
 
   config {
     bucket  = "${var.remote_state_bucket}"
-    key     = "keys"
+    key     = "bootstrap_bind"
     region  = "${var.remote_state_region}"
     encrypt = true
   }
@@ -79,7 +79,7 @@ locals {
   modified_name = "${local.env_name} ldap"
   modified_tags = "${merge(var.tags, map("Name", "${local.modified_name}"))}"
 
-  bind_rndc_secret = "${data.terraform_remote_state.keys.bind_rndc_secret}"
+  bind_rndc_secret = "${data.terraform_remote_state.bootstrap_bind.bind_rndc_secret}"
   master_dns_ip    = "${data.terraform_remote_state.bind.master_public_ip}"
   dns_zone_name    = "${data.terraform_remote_state.bind.zone_name}"
 

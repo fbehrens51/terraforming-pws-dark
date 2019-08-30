@@ -41,12 +41,12 @@ data "terraform_remote_state" "bind" {
   }
 }
 
-data "terraform_remote_state" "keys" {
+data "terraform_remote_state" "bootstrap_bind" {
   backend = "s3"
 
   config {
     bucket  = "${var.remote_state_bucket}"
-    key     = "keys"
+    key     = "bootstrap_bind"
     region  = "${var.remote_state_region}"
     encrypt = true
   }
@@ -65,7 +65,7 @@ locals {
 
   dns_zone_name    = "${data.terraform_remote_state.bind.zone_name}"
   master_dns_ip    = "${data.terraform_remote_state.bind.master_public_ip}"
-  bind_rndc_secret = "${data.terraform_remote_state.keys.bind_rndc_secret}"
+  bind_rndc_secret = "${data.terraform_remote_state.bootstrap_bind.bind_rndc_secret}"
   public_subnet    = "${data.terraform_remote_state.enterprise-services.public_subnet_ids[0]}"
 
   private_subnets            = "${data.terraform_remote_state.enterprise-services.private_subnet_ids}"

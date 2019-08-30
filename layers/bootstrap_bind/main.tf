@@ -78,12 +78,22 @@ module "bootstrap" {
   tags          = "${local.modified_tags}"
 }
 
+module "rndc_generator" {
+  source   = "../../modules/bind_dns/rndc"
+  env_name = "${local.env_name}"
+}
+
 variable "remote_state_region" {}
 variable "remote_state_bucket" {}
 variable "internetless" {}
 
 variable "tags" {
   type = "map"
+}
+
+output "bind_rndc_secret" {
+  value     = "${module.rndc_generator.value}"
+  sensitive = true
 }
 
 output "bind_eni_ids" {

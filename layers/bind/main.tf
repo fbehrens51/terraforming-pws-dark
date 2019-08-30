@@ -8,17 +8,6 @@ module "providers" {
   source = "../../modules/dark_providers"
 }
 
-data "terraform_remote_state" "keys" {
-  backend = "s3"
-
-  config {
-    bucket  = "${var.remote_state_bucket}"
-    key     = "keys"
-    region  = "${var.remote_state_region}"
-    encrypt = true
-  }
-}
-
 data "terraform_remote_state" "bootstrap_bind" {
   backend = "s3"
 
@@ -34,7 +23,7 @@ locals {
   env_name          = "${var.tags["Name"]}"
   modified_name     = "${local.env_name} bind"
   modified_tags     = "${merge(var.tags, map("Name", "${local.modified_name}"))}"
-  bind_rndc_secret  = "${data.terraform_remote_state.keys.bind_rndc_secret}"
+  bind_rndc_secret  = "${data.terraform_remote_state.bootstrap_bind.bind_rndc_secret}"
   master_private_ip = "${data.terraform_remote_state.bootstrap_bind.bind_eni_ips[0]}"
 
   // If internetless = true in the bootstrap_bind layer,
