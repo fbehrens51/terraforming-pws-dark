@@ -2,6 +2,10 @@ output "pas_vpc_dns" {
   value = "${cidrhost(aws_vpc.pas_vpc.cidr_block, 2)}"
 }
 
+output "control_plane_vpc_dns" {
+  value = "${cidrhost(aws_vpc.control_plane_vpc.cidr_block, 2)}"
+}
+
 output "pas_vpc_id" {
   value = "${aws_vpc.pas_vpc.id}"
 }
@@ -32,6 +36,15 @@ output "router_trusted_ca_certs" {
 # (on-site it is not the same value for both router_trusted_ca_certs and trusted_ca_certs)
 output "trusted_ca_certs" {
   value = "${module.ca_cert.cert_pem}"
+}
+
+output "control_plane_om_server_cert" {
+  value = "${module.control_plane_om_server_cert.cert_pem}"
+}
+
+output "control_plane_om_server_key" {
+  value     = "${module.control_plane_om_server_cert.private_key_pem}"
+  sensitive = true
 }
 
 output "om_server_cert" {
@@ -76,6 +89,15 @@ output "router_server_cert" {
 
 output "router_server_key" {
   value     = "${module.router_server_cert.private_key_pem}"
+  sensitive = true
+}
+
+output "concourse_server_cert" {
+  value = "${module.concourse_server_cert.cert_pem}"
+}
+
+output "concourse_server_key" {
+  value     = "${module.concourse_server_cert.private_key_pem}"
   sensitive = true
 }
 

@@ -14,6 +14,8 @@ variable "pas_vpc_id" {}
 
 variable "pas_vpc_dns" {}
 
+variable "control_plane_vpc_dns" {}
+
 variable "bastion_vpc_id" {}
 
 variable "es_vpc_id" {}
@@ -43,6 +45,8 @@ variable "ldap_role_attr" {}
 variable "system_domain" {}
 
 variable "apps_domain" {}
+
+variable "control_plane_domain" {}
 
 variable "ldap_password_s3_path" {}
 
@@ -93,6 +97,20 @@ data "aws_s3_bucket_object" "router_server_key" {
   key    = "${var.router_server_key_s3_path}"
 }
 
+variable "concourse_server_cert_s3_path" {}
+
+data "aws_s3_bucket_object" "concourse_server_cert" {
+  bucket = "${var.cert_bucket}"
+  key    = "${var.concourse_server_cert_s3_path}"
+}
+
+variable "concourse_server_key_s3_path" {}
+
+data "aws_s3_bucket_object" "concourse_server_key" {
+  bucket = "${var.cert_bucket}"
+  key    = "${var.concourse_server_key_s3_path}"
+}
+
 variable "uaa_server_cert_s3_path" {}
 
 data "aws_s3_bucket_object" "uaa_server_cert" {
@@ -119,6 +137,20 @@ variable "ldap_client_key_s3_path" {}
 data "aws_s3_bucket_object" "ldap_client_key" {
   bucket = "${var.cert_bucket}"
   key    = "${var.ldap_client_key_s3_path}"
+}
+
+variable "control_plane_om_server_cert_s3_path" {}
+
+data "aws_s3_bucket_object" "control_plane_om_server_cert" {
+  bucket = "${var.cert_bucket}"
+  key    = "${var.control_plane_om_server_cert_s3_path}"
+}
+
+variable "control_plane_om_server_key_s3_path" {}
+
+data "aws_s3_bucket_object" "control_plane_om_server_key" {
+  bucket = "${var.cert_bucket}"
+  key    = "${var.control_plane_om_server_key_s3_path}"
 }
 
 variable "om_server_cert_s3_path" {}
@@ -181,6 +213,10 @@ output "pas_vpc_dns" {
   value = "${var.pas_vpc_dns}"
 }
 
+output "control_plane_vpc_dns" {
+  value = "${var.control_plane_vpc_dns}"
+}
+
 output "pas_vpc_id" {
   value = "${var.pas_vpc_id}"
 }
@@ -238,6 +274,15 @@ output "router_server_key" {
   sensitive = true
 }
 
+output "concourse_server_cert" {
+  value = "${data.aws_s3_bucket_object.concourse_server_cert.body}"
+}
+
+output "concourse_server_key" {
+  value     = "${data.aws_s3_bucket_object.concourse_server_key.body}"
+  sensitive = true
+}
+
 output "uaa_server_cert" {
   value = "${data.aws_s3_bucket_object.uaa_server_cert.body}"
 }
@@ -253,6 +298,15 @@ output "ldap_client_cert" {
 
 output "ldap_client_key" {
   value     = "${data.aws_s3_bucket_object.ldap_client_key.body}"
+  sensitive = true
+}
+
+output "control_plane_om_server_cert" {
+  value = "${data.aws_s3_bucket_object.control_plane_om_server_cert.body}"
+}
+
+output "control_plane_om_server_key" {
+  value     = "${data.aws_s3_bucket_object.control_plane_om_server_key.body}"
   sensitive = true
 }
 
@@ -327,4 +381,8 @@ output "system_domain" {
 
 output "apps_domain" {
   value = "${var.apps_domain}"
+}
+
+output "control_plane_domain" {
+  value = "${var.control_plane_domain}"
 }

@@ -9,33 +9,39 @@ module "providers" {
 provider "aws" {}
 
 locals {
-  ldap_domain           = "ldap.${var.root_domain}"
-  splunk_domain         = "splunk.${var.root_domain}"
-  om_domain             = "om.${var.root_domain}"
-  splunk_monitor_domain = "splunk_monitor.${var.root_domain}"
-  system_domain         = "run.${var.root_domain}"
-  apps_domain           = "cfapps.${var.root_domain}"
+  ldap_domain             = "ldap.${var.root_domain}"
+  splunk_domain           = "splunk.${var.root_domain}"
+  om_domain               = "om.${var.root_domain}"
+  splunk_monitor_domain   = "splunk_monitor.${var.root_domain}"
+  system_domain           = "run.${var.root_domain}"
+  apps_domain             = "cfapps.${var.root_domain}"
+  control_plane_domain    = "ci.${var.root_domain}"
+  control_plane_om_domain = "om.${local.control_plane_domain}"
 
-  cert_bucket                        = "${replace(var.env_name," ","-")}-secrets"
-  root_ca_cert_s3_path               = "root_ca_cert.pem"
-  router_trusted_ca_certs_s3_path    = "router_trusted_ca_certs.pem"
-  trusted_ca_certs_s3_path           = "trusted_ca_certs.pem"
-  rds_ca_cert_s3_path                = "rds_ca_cert.pem"
-  router_server_cert_s3_path         = "router_server_cert.pem"
-  router_server_key_s3_path          = "router_server_key.pem"
-  uaa_server_cert_s3_path            = "uaa_server_cert.pem"
-  uaa_server_key_s3_path             = "uaa_server_key.pem"
-  ldap_client_cert_s3_path           = "ldap_client_cert.pem"
-  ldap_client_key_s3_path            = "ldap_client_key.pem"
-  om_server_cert_s3_path             = "om_server_cert.pem"
-  om_server_key_s3_path              = "om_server_key.pem"
-  splunk_server_cert_s3_path         = "splunk_server_cert.pem"
-  splunk_server_key_s3_path          = "splunk_server_key.pem"
-  splunk_monitor_server_cert_s3_path = "splunk_monitor_server_cert.pem"
-  splunk_monitor_server_key_s3_path  = "splunk_monitor_server_key.pem"
-  portal_smoke_test_cert_s3_path     = "portal_smoke_test_cert.pem"
-  portal_smoke_test_key_s3_path      = "portal_smoke_test_key.pem"
-  ldap_password_s3_path              = "ldap_password.txt"
+  cert_bucket                          = "${replace(var.env_name," ","-")}-secrets"
+  root_ca_cert_s3_path                 = "root_ca_cert.pem"
+  router_trusted_ca_certs_s3_path      = "router_trusted_ca_certs.pem"
+  trusted_ca_certs_s3_path             = "trusted_ca_certs.pem"
+  rds_ca_cert_s3_path                  = "rds_ca_cert.pem"
+  router_server_cert_s3_path           = "router_server_cert.pem"
+  router_server_key_s3_path            = "router_server_key.pem"
+  concourse_server_cert_s3_path        = "concourse_server_cert.pem"
+  concourse_server_key_s3_path         = "concourse_server_key.pem"
+  uaa_server_cert_s3_path              = "uaa_server_cert.pem"
+  uaa_server_key_s3_path               = "uaa_server_key.pem"
+  ldap_client_cert_s3_path             = "ldap_client_cert.pem"
+  ldap_client_key_s3_path              = "ldap_client_key.pem"
+  om_server_cert_s3_path               = "om_server_cert.pem"
+  om_server_key_s3_path                = "om_server_key.pem"
+  control_plane_om_server_cert_s3_path = "control_plane_om_server_cert.pem"
+  control_plane_om_server_key_s3_path  = "control_plane_om_server_key.pem"
+  splunk_server_cert_s3_path           = "splunk_server_cert.pem"
+  splunk_server_key_s3_path            = "splunk_server_key.pem"
+  splunk_monitor_server_cert_s3_path   = "splunk_monitor_server_cert.pem"
+  splunk_monitor_server_key_s3_path    = "splunk_monitor_server_key.pem"
+  portal_smoke_test_cert_s3_path       = "portal_smoke_test_cert.pem"
+  portal_smoke_test_key_s3_path        = "portal_smoke_test_key.pem"
+  ldap_password_s3_path                = "ldap_password.txt"
 
   basedn = "ou=users,dc=${join(",dc=", split(".", var.root_domain))}"
   admin  = "cn=admin,dc=${join(",dc=", split(".", var.root_domain))}"
@@ -53,14 +59,16 @@ module "paperwork" {
   key_manager_role_name = "${var.key_manager_role_name}"
   splunk_role_name      = "${var.splunk_role_name}"
 
-  env_name              = "${var.env_name}"
-  ldap_domain           = "${local.ldap_domain}"
-  splunk_domain         = "${local.splunk_domain}"
-  om_domain             = "${local.om_domain}"
-  system_domain         = "${local.system_domain}"
-  splunk_monitor_domain = "${local.splunk_monitor_domain}"
-  apps_domain           = "${local.apps_domain}"
-  users                 = "${var.users}"
+  env_name                = "${var.env_name}"
+  ldap_domain             = "${local.ldap_domain}"
+  splunk_domain           = "${local.splunk_domain}"
+  om_domain               = "${local.om_domain}"
+  control_plane_om_domain = "${local.control_plane_om_domain}"
+  system_domain           = "${local.system_domain}"
+  splunk_monitor_domain   = "${local.splunk_monitor_domain}"
+  apps_domain             = "${local.apps_domain}"
+  control_plane_domain    = "${local.control_plane_domain}"
+  users                   = "${var.users}"
 }
 
 # We invoke the keys layer here to simulate having a KEYMANAGER role invoke keys
@@ -83,6 +91,7 @@ data "template_file" "paperwork_variables" {
   template = "${file("${path.module}/paperwork.tfvars.tpl")}"
 
   vars {
+    control_plane_domain  = "${local.control_plane_domain}"
     apps_domain           = "${local.apps_domain}"
     system_domain         = "${local.system_domain}"
     bucket_role_name      = "${var.pas_bucket_role_name}"
@@ -95,6 +104,7 @@ data "template_file" "paperwork_variables" {
     bastion_vpc_id        = "${module.paperwork.bastion_vpc_id}"
     pas_vpc_id            = "${module.paperwork.pas_vpc_id}"
     pas_vpc_dns           = "${module.paperwork.pas_vpc_dns}"
+    control_plane_vpc_dns = "${module.paperwork.control_plane_vpc_dns}"
 
     ldap_basedn           = "${local.basedn}"
     ldap_dn               = "${local.admin}"
@@ -103,25 +113,29 @@ data "template_file" "paperwork_variables" {
     ldap_role_attr        = "role"
     ldap_password_s3_path = "${local.ldap_password_s3_path}"
 
-    cert_bucket                        = "${aws_s3_bucket.certs.bucket}"
-    root_ca_cert_s3_path               = "${local.root_ca_cert_s3_path}"
-    router_trusted_ca_certs_s3_path    = "${local.router_trusted_ca_certs_s3_path}"
-    trusted_ca_certs_s3_path           = "${local.trusted_ca_certs_s3_path}"
-    rds_ca_cert_s3_path                = "${local.rds_ca_cert_s3_path}"
-    router_server_cert_s3_path         = "${local.router_server_cert_s3_path}"
-    router_server_key_s3_path          = "${local.router_server_key_s3_path}"
-    uaa_server_cert_s3_path            = "${local.uaa_server_cert_s3_path}"
-    uaa_server_key_s3_path             = "${local.uaa_server_key_s3_path}"
-    ldap_client_cert_s3_path           = "${local.ldap_client_cert_s3_path}"
-    ldap_client_key_s3_path            = "${local.ldap_client_key_s3_path}"
-    om_server_cert_s3_path             = "${local.om_server_cert_s3_path}"
-    om_server_key_s3_path              = "${local.om_server_key_s3_path}"
-    splunk_server_cert_s3_path         = "${local.splunk_server_cert_s3_path}"
-    splunk_server_key_s3_path          = "${local.splunk_server_key_s3_path}"
-    splunk_monitor_server_cert_s3_path = "${local.splunk_monitor_server_cert_s3_path}"
-    splunk_monitor_server_key_s3_path  = "${local.splunk_monitor_server_key_s3_path}"
-    portal_smoke_test_cert_s3_path     = "${local.portal_smoke_test_cert_s3_path}"
-    portal_smoke_test_key_s3_path      = "${local.portal_smoke_test_key_s3_path}"
+    cert_bucket                          = "${aws_s3_bucket.certs.bucket}"
+    root_ca_cert_s3_path                 = "${local.root_ca_cert_s3_path}"
+    router_trusted_ca_certs_s3_path      = "${local.router_trusted_ca_certs_s3_path}"
+    trusted_ca_certs_s3_path             = "${local.trusted_ca_certs_s3_path}"
+    rds_ca_cert_s3_path                  = "${local.rds_ca_cert_s3_path}"
+    router_server_cert_s3_path           = "${local.router_server_cert_s3_path}"
+    router_server_key_s3_path            = "${local.router_server_key_s3_path}"
+    concourse_server_cert_s3_path        = "${local.concourse_server_cert_s3_path}"
+    concourse_server_key_s3_path         = "${local.concourse_server_key_s3_path}"
+    uaa_server_cert_s3_path              = "${local.uaa_server_cert_s3_path}"
+    uaa_server_key_s3_path               = "${local.uaa_server_key_s3_path}"
+    ldap_client_cert_s3_path             = "${local.ldap_client_cert_s3_path}"
+    ldap_client_key_s3_path              = "${local.ldap_client_key_s3_path}"
+    om_server_cert_s3_path               = "${local.om_server_cert_s3_path}"
+    om_server_key_s3_path                = "${local.om_server_key_s3_path}"
+    control_plane_om_server_cert_s3_path = "${local.control_plane_om_server_cert_s3_path}"
+    control_plane_om_server_key_s3_path  = "${local.control_plane_om_server_key_s3_path}"
+    splunk_server_cert_s3_path           = "${local.splunk_server_cert_s3_path}"
+    splunk_server_key_s3_path            = "${local.splunk_server_key_s3_path}"
+    splunk_monitor_server_cert_s3_path   = "${local.splunk_monitor_server_cert_s3_path}"
+    splunk_monitor_server_key_s3_path    = "${local.splunk_monitor_server_key_s3_path}"
+    portal_smoke_test_cert_s3_path       = "${local.portal_smoke_test_cert_s3_path}"
+    portal_smoke_test_key_s3_path        = "${local.portal_smoke_test_key_s3_path}"
   }
 }
 
@@ -201,6 +215,20 @@ resource "aws_s3_bucket_object" "router_server_key" {
   content_type = "text/plain"
 }
 
+resource "aws_s3_bucket_object" "concourse_server_cert" {
+  key          = "${local.concourse_server_cert_s3_path}"
+  bucket       = "${aws_s3_bucket.certs.bucket}"
+  content_type = "text/plain"
+  content      = "${module.paperwork.concourse_server_cert}"
+}
+
+resource "aws_s3_bucket_object" "concourse_server_key" {
+  key          = "${local.concourse_server_key_s3_path}"
+  bucket       = "${aws_s3_bucket.certs.bucket}"
+  content      = "${module.paperwork.concourse_server_key}"
+  content_type = "text/plain"
+}
+
 resource "aws_s3_bucket_object" "uaa_server_cert" {
   key          = "${local.uaa_server_cert_s3_path}"
   bucket       = "${aws_s3_bucket.certs.bucket}"
@@ -227,6 +255,20 @@ resource "aws_s3_bucket_object" "om_server_key" {
   bucket       = "${aws_s3_bucket.certs.bucket}"
   content_type = "text/plain"
   content      = "${module.paperwork.om_server_key}"
+}
+
+resource "aws_s3_bucket_object" "control_plane_om_server_cert" {
+  key          = "${local.control_plane_om_server_cert_s3_path}"
+  bucket       = "${aws_s3_bucket.certs.bucket}"
+  content      = "${module.paperwork.control_plane_om_server_cert}"
+  content_type = "text/plain"
+}
+
+resource "aws_s3_bucket_object" "control_plane_om_server_key" {
+  key          = "${local.control_plane_om_server_key_s3_path}"
+  bucket       = "${aws_s3_bucket.certs.bucket}"
+  content_type = "text/plain"
+  content      = "${module.paperwork.control_plane_om_server_key}"
 }
 
 resource "aws_s3_bucket_object" "splunk_server_cert" {

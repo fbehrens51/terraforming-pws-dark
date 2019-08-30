@@ -1,9 +1,11 @@
 variable "om_domain" {}
+variable "control_plane_om_domain" {}
 variable "splunk_domain" {}
 variable "splunk_monitor_domain" {}
 variable "ldap_domain" {}
 variable "apps_domain" {}
 variable "system_domain" {}
+variable "control_plane_domain" {}
 
 module "ca_cert" {
   source = "../ca_cert"
@@ -19,6 +21,16 @@ module "splunk_server_cert" {
   ca_private_key_pem = "${module.ca_cert.private_key_pem}"
   common_name        = "splunk"
   domains            = ["${var.splunk_domain}"]
+}
+
+module "control_plane_om_server_cert" {
+  source = "../server_cert"
+
+  env_name           = "${var.env_name}"
+  ca_cert_pem        = "${module.ca_cert.cert_pem}"
+  ca_private_key_pem = "${module.ca_cert.private_key_pem}"
+  common_name        = "om"
+  domains            = ["${var.control_plane_om_domain}"]
 }
 
 module "om_server_cert" {
@@ -71,6 +83,21 @@ module "router_server_cert" {
   domains = [
     "*.${var.system_domain}",
     "*.${var.apps_domain}",
+  ]
+}
+
+module "concourse_server_cert" {
+  source = "../server_cert"
+
+  env_name           = "${var.env_name}"
+  ca_cert_pem        = "${module.ca_cert.cert_pem}"
+  ca_private_key_pem = "${module.ca_cert.private_key_pem}"
+  common_name        = "${var.env_name} Concourse"
+
+  domains = [
+    "credhub.${var.control_plane_domain}",
+    "uaa.${var.control_plane_domain}",
+    "plane.${var.control_plane_domain}",
   ]
 }
 

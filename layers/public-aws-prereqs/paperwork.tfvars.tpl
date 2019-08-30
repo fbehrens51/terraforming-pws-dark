@@ -1,5 +1,7 @@
 pas_vpc_dns = "${pas_vpc_dns}"
 
+control_plane_vpc_dns = "${control_plane_vpc_dns}"
+
 pas_vpc_id = "${pas_vpc_id}"
 
 bastion_vpc_id = "${bastion_vpc_id}"
@@ -21,6 +23,8 @@ bucket_role_name = "${bucket_role_name}"
 system_domain = "${system_domain}"
 
 apps_domain = "${apps_domain}"
+
+control_plane_domain = "${control_plane_domain}"
 
 ldap_basedn = "${ldap_basedn}"
 
@@ -48,6 +52,10 @@ router_server_cert_s3_path = "${router_server_cert_s3_path}"
 
 router_server_key_s3_path = "${router_server_key_s3_path}"
 
+concourse_server_cert_s3_path = "${concourse_server_cert_s3_path}"
+
+concourse_server_key_s3_path = "${concourse_server_key_s3_path}"
+
 uaa_server_cert_s3_path = "${uaa_server_cert_s3_path}"
 
 uaa_server_key_s3_path = "${uaa_server_key_s3_path}"
@@ -55,6 +63,10 @@ uaa_server_key_s3_path = "${uaa_server_key_s3_path}"
 ldap_client_cert_s3_path = "${ldap_client_cert_s3_path}"
 
 ldap_client_key_s3_path = "${ldap_client_key_s3_path}"
+
+control_plane_om_server_cert_s3_path = "${control_plane_om_server_cert_s3_path}"
+
+control_plane_om_server_key_s3_path = "${control_plane_om_server_key_s3_path}"
 
 om_server_cert_s3_path = "${om_server_cert_s3_path}"
 

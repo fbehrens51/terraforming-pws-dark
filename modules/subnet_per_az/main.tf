@@ -30,3 +30,15 @@ output "subnet_ids" {
 output "subnet_cidr_blocks" {
   value = "${aws_subnet.subnet.*.cidr_block}"
 }
+
+data "template_file" "gateways" {
+  count = "${length(var.availability_zones)}"
+
+  template = <<EOF
+${cidrhost(aws_subnet.subnet.*.cidr_block[count.index], 1)}
+EOF
+}
+
+output "subnet_gateways" {
+  value = "${data.template_file.gateways.*.rendered}"
+}
