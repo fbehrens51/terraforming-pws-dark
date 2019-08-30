@@ -96,7 +96,7 @@ resource "null_resource" "wait_for_master" {
   }
 
   provisioner "local-exec" {
-    command = "while ! nc -v -q 0 ${local.master_public_ip} 53 < /dev/null; do sleep 1; done"
+    command = "while ! nslookup -timeout=1 -querytype=soa ${var.zone_name} ${local.master_public_ip} < /dev/null; do sleep 1; done"
   }
 }
 
