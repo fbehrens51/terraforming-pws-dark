@@ -42,6 +42,8 @@ router_trusted_ca_certs_s3_path = "${router_trusted_ca_certs_s3_path}"
 
 trusted_ca_certs_s3_path = "${trusted_ca_certs_s3_path}"
 
+rds_ca_cert_s3_path = "${rds_ca_cert_s3_path}"
+
 router_server_cert_s3_path = "${router_server_cert_s3_path}"
 
 router_server_key_s3_path = "${router_server_key_s3_path}"

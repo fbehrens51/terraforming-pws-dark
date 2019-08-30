@@ -72,6 +72,13 @@ data "aws_s3_bucket_object" "trusted_ca_certs" {
   key    = "${var.trusted_ca_certs_s3_path}"
 }
 
+variable "rds_ca_cert_s3_path" {}
+
+data "aws_s3_bucket_object" "rds_ca_cert" {
+  bucket = "${var.cert_bucket}"
+  key    = "${var.rds_ca_cert_s3_path}"
+}
+
 variable "router_server_cert_s3_path" {}
 
 data "aws_s3_bucket_object" "router_server_cert" {
@@ -216,6 +223,10 @@ output "router_trusted_ca_certs" {
 
 output "trusted_ca_certs" {
   value = "${data.aws_s3_bucket_object.trusted_ca_certs.body}"
+}
+
+output "rds_ca_cert" {
+  value = "${data.aws_s3_bucket_object.rds_ca_cert.body}"
 }
 
 output "router_server_cert" {

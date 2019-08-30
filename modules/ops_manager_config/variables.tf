@@ -376,7 +376,7 @@ variable "rds_port" {}
 
 variable "rds_username" {}
 
-variable "rds_ca_cert_file" {
+variable "rds_ca_cert_pem" {
   type        = "string"
   description = "CA Cert which signs the rds server certificate."
 }

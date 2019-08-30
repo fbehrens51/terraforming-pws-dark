@@ -151,7 +151,7 @@ data "template_file" "cf_template" {
     rds_password = "${var.rds_password}"
     rds_port     = "${var.rds_port}"
     rds_username = "${var.rds_username}"
-    rds_ca_cert  = "${file(var.rds_ca_cert_file)}"
+    rds_ca_cert  = "${var.rds_ca_cert_pem}"
 
     password_policies_max_retry            = "${var.password_policies_max_retry}"
     password_policies_expires_after_months = "${var.password_policies_expires_after_months}"
@@ -255,7 +255,7 @@ data "template_file" "portal_template" {
     mysql_db_name  = "portal"
     mysql_username = "${var.rds_username}"
     mysql_password = "${var.rds_password}"
-    mysql_ca_cert  = "${file(var.rds_ca_cert_file)}"
+    mysql_ca_cert  = "${var.rds_ca_cert_pem}"
 
     pas_vpc_azs                 = "${indent(4, join("", data.template_file.pas_vpc_azs.*.rendered))}"
     singleton_availability_zone = "${var.singleton_availability_zone}"

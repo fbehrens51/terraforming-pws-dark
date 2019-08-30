@@ -118,11 +118,11 @@ module "om_config" {
   custom_ssh_banner_file                      = "${var.custom_ssh_banner_file}"
   security_configuration_trusted_certificates = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 
-  rds_address      = "${data.terraform_remote_state.pas.rds_address}"
-  rds_password     = "${data.terraform_remote_state.pas.rds_password}"
-  rds_port         = "${data.terraform_remote_state.pas.rds_port}"
-  rds_username     = "${data.terraform_remote_state.pas.rds_username}"
-  rds_ca_cert_file = "${var.rds_ca_cert_file}"
+  rds_address     = "${data.terraform_remote_state.pas.rds_address}"
+  rds_password    = "${data.terraform_remote_state.pas.rds_password}"
+  rds_port        = "${data.terraform_remote_state.pas.rds_port}"
+  rds_username    = "${data.terraform_remote_state.pas.rds_username}"
+  rds_ca_cert_pem = "${data.terraform_remote_state.paperwork.rds_ca_cert}"
 
   kms_key_id                               = "${data.terraform_remote_state.paperwork.kms_key_id}"
   pas_buildpacks_bucket                    = "${data.terraform_remote_state.pas.pas_buildpacks_bucket}"

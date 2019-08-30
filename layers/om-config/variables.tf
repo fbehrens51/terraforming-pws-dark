@@ -24,7 +24,6 @@ variable "apps_manager_favicon_file" {}
 variable "apps_manager_square_logo_file" {}
 variable "apps_manager_main_logo_file" {}
 variable "custom_ssh_banner_file" {}
-variable "rds_ca_cert_file" {}
 variable "jwt_expiration" {}
 variable "env_name" {}
 variable "s3_endpoint" {}
