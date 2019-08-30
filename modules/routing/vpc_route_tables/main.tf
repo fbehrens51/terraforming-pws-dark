@@ -15,6 +15,16 @@ resource "aws_route_table" "pas_private_route_table" {
   }
 }
 
+resource "aws_route_table" "cp_private_route_table" {
+  count = 1
+
+  vpc_id = "${var.cp_vpc_id}"
+
+  tags {
+    Name = "${var.env_name} | CP PRIVATE"
+  }
+}
+
 resource "aws_route_table" "es_private_route_table" {
   count = 1
 
@@ -83,6 +93,10 @@ output "es_private_vpc_route_table_id" {
 
 output "es_public_vpc_route_table_id" {
   value = "${module.es_public_vpc_route_table.route_table_id}"
+}
+
+output "cp_private_vpc_route_table_id" {
+  value = "${element(concat(aws_route_table.cp_private_route_table.*.id, list("")), 0)}"
 }
 
 output "cp_public_vpc_route_table_id" {

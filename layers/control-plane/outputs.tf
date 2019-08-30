@@ -1,5 +1,5 @@
 output "mjb_private_ip" {
-  value = "${module.bootstrap_control_plane.private_ip}"
+  value = "${element(concat(module.sjb_bootstrap.eni_ips, list("")), 0)}"
 }
 
 output "mjb_private_key" {

@@ -34,15 +34,32 @@ module "providers" {
   source = "../../modules/dark_providers"
 }
 
-module "bootstrap_control_plane" {
-  source            = "../../modules/single_use_subnet"
-  availability_zone = "${var.singleton_availability_zone}"
-  cidr_block        = "${data.aws_vpc.vpc.cidr_block}"
-  route_table_id    = "${data.terraform_remote_state.routes.cp_public_vpc_route_table_id}"
-  ingress_rules     = "${var.ingress_rules}"
-  egress_rules      = "${var.egress_rules}"
-  tags              = "${local.modified_tags}"
-  create_eip        = false
+module "public_subnets" {
+  source             = "../../modules/subnet_per_az"
+  availability_zones = ["${var.singleton_availability_zone}"]
+  vpc_id             = "${data.aws_vpc.vpc.id}"
+  cidr_block         = "${local.public_cidr_block}"
+  tags               = "${merge(local.modified_tags, map("Name", "${local.modified_name}-public"))}"
+}
+
+resource "aws_route_table_association" "public_route_table_assoc" {
+  count          = "1"
+  subnet_id      = "${module.public_subnets.subnet_ids[count.index]}"
+  route_table_id = "${data.terraform_remote_state.routes.cp_public_vpc_route_table_id}"
+}
+
+module "private_subnets" {
+  source             = "../../modules/subnet_per_az"
+  availability_zones = ["${var.singleton_availability_zone}"]
+  vpc_id             = "${data.aws_vpc.vpc.id}"
+  cidr_block         = "${local.private_cidr_block}"
+  tags               = "${merge(local.modified_tags, map("Name", "${local.modified_name}-private"))}"
+}
+
+resource "aws_route_table_association" "private_route_table_assoc" {
+  count          = "1"
+  subnet_id      = "${module.private_subnets.subnet_ids[count.index]}"
+  route_table_id = "${data.terraform_remote_state.routes.cp_private_vpc_route_table_id}"
 }
 
 data "template_cloudinit_config" "user_data" {
@@ -66,9 +83,21 @@ module "control_plane_host_key_pair" {
 }
 
 locals {
-  env_name      = "${var.tags["Name"]}"
-  modified_name = "${local.env_name} control plane"
-  modified_tags = "${merge(var.tags, map("Name", "${local.modified_name}"))}"
+  env_name           = "${var.tags["Name"]}"
+  modified_name      = "${local.env_name} control plane"
+  modified_tags      = "${merge(var.tags, map("Name", "${local.modified_name}"))}"
+  public_cidr_block  = "${cidrsubnet(data.aws_vpc.vpc.cidr_block, 1, 0)}"
+  private_cidr_block = "${cidrsubnet(data.aws_vpc.vpc.cidr_block, 1, 1)}"
+}
+
+module "sjb_bootstrap" {
+  source        = "../../modules/eni_per_subnet"
+  ingress_rules = "${var.ingress_rules}"
+  egress_rules  = "${var.egress_rules}"
+  subnet_ids    = "${module.private_subnets.subnet_ids}"
+  eni_count     = "1"
+  create_eip    = "false"
+  tags          = "${local.modified_tags}"
 }
 
 module "sjb" {
@@ -76,7 +105,7 @@ module "sjb" {
   source               = "../../modules/launch"
   ami_id               = "${module.find_ami.id}"
   user_data            = "${data.template_cloudinit_config.user_data.rendered}"
-  eni_ids              = ["${module.bootstrap_control_plane.eni_id}"]
+  eni_ids              = "${module.sjb_bootstrap.eni_ids}"
   key_pair_name        = "${var.control_plane_host_key_pair_name}"
   iam_instance_profile = "${data.terraform_remote_state.paperwork.director_role_name}"
   instance_type        = "${var.instance_type}"
@@ -88,14 +117,21 @@ module "sjb" {
   }
 }
 
-resource "aws_eip" "temp_sjb" {}
-
-resource "aws_eip_association" "sjb_assoc" {
-  allocation_id = "${aws_eip.temp_sjb.id}"
-  instance_id   = "${module.sjb.instance_ids[0]}"
+module "nat" {
+  source                 = "../../modules/nat"
+  private_route_table_id = "${data.terraform_remote_state.routes.cp_private_vpc_route_table_id}"
+  tags                   = "${local.modified_tags}"
+  public_subnet_id       = "${module.public_subnets.subnet_ids[0]}"
+  internetless           = "${var.internetless}"
+  instance_type          = "${var.nat_instance_type}"
 }
 
 variable "singleton_availability_zone" {}
+variable "internetless" {}
+
+variable "nat_instance_type" {
+  default = "t2.small"
+}
 
 variable "ingress_rules" {
   type = "list"
