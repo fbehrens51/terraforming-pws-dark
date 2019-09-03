@@ -82,7 +82,7 @@ module "public_subnets" {
 }
 
 resource "aws_route_table_association" "public_route_table_assoc" {
-  count          = "${length(module.public_subnets.subnet_ids)}"
+  count          = "${length(var.availability_zones)}"
   subnet_id      = "${module.public_subnets.subnet_ids[count.index]}"
   route_table_id = "${data.terraform_remote_state.routes.cp_public_vpc_route_table_id}"
 }
@@ -96,7 +96,7 @@ module "private_subnets" {
 }
 
 resource "aws_route_table_association" "private_route_table_assoc" {
-  count          = "${length(module.private_subnets.subnet_ids)}"
+  count          = "${length(var.availability_zones)}"
   subnet_id      = "${module.private_subnets.subnet_ids[count.index]}"
   route_table_id = "${data.terraform_remote_state.routes.cp_private_vpc_route_table_id}"
 }
