@@ -22,7 +22,7 @@ network-properties:
   network:
     name: control-plane-subnet
   other_availability_zones:
-  - name: ${singleton_availability_zone}
+    ${control_plane_vpc_azs}
   singleton_availability_zone:
     name: ${singleton_availability_zone}
 resource-config:

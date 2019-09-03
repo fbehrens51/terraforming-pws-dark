@@ -81,6 +81,7 @@ data "template_file" "platform_automation_engine_template" {
 
   vars = {
     singleton_availability_zone = "${var.singleton_availability_zone}"
+    control_plane_vpc_azs       = "${indent(4, join("", data.template_file.control_plane_vpc_azs.*.rendered))}"
 
     uaa_elb_names     = "[${join(",", var.uaa_elb_names)}]"
     credhub_elb_names = "[${join(",", var.credhub_elb_names)}]"
