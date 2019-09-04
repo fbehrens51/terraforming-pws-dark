@@ -221,18 +221,10 @@ resource "aws_iam_instance_profile" "splunk_instance_profile" {
   role = "${aws_iam_role.splunk_role.name}"
 }
 
-output "director_role_id" {
-  value = "${aws_iam_role.director.id}"
+output "director_role_arn" {
+  value = "${aws_iam_role.director.arn}"
 }
 
-output "bucket_role_id" {
-  value = "${aws_iam_role.bucket.id}"
-}
-
-output "bucket_role_arn" {
+output "pas_bucket_role_arn" {
   value = "${aws_iam_role.bucket.arn}"
-}
-
-output "splunk_role_id" {
-  value = "${aws_iam_role.splunk_role.id}"
 }

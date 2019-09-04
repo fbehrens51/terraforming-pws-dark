@@ -4,14 +4,6 @@ resource "aws_kms_alias" "kms_key_alias" {
   name_prefix   = "alias/${var.key_name}"
 }
 
-data "aws_iam_role" "director_role" {
-  name = "${var.director_role_name}"
-}
-
-data "aws_iam_role" "pas_bucket_role" {
-  name = "${var.pas_bucket_role_name}"
-}
-
 data "aws_caller_identity" "my_account" {}
 
 data "aws_iam_policy_document" "kms_key_policy_document" {
@@ -24,8 +16,8 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
       type = "AWS"
 
       identifiers = [
-        "${data.aws_iam_role.director_role.arn}",
-        "${data.aws_iam_role.pas_bucket_role.arn}",
+        "${var.director_role_arn}",
+        "${var.pas_bucket_role_arn}",
       ]
     }
 
@@ -85,8 +77,8 @@ resource "aws_kms_key" "kms_key" {
   tags = "${map("Name", "${var.key_name} KMS Key")}"
 }
 
-variable "pas_bucket_role_name" {}
-variable "director_role_name" {}
+variable "pas_bucket_role_arn" {}
+variable "director_role_arn" {}
 
 variable "key_name" {}
 

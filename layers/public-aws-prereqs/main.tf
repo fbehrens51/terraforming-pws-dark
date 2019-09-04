@@ -77,8 +77,8 @@ module "keys" {
   source = "../../modules/kms/create"
 
   key_name             = "${var.kms_key_name}"
-  director_role_name   = "${var.director_role_name}"
-  pas_bucket_role_name = "${var.pas_bucket_role_name}"
+  director_role_arn   = "${module.paperwork.director_role_arn}"
+  pas_bucket_role_arn = "${module.paperwork.pas_bucket_role_arn}"
   deletion_window      = "7"
 }
 
