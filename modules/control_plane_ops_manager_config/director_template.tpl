@@ -90,3 +90,7 @@ resource-configuration:
     instance_type:
       id: automatic
     internet_connected: false
+vmextensions-configuration:
+- name: worker_instance_profile
+  cloud_properties:
+    iam_instance_profile: ${platform_automation_engine_worker_role_name}

@@ -56,4 +56,6 @@ resource-config:
     instance_type:
       id: automatic
     internet_connected: false
+    additional_vm_extensions:
+    - worker_instance_profile
 

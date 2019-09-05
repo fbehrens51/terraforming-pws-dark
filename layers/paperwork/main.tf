@@ -32,6 +32,8 @@ variable "splunk_role_name" {}
 
 variable "bucket_role_name" {}
 
+variable "platform_automation_engine_worker_role_name" {}
+
 variable "ldap_basedn" {}
 
 variable "ldap_dn" {}
@@ -344,6 +346,10 @@ output "portal_smoke_test_cert" {
 output "portal_smoke_test_key" {
   value     = "${data.aws_s3_bucket_object.portal_smoke_test_key.body}"
   sensitive = true
+}
+
+output "platform_automation_engine_worker_role_name" {
+  value = "${var.platform_automation_engine_worker_role_name}"
 }
 
 output "bucket_role_name" {

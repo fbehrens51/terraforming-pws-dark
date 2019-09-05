@@ -2,6 +2,8 @@ variable "director_role_name" {}
 
 variable "bucket_role_name" {}
 
+variable "worker_role_name" {}
+
 variable "splunk_role_name" {}
 
 variable "key_manager_role_name" {}
@@ -129,6 +131,11 @@ resource "aws_iam_policy_attachment" "director" {
 resource "aws_iam_instance_profile" "director" {
   name = "${var.director_role_name}"
   role = "${aws_iam_role.director.name}"
+}
+
+resource "aws_iam_instance_profile" "worker" {
+  name = "${var.worker_role_name}"
+  role = "${aws_iam_role.bucket.name}"
 }
 
 resource "aws_iam_instance_profile" "bucket" {

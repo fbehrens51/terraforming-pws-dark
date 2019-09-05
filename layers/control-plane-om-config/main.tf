@@ -85,6 +85,8 @@ module "om_config" {
   smtp_domain     = "${var.smtp_domain}"
   smtp_enabled    = "${var.smtp_enabled}"
 
+  platform_automation_engine_worker_role_name = "${data.terraform_remote_state.paperwork.platform_automation_engine_worker_role_name}"
+
   iaas_configuration_endpoints_ca_cert    = "${var.iaas_configuration_endpoints_ca_cert}"
   iaas_configuration_iam_instance_profile = "${data.terraform_remote_state.paperwork.director_role_name}"
 

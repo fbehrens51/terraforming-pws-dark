@@ -55,6 +55,7 @@ resource "random_string" "ldap_password" {
 module "paperwork" {
   source                = "./modules/paperwork"
   bucket_role_name      = "${var.pas_bucket_role_name}"
+  worker_role_name      = "${var.platform_automation_engine_worker_role_name}"
   director_role_name    = "${var.director_role_name}"
   key_manager_role_name = "${var.key_manager_role_name}"
   splunk_role_name      = "${var.splunk_role_name}"
@@ -76,10 +77,10 @@ module "paperwork" {
 module "keys" {
   source = "../../modules/kms/create"
 
-  key_name             = "${var.kms_key_name}"
+  key_name            = "${var.kms_key_name}"
   director_role_arn   = "${module.paperwork.director_role_arn}"
   pas_bucket_role_arn = "${module.paperwork.pas_bucket_role_arn}"
-  deletion_window      = "7"
+  deletion_window     = "7"
 }
 
 resource "aws_s3_bucket" "certs" {
@@ -91,20 +92,21 @@ data "template_file" "paperwork_variables" {
   template = "${file("${path.module}/paperwork.tfvars.tpl")}"
 
   vars {
-    control_plane_domain  = "${local.control_plane_domain}"
-    apps_domain           = "${local.apps_domain}"
-    system_domain         = "${local.system_domain}"
-    bucket_role_name      = "${var.pas_bucket_role_name}"
-    splunk_role_name      = "${var.splunk_role_name}"
-    key_manager_role_name = "${var.key_manager_role_name}"
-    kms_key_id            = "${module.keys.kms_key_id}"
-    director_role_name    = "${var.director_role_name}"
-    cp_vpc_id             = "${module.paperwork.cp_vpc_id}"
-    es_vpc_id             = "${module.paperwork.es_vpc_id}"
-    bastion_vpc_id        = "${module.paperwork.bastion_vpc_id}"
-    pas_vpc_id            = "${module.paperwork.pas_vpc_id}"
-    pas_vpc_dns           = "${module.paperwork.pas_vpc_dns}"
-    control_plane_vpc_dns = "${module.paperwork.control_plane_vpc_dns}"
+    control_plane_domain                        = "${local.control_plane_domain}"
+    apps_domain                                 = "${local.apps_domain}"
+    system_domain                               = "${local.system_domain}"
+    bucket_role_name                            = "${var.pas_bucket_role_name}"
+    platform_automation_engine_worker_role_name = "${var.platform_automation_engine_worker_role_name}"
+    splunk_role_name                            = "${var.splunk_role_name}"
+    key_manager_role_name                       = "${var.key_manager_role_name}"
+    kms_key_id                                  = "${module.keys.kms_key_id}"
+    director_role_name                          = "${var.director_role_name}"
+    cp_vpc_id                                   = "${module.paperwork.cp_vpc_id}"
+    es_vpc_id                                   = "${module.paperwork.es_vpc_id}"
+    bastion_vpc_id                              = "${module.paperwork.bastion_vpc_id}"
+    pas_vpc_id                                  = "${module.paperwork.pas_vpc_id}"
+    pas_vpc_dns                                 = "${module.paperwork.pas_vpc_dns}"
+    control_plane_vpc_dns                       = "${module.paperwork.control_plane_vpc_dns}"
 
     ldap_basedn           = "${local.basedn}"
     ldap_dn               = "${local.admin}"
@@ -140,6 +142,10 @@ data "template_file" "paperwork_variables" {
 }
 
 variable "paperwork_variable_output_path" {
+  type = "string"
+}
+
+variable "platform_automation_engine_worker_role_name" {
   type = "string"
 }
 

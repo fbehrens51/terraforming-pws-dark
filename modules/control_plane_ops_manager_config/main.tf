@@ -71,6 +71,8 @@ data "template_file" "director_template" {
     iaas_configuration_ssh_private_key          = "${var.ops_manager_ssh_private_key}"
     security_configuration_trusted_certificates = "${var.security_configuration_trusted_certificates}"
 
+    platform_automation_engine_worker_role_name = "${var.platform_automation_engine_worker_role_name}"
+
     control_plane_subnets = "${indent(4, join("", data.template_file.control_plane_subnets.*.rendered))}"
     control_plane_vpc_azs = "${indent(2, join("", data.template_file.control_plane_vpc_azs.*.rendered))}"
   }

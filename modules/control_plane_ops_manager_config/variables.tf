@@ -11,6 +11,8 @@ variable "env_name" {
   description = "Identifier for the deployment. This will be used to add an `env` tag to BOSH-deployed VMs"
 }
 
+variable "platform_automation_engine_worker_role_name" {}
+
 variable "region" {}
 
 variable "custom_ssh_banner_file" {
