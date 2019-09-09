@@ -101,6 +101,7 @@ data "template_file" "paperwork_variables" {
     key_manager_role_name                       = "${var.key_manager_role_name}"
     kms_key_id                                  = "${module.keys.kms_key_id}"
     director_role_name                          = "${var.director_role_name}"
+    sjb_role_name                               = "${var.director_role_name}"
     cp_vpc_id                                   = "${module.paperwork.cp_vpc_id}"
     es_vpc_id                                   = "${module.paperwork.es_vpc_id}"
     bastion_vpc_id                              = "${module.paperwork.bastion_vpc_id}"

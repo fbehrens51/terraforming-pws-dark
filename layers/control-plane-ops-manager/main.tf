@@ -19,12 +19,12 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
-data "terraform_remote_state" "control-plane" {
+data "terraform_remote_state" "bootstrap_control_plane" {
   backend = "s3"
 
   config {
     bucket  = "${var.remote_state_bucket}"
-    key     = "control-plane"
+    key     = "bootstrap_control_plane"
     region  = "${var.remote_state_region}"
     encrypt = true
   }
@@ -33,10 +33,10 @@ data "terraform_remote_state" "control-plane" {
 locals {
   vpc_id                      = "${data.terraform_remote_state.paperwork.cp_vpc_id}"
   director_role_name          = "${data.terraform_remote_state.paperwork.director_role_name}"
-  om_security_group_id        = "${data.terraform_remote_state.control-plane.om_security_group_id}"
-  om_ssh_public_key_pair_name = "${data.terraform_remote_state.control-plane.om_ssh_public_key_pair_name}"
-  om_eip_allocation_id        = "${data.terraform_remote_state.control-plane.om_eip_allocation_id}"
-  om_eni_id                   = "${data.terraform_remote_state.control-plane.om_eni_id}"
+  om_security_group_id        = "${data.terraform_remote_state.bootstrap_control_plane.om_security_group_id}"
+  om_ssh_public_key_pair_name = "${data.terraform_remote_state.bootstrap_control_plane.om_ssh_public_key_pair_name}"
+  om_eip_allocation_id        = "${data.terraform_remote_state.bootstrap_control_plane.om_eip_allocation_id}"
+  om_eni_id                   = "${data.terraform_remote_state.bootstrap_control_plane.om_eni_id}"
 
   tags = "${merge(var.tags, map("Name", "${var.env_name}-ops-manager"))}"
 }

@@ -7,6 +7,10 @@ output "sjb_private_key" {
   sensitive = true
 }
 
+output "sjb_ssh_key_pair_name" {
+  value = "${module.sjb_key_pair.key_name}"
+}
+
 output "control_plane_subnet_cidrs" {
   value = "${module.private_subnets.subnet_cidr_blocks}"
 }
@@ -25,6 +29,10 @@ output "control_plane_subnet_ids" {
 
 output "vms_security_group_id" {
   value = "${aws_security_group.vms_security_group.id}"
+}
+
+output "sjb_eni_ids" {
+  value = "${module.sjb_bootstrap.eni_ids}"
 }
 
 output "om_eni_id" {

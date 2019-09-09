@@ -255,17 +255,6 @@ locals {
   ]
 }
 
-data "template_cloudinit_config" "user_data" {
-  base64_encode = false
-  gzip          = false
-
-  part {
-    filename     = "other.cfg"
-    content_type = "text/cloud-config"
-    content      = "${file("${var.user_data_path}")}"
-  }
-}
-
 module "sjb_subnet" {
   source             = "../../modules/subnet_per_az"
   availability_zones = "${list(var.singleton_availability_zone)}"
@@ -290,28 +279,7 @@ module "sjb_bootstrap" {
   tags          = "${local.modified_tags}"
 }
 
-module "find_ami" {
-  source = "../../modules/amis/amazon_hvm_ami"
-}
-
 module "sjb_key_pair" {
   source   = "../../modules/key_pair"
   key_name = "${var.control_plane_host_key_pair_name}"
-}
-
-module "sjb" {
-  instance_count       = 1
-  source               = "../../modules/launch"
-  ami_id               = "${module.find_ami.id}"
-  user_data            = "${data.template_cloudinit_config.user_data.rendered}"
-  eni_ids              = "${module.sjb_bootstrap.eni_ids}"
-  key_pair_name        = "${module.sjb_key_pair.key_name}"
-  iam_instance_profile = "${data.terraform_remote_state.paperwork.director_role_name}"
-  instance_type        = "${var.instance_type}"
-  tags                 = "${merge(local.modified_tags, map("Name", "${local.env_name}-sjb"))}"
-
-  root_block_device = {
-    volume_type = "gp2"
-    volume_size = 64
-  }
 }

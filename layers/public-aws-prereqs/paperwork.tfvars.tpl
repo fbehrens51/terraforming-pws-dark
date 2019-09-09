@@ -12,6 +12,8 @@ cp_vpc_id = "${cp_vpc_id}"
 
 director_role_name = "${director_role_name}"
 
+sjb_role_name = "${sjb_role_name}"
+
 key_manager_role_name = "${key_manager_role_name}"
 
 kms_key_id = "${kms_key_id}"

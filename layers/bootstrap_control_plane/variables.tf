@@ -1,7 +1,5 @@
 variable "remote_state_bucket" {}
 variable "remote_state_region" {}
-variable "user_data_path" {}
-variable "instance_type" {}
 variable "control_plane_host_key_pair_name" {}
 
 variable "singleton_availability_zone" {}

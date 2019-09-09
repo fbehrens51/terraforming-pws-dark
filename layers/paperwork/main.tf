@@ -24,6 +24,8 @@ variable "cp_vpc_id" {}
 
 variable "director_role_name" {}
 
+variable "sjb_role_name" {}
+
 variable "key_manager_role_name" {}
 
 variable "kms_key_id" {}
@@ -233,6 +235,10 @@ output "es_vpc_id" {
 
 output "cp_vpc_id" {
   value = "${var.cp_vpc_id}"
+}
+
+output "sjb_role_name" {
+  value = "${var.sjb_role_name}"
 }
 
 output "director_role_name" {

@@ -18,12 +18,12 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
-data "terraform_remote_state" "control-plane" {
+data "terraform_remote_state" "bootstrap_control_plane" {
   backend = "s3"
 
   config {
     bucket     = "${var.remote_state_bucket}"
-    key        = "control-plane"
+    key        = "bootstrap_control_plane"
     region     = "${var.remote_state_region}"
     encrypt    = true
     kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
@@ -35,11 +35,11 @@ data "aws_region" "current" {}
 module "om_config" {
   source = "../../modules/control_plane_ops_manager_config"
 
-  control_plane_subnet_ids                = "${data.terraform_remote_state.control-plane.control_plane_subnet_ids}"
-  vms_security_group_id                   = "${data.terraform_remote_state.control-plane.vms_security_group_id}"
-  control_plane_subnet_availability_zones = "${data.terraform_remote_state.control-plane.control_plane_subnet_availability_zones}"
-  control_plane_subnet_gateways           = "${data.terraform_remote_state.control-plane.control_plane_subnet_gateways}"
-  control_plane_subnet_cidrs              = "${data.terraform_remote_state.control-plane.control_plane_subnet_cidrs}"
+  control_plane_subnet_ids                = "${data.terraform_remote_state.bootstrap_control_plane.control_plane_subnet_ids}"
+  vms_security_group_id                   = "${data.terraform_remote_state.bootstrap_control_plane.vms_security_group_id}"
+  control_plane_subnet_availability_zones = "${data.terraform_remote_state.bootstrap_control_plane.control_plane_subnet_availability_zones}"
+  control_plane_subnet_gateways           = "${data.terraform_remote_state.bootstrap_control_plane.control_plane_subnet_gateways}"
+  control_plane_subnet_cidrs              = "${data.terraform_remote_state.bootstrap_control_plane.control_plane_subnet_cidrs}"
   control_plane_vpc_dns                   = "${data.terraform_remote_state.paperwork.control_plane_vpc_dns}"
 
   vpc_id       = "${local.vpc_id}"
@@ -57,11 +57,11 @@ module "om_config" {
 
   concourse_domain = "${data.terraform_remote_state.paperwork.control_plane_domain}"
 
-  web_elb_names = ["${data.terraform_remote_state.control-plane.web_elb_id}"]
+  web_elb_names = ["${data.terraform_remote_state.bootstrap_control_plane.web_elb_id}"]
 
-  uaa_elb_names = ["${data.terraform_remote_state.control-plane.uaa_elb_id}"]
+  uaa_elb_names = ["${data.terraform_remote_state.bootstrap_control_plane.uaa_elb_id}"]
 
-  credhub_elb_names = ["${data.terraform_remote_state.control-plane.credhub_elb_id}"]
+  credhub_elb_names = ["${data.terraform_remote_state.bootstrap_control_plane.credhub_elb_id}"]
 
   smtp_host       = "${var.smtp_host}"
   smtp_user       = "${var.smtp_user}"
@@ -82,16 +82,16 @@ module "om_config" {
   custom_ssh_banner_file                      = "${var.custom_ssh_banner_file}"
   security_configuration_trusted_certificates = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 
-  # director_rds_address  = "${data.terraform_remote_state.control-plane.director_rds_address}"
-  # director_rds_password = "${data.terraform_remote_state.control-plane.director_rds_password}"
-  # director_rds_port     = "${data.terraform_remote_state.control-plane.director_rds_port}"
-  # director_rds_username = "${data.terraform_remote_state.control-plane.director_rds_username}"
+  # director_rds_address  = "${data.terraform_remote_state.bootstrap_control_plane.director_rds_address}"
+  # director_rds_password = "${data.terraform_remote_state.bootstrap_control_plane.director_rds_password}"
+  # director_rds_port     = "${data.terraform_remote_state.bootstrap_control_plane.director_rds_port}"
+  # director_rds_username = "${data.terraform_remote_state.bootstrap_control_plane.director_rds_username}"
 
 
   # rds_ca_cert_pem = "${data.terraform_remote_state.paperwork.rds_ca_cert_pem}"
 
   ops_manager_ssh_public_key_name = "${local.om_key_name}"
-  ops_manager_ssh_private_key     = "${data.terraform_remote_state.control-plane.om_private_key_pem}"
+  ops_manager_ssh_private_key     = "${data.terraform_remote_state.bootstrap_control_plane.om_private_key_pem}"
 
   # Used by the download config
 
