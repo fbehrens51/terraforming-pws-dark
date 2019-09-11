@@ -45,3 +45,5 @@ variable "tags" {
 variable "availability_zones" {
   type = "list"
 }
+
+variable "pws_dark_iam_s3_resource_product_version" {}

@@ -9,3 +9,7 @@ output "director_template" {
 output "download_platform_automation_engine_config" {
   value = "${data.template_file.download_platform_automation_engine_config.rendered}"
 }
+
+output "download_pws_dark_iam_s3_resource_config" {
+  value = "${data.template_file.download_pws_dark_iam_s3_resource_config.rendered}"
+}

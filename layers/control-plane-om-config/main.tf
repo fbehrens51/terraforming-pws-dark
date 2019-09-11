@@ -95,13 +95,14 @@ module "om_config" {
 
   # Used by the download config
 
-  pivnet_api_token          = "${var.pivnet_api_token}"
-  product_blobs_s3_bucket   = "${var.product_blobs_s3_bucket}"
-  product_blobs_s3_endpoint = "${var.product_blobs_s3_endpoint}"
-  product_blobs_s3_region   = "${var.product_blobs_s3_region}"
-  s3_access_key_id          = "${var.s3_access_key_id}"
-  s3_secret_access_key      = "${var.s3_secret_access_key}"
-  s3_auth_type              = "${var.s3_auth_type}"
+  pivnet_api_token                         = "${var.pivnet_api_token}"
+  product_blobs_s3_bucket                  = "${var.product_blobs_s3_bucket}"
+  product_blobs_s3_endpoint                = "${var.product_blobs_s3_endpoint}"
+  product_blobs_s3_region                  = "${var.product_blobs_s3_region}"
+  s3_access_key_id                         = "${var.s3_access_key_id}"
+  s3_secret_access_key                     = "${var.s3_secret_access_key}"
+  s3_auth_type                             = "${var.s3_auth_type}"
+  pws_dark_iam_s3_resource_product_version = "${var.pws_dark_iam_s3_resource_product_version}"
 }
 
 locals {
