@@ -78,6 +78,11 @@ output "download_compliance_scanner_config" {
   sensitive = true
 }
 
+output "download_pcf_metrics_config" {
+  value     = "${module.om_config.download_pcf_metrics_config}"
+  sensitive = true
+}
+
 output "download_clamav_addon_config" {
   value     = "${module.om_config.download_clamav_addon_config}"
   sensitive = true

@@ -22,6 +22,10 @@ locals {
   compliance_scanner_product_slug    = "p-compliance-scanner"
   compliance_scanner_product_version = "1.0.0"
 
+  pcf_metrics_file_glob       = "apm*.pivotal"
+  pcf_metrics_product_slug    = "apm"
+  pcf_metrics_product_version = "1.6.1"
+
   clamav_product_slug    = "p-clamav-addon"
   clamav_product_version = "2.0.12"
 
@@ -440,6 +444,25 @@ data "template_file" "download_compliance_scanner_config" {
     pivnet_file_glob    = "${local.compliance_scanner_file_glob}"
     pivnet_product_slug = "${local.compliance_scanner_product_slug}"
     product_version     = "${local.compliance_scanner_product_version}"
+
+    pivnet_api_token = "${var.pivnet_api_token}"
+    s3_bucket        = "${var.product_blobs_s3_bucket}"
+
+    s3_endpoint          = "${var.product_blobs_s3_endpoint}"
+    s3_region_name       = "${var.product_blobs_s3_region}"
+    s3_access_key_id     = "${var.s3_access_key_id}"
+    s3_secret_access_key = "${var.s3_secret_access_key}"
+    s3_auth_type         = "${var.s3_auth_type}"
+  }
+}
+
+data "template_file" "download_pcf_metrics_config" {
+  template = "${file("${path.module}/download_product_config.tpl")}"
+
+  vars = {
+    pivnet_file_glob    = "${local.pcf_metrics_file_glob}"
+    pivnet_product_slug = "${local.pcf_metrics_product_slug}"
+    product_version     = "${local.pcf_metrics_product_version}"
 
     pivnet_api_token = "${var.pivnet_api_token}"
     s3_bucket        = "${var.product_blobs_s3_bucket}"
