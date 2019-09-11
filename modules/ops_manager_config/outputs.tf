@@ -63,6 +63,11 @@ output "download_healthwatch_config" {
   sensitive = true
 }
 
+output "download_compliance_scanner_config" {
+  value     = "${data.template_file.download_compliance_scanner_config.rendered}"
+  sensitive = true
+}
+
 output "download_clamav_mirror_config" {
   value     = "${data.template_file.download_clamav_mirror_config.rendered}"
   sensitive = true
