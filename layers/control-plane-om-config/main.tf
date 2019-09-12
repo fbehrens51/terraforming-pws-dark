@@ -18,6 +18,17 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
+data "terraform_remote_state" "bootstrap_splunk" {
+  backend = "s3"
+
+  config {
+    bucket  = "${var.remote_state_bucket}"
+    key     = "bootstrap_splunk"
+    region  = "${var.remote_state_region}"
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "bootstrap_control_plane" {
   backend = "s3"
 
@@ -103,6 +114,8 @@ module "om_config" {
   s3_secret_access_key                     = "${var.s3_secret_access_key}"
   s3_auth_type                             = "${var.s3_auth_type}"
   pws_dark_iam_s3_resource_product_version = "${var.pws_dark_iam_s3_resource_product_version}"
+  splunk_syslog_host = "${data.terraform_remote_state.bootstrap_splunk.splunk_syslog_host_name}"
+  splunk_syslog_port = "${data.terraform_remote_state.bootstrap_splunk.splunk_syslog_port}"
 }
 
 locals {

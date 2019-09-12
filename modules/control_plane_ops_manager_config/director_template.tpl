@@ -76,7 +76,11 @@ EOF
     trusted_certificates: |
       ${indent(6, security_configuration_trusted_certificates)}
   syslog_configuration:
-    enabled: false
+    enabled: true
+    address: ${splunk_syslog_host}
+    port: ${splunk_syslog_port}
+    transport_protocol: tcp
+    tls_enabled: false
 resource-configuration:
   compilation:
     instances: automatic

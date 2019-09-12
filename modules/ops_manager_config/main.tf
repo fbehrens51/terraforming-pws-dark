@@ -132,6 +132,9 @@ data "template_file" "director_template" {
     infrastructure_subnets      = "${join("", data.template_file.infrastructure_subnets.*.rendered)}"
     pas_subnets                 = "${indent(4, join("", data.template_file.pas_subnets.*.rendered))}"
     pas_vpc_azs                 = "${indent(2, join("", data.template_file.pas_vpc_azs.*.rendered))}"
+
+    splunk_syslog_host = "${var.splunk_syslog_host}"
+    splunk_syslog_port = "${var.splunk_syslog_port}"
   }
 }
 
@@ -291,6 +294,8 @@ data "template_file" "clamav_mirror_template" {
     pas_vpc_azs                 = "${indent(4, join("", data.template_file.pas_vpc_azs.*.rendered))}"
     singleton_availability_zone = "${var.singleton_availability_zone}"
     clamav_mirror_instance_type = "${var.clamav_mirror_instance_type}"
+    splunk_syslog_host          = "${var.splunk_syslog_host}"
+    splunk_syslog_port          = "${var.splunk_syslog_port}"
   }
 }
 

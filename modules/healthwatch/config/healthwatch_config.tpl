@@ -39,8 +39,14 @@ product-properties:
   .properties.opsman.enable.url:
     value: ${om_url}
   .properties.syslog_selector:
-    selected_option: inactive
-    value: "No"
+    selected_option: active
+    value: Yes without encryption
+  .properties.syslog_selector.active.syslog_address:
+    value: ${splunk_syslog_host}
+  .properties.syslog_selector.active.syslog_port:
+    value: ${splunk_syslog_port}
+  .properties.syslog_selector.active.syslog_transport:
+    value: tcp
 network-properties:
   network:
     name: ${network_name}

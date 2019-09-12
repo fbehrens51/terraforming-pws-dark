@@ -37,3 +37,9 @@ resource-config:
 errand-config:
   scan_results:
     post-deploy-state: false
+syslog-properties:
+  enabled: true
+  address: ${syslog_host}
+  port: ${syslog_port}
+  transport_protocol: tcp
+  tls_enabled: false

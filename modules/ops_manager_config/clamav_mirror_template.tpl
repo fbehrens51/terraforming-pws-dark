@@ -49,3 +49,10 @@ resource-config:
     instance_type:
       id: ${clamav_mirror_instance_type}
     internet_connected: false
+syslog-properties:
+  enabled: true
+  address: ${splunk_syslog_host}
+  port: ${splunk_syslog_port}
+  transport_protocol: tcp
+  tls_enabled: false
+

@@ -78,6 +78,9 @@ data "template_file" "director_template" {
 
     control_plane_subnets = "${indent(4, join("", data.template_file.control_plane_subnets.*.rendered))}"
     control_plane_vpc_azs = "${indent(2, join("", data.template_file.control_plane_vpc_azs.*.rendered))}"
+
+    splunk_syslog_host = "${var.splunk_syslog_host}"
+    splunk_syslog_port = "${var.splunk_syslog_port}"
   }
 }
 

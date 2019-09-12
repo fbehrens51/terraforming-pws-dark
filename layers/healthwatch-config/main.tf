@@ -20,6 +20,17 @@ module "providers" {
   source = "../../modules/dark_providers"
 }
 
+data "terraform_remote_state" "bootstrap_splunk" {
+  backend = "s3"
+
+  config {
+    bucket  = "${var.remote_state_bucket}"
+    key     = "bootstrap_splunk"
+    region  = "${var.remote_state_region}"
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "paperwork" {
   backend = "s3"
 
@@ -55,6 +66,9 @@ module "healthwatch_config" {
   health_check_availability_zone = "${var.singleton_availability_zone}"
   env_name                       = "${var.env_name}"
   bosh_task_uaa_client_secret    = "${random_string.healthwatch_client_credentials_secret.result}"
+
+  splunk_syslog_host = "${data.terraform_remote_state.bootstrap_splunk.splunk_syslog_host_name}"
+  splunk_syslog_port = "${data.terraform_remote_state.bootstrap_splunk.splunk_syslog_port}"
 }
 
 resource "random_string" "healthwatch_client_credentials_secret" {

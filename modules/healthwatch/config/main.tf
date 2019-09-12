@@ -10,6 +10,9 @@ variable "singleton_availability_zone" {}
 variable "health_check_availability_zone" {}
 variable "bosh_task_uaa_client_secret" {}
 
+variable "splunk_syslog_host" {}
+variable "splunk_syslog_port" {}
+
 data "template_file" "hw_vpc_azs" {
   count = "${length(var.availability_zones)}"
 
@@ -42,6 +45,8 @@ data "template_file" "healthwatch_config" {
     env_name                       = "${var.env_name}"
 
     bosh_task_uaa_client_secret = "${var.bosh_task_uaa_client_secret}"
+    splunk_syslog_host = "${var.splunk_syslog_host}"
+    splunk_syslog_port = "${var.splunk_syslog_port}"
   }
 }
 
