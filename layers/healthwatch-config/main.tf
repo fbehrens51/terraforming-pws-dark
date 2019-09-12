@@ -77,7 +77,8 @@ resource "random_string" "healthwatch_client_credentials_secret" {
 }
 
 output "healthwatch_config" {
-  value = "${module.healthwatch_config.healthwatch_config}"
+  value     = "${module.healthwatch_config.healthwatch_config}"
+  sensitive = true
 }
 
 output "healthwatch_client_credentials_secret" {
