@@ -41,6 +41,10 @@ data "aws_vpc" "cp_vpc" {
   id = "${data.terraform_remote_state.paperwork.cp_vpc_id}"
 }
 
+data "aws_vpc" "es_vpc" {
+  id = "${data.terraform_remote_state.paperwork.es_vpc_id}"
+}
+
 data "aws_vpc_peering_connection" "pas_bastion_peering_connection" {
   vpc_id      = "${data.terraform_remote_state.paperwork.pas_vpc_id}"
   peer_vpc_id = "${data.terraform_remote_state.paperwork.bastion_vpc_id}"
@@ -74,6 +78,21 @@ data "aws_vpc_peering_connection" "pas_cp_peering_connection" {
 data "aws_vpc_peering_connection" "cp_bastion_peering_connection" {
   vpc_id      = "${data.terraform_remote_state.paperwork.cp_vpc_id}"
   peer_vpc_id = "${data.terraform_remote_state.paperwork.bastion_vpc_id}"
+}
+
+data "aws_vpc_peering_connection" "es_cp_peering_connection" {
+  vpc_id      = "${data.terraform_remote_state.paperwork.es_vpc_id}"
+  peer_vpc_id = "${data.terraform_remote_state.paperwork.cp_vpc_id}"
+}
+
+resource "aws_route" "cp_public_to_es" {
+  route_table_id            = "${module.vpc_route_tables.cp_public_vpc_route_table_id}"
+  destination_cidr_block    = "${data.aws_vpc.es_vpc.cidr_block}"
+  vpc_peering_connection_id = "${data.aws_vpc_peering_connection.es_cp_peering_connection.id}"
+
+  timeouts {
+    create = "5m"
+  }
 }
 
 resource "aws_route" "cp_private_to_bastion" {
@@ -156,6 +175,12 @@ module "route_cp_pas_private" {
   source                   = "../../modules/routing"
   accepter_route_table_id  = "${module.vpc_route_tables.cp_public_vpc_route_table_id}"
   requester_route_table_id = "${module.vpc_route_tables.pas_private_vpc_route_table_id}"
+}
+
+module "route_cp_private_es" {
+  source                   = "../../modules/routing"
+  accepter_route_table_id  = "${module.vpc_route_tables.cp_private_vpc_route_table_id}"
+  requester_route_table_id = "${module.vpc_route_tables.es_private_vpc_route_table_id}"
 }
 
 variable "remote_state_region" {}
