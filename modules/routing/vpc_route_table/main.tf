@@ -25,6 +25,10 @@ resource "aws_route" "pas_default_route" {
   route_table_id         = "${aws_route_table.pas_public_route_table.id}"
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = "${element(concat(data.aws_internet_gateway.pas_igw.*.internet_gateway_id, data.aws_vpn_gateway.pas_vgw.*.id), 0)}"
+
+  timeouts {
+    create = "5m"
+  }
 }
 
 resource "aws_route_table" "pas_public_route_table" {

@@ -26,10 +26,18 @@ resource "aws_route" "route_to_add_to_accepter" {
   route_table_id            = "${var.accepter_route_table_id}"
   destination_cidr_block    = "${data.aws_vpc.requester_vpc.cidr_block}"
   vpc_peering_connection_id = "${data.aws_vpc_peering_connection.peering_connection.id}"
+
+  timeouts {
+    create = "5m"
+  }
 }
 
 resource "aws_route" "route_to_add_to_requestor" {
   route_table_id            = "${var.requester_route_table_id}"
   destination_cidr_block    = "${data.aws_vpc.accepter_vpc.cidr_block}"
   vpc_peering_connection_id = "${data.aws_vpc_peering_connection.peering_connection.id}"
+
+  timeouts {
+    create = "5m"
+  }
 }
