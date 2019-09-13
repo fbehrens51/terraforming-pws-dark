@@ -31,6 +31,10 @@ output "vms_security_group_id" {
   value = "${aws_security_group.vms_security_group.id}"
 }
 
+output "sjb_cidr_block" {
+  value = "${local.sjb_cidr_block}"
+}
+
 output "sjb_eni_ids" {
   value = "${module.sjb_bootstrap.eni_ids}"
 }

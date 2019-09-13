@@ -145,6 +145,16 @@ resource "aws_route" "pas_public_to_cp" {
   }
 }
 
+resource "aws_route" "es_public_to_cp" {
+  route_table_id            = "${module.vpc_route_tables.es_public_vpc_route_table_id}"
+  destination_cidr_block    = "${data.aws_vpc.cp_vpc.cidr_block}"
+  vpc_peering_connection_id = "${data.aws_vpc_peering_connection.es_cp_peering_connection.id}"
+
+  timeouts {
+    create = "5m"
+  }
+}
+
 // We can't know in general which vpc is the accepter vs the requester,
 // so these modules have to be copied in each environment
 module "route_bastion_pas" {

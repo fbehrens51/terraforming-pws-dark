@@ -13,6 +13,17 @@ data "terraform_remote_state" "enterprise-services" {
   }
 }
 
+data "terraform_remote_state" "bootstrap_control_plane" {
+  backend = "s3"
+
+  config {
+    bucket  = "${var.remote_state_bucket}"
+    key     = "bootstrap_control_plane"
+    region  = "${var.remote_state_region}"
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "bastion" {
   backend = "s3"
 
@@ -59,6 +70,11 @@ locals {
       port        = "53"
       protocol    = "tcp"
       cidr_blocks = "0.0.0.0/0"
+    },
+    {
+      port        = "22"
+      protocol    = "tcp"
+      cidr_blocks = "${data.terraform_remote_state.bootstrap_control_plane.sjb_cidr_block}"
     },
     {
       port        = "22"
