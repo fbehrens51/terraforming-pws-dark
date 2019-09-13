@@ -13,12 +13,12 @@ data "terraform_remote_state" "enterprise-services" {
   }
 }
 
-data "terraform_remote_state" "bootstrap_control_plane" {
+data "terraform_remote_state" "paperwork" {
   backend = "s3"
 
   config {
     bucket  = "${var.remote_state_bucket}"
-    key     = "bootstrap_control_plane"
+    key     = "paperwork"
     region  = "${var.remote_state_region}"
     encrypt = true
   }
@@ -74,7 +74,7 @@ locals {
     {
       port        = "22"
       protocol    = "tcp"
-      cidr_blocks = "${data.terraform_remote_state.bootstrap_control_plane.sjb_cidr_block}"
+      cidr_blocks = "${data.aws_vpc.cp_vpc.cidr_block}"
     },
     {
       port        = "22"
@@ -82,6 +82,10 @@ locals {
       cidr_blocks = "${data.terraform_remote_state.bastion.bastion_cidr_block}"
     },
   ]
+}
+
+data "aws_vpc" "cp_vpc" {
+  id = "${data.terraform_remote_state.paperwork.cp_vpc_id}"
 }
 
 module "bootstrap" {
