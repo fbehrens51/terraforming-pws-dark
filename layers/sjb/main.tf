@@ -12,6 +12,8 @@ locals {
   env_name      = "${var.tags["Name"]}"
   modified_name = "${local.env_name} sjb"
   modified_tags = "${merge(var.tags, map("Name", "${local.modified_name}"))}"
+
+  root_domain = "${data.terraform_remote_state.paperwork.root_domain}"
 }
 
 module "find_ami" {
@@ -64,9 +66,22 @@ runcmd:
 EOF
 }
 
+module "syslog_config" {
+  source = "../../modules/syslog"
+
+  root_domain = "${local.root_domain}"
+}
+
 data "template_cloudinit_config" "user_data" {
   base64_encode = false
   gzip          = false
+
+  part {
+    filename     = "syslog.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.syslog_config.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
 
   # source.zip
   part {

@@ -19,14 +19,28 @@ data "template_file" "user_data" {
   }
 }
 
+module "syslog_config" {
+  source = "../../../syslog"
+
+  root_domain = "${var.zone_name}"
+}
+
 data "template_cloudinit_config" "slave_bind_conf_userdata" {
   base64_encode = false
   gzip          = false
 
   part {
+    filename     = "syslog.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.syslog_config.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+
+  part {
     filename     = "slave_bind_conf.cfg"
     content_type = "text/cloud-config"
     content      = "${data.template_file.user_data.rendered}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 }
 

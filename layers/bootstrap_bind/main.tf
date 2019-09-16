@@ -35,6 +35,10 @@ data "terraform_remote_state" "bastion" {
   }
 }
 
+module "splunk_ports" {
+  source = "../../modules/splunk_ports"
+}
+
 locals {
   env_name      = "${var.tags["Name"]}"
   modified_name = "${local.env_name} bootstrap bind"
@@ -55,6 +59,12 @@ locals {
     {
       //yum for bind install
       port        = "80"
+      protocol    = "tcp"
+      cidr_blocks = "0.0.0.0/0"
+    },
+    {
+      //splunk syslog
+      port        = "${module.splunk_ports.splunk_tcp_port}"
       protocol    = "tcp"
       cidr_blocks = "0.0.0.0/0"
     },
