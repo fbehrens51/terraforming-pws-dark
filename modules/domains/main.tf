@@ -28,8 +28,11 @@ locals {
   control_plane_plane_subdomain = "plane.ci"
   control_plane_plane_fqdn      = "${local.control_plane_plane_subdomain}.${var.root_domain}"
 
-  system_fqdn = "run.${var.root_domain}"
-  apps_fqdn   = "cfapps.${var.root_domain}"
+  system_subdomain = "run"
+  system_fqdn = "${local.system_subdomain}.${var.root_domain}"
+
+  apps_subdomain = "cfapps"
+  apps_fqdn = "${local.apps_subdomain}.${var.root_domain}"
 }
 
 output "ldap_subdomain" {
@@ -108,6 +111,14 @@ output "system_fqdn" {
   value = "${local.system_fqdn}"
 }
 
+output "system_subdomain" {
+  value = "${local.system_subdomain}"
+}
+
 output "apps_fqdn" {
   value = "${local.apps_fqdn}"
+}
+
+output "apps_subdomain" {
+  value = "${local.apps_subdomain}"
 }
