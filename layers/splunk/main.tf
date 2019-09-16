@@ -41,18 +41,22 @@ data "terraform_remote_state" "bootstrap_splunk" {
   }
 }
 
+module "splunk_ports" {
+  source = "../../modules/splunk_ports"
+}
+
 locals {
   splunk_master_eni_id      = "${data.terraform_remote_state.bootstrap_splunk.master_eni_ids[0]}"
   splunk_indexers_eni_ids   = "${data.terraform_remote_state.bootstrap_splunk.indexers_eni_ids}"
   splunk_forwarders_eni_ids = "${data.terraform_remote_state.bootstrap_splunk.forwarders_eni_ids}"
   splunk_search_head_eni_id = "${data.terraform_remote_state.bootstrap_splunk.search_head_eni_ids[0]}"
 
-  splunk_http_collector_port = "${data.terraform_remote_state.bootstrap_splunk.splunk_http_collector_port}"
-  splunk_mgmt_port           = "${data.terraform_remote_state.bootstrap_splunk.splunk_mgmt_port}"
-  splunk_replication_port    = "${data.terraform_remote_state.bootstrap_splunk.splunk_replication_port}"
-  splunk_indexers_input_port = "${data.terraform_remote_state.bootstrap_splunk.splunk_indexers_input_port}"
-  splunk_syslog_port         = "${data.terraform_remote_state.bootstrap_splunk.splunk_syslog_port}"
-  splunk_web_port            = "${data.terraform_remote_state.bootstrap_splunk.splunk_web_port}"
+  splunk_http_collector_port = "${module.splunk_ports.splunk_http_collector_port}"
+  splunk_mgmt_port           = "${module.splunk_ports.splunk_mgmt_port}"
+  splunk_replication_port    = "${module.splunk_ports.splunk_replication_port}"
+  splunk_indexers_input_port = "${module.splunk_ports.splunk_tcp_port}"
+  splunk_syslog_port         = "${module.splunk_ports.splunk_tcp_port}"
+  splunk_web_port            = "${module.splunk_ports.splunk_web_port}"
 
   tags = "${merge(var.tags, map("Name", "${var.env_name}-splunk"))}"
 

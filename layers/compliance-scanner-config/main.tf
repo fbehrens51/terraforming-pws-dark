@@ -40,9 +40,18 @@ data "terraform_remote_state" "bootstrap_splunk" {
   }
 }
 
+module "domains" {
+  source = "../../modules/domains"
+
+  root_domain = "${local.root_domain}"
+}
+
+module "splunk_ports" {
+  source = "../../modules/splunk_ports"
+}
+
 locals {
-  splunk_syslog_port      = "${data.terraform_remote_state.bootstrap_splunk.splunk_syslog_port}"
-  splunk_syslog_host_name = "${data.terraform_remote_state.bootstrap_splunk.splunk_syslog_host_name}"
+  root_domain = "${data.terraform_remote_state.paperwork.root_domain}"
 }
 
 module "compliance_scanner_config" {
@@ -51,8 +60,8 @@ module "compliance_scanner_config" {
   availability_zones          = "${var.availability_zones}"
   singleton_availability_zone = "${var.singleton_availability_zone}"
   ntp_servers                 = "${var.ntp_servers}"
-  syslog_host                 = "${local.splunk_syslog_host_name}"
-  syslog_port                 = "${local.splunk_syslog_port}"
+  syslog_host                 = "${module.domains.splunk_logs_fqdn}"
+  syslog_port                 = "${module.splunk_ports.splunk_tcp_port}"
 }
 
 output "compliance_scanner_config" {

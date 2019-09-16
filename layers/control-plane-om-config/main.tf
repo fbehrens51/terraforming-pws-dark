@@ -43,6 +43,16 @@ data "terraform_remote_state" "bootstrap_control_plane" {
 
 data "aws_region" "current" {}
 
+module "domains" {
+  source = "../../modules/domains"
+
+  root_domain = "${local.root_domain}"
+}
+
+module "splunk_ports" {
+  source = "../../modules/splunk_ports"
+}
+
 module "om_config" {
   source = "../../modules/control_plane_ops_manager_config"
 
@@ -66,7 +76,7 @@ module "om_config" {
   concourse_private_key_pem = "${data.terraform_remote_state.paperwork.concourse_server_key}"
   trusted_ca_certs          = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 
-  concourse_domain = "${data.terraform_remote_state.paperwork.control_plane_domain}"
+  root_domain = "${local.root_domain}"
 
   web_elb_names = ["${data.terraform_remote_state.bootstrap_control_plane.web_elb_id}"]
 
@@ -114,11 +124,12 @@ module "om_config" {
   s3_secret_access_key                     = "${var.s3_secret_access_key}"
   s3_auth_type                             = "${var.s3_auth_type}"
   pws_dark_iam_s3_resource_product_version = "${var.pws_dark_iam_s3_resource_product_version}"
-  splunk_syslog_host = "${data.terraform_remote_state.bootstrap_splunk.splunk_syslog_host_name}"
-  splunk_syslog_port = "${data.terraform_remote_state.bootstrap_splunk.splunk_syslog_port}"
+  splunk_syslog_host                       = "${module.domains.splunk_logs_fqdn}"
+  splunk_syslog_port                       = "${module.splunk_ports.splunk_tcp_port}"
 }
 
 locals {
   vpc_id      = "${data.terraform_remote_state.paperwork.pas_vpc_id}"
   om_key_name = "${var.env_name}-om"
+  root_domain = "${data.terraform_remote_state.paperwork.root_domain}"
 }

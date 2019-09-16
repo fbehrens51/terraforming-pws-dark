@@ -81,10 +81,10 @@ locals {
 
   bind_rndc_secret = "${data.terraform_remote_state.bootstrap_bind.bind_rndc_secret}"
   master_dns_ip    = "${data.terraform_remote_state.bind.master_public_ip}"
-  dns_zone_name    = "${data.terraform_remote_state.bind.zone_name}"
+  root_domain      = "${data.terraform_remote_state.paperwork.root_domain}"
 
-  basedn        = "ou=users,dc=${join(",dc=", split(".", var.root_domain))}"
-  admin         = "cn=admin,dc=${join(",dc=", split(".", var.root_domain))}"
+  basedn        = "ou=users,dc=${join(",dc=", split(".", local.root_domain))}"
+  admin         = "cn=admin,dc=${join(",dc=", split(".", local.root_domain))}"
   public_subnet = "${data.terraform_remote_state.enterprise_services.public_subnet_ids[0]}"
 
   ldap_ingress_rules = [
@@ -148,11 +148,17 @@ module "ldap_configure" {
   ssh_host            = "${module.bootstrap.public_ips[0]}"
   instance_id         = "${module.ldap_host.instance_ids[0]}"
   users               = "${var.users}"
-  root_domain         = "${var.root_domain}"
+  root_domain         = "${local.root_domain}"
 
   basedn   = "${data.terraform_remote_state.paperwork.ldap_basedn}"
   admin    = "${data.terraform_remote_state.paperwork.ldap_dn}"
   password = "${data.terraform_remote_state.paperwork.ldap_password}"
+}
+
+module "domains" {
+  source = "../../modules/domains"
+
+  root_domain = "${local.root_domain}"
 }
 
 # Configure the DNS Provider
@@ -166,13 +172,12 @@ provider "dns" {
 }
 
 resource "dns_a_record_set" "ldap_a_record" {
-  zone      = "${local.dns_zone_name}."
-  name      = "ldap"
+  zone      = "${local.root_domain}."
+  name      = "${module.domains.ldap_subdomain}"
   addresses = ["${module.bootstrap.public_ips}"]
   ttl       = 300
 }
 
-variable "root_domain" {}
 variable "remote_state_region" {}
 variable "remote_state_bucket" {}
 

@@ -68,8 +68,8 @@ variable "ntp_servers" {
 # Router Configuration
 # ========================
 
-variable "concourse_domain" {
-  description = "The root domain for concourse (uaa, credhub, plane).{concourse_domain}"
+variable "root_domain" {
+  description = "The root domain for this environment"
 }
 
 variable "web_elb_names" {

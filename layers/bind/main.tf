@@ -8,6 +8,17 @@ module "providers" {
   source = "../../modules/dark_providers"
 }
 
+data "terraform_remote_state" "paperwork" {
+  backend = "s3"
+
+  config {
+    bucket  = "${var.remote_state_bucket}"
+    key     = "paperwork"
+    region  = "${var.remote_state_region}"
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "bootstrap_bind" {
   backend = "s3"
 
@@ -25,6 +36,8 @@ locals {
   modified_tags     = "${merge(var.tags, map("Name", "${local.modified_name}"))}"
   bind_rndc_secret  = "${data.terraform_remote_state.bootstrap_bind.bind_rndc_secret}"
   master_private_ip = "${data.terraform_remote_state.bootstrap_bind.bind_eni_ips[0]}"
+
+  root_domain = "${data.terraform_remote_state.paperwork.root_domain}"
 
   // If internetless = true in the bootstrap_bind layer,
   // eip_ips will be empty, and master_public_ip becomes the first eni_ip
@@ -49,7 +62,7 @@ module "bind_master_user_data" {
   master_ip   = "${local.master_public_ip}"
   secret      = "${local.bind_rndc_secret}"
   slave_ips   = "${local.slave_public_ips}"
-  zone_name   = "${var.zone_name}"
+  zone_name   = "${local.root_domain}"
 }
 
 module "bind_master_host" {
@@ -66,7 +79,7 @@ module "bind_slave_user_data" {
   source      = "../../modules/bind_dns/slave/user_data"
   client_cidr = "${var.client_cidr}"
   master_ip   = "${local.master_public_ip}"
-  zone_name   = "${var.zone_name}"
+  zone_name   = "${local.root_domain}"
 }
 
 module "bind_slave_host" {
@@ -85,7 +98,7 @@ resource "null_resource" "wait_for_master" {
   }
 
   provisioner "local-exec" {
-    command = "while ! nslookup -timeout=1 -querytype=soa ${var.zone_name} ${local.master_public_ip} < /dev/null; do sleep 1; done"
+    command = "while ! nslookup -timeout=1 -querytype=soa ${local.root_domain} ${local.master_public_ip} < /dev/null; do sleep 1; done"
   }
 }
 
@@ -109,10 +122,4 @@ output "master_public_ip" {
   value = "${local.master_public_ip}"
 }
 
-output "zone_name" {
-  value = "${var.zone_name}"
-}
-
 variable "client_cidr" {}
-
-variable "zone_name" {}

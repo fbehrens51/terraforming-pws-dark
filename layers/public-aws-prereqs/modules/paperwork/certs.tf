@@ -1,16 +1,13 @@
-variable "om_domain" {}
-variable "control_plane_om_domain" {}
-variable "splunk_domain" {}
-variable "splunk_monitor_domain" {}
-variable "ldap_domain" {}
-variable "apps_domain" {}
-variable "system_domain" {}
-variable "control_plane_domain" {}
-
 module "ca_cert" {
   source = "../ca_cert"
 
   env_name = "${var.env_name}"
+}
+
+module "domains" {
+  source = "../../../../modules/domains"
+
+  root_domain = "${var.root_domain}"
 }
 
 module "splunk_server_cert" {
@@ -19,8 +16,8 @@ module "splunk_server_cert" {
   env_name           = "${var.env_name}"
   ca_cert_pem        = "${module.ca_cert.cert_pem}"
   ca_private_key_pem = "${module.ca_cert.private_key_pem}"
-  common_name        = "splunk"
-  domains            = ["${var.splunk_domain}"]
+  common_name        = "${module.domains.splunk_subdomain}"
+  domains            = ["${module.domains.splunk_fqdn}"]
 }
 
 module "control_plane_om_server_cert" {
@@ -29,8 +26,8 @@ module "control_plane_om_server_cert" {
   env_name           = "${var.env_name}"
   ca_cert_pem        = "${module.ca_cert.cert_pem}"
   ca_private_key_pem = "${module.ca_cert.private_key_pem}"
-  common_name        = "om"
-  domains            = ["${var.control_plane_om_domain}"]
+  common_name        = "${module.domains.control_plane_om_subdomain}"
+  domains            = ["${module.domains.control_plane_om_fqdn}"]
 }
 
 module "om_server_cert" {
@@ -39,8 +36,8 @@ module "om_server_cert" {
   env_name           = "${var.env_name}"
   ca_cert_pem        = "${module.ca_cert.cert_pem}"
   ca_private_key_pem = "${module.ca_cert.private_key_pem}"
-  common_name        = "om"
-  domains            = ["${var.om_domain}"]
+  common_name        = "${module.domains.om_subdomain}"
+  domains            = ["${module.domains.om_fqdn}"]
 }
 
 module "splunk_monitor_server_cert" {
@@ -49,8 +46,8 @@ module "splunk_monitor_server_cert" {
   env_name           = "${var.env_name}"
   ca_cert_pem        = "${module.ca_cert.cert_pem}"
   ca_private_key_pem = "${module.ca_cert.private_key_pem}"
-  common_name        = "splunk-monitor"
-  domains            = ["${var.splunk_monitor_domain}"]
+  common_name        = "${module.domains.splunk_monitor_subdomain}"
+  domains            = ["${module.domains.splunk_monitor_fqdn}"]
 }
 
 module "ldap_server_cert" {
@@ -59,8 +56,8 @@ module "ldap_server_cert" {
   env_name           = "${var.env_name}"
   ca_cert_pem        = "${module.ca_cert.cert_pem}"
   ca_private_key_pem = "${module.ca_cert.private_key_pem}"
-  common_name        = "LDAP"
-  domains            = ["${var.ldap_domain}"]
+  common_name        = "${module.domains.ldap_subdomain}"
+  domains            = ["${module.domains.ldap_fqdn}"]
 }
 
 module "ldap_client_cert" {
@@ -81,8 +78,8 @@ module "router_server_cert" {
   common_name        = "${var.env_name} Router"
 
   domains = [
-    "*.${var.system_domain}",
-    "*.${var.apps_domain}",
+    "*.${module.domains.system_fqdn}",
+    "*.${module.domains.apps_fqdn}",
   ]
 }
 
@@ -95,9 +92,9 @@ module "concourse_server_cert" {
   common_name        = "${var.env_name} Concourse"
 
   domains = [
-    "credhub.${var.control_plane_domain}",
-    "uaa.${var.control_plane_domain}",
-    "plane.${var.control_plane_domain}",
+    "${module.domains.control_plane_credhub_fqdn}",
+    "${module.domains.control_plane_uaa_fqdn}",
+    "${module.domains.control_plane_plane_fqdn}",
   ]
 }
 
@@ -110,6 +107,6 @@ module "uaa_server_cert" {
   common_name        = "${var.env_name} UAA"
 
   domains = [
-    "login.${var.system_domain}",
+    "login.${module.domains.system_fqdn}",
   ]
 }

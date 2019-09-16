@@ -1,3 +1,5 @@
+root_domain = "${root_domain}"
+
 pas_vpc_dns = "${pas_vpc_dns}"
 
 control_plane_vpc_dns = "${control_plane_vpc_dns}"
@@ -27,8 +29,6 @@ platform_automation_engine_worker_role_name = "${platform_automation_engine_work
 system_domain = "${system_domain}"
 
 apps_domain = "${apps_domain}"
-
-control_plane_domain = "${control_plane_domain}"
 
 ldap_basedn = "${ldap_basedn}"
 

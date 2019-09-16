@@ -1,7 +1,3 @@
-variable "users" {
-  type = "list"
-}
-
 resource "tls_private_key" "user_pki_cert_private_key" {
   count     = "${length(var.users)}"
   algorithm = "RSA"

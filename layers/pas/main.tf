@@ -118,6 +118,12 @@ module "pas_elb" {
   short_name        = "pas"
 }
 
+module "domains" {
+  source = "../../modules/domains"
+
+  root_domain = "${local.root_domain}"
+}
+
 # Configure the DNS Provider
 //TODO support running from CI/Dev wks.  From MJB using the master private IP should work, but that won't work from external CI or our WKS.
 provider "dns" {
@@ -132,14 +138,14 @@ provider "dns" {
 //update add testing.pivotal-staging.com 600 CNAME dns1.pivotal-staging.com
 
 resource "dns_a_record_set" "om_a_record" {
-  zone      = "${local.dns_zone_name}."
-  name      = "om"
+  zone      = "${local.root_domain}."
+  name      = "${module.domains.om_subdomain}"
   addresses = ["${module.ops_manager.ip}"]
   ttl       = 300
 }
 
 resource "dns_cname_record" "pas_cname" {
-  zone  = "${local.dns_zone_name}."
+  zone  = "${local.root_domain}."
   name  = "*"
   cname = "${module.pas_elb.dns_name}."
   ttl   = 300
@@ -208,7 +214,7 @@ locals {
   om_key_name      = "${var.env_name}-om"
   bind_rndc_secret = "${data.terraform_remote_state.bootstrap_bind.bind_rndc_secret}"
   master_dns_ip    = "${data.terraform_remote_state.bind.master_public_ip}"
-  dns_zone_name    = "${data.terraform_remote_state.bind.zone_name}"
+  root_domain      = "${data.terraform_remote_state.paperwork.root_domain}"
 
   ingress_rules = [
     {
@@ -328,7 +334,7 @@ output "om_ssh_public_key_pair_name" {
 }
 
 output "om_dns_name" {
-  value = "${dns_a_record_set.om_a_record.name}.${substr(dns_a_record_set.om_a_record.zone, 0, length(dns_a_record_set.om_a_record.zone) - 1)}"
+  value = "${module.domains.om_fqdn}"
 }
 
 output "rds_cidr_block" {

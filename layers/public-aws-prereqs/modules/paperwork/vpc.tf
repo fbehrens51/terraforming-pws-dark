@@ -128,7 +128,3 @@ resource "aws_vpc_peering_connection" "control_plane_pas" {
     Name = "${var.env_name} | control plane/pas vpc peering"
   }
 }
-
-variable "env_name" {
-  type = "string"
-}

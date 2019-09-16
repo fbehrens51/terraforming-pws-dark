@@ -9,15 +9,6 @@ module "providers" {
 provider "aws" {}
 
 locals {
-  ldap_domain             = "ldap.${var.root_domain}"
-  splunk_domain           = "splunk.${var.root_domain}"
-  om_domain               = "om.${var.root_domain}"
-  splunk_monitor_domain   = "splunk_monitor.${var.root_domain}"
-  system_domain           = "run.${var.root_domain}"
-  apps_domain             = "cfapps.${var.root_domain}"
-  control_plane_domain    = "ci.${var.root_domain}"
-  control_plane_om_domain = "om.${local.control_plane_domain}"
-
   cert_bucket                          = "${replace(var.env_name," ","-")}-secrets"
   root_ca_cert_s3_path                 = "root_ca_cert.pem"
   router_trusted_ca_certs_s3_path      = "router_trusted_ca_certs.pem"
@@ -52,6 +43,12 @@ resource "random_string" "ldap_password" {
   special = false
 }
 
+module "domains" {
+  source = "../../modules/domains"
+
+  root_domain = "${var.root_domain}"
+}
+
 module "paperwork" {
   source                = "./modules/paperwork"
   bucket_role_name      = "${var.pas_bucket_role_name}"
@@ -60,16 +57,9 @@ module "paperwork" {
   key_manager_role_name = "${var.key_manager_role_name}"
   splunk_role_name      = "${var.splunk_role_name}"
 
-  env_name                = "${var.env_name}"
-  ldap_domain             = "${local.ldap_domain}"
-  splunk_domain           = "${local.splunk_domain}"
-  om_domain               = "${local.om_domain}"
-  control_plane_om_domain = "${local.control_plane_om_domain}"
-  system_domain           = "${local.system_domain}"
-  splunk_monitor_domain   = "${local.splunk_monitor_domain}"
-  apps_domain             = "${local.apps_domain}"
-  control_plane_domain    = "${local.control_plane_domain}"
-  users                   = "${var.users}"
+  env_name    = "${var.env_name}"
+  root_domain = "${var.root_domain}"
+  users       = "${var.users}"
 }
 
 # We invoke the keys layer here to simulate having a KEYMANAGER role invoke keys
@@ -92,9 +82,10 @@ data "template_file" "paperwork_variables" {
   template = "${file("${path.module}/paperwork.tfvars.tpl")}"
 
   vars {
-    control_plane_domain                        = "${local.control_plane_domain}"
-    apps_domain                                 = "${local.apps_domain}"
-    system_domain                               = "${local.system_domain}"
+    root_domain = "${var.root_domain}"
+
+    apps_domain                                 = "${module.domains.apps_fqdn}"
+    system_domain                               = "${module.domains.system_fqdn}"
     bucket_role_name                            = "${var.pas_bucket_role_name}"
     platform_automation_engine_worker_role_name = "${var.platform_automation_engine_worker_role_name}"
     splunk_role_name                            = "${var.splunk_role_name}"
@@ -111,7 +102,7 @@ data "template_file" "paperwork_variables" {
 
     ldap_basedn           = "${local.basedn}"
     ldap_dn               = "${local.admin}"
-    ldap_host             = "${local.ldap_domain}"
+    ldap_host             = "${module.domains.ldap_fqdn}"
     ldap_port             = "636"
     ldap_role_attr        = "role"
     ldap_password_s3_path = "${local.ldap_password_s3_path}"

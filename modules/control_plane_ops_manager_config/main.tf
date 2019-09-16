@@ -84,6 +84,12 @@ data "template_file" "director_template" {
   }
 }
 
+module "domains" {
+  source = "../domains"
+
+  root_domain = "${var.root_domain}"
+}
+
 data "template_file" "platform_automation_engine_template" {
   template = "${file("${path.module}/platform_automation_engine_template.tpl")}"
 
@@ -95,9 +101,9 @@ data "template_file" "platform_automation_engine_template" {
     credhub_elb_names = "[${join(",", var.credhub_elb_names)}]"
     web_elb_names     = "[${join(",", var.web_elb_names)}]"
 
-    uaa_endpoint     = "uaa.${var.concourse_domain}"
-    credhub_endpoint = "credhub.${var.concourse_domain}"
-    plane_endpoint   = "plane.${var.concourse_domain}"
+    uaa_endpoint     = "${module.domains.control_plane_uaa_fqdn}"
+    credhub_endpoint = "${module.domains.control_plane_credhub_fqdn}"
+    plane_endpoint   = "${module.domains.control_plane_plane_fqdn}"
 
     concourse_cert_pem        = "${var.concourse_cert_pem}"
     concourse_private_key_pem = "${var.concourse_private_key_pem}"

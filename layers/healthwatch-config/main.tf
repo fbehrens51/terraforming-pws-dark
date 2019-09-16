@@ -53,8 +53,19 @@ data "terraform_remote_state" "pas" {
   }
 }
 
+module "domains" {
+  source = "../../modules/domains"
+
+  root_domain = "${local.root_domain}"
+}
+
+module "splunk_ports" {
+  source = "../../modules/splunk_ports"
+}
+
 locals {
-  api_endpoint = "https://api.${data.terraform_remote_state.paperwork.system_domain}"
+  root_domain  = "${data.terraform_remote_state.paperwork.root_domain}"
+  api_endpoint = "https://api.${module.domains.system_fqdn}"
 }
 
 module "healthwatch_config" {
@@ -67,8 +78,8 @@ module "healthwatch_config" {
   env_name                       = "${var.env_name}"
   bosh_task_uaa_client_secret    = "${random_string.healthwatch_client_credentials_secret.result}"
 
-  splunk_syslog_host = "${data.terraform_remote_state.bootstrap_splunk.splunk_syslog_host_name}"
-  splunk_syslog_port = "${data.terraform_remote_state.bootstrap_splunk.splunk_syslog_port}"
+  splunk_syslog_host = "${module.domains.splunk_logs_fqdn}"
+  splunk_syslog_port = "${module.splunk_ports.splunk_tcp_port}"
 }
 
 resource "random_string" "healthwatch_client_credentials_secret" {

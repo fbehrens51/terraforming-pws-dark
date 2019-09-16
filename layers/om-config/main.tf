@@ -43,6 +43,16 @@ data "terraform_remote_state" "pas" {
 
 data "aws_region" "current" {}
 
+module "domains" {
+  source = "../../modules/domains"
+
+  root_domain = "${data.terraform_remote_state.paperwork.root_domain}"
+}
+
+module "splunk_ports" {
+  source = "../../modules/splunk_ports"
+}
+
 module "om_config" {
   source = "../../modules/ops_manager_config"
 
@@ -194,8 +204,8 @@ module "om_config" {
   ipsec_subnet_cidrs    = "${local.ipsec_subnet_cidrs}"
   no_ipsec_subnet_cidrs = "${local.no_ipsec_subnet_cidrs}"
 
-  splunk_syslog_host = "${data.terraform_remote_state.bootstrap_splunk.splunk_syslog_host_name}"
-  splunk_syslog_port = "${data.terraform_remote_state.bootstrap_splunk.splunk_syslog_port}"
+  splunk_syslog_host = "${module.domains.splunk_logs_fqdn}"
+  splunk_syslog_port = "${module.splunk_ports.splunk_tcp_port}"
 
   clamav_no_upstream_mirror = "${var.clamav_no_upstream_mirror}"
   clamav_external_mirrors   = "${var.clamav_external_mirrors}"

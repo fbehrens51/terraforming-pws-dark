@@ -178,6 +178,12 @@ module "credhub_elb" {
   instance_port     = 8844
 }
 
+module "domains" {
+  source = "../../modules/domains"
+
+  root_domain = "${local.root_domain}"
+}
+
 # Configure the DNS Provider
 provider "dns" {
   update {
@@ -189,29 +195,30 @@ provider "dns" {
 }
 
 resource "dns_a_record_set" "om_a_record" {
-  zone      = "${local.dns_zone_name}."
-  name      = "om.ci"
+  zone      = "${local.root_domain}."
+  name      = "${module.domains.control_plane_om_subdomain}"
   addresses = ["${module.ops_manager.ip}"]
   ttl       = 300
 }
 
 resource "dns_cname_record" "atc_cname" {
-  zone  = "${local.dns_zone_name}."
-  name  = "plane.ci"
+  zone = "${local.root_domain}."
+  name = "${module.domains.control_plane_plane_subdomain}"
+
   cname = "${module.web_elb.dns_name}."
   ttl   = 300
 }
 
 resource "dns_cname_record" "uaa_cname" {
-  zone  = "${local.dns_zone_name}."
-  name  = "uaa.ci"
+  zone  = "${local.root_domain}."
+  name  = "${module.domains.control_plane_uaa_subdomain}"
   cname = "${module.uaa_elb.dns_name}."
   ttl   = 300
 }
 
 resource "dns_cname_record" "credhub_cname" {
-  zone  = "${local.dns_zone_name}."
-  name  = "credhub.ci"
+  zone  = "${local.root_domain}."
+  name  = "${module.domains.control_plane_credhub_subdomain}"
   cname = "${module.credhub_elb.dns_name}."
   ttl   = 300
 }
@@ -232,7 +239,7 @@ locals {
   om_key_name      = "${local.env_name}-cp-om"
   bind_rndc_secret = "${data.terraform_remote_state.bootstrap_bind.bind_rndc_secret}"
   master_dns_ip    = "${data.terraform_remote_state.bind.master_public_ip}"
-  dns_zone_name    = "${data.terraform_remote_state.bind.zone_name}"
+  root_domain      = "${data.terraform_remote_state.paperwork.root_domain}"
   env_name         = "${var.tags["Name"]}"
   modified_name    = "${local.env_name} control plane"
   modified_tags    = "${merge(var.tags, map("Name", "${local.modified_name}"))}"

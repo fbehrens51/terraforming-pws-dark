@@ -53,17 +53,12 @@ data "terraform_remote_state" "bootstrap_bind" {
 }
 
 locals {
-  indexers_count             = "3"
-  forwarders_count           = "1"
-  splunk_http_collector_port = 8087
-  splunk_mgmt_port           = 8089
-  splunk_replication_port    = 8088
-  splunk_tcp_port            = 8090
-  splunk_web_port            = 8000
+  indexers_count   = "3"
+  forwarders_count = "1"
 
   tags = "${merge(var.tags, map("Name", "${var.env_name}-splunk"))}"
 
-  dns_zone_name    = "${data.terraform_remote_state.bind.zone_name}"
+  dns_zone_name    = "${data.terraform_remote_state.paperwork.root_domain}"
   master_dns_ip    = "${data.terraform_remote_state.bind.master_public_ip}"
   bind_rndc_secret = "${data.terraform_remote_state.bootstrap_bind.bind_rndc_secret}"
   public_subnet    = "${data.terraform_remote_state.enterprise-services.public_subnet_ids[0]}"
@@ -80,27 +75,27 @@ locals {
       cidr_blocks = "0.0.0.0/0"
     },
     {
-      port        = "${local.splunk_replication_port}"
+      port        = "${module.splunk_ports.splunk_replication_port}"
       protocol    = "tcp"
       cidr_blocks = "0.0.0.0/0"
     },
     {
-      port        = "${local.splunk_mgmt_port}"
+      port        = "${module.splunk_ports.splunk_mgmt_port}"
       protocol    = "tcp"
       cidr_blocks = "0.0.0.0/0"
     },
     {
-      port        = "${local.splunk_web_port}"
+      port        = "${module.splunk_ports.splunk_web_port}"
       protocol    = "tcp"
       cidr_blocks = "0.0.0.0/0"
     },
     {
-      port        = "${local.splunk_tcp_port}"
+      port        = "${module.splunk_ports.splunk_tcp_port}"
       protocol    = "tcp"
       cidr_blocks = "0.0.0.0/0"
     },
     {
-      port        = "${local.splunk_http_collector_port}"
+      port        = "${module.splunk_ports.splunk_http_collector_port}"
       protocol    = "tcp"
       cidr_blocks = "0.0.0.0/0"
     },
@@ -113,6 +108,10 @@ locals {
       cidr_blocks = "0.0.0.0/0"
     },
   ]
+}
+
+module "splunk_ports" {
+  source = "../../modules/splunk_ports"
 }
 
 variable "remote_state_bucket" {}
@@ -251,6 +250,12 @@ module "splunk_monitor_elb" {
   instance_port     = "8000"
 }
 
+module "domains" {
+  source = "../../modules/domains"
+
+  root_domain = "${data.terraform_remote_state.paperwork.root_domain}"
+}
+
 provider "dns" {
   update {
     server        = "${local.master_dns_ip}"
@@ -262,21 +267,21 @@ provider "dns" {
 
 resource "dns_cname_record" "splunk_master_cname" {
   zone  = "${local.dns_zone_name}."
-  name  = "splunk-monitor"
+  name  = "${module.domains.splunk_monitor_subdomain}"
   cname = "${module.splunk_monitor_elb.dns_name}."
   ttl   = 300
 }
 
 resource "dns_cname_record" "splunk_cname" {
   zone  = "${local.dns_zone_name}."
-  name  = "splunk"
+  name  = "${module.domains.splunk_subdomain}"
   cname = "${module.splunk_search_head_elb.dns_name}."
   ttl   = 300
 }
 
 resource "dns_a_record_set" "splunk_logs_a_record" {
   zone      = "${local.dns_zone_name}."
-  name      = "splunk-logs"
+  name      = "${module.domains.splunk_logs_subdomain}"
   addresses = ["${module.forwarders_bootstrap.eni_ips}"]
   ttl       = 300
 }
@@ -329,16 +334,8 @@ output "search_head_eni_ids" {
   value = "${module.search_head_bootstrap.eni_ids}"
 }
 
-output "splunk_dns_name" {
-  value = "${dns_cname_record.splunk_cname.name}.${substr(dns_cname_record.splunk_cname.zone, 0, length(dns_cname_record.splunk_cname.zone) - 1)}"
-}
-
-output "splunk_syslog_host_name" {
-  value = "${dns_a_record_set.splunk_logs_a_record.name}.${substr(dns_a_record_set.splunk_logs_a_record.zone, 0, length(dns_a_record_set.splunk_logs_a_record.zone) - 1)}"
-}
-
 output "splunk_http_collector_url" {
-  value = "https://${dns_a_record_set.splunk_logs_a_record.name}.${substr(dns_a_record_set.splunk_logs_a_record.zone, 0, length(dns_a_record_set.splunk_logs_a_record.zone) - 1)}:${local.splunk_http_collector_port}"
+  value = "https://${module.domains.splunk_logs_fqdn}:${module.splunk_ports.splunk_http_collector_port}"
 }
 
 output "splunk_ssh_key_pair_name" {
@@ -377,28 +374,4 @@ output "splunk_monitor_elb_id" {
 
 output "splunk_search_head_elb_id" {
   value = "${module.splunk_search_head_elb.my_elb_id}"
-}
-
-output "splunk_http_collector_port" {
-  value = "${local.splunk_http_collector_port}"
-}
-
-output "splunk_mgmt_port" {
-  value = "${local.splunk_mgmt_port}"
-}
-
-output "splunk_replication_port" {
-  value = "${local.splunk_replication_port}"
-}
-
-output "splunk_indexers_input_port" {
-  value = "${local.splunk_tcp_port}"
-}
-
-output "splunk_syslog_port" {
-  value = "${local.splunk_tcp_port}"
-}
-
-output "splunk_web_port" {
-  value = "${local.splunk_web_port}"
 }

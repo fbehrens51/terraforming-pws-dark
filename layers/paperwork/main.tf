@@ -8,6 +8,8 @@ module "providers" {
 
 provider "aws" {}
 
+variable "root_domain" {}
+
 variable "cert_bucket" {}
 
 variable "pas_vpc_id" {}
@@ -49,8 +51,6 @@ variable "ldap_role_attr" {}
 variable "system_domain" {}
 
 variable "apps_domain" {}
-
-variable "control_plane_domain" {}
 
 variable "ldap_password_s3_path" {}
 
@@ -387,14 +387,14 @@ output "ldap_role_attr" {
   value = "${var.ldap_role_attr}"
 }
 
+output "root_domain" {
+  value = "${var.root_domain}"
+}
+
 output "system_domain" {
   value = "${var.system_domain}"
 }
 
 output "apps_domain" {
   value = "${var.apps_domain}"
-}
-
-output "control_plane_domain" {
-  value = "${var.control_plane_domain}"
 }

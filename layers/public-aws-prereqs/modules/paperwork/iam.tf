@@ -1,13 +1,3 @@
-variable "director_role_name" {}
-
-variable "bucket_role_name" {}
-
-variable "worker_role_name" {}
-
-variable "splunk_role_name" {}
-
-variable "key_manager_role_name" {}
-
 data "aws_iam_policy_document" "director" {
   statement {
     effect = "Allow"
