@@ -19,50 +19,87 @@ module "providers" {
   source = "../../modules/dark_providers"
 }
 
-module "vpc_route_tables" {
-  source         = "../../modules/routing/vpc_route_tables"
+locals {
   pas_vpc_id     = "${data.terraform_remote_state.paperwork.pas_vpc_id}"
-  bastion_vpc_id = "${data.terraform_remote_state.paperwork.bastion_vpc_id}"
   es_vpc_id      = "${data.terraform_remote_state.paperwork.es_vpc_id}"
   cp_vpc_id      = "${data.terraform_remote_state.paperwork.cp_vpc_id}"
-  env_name       = "${var.env_name}"
-  internetless   = "${var.internetless}"
+  bastion_vpc_id = "${data.terraform_remote_state.paperwork.bastion_vpc_id}"
+}
+
+module "pas_vpc_route_tables" {
+  source       = "./modules/vpc_route_tables"
+  internetless = "${var.internetless}"
+  vpc_id       = "${local.pas_vpc_id}"
+
+  tags = {
+    Name = "${var.env_name} | PAS"
+  }
+}
+
+module "bastion_vpc_route_tables" {
+  source       = "./modules/vpc_route_tables"
+  internetless = "${var.internetless}"
+  vpc_id       = "${local.bastion_vpc_id}"
+
+  tags = {
+    Name = "${var.env_name} | BASTION"
+  }
+}
+
+module "es_vpc_route_tables" {
+  source       = "./modules/vpc_route_tables"
+  internetless = "${var.internetless}"
+  vpc_id       = "${local.es_vpc_id}"
+
+  tags = {
+    Name = "${var.env_name} | ENT SVCS"
+  }
+}
+
+module "cp_vpc_route_tables" {
+  source       = "./modules/vpc_route_tables"
+  internetless = "${var.internetless}"
+  vpc_id       = "${local.cp_vpc_id}"
+
+  tags = {
+    Name = "${var.env_name} | CP"
+  }
 }
 
 module "route_bastion_cp" {
-  source                   = "../../modules/routing"
-  accepter_vpc_id  = "${data.terraform_remote_state.paperwork.bastion_vpc_id}"
-  requester_vpc_id = "${data.terraform_remote_state.paperwork.cp_vpc_id}"
+  source           = "./modules/routing"
+  accepter_vpc_id  = "${local.bastion_vpc_id}"
+  requester_vpc_id = "${local.cp_vpc_id}"
 }
 
 module "route_bastion_pas" {
-  source                   = "../../modules/routing"
-  accepter_vpc_id  = "${data.terraform_remote_state.paperwork.bastion_vpc_id}"
-  requester_vpc_id = "${data.terraform_remote_state.paperwork.pas_vpc_id}"
+  source           = "./modules/routing"
+  accepter_vpc_id  = "${local.bastion_vpc_id}"
+  requester_vpc_id = "${local.pas_vpc_id}"
 }
 
 module "route_bastion_es" {
-  source                   = "../../modules/routing"
-  accepter_vpc_id  = "${data.terraform_remote_state.paperwork.bastion_vpc_id}"
-  requester_vpc_id = "${data.terraform_remote_state.paperwork.es_vpc_id}"
+  source           = "./modules/routing"
+  accepter_vpc_id  = "${local.bastion_vpc_id}"
+  requester_vpc_id = "${local.es_vpc_id}"
 }
 
 module "route_cp_pas" {
-  source                   = "../../modules/routing"
-  accepter_vpc_id  = "${data.terraform_remote_state.paperwork.cp_vpc_id}"
-  requester_vpc_id = "${data.terraform_remote_state.paperwork.pas_vpc_id}"
+  source           = "./modules/routing"
+  accepter_vpc_id  = "${local.cp_vpc_id}"
+  requester_vpc_id = "${local.pas_vpc_id}"
 }
 
 module "route_cp_es" {
-  source                   = "../../modules/routing"
-  accepter_vpc_id  = "${data.terraform_remote_state.paperwork.cp_vpc_id}"
-  requester_vpc_id = "${data.terraform_remote_state.paperwork.es_vpc_id}"
+  source           = "./modules/routing"
+  accepter_vpc_id  = "${local.cp_vpc_id}"
+  requester_vpc_id = "${local.es_vpc_id}"
 }
 
 module "route_pas_es" {
-  source                   = "../../modules/routing"
-  accepter_vpc_id  = "${data.terraform_remote_state.paperwork.pas_vpc_id}"
-  requester_vpc_id = "${data.terraform_remote_state.paperwork.es_vpc_id}"
+  source           = "./modules/routing"
+  accepter_vpc_id  = "${local.pas_vpc_id}"
+  requester_vpc_id = "${local.es_vpc_id}"
 }
 
 variable "remote_state_region" {}

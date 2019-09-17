@@ -5,12 +5,12 @@ variable "tags" {
 }
 
 locals {
-  env_name         = "${var.tags["Name"]}"
-  public_name    = "${local.env_name} PUBLIC"
-  public_tags    = "${merge(var.tags, map("Name", "${local.public_name}"))}"
+  env_name    = "${var.tags["Name"]}"
+  public_name = "${local.env_name} PUBLIC"
+  public_tags = "${merge(var.tags, map("Name", "${local.public_name}"))}"
 
-  private_name    = "${local.env_name} PRIVATE"
-  private_tags    = "${merge(var.tags, map("Name", "${local.private_name}"))}"
+  private_name = "${local.env_name} PRIVATE"
+  private_tags = "${merge(var.tags, map("Name", "${local.private_name}"))}"
 }
 
 variable "internetless" {}
@@ -45,7 +45,7 @@ resource "aws_route_table" "public_route_table" {
 
   vpc_id = "${var.vpc_id}"
 
-  tags   = "${local.public_tags}"
+  tags = "${local.public_tags}"
 }
 
 resource "aws_route_table" "private_route_table" {
@@ -53,7 +53,7 @@ resource "aws_route_table" "private_route_table" {
 
   vpc_id = "${var.vpc_id}"
 
-  tags   = "${local.private_tags}"
+  tags = "${local.private_tags}"
 }
 
 output "public_route_table_id" {
