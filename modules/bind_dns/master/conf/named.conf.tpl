@@ -37,9 +37,9 @@ options {
 
 	auth-nxdomain no;
 	notify no;
-	dnssec-enable yes;
-	dnssec-validation auto;
-	dnssec-lookaside auto;
+	dnssec-enable no;
+	#dnssec-validation auto;
+	#dnssec-lookaside auto;
 
 	bindkeys-file "/etc/named.iscdlv.key";
 	managed-keys-directory "/var/named/dynamic";
