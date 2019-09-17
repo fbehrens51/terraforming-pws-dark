@@ -68,6 +68,8 @@ locals {
   master_ip = "${data.terraform_remote_state.bootstrap_splunk.master_private_ips[0]}"
 
   ssh_key_pair_name = "${data.terraform_remote_state.bootstrap_splunk.splunk_ssh_key_pair_name}"
+
+  root_domain = "${data.terraform_remote_state.paperwork.root_domain}"
 }
 
 variable "remote_state_bucket" {}
@@ -201,9 +203,22 @@ module "setup_indexers_hostname" {
   role   = "splunk-inexer"
 }
 
+module "syslog_config" {
+  source = "../../modules/syslog"
+
+  root_domain = "${local.root_domain}"
+}
+
 data "template_cloudinit_config" "splunk_master_cloud_init_config" {
   base64_encode = false
   gzip          = false
+
+  part {
+    filename     = "syslog.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.syslog_config.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
 
   part {
     filename     = "serverconf.cfg"
@@ -247,6 +262,12 @@ data "template_cloudinit_config" "splunk_search_head_cloud_init_config" {
   gzip          = false
 
   part {
+    filename     = "syslog.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.syslog_config.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+  part {
     filename     = "serverconf.cfg"
     content_type = "text/cloud-config"
     content      = "${module.search_head_server_conf.user_data}"
@@ -286,6 +307,13 @@ data "template_cloudinit_config" "splunk_search_head_cloud_init_config" {
 data "template_cloudinit_config" "splunk_forwarders_cloud_init_config" {
   base64_encode = false
   gzip          = false
+
+  part {
+    filename     = "syslog.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.syslog_config.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
 
   part {
     filename     = "webconf.cfg"
@@ -328,6 +356,12 @@ data "template_cloudinit_config" "splunk_indexers_cloud_init_config" {
   base64_encode = false
   gzip          = false
 
+  part {
+    filename     = "syslog.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.syslog_config.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
   part {
     filename     = "serverconf.cfg"
     content_type = "text/cloud-config"

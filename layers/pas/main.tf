@@ -144,9 +144,16 @@ resource "dns_a_record_set" "om_a_record" {
   ttl       = 300
 }
 
-resource "dns_cname_record" "pas_cname" {
+resource "dns_cname_record" "pas_system_cname" {
   zone  = "${local.root_domain}."
-  name  = "*"
+  name  = "*.${module.domains.system_subdomain}"
+  cname = "${module.pas_elb.dns_name}."
+  ttl   = 300
+}
+
+resource "dns_cname_record" "pas_apps_cname" {
+  zone  = "${local.root_domain}."
+  name  = "*.${module.domains.apps_subdomain}"
   cname = "${module.pas_elb.dns_name}."
   ttl   = 300
 }
