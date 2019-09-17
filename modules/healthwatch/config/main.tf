@@ -45,8 +45,8 @@ data "template_file" "healthwatch_config" {
     env_name                       = "${var.env_name}"
 
     bosh_task_uaa_client_secret = "${var.bosh_task_uaa_client_secret}"
-    splunk_syslog_host = "${var.splunk_syslog_host}"
-    splunk_syslog_port = "${var.splunk_syslog_port}"
+    splunk_syslog_host          = "${var.splunk_syslog_host}"
+    splunk_syslog_port          = "${var.splunk_syslog_port}"
   }
 }
 

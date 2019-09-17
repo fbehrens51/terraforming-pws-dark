@@ -29,10 +29,10 @@ locals {
   control_plane_plane_fqdn      = "${local.control_plane_plane_subdomain}.${var.root_domain}"
 
   system_subdomain = "run"
-  system_fqdn = "${local.system_subdomain}.${var.root_domain}"
+  system_fqdn      = "${local.system_subdomain}.${var.root_domain}"
 
   apps_subdomain = "cfapps"
-  apps_fqdn = "${local.apps_subdomain}.${var.root_domain}"
+  apps_fqdn      = "${local.apps_subdomain}.${var.root_domain}"
 }
 
 output "ldap_subdomain" {

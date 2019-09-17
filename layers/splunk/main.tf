@@ -267,6 +267,7 @@ data "template_cloudinit_config" "splunk_search_head_cloud_init_config" {
     content      = "${module.syslog_config.user_data}"
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
+
   part {
     filename     = "serverconf.cfg"
     content_type = "text/cloud-config"
@@ -362,6 +363,7 @@ data "template_cloudinit_config" "splunk_indexers_cloud_init_config" {
     content      = "${module.syslog_config.user_data}"
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
+
   part {
     filename     = "serverconf.cfg"
     content_type = "text/cloud-config"
