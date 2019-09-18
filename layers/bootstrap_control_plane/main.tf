@@ -130,6 +130,20 @@ resource "aws_security_group" "vms_security_group" {
   tags = "${merge(local.modified_tags, map("Name", "${local.env_name}-vms-security-group"))}"
 }
 
+resource "aws_s3_bucket" "transfer_bucket" {
+  bucket        = "${local.bucket_prefix}-transfer"
+  force_destroy = true
+
+  tags = "${merge(var.tags, map("Name", "${local.env_name} Transfer Bucket"))}"
+}
+
+resource "aws_s3_bucket" "mirror_bucket" {
+  bucket        = "${local.bucket_prefix}-mirror"
+  force_destroy = true
+
+  tags = "${merge(var.tags, map("Name", "${local.env_name} Mirror Bucket"))}"
+}
+
 module "nat" {
   source                 = "../../modules/nat"
   private_route_table_id = "${data.terraform_remote_state.routes.cp_private_vpc_route_table_id}"
@@ -243,6 +257,7 @@ locals {
   env_name         = "${var.tags["Name"]}"
   modified_name    = "${local.env_name} control plane"
   modified_tags    = "${merge(var.tags, map("Name", "${local.modified_name}"))}"
+  bucket_prefix    = "${replace(local.env_name, " ", "-")}"
 
   public_cidr_block  = "${cidrsubnet(data.aws_vpc.vpc.cidr_block, 1, 0)}"
   private_cidr_block = "${cidrsubnet(data.aws_vpc.vpc.cidr_block, 1, 1)}"
