@@ -125,7 +125,7 @@ resource "aws_iam_instance_profile" "director" {
 
 resource "aws_iam_instance_profile" "worker" {
   name = "${var.worker_role_name}"
-  role = "${aws_iam_role.bucket.name}"
+  role = "${aws_iam_role.director.name}"
 }
 
 resource "aws_iam_instance_profile" "bucket" {
