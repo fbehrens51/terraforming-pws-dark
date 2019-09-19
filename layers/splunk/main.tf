@@ -206,12 +206,12 @@ module "setup_indexers_hostname" {
 variable "clamav_db_mirror" {}
 
 module "clam_av_client_config" {
-  source = "../../modules/clamav/amzn2_systemd_client"
+  source           = "../../modules/clamav/amzn2_systemd_client"
   clamav_db_mirror = "${var.clamav_db_mirror}"
 }
 
 module "syslog_config" {
-  source = "../../modules/syslog"
+  source      = "../../modules/syslog"
   root_domain = "${local.root_domain}"
 }
 

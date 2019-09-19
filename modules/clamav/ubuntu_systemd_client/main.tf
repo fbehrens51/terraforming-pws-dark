@@ -7,8 +7,8 @@ data "template_file" "user_data" {
 
   vars {
     clam_database_mirror = "${var.clamav_db_mirror}"
-    aug_lens = "${indent(8,file("${path.module}/clamavubuntu.aug"))}"
-    deb_tgz_location = "${var.deb_tgz_location}"
+    aug_lens             = "${indent(8,file("${path.module}/clamavubuntu.aug"))}"
+    deb_tgz_location     = "${var.deb_tgz_location}"
   }
 }
 

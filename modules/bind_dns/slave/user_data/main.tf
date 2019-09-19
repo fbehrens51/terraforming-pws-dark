@@ -22,12 +22,12 @@ data "template_file" "user_data" {
 variable "clamav_db_mirror" {}
 
 module "clam_av_client_config" {
-  source = "../../../clamav/amzn2_systemd_client"
+  source           = "../../../clamav/amzn2_systemd_client"
   clamav_db_mirror = "${var.clamav_db_mirror}"
 }
 
 module "syslog_config" {
-  source = "../../../syslog"
+  source      = "../../../syslog"
   root_domain = "${var.zone_name}"
 }
 

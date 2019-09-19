@@ -78,9 +78,9 @@ variable "deb_pkg_bucket" {}
 variable "clamav_deb_pkg_object_key" {}
 
 module "deb_tgz_url" {
-  source = "../../modules/s3/presigned_url"
+  source      = "../../modules/s3/presigned_url"
   bucket_name = "${var.deb_pkg_bucket}"
-  object_key = "${var.clamav_deb_pkg_object_key}"
+  object_key  = "${var.clamav_deb_pkg_object_key}"
 }
 
 module "clam_av_client_config" {
@@ -88,7 +88,6 @@ module "clam_av_client_config" {
   clamav_db_mirror = "database.clamav.net"
   deb_tgz_location = "${module.deb_tgz_url.value}"
 }
-
 
 data "template_cloudinit_config" "config" {
   part {

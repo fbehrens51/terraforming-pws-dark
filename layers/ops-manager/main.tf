@@ -78,9 +78,9 @@ variable "deb_pkg_bucket" {}
 variable "clamav_deb_pkg_object_key" {}
 
 module "deb_tgz_url" {
-  source = "../../modules/s3/presigned_url"
+  source      = "../../modules/s3/presigned_url"
   bucket_name = "${var.deb_pkg_bucket}"
-  object_key = "${var.clamav_deb_pkg_object_key}"
+  object_key  = "${var.clamav_deb_pkg_object_key}"
 }
 
 module "clam_av_client_config" {
@@ -107,12 +107,12 @@ bootcmd:
 CLOUDINIT
   }
 
-    part {
-      filename     = "clamav.cfg"
-      content_type = "text/cloud-config"
-      content      = "${module.clam_av_client_config.client_user_data_config}"
-      merge_type   = "list(append)+dict(no_replace,recurse_list)"
-    }
+  part {
+    filename     = "clamav.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.clam_av_client_config.client_user_data_config}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
 }
 
 resource "aws_eip_association" "om_eip_assoc" {

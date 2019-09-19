@@ -130,13 +130,11 @@ resource "aws_security_group" "vms_security_group" {
   tags = "${merge(local.modified_tags, map("Name", "${local.env_name}-vms-security-group"))}"
 }
 
-
 variable "clamav_db_mirror" {}
 
 module "amzn1_clam_av_client_config" {
-  source = "../../modules/clamav/amzn1_initd_client"
+  source           = "../../modules/clamav/amzn1_initd_client"
   clamav_db_mirror = "${var.clamav_db_mirror}"
-
 }
 
 resource "aws_s3_bucket" "transfer_bucket" {
@@ -151,7 +149,6 @@ resource "aws_s3_bucket" "mirror_bucket" {
   force_destroy = true
 
   tags = "${merge(var.tags, map("Name", "${local.env_name} Mirror Bucket"))}"
-
 }
 
 module "nat" {

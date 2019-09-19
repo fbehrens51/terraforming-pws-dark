@@ -5,7 +5,7 @@ data "template_file" "user_data" {
 
   vars {
     clam_database_mirror = "${var.clamav_db_mirror}"
-    clam_freshclam = "${indent(8,file("${path.module}/clam-freshclam"))}"
+    clam_freshclam       = "${indent(8,file("${path.module}/clam-freshclam"))}"
   }
 }
 

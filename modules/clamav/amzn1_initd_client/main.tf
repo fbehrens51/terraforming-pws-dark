@@ -5,8 +5,8 @@ data "template_file" "user_data" {
 
   vars {
     clam_database_mirror = "${var.clamav_db_mirror}"
-    aug_lens = "${indent(8,file("${path.module}/clamav.aug"))}"
-    service_file = "${indent(8,file("${path.module}/freshclam.service"))}"
+    aug_lens             = "${indent(8,file("${path.module}/clamav.aug"))}"
+    service_file         = "${indent(8,file("${path.module}/freshclam.service"))}"
   }
 }
 

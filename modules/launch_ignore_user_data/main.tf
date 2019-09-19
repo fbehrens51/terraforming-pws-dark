@@ -65,7 +65,7 @@ resource "aws_instance" "instance" {
 
   lifecycle {
     // We don't want terraform to remove tags applied later by customer processes
-    ignore_changes = ["tags","user_data"]
+    ignore_changes = ["tags", "user_data"]
   }
 }
 
