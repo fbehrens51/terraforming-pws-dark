@@ -43,6 +43,18 @@ data "terraform_remote_state" "bootstrap_control_plane" {
 
 data "aws_region" "current" {}
 
+data "aws_vpc" "bastion_vpc" {
+  id = "${data.terraform_remote_state.paperwork.bastion_vpc_id}"
+}
+
+data "aws_vpc" "es_vpc" {
+  id = "${data.terraform_remote_state.paperwork.es_vpc_id}"
+}
+
+data "aws_vpc" "cp_vpc" {
+  id = "${data.terraform_remote_state.paperwork.cp_vpc_id}"
+}
+
 module "domains" {
   source = "../../modules/domains"
 
@@ -128,31 +140,67 @@ module "om_config" {
   splunk_syslog_port                       = "${module.splunk_ports.splunk_tcp_port}"
 }
 
+module "runtime_config_config" {
+  source = "../../modules/runtime_config"
+
+  runtime_config_product_version = "${var.runtime_config_product_version}"
+  ipsec_log_level                = "${var.ipsec_log_level}"
+  ipsec_optional                 = "${var.ipsec_optional}"
+
+  ipsec_subnet_cidrs    = "${local.ipsec_subnet_cidrs}"
+  no_ipsec_subnet_cidrs = "${local.no_ipsec_subnet_cidrs}"
+
+  custom_ssh_banner_file = "${var.custom_ssh_banner_file}"
+
+  pivnet_api_token          = "${var.pivnet_api_token}"
+  product_blobs_s3_bucket   = "${var.product_blobs_s3_bucket}"
+  product_blobs_s3_endpoint = "${var.product_blobs_s3_endpoint}"
+  product_blobs_s3_region   = "${var.product_blobs_s3_region}"
+  s3_access_key_id          = "${var.s3_access_key_id}"
+  s3_secret_access_key      = "${var.s3_secret_access_key}"
+  s3_auth_type              = "${var.s3_auth_type}"
+
+  vpc_dns = "${local.vpc_dns}"
+}
+
 module "clamav_config" {
   source = "../../modules/clamav"
 
-  bosh_network_name = "control-plane-subnet"
-  singleton_availability_zone = "${var.singleton_availability_zone}"
-  availability_zones = "${data.terraform_remote_state.bootstrap_control_plane.control_plane_subnet_availability_zones}"
-  clamav_no_upstream_mirror = "${var.clamav_no_upstream_mirror}"
-  clamav_external_mirrors   = "${var.clamav_external_mirrors}"
+  bosh_network_name                = "control-plane-subnet"
+  singleton_availability_zone      = "${var.singleton_availability_zone}"
+  availability_zones               = "${data.terraform_remote_state.bootstrap_control_plane.control_plane_subnet_availability_zones}"
+  clamav_no_upstream_mirror        = "${var.clamav_no_upstream_mirror}"
+  clamav_external_mirrors          = "${var.clamav_external_mirrors}"
   clamav_cpu_limit                 = "${var.clamav_cpu_limit}"
   clamav_enable_on_access_scanning = "${var.clamav_enable_on_access_scanning}"
   clamav_mirror_instance_type      = "${var.clamav_mirror_instance_type}"
 
-  pivnet_api_token                         = "${var.pivnet_api_token}"
-  product_blobs_s3_bucket                  = "${var.product_blobs_s3_bucket}"
-  product_blobs_s3_endpoint                = "${var.product_blobs_s3_endpoint}"
-  product_blobs_s3_region                  = "${var.product_blobs_s3_region}"
-  s3_access_key_id                         = "${var.s3_access_key_id}"
-  s3_secret_access_key                     = "${var.s3_secret_access_key}"
-  s3_auth_type                             = "${var.s3_auth_type}"
-  splunk_syslog_host                       = "${module.domains.splunk_logs_fqdn}"
-  splunk_syslog_port                       = "${module.splunk_ports.splunk_tcp_port}"
+  pivnet_api_token          = "${var.pivnet_api_token}"
+  product_blobs_s3_bucket   = "${var.product_blobs_s3_bucket}"
+  product_blobs_s3_endpoint = "${var.product_blobs_s3_endpoint}"
+  product_blobs_s3_region   = "${var.product_blobs_s3_region}"
+  s3_access_key_id          = "${var.s3_access_key_id}"
+  s3_secret_access_key      = "${var.s3_secret_access_key}"
+  s3_auth_type              = "${var.s3_auth_type}"
+  splunk_syslog_host        = "${module.domains.splunk_logs_fqdn}"
+  splunk_syslog_port        = "${module.splunk_ports.splunk_tcp_port}"
 }
 
 locals {
+  vpc_dns     = "${data.terraform_remote_state.paperwork.pas_vpc_dns}"
   vpc_id      = "${data.terraform_remote_state.paperwork.pas_vpc_id}"
   om_key_name = "${var.env_name}-om"
   root_domain = "${data.terraform_remote_state.paperwork.root_domain}"
+
+  control_plane_subnet_cidrs = "${data.terraform_remote_state.bootstrap_control_plane.control_plane_subnet_cidrs}"
+
+  control_plane_public_cidrs   = "${data.terraform_remote_state.bootstrap_control_plane.control_plane_public_cidrs}"
+  sjb_cidrs                    = "${data.terraform_remote_state.bootstrap_control_plane.sjb_cidr_block}"
+  bosh_cidr                    = "${cidrhost(local.control_plane_subnet_cidrs[0], 5)}/32"
+  enterprise_services_vpc_cidr = "${data.aws_vpc.es_vpc.cidr_block}"
+  control_plane_vpc_cidr       = "${data.aws_vpc.cp_vpc.cidr_block}"
+  bastion_vpc_cidr             = "${data.aws_vpc.bastion_vpc.cidr_block}"
+
+  ipsec_subnet_cidrs    = "${local.control_plane_subnet_cidrs}"
+  no_ipsec_subnet_cidrs = "${concat(local.control_plane_public_cidrs, list(local.bosh_cidr, local.enterprise_services_vpc_cidr, local.control_plane_vpc_cidr, local.bastion_vpc_cidr))}"
 }

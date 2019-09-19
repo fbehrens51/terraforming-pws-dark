@@ -11,6 +11,10 @@ output "sjb_ssh_key_pair_name" {
   value = "${module.sjb_key_pair.key_name}"
 }
 
+output "control_plane_public_cidrs" {
+  value = "${module.public_subnets.subnet_cidr_blocks}"
+}
+
 output "control_plane_subnet_cidrs" {
   value = "${module.private_subnets.subnet_cidr_blocks}"
 }

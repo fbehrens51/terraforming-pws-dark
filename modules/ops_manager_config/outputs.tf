@@ -62,13 +62,3 @@ output "download_compliance_scanner_config" {
   value     = "${data.template_file.download_compliance_scanner_config.rendered}"
   sensitive = true
 }
-
-output "download_runtime_config_config" {
-  value     = "${data.template_file.download_runtime_config_config.rendered}"
-  sensitive = true
-}
-
-output "runtime_config_template" {
-  value     = "${data.template_file.runtime_config_template.rendered}"
-  sensitive = true
-}

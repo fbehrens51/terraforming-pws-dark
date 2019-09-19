@@ -3,16 +3,12 @@ locals {
   pas_file_glob       = "cf*.pivotal"
   pas_product_slug    = "elastic-runtime"
   pas_product_version = "2.4.13"
-  pas_vpc_dns_subnet  = "${var.pas_vpc_dns}/32"
 
   cf_tools_file_glob    = "pws-dark-cf-tools*"
   cf_tools_product_slug = "pws-dark-cf-tools-tile"
 
   portal_file_glob    = "pws-dark-portal*"
   portal_product_slug = "pws-dark-portal-tile"
-
-  runtime_config_file_glob    = "pws-dark-runtime-config*.pivotal"
-  runtime_config_product_slug = "pws-dark-runtime-config-tile"
 
   healthwatch_file_glob       = "p-healthwatch*.pivotal"
   healthwatch_product_slug    = "p-healthwatch"
@@ -267,18 +263,6 @@ data "template_file" "portal_template" {
   }
 }
 
-data "template_file" "runtime_config_template" {
-  template = "${file("${path.module}/runtime_config_template.tpl")}"
-
-  vars = {
-    ipsec_log_level       = "${var.ipsec_log_level}"
-    ipsec_optional        = "${var.ipsec_optional}"
-    ipsec_subnet_cidrs    = "${join(",",  var.ipsec_subnet_cidrs)}"
-    no_ipsec_subnet_cidrs = "${join(",", concat(var.no_ipsec_subnet_cidrs, list(local.pas_vpc_dns_subnet)))}"
-    ssh_banner            = "${file(var.custom_ssh_banner_file)}"
-  }
-}
-
 data "template_file" "create_db" {
   template = "${file("${path.module}/create_db.tpl")}"
 
@@ -344,25 +328,6 @@ data "template_file" "download_cf_tools_config" {
     pivnet_file_glob    = "${local.cf_tools_file_glob}"
     pivnet_product_slug = "${local.cf_tools_product_slug}"
     product_version     = "${var.cf_tools_product_version}"
-
-    pivnet_api_token = "${var.pivnet_api_token}"
-    s3_bucket        = "${var.product_blobs_s3_bucket}"
-
-    s3_endpoint          = "${var.product_blobs_s3_endpoint}"
-    s3_region_name       = "${var.product_blobs_s3_region}"
-    s3_access_key_id     = "${var.s3_access_key_id}"
-    s3_secret_access_key = "${var.s3_secret_access_key}"
-    s3_auth_type         = "${var.s3_auth_type}"
-  }
-}
-
-data "template_file" "download_runtime_config_config" {
-  template = "${file("${path.module}/download_product_config.tpl")}"
-
-  vars = {
-    pivnet_file_glob    = "${local.runtime_config_file_glob}"
-    pivnet_product_slug = "${local.runtime_config_product_slug}"
-    product_version     = "${var.runtime_config_product_version}"
 
     pivnet_api_token = "${var.pivnet_api_token}"
     s3_bucket        = "${var.product_blobs_s3_bucket}"

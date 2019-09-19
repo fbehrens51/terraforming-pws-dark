@@ -68,3 +68,8 @@ variable "clamav_external_mirrors" {
 variable "clamav_mirror_instance_type" {
   default = "automatic"
 }
+
+variable "ipsec_log_level" {}
+variable "ipsec_optional" {}
+
+variable "runtime_config_product_version" {}

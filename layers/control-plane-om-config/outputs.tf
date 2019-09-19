@@ -37,3 +37,13 @@ output "download_clamav_mirror_config" {
   value     = "${module.clamav_config.download_clamav_mirror_config}"
   sensitive = true
 }
+
+output "download_runtime_config_config" {
+  value     = "${module.runtime_config_config.download_runtime_config_config}"
+  sensitive = true
+}
+
+output "runtime_config_template" {
+  value     = "${module.runtime_config_config.runtime_config_template}"
+  sensitive = true
+}

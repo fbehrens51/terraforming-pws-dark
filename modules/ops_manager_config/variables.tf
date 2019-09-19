@@ -437,8 +437,6 @@ variable "cf_tools_product_version" {}
 
 variable "portal_product_version" {}
 
-variable "runtime_config_product_version" {}
-
 variable "s3_access_key_id" {}
 
 variable "s3_secret_access_key" {}
@@ -448,17 +446,6 @@ variable "s3_auth_type" {}
 variable "splunk_syslog_host" {}
 
 variable "splunk_syslog_port" {}
-
-variable "ipsec_log_level" {}
-variable "ipsec_optional" {}
-
-variable "ipsec_subnet_cidrs" {
-  type = "list"
-}
-
-variable "no_ipsec_subnet_cidrs" {
-  type = "list"
-}
 
 variable "backup_restore_instance_type" {}
 variable "clock_global_instance_type" {}
@@ -482,4 +469,3 @@ variable "syslog_adapter_instance_type" {}
 variable "syslog_scheduler_instance_type" {}
 variable "tcp_router_instance_type" {}
 variable "uaa_instance_type" {}
-
