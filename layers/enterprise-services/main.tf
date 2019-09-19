@@ -85,6 +85,11 @@ resource "aws_route_table_association" "private_route_table_assoc" {
   route_table_id = "${data.terraform_remote_state.routes.es_private_vpc_route_table_id}"
 }
 
+module "amzn1_clam_av_client_config" {
+  source           = "../../modules/clamav/amzn1_initd_client"
+  clamav_db_mirror = "${var.clamav_db_mirror}"
+}
+
 module "nat" {
   source                 = "../../modules/nat"
   private_route_table_id = "${data.terraform_remote_state.routes.es_private_vpc_route_table_id}"
@@ -92,6 +97,7 @@ module "nat" {
   public_subnet_id       = "${element(module.public_subnets.subnet_ids, 0)}"
   internetless           = "${var.internetless}"
   instance_type          = "${var.nat_instance_type}"
+  user_data              = "${module.amzn1_clam_av_client_config.client_cloud_config}"
 }
 
 variable "nat_instance_type" {
@@ -111,6 +117,8 @@ variable "tags" {
 variable "availability_zones" {
   type = "list"
 }
+
+variable "clamav_db_mirror" {}
 
 output "public_subnet_ids" {
   value = "${module.public_subnets.subnet_ids}"

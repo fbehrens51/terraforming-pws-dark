@@ -32,9 +32,15 @@ data "template_file" "user_data" {
   }
 }
 
+variable "clamav_db_mirror" {}
+
+module "clam_av_client_config" {
+  source = "../../../clamav/amzn2_systemd_client"
+  clamav_db_mirror = "${var.clamav_db_mirror}"
+}
+
 module "syslog_config" {
   source = "../../../syslog"
-
   root_domain = "${var.zone_name}"
 }
 
@@ -53,6 +59,13 @@ data "template_cloudinit_config" "master_bind_conf_userdata" {
     filename     = "master_bind_conf.cfg"
     content_type = "text/cloud-config"
     content      = "${data.template_file.user_data.rendered}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+
+  part {
+    filename     = "clamav.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.clam_av_client_config.client_user_data_config}"
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 }

@@ -118,6 +118,13 @@ data "template_cloudinit_config" "user_data" {
     content      = "${file("${var.user_data_path}")}"
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
+
+  part {
+    filename     = "clamav.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.clam_av_client_config.client_user_data_config}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
 }
 
 data "terraform_remote_state" "paperwork" {
@@ -142,6 +149,13 @@ data "terraform_remote_state" "bootstrap_control_plane" {
     encrypt    = true
     kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
   }
+}
+
+variable "clamav_db_mirror" {}
+
+module "clam_av_client_config" {
+  source           = "../../modules/clamav/amzn2_systemd_client"
+  clamav_db_mirror = "${var.clamav_db_mirror}"
 }
 
 module "sjb" {

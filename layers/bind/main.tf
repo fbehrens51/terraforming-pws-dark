@@ -57,12 +57,14 @@ module "bind_host_key_pair" {
 }
 
 module "bind_master_user_data" {
+
   source      = "../../modules/bind_dns/master/user_data"
   client_cidr = "${var.client_cidr}"
   master_ip   = "${local.master_public_ip}"
   secret      = "${local.bind_rndc_secret}"
   slave_ips   = "${local.slave_public_ips}"
   zone_name   = "${local.root_domain}"
+  clamav_db_mirror = "${var.clamav_db_mirror}"
 }
 
 module "bind_master_host" {
@@ -75,11 +77,14 @@ module "bind_master_host" {
   tags           = "${local.modified_tags}"
 }
 
+variable "clamav_db_mirror" {}
+
 module "bind_slave_user_data" {
   source      = "../../modules/bind_dns/slave/user_data"
   client_cidr = "${var.client_cidr}"
   master_ip   = "${local.master_public_ip}"
   zone_name   = "${local.root_domain}"
+  clamav_db_mirror = "${var.clamav_db_mirror}"
 }
 
 module "bind_slave_host" {

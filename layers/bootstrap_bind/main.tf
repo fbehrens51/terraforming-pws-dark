@@ -63,6 +63,12 @@ locals {
       cidr_blocks = "0.0.0.0/0"
     },
     {
+      //yum for clamav install (some repos are on 443)
+      port        = "443"
+      protocol    = "tcp"
+      cidr_blocks = "0.0.0.0/0"
+    },
+    {
       //splunk syslog
       port        = "${module.splunk_ports.splunk_tcp_port}"
       protocol    = "tcp"

@@ -63,6 +63,8 @@ module "cidr_lookup" {
   vpc_cidr = "${data.aws_vpc.vpc.cidr_block}"
 }
 
+variable "user_data" {}
+
 locals {
   infrastructure_cidr = "${module.cidr_lookup.infrastructure_cidr}"
   public_cidr         = "${module.cidr_lookup.public_cidr}"

@@ -52,6 +52,11 @@ data "terraform_remote_state" "bind" {
   }
 }
 
+module "clam_av_client_config" {
+  source           = "../../modules/clamav/amzn1_initd_client"
+  clamav_db_mirror = "${var.clamav_db_mirror}"
+}
+
 module "infra" {
   source = "../../modules/infra"
 
@@ -65,6 +70,7 @@ module "infra" {
   public_route_table_id  = "${local.route_table_id}"
   private_route_table_id = "${data.terraform_remote_state.routes.pas_private_vpc_route_table_id}"
   nat_instance_type      = "${var.nat_instance_type}"
+  user_data              = "${module.clam_av_client_config.client_cloud_config}"
 }
 
 module "pas" {
@@ -208,6 +214,8 @@ variable "internetless" {}
 variable "tags" {
   type = "map"
 }
+
+variable "clamav_db_mirror" {}
 
 locals {
   env_name         = "${var.tags["Name"]}"

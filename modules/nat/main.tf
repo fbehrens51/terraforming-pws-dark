@@ -12,6 +12,8 @@ variable "instance_type" {
   default = "t2.small"
 }
 
+variable "user_data" {}
+
 locals {
   env_name      = "${var.tags["Name"]}"
   modified_name = "${local.env_name} nat"
@@ -72,6 +74,8 @@ resource "aws_instance" "nat" {
     device_index         = 0
     network_interface_id = "${module.eni.eni_ids[0]}"
   }
+
+  user_data = "${var.user_data}"
 }
 
 resource "aws_route" "toggle_internet" {

@@ -203,9 +203,15 @@ module "setup_indexers_hostname" {
   role   = "splunk-inexer"
 }
 
+variable "clamav_db_mirror" {}
+
+module "clam_av_client_config" {
+  source = "../../modules/clamav/amzn2_systemd_client"
+  clamav_db_mirror = "${var.clamav_db_mirror}"
+}
+
 module "syslog_config" {
   source = "../../modules/syslog"
-
   root_domain = "${local.root_domain}"
 }
 
@@ -255,6 +261,13 @@ data "template_cloudinit_config" "splunk_master_cloud_init_config" {
     content_type = "text/cloud-config"
     content      = "${file(var.user_data_path)}"
   }
+
+  part {
+    filename     = "clamav.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.clam_av_client_config.client_user_data_config}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
 }
 
 data "template_cloudinit_config" "splunk_search_head_cloud_init_config" {
@@ -303,6 +316,13 @@ data "template_cloudinit_config" "splunk_search_head_cloud_init_config" {
     content_type = "text/cloud-config"
     content      = "${file(var.user_data_path)}"
   }
+
+  part {
+    filename     = "clamav.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.clam_av_client_config.client_user_data_config}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
 }
 
 data "template_cloudinit_config" "splunk_forwarders_cloud_init_config" {
@@ -350,6 +370,13 @@ data "template_cloudinit_config" "splunk_forwarders_cloud_init_config" {
     filename     = "custom.cfg"
     content_type = "text/cloud-config"
     content      = "${file(var.user_data_path)}"
+  }
+
+  part {
+    filename     = "clamav.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.clam_av_client_config.client_user_data_config}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 }
 
@@ -404,6 +431,13 @@ data "template_cloudinit_config" "splunk_indexers_cloud_init_config" {
     filename     = "custom.cfg"
     content_type = "text/cloud-config"
     content      = "${file(var.user_data_path)}"
+  }
+
+  part {
+    filename     = "clamav.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.clam_av_client_config.client_user_data_config}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 }
 

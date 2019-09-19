@@ -59,7 +59,7 @@ variable "instance_type" {}
 module "ops_manager" {
   instance_count = "1"
 
-  source               = "../../modules/launch"
+  source               = "../../modules/launch_ignore_user_data"
   ami_id               = "${var.om_ami_id}"
   iam_instance_profile = "${local.director_role_name}"
   instance_type        = "${var.instance_type}"
@@ -73,6 +73,22 @@ module "ops_manager" {
     volume_size = 150
   }
 }
+
+variable "deb_pkg_bucket" {}
+variable "clamav_deb_pkg_object_key" {}
+
+module "deb_tgz_url" {
+  source = "../../modules/s3/presigned_url"
+  bucket_name = "${var.deb_pkg_bucket}"
+  object_key = "${var.clamav_deb_pkg_object_key}"
+}
+
+module "clam_av_client_config" {
+  source           = "../../modules/clamav/ubuntu_systemd_client"
+  clamav_db_mirror = "database.clamav.net"
+  deb_tgz_location = "${module.deb_tgz_url.value}"
+}
+
 
 data "template_cloudinit_config" "config" {
   part {
@@ -90,6 +106,13 @@ bootcmd:
   # unix socket.
   - sudo sed -i 's/^ssl = true/#ssl = true/' /etc/postgresql/*/main/postgresql.conf
 CLOUDINIT
+  }
+
+  part {
+    filename     = "clamav.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.clam_av_client_config.client_user_data_config}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 }
 
