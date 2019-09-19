@@ -36,7 +36,7 @@ EOF
     value: disabled
 network-properties:
   network:
-    name: pas
+    name: ${bosh_network_name}
   other_availability_zones:
     ${pas_vpc_azs}
   singleton_availability_zone:

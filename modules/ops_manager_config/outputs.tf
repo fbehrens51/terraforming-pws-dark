@@ -28,16 +28,6 @@ output "portal_template" {
   sensitive = true
 }
 
-output "clamav_addon_template" {
-  value     = "${data.template_file.clamav_addon_template.rendered}"
-  sensitive = true
-}
-
-output "clamav_mirror_template" {
-  value     = "${data.template_file.clamav_mirror_template.rendered}"
-  sensitive = true
-}
-
 output "download_pas_config" {
   value     = "${data.template_file.download_pas_config.rendered}"
   sensitive = true
@@ -70,16 +60,6 @@ output "download_pcf_metrics_config" {
 
 output "download_compliance_scanner_config" {
   value     = "${data.template_file.download_compliance_scanner_config.rendered}"
-  sensitive = true
-}
-
-output "download_clamav_mirror_config" {
-  value     = "${data.template_file.download_clamav_mirror_config.rendered}"
-  sensitive = true
-}
-
-output "download_clamav_addon_config" {
-  value     = "${data.template_file.download_clamav_addon_config.rendered}"
   sensitive = true
 }
 

@@ -128,6 +128,29 @@ module "om_config" {
   splunk_syslog_port                       = "${module.splunk_ports.splunk_tcp_port}"
 }
 
+module "clamav_config" {
+  source = "../../modules/clamav"
+
+  bosh_network_name = "control-plane-subnet"
+  singleton_availability_zone = "${var.singleton_availability_zone}"
+  availability_zones = "${data.terraform_remote_state.bootstrap_control_plane.control_plane_subnet_availability_zones}"
+  clamav_no_upstream_mirror = "${var.clamav_no_upstream_mirror}"
+  clamav_external_mirrors   = "${var.clamav_external_mirrors}"
+  clamav_cpu_limit                 = "${var.clamav_cpu_limit}"
+  clamav_enable_on_access_scanning = "${var.clamav_enable_on_access_scanning}"
+  clamav_mirror_instance_type      = "${var.clamav_mirror_instance_type}"
+
+  pivnet_api_token                         = "${var.pivnet_api_token}"
+  product_blobs_s3_bucket                  = "${var.product_blobs_s3_bucket}"
+  product_blobs_s3_endpoint                = "${var.product_blobs_s3_endpoint}"
+  product_blobs_s3_region                  = "${var.product_blobs_s3_region}"
+  s3_access_key_id                         = "${var.s3_access_key_id}"
+  s3_secret_access_key                     = "${var.s3_secret_access_key}"
+  s3_auth_type                             = "${var.s3_auth_type}"
+  splunk_syslog_host                       = "${module.domains.splunk_logs_fqdn}"
+  splunk_syslog_port                       = "${module.splunk_ports.splunk_tcp_port}"
+}
+
 locals {
   vpc_id      = "${data.terraform_remote_state.paperwork.pas_vpc_id}"
   om_key_name = "${var.env_name}-om"

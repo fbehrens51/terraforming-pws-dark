@@ -29,12 +29,12 @@ output "portal_template" {
 }
 
 output "clamav_addon_template" {
-  value     = "${module.om_config.clamav_addon_template}"
+  value     = "${module.clamav_config.clamav_addon_template}"
   sensitive = true
 }
 
 output "clamav_mirror_template" {
-  value     = "${module.om_config.clamav_mirror_template}"
+  value     = "${module.clamav_config.clamav_mirror_template}"
   sensitive = true
 }
 
@@ -84,11 +84,11 @@ output "download_pcf_metrics_config" {
 }
 
 output "download_clamav_addon_config" {
-  value     = "${module.om_config.download_clamav_addon_config}"
+  value     = "${module.clamav_config.download_clamav_addon_config}"
   sensitive = true
 }
 
 output "download_clamav_mirror_config" {
-  value     = "${module.om_config.download_clamav_mirror_config}"
+  value     = "${module.clamav_config.download_clamav_mirror_config}"
   sensitive = true
 }

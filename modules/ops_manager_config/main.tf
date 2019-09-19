@@ -26,12 +26,6 @@ locals {
   pcf_metrics_product_slug    = "apm"
   pcf_metrics_product_version = "1.6.1"
 
-  clamav_product_slug    = "p-clamav-addon"
-  clamav_product_version = "2.0.12"
-
-  clamav_addon_file_glob  = "p-clamav-[0-9]*.pivotal"
-  clamav_mirror_file_glob = "p-clamav-mirror-[0-9]*.pivotal"
-
   splunk_file_glob       = "splunk-nozzle*.pivotal"
   splunk_product_slug    = "splunk-nozzle"
   splunk_product_version = "1.1.1"
@@ -285,29 +279,6 @@ data "template_file" "runtime_config_template" {
   }
 }
 
-data "template_file" "clamav_mirror_template" {
-  template = "${file("${path.module}/clamav_mirror_template.tpl")}"
-
-  vars = {
-    external_mirrors            = "${join(",", var.clamav_external_mirrors)}"
-    no_upstream_mirror          = "${var.clamav_no_upstream_mirror}"
-    pas_vpc_azs                 = "${indent(4, join("", data.template_file.pas_vpc_azs.*.rendered))}"
-    singleton_availability_zone = "${var.singleton_availability_zone}"
-    clamav_mirror_instance_type = "${var.clamav_mirror_instance_type}"
-    splunk_syslog_host          = "${var.splunk_syslog_host}"
-    splunk_syslog_port          = "${var.splunk_syslog_port}"
-  }
-}
-
-data "template_file" "clamav_addon_template" {
-  template = "${file("${path.module}/clamav_addon_template.tpl")}"
-
-  vars = {
-    cpu_limit          = "${var.clamav_cpu_limit}"
-    on_access_scanning = "${var.clamav_enable_on_access_scanning}"
-  }
-}
-
 data "template_file" "create_db" {
   template = "${file("${path.module}/create_db.tpl")}"
 
@@ -468,44 +439,6 @@ data "template_file" "download_pcf_metrics_config" {
     pivnet_file_glob    = "${local.pcf_metrics_file_glob}"
     pivnet_product_slug = "${local.pcf_metrics_product_slug}"
     product_version     = "${local.pcf_metrics_product_version}"
-
-    pivnet_api_token = "${var.pivnet_api_token}"
-    s3_bucket        = "${var.product_blobs_s3_bucket}"
-
-    s3_endpoint          = "${var.product_blobs_s3_endpoint}"
-    s3_region_name       = "${var.product_blobs_s3_region}"
-    s3_access_key_id     = "${var.s3_access_key_id}"
-    s3_secret_access_key = "${var.s3_secret_access_key}"
-    s3_auth_type         = "${var.s3_auth_type}"
-  }
-}
-
-data "template_file" "download_clamav_mirror_config" {
-  template = "${file("${path.module}/download_product_config.tpl")}"
-
-  vars = {
-    pivnet_file_glob    = "${local.clamav_mirror_file_glob}"
-    pivnet_product_slug = "${local.clamav_product_slug}"
-    product_version     = "${local.clamav_product_version}"
-
-    pivnet_api_token = "${var.pivnet_api_token}"
-    s3_bucket        = "${var.product_blobs_s3_bucket}"
-
-    s3_endpoint          = "${var.product_blobs_s3_endpoint}"
-    s3_region_name       = "${var.product_blobs_s3_region}"
-    s3_access_key_id     = "${var.s3_access_key_id}"
-    s3_secret_access_key = "${var.s3_secret_access_key}"
-    s3_auth_type         = "${var.s3_auth_type}"
-  }
-}
-
-data "template_file" "download_clamav_addon_config" {
-  template = "${file("${path.module}/download_product_config.tpl")}"
-
-  vars = {
-    pivnet_file_glob    = "${local.clamav_addon_file_glob}"
-    pivnet_product_slug = "${local.clamav_product_slug}"
-    product_version     = "${local.clamav_product_version}"
 
     pivnet_api_token = "${var.pivnet_api_token}"
     s3_bucket        = "${var.product_blobs_s3_bucket}"
