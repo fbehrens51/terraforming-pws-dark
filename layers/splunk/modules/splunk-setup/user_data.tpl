@@ -17,8 +17,8 @@ runcmd:
   - |
     set -ex
     mkdir -p /opt/splunk
-    aws s3 cp s3://${splunk_rpm_s3_bucket}/ . --recursive --exclude='*' --include='splunk-${splunk_rpm_version}*' --region ${splunk_rpm_s3_region}
-    sudo rpm -i splunk-${splunk_rpm_version}*.rpm
+    aws s3 cp s3://${splunk_rpm_s3_bucket}/ . --recursive --exclude='*' --include='splunk/splunk-${splunk_rpm_version}*' --region ${splunk_rpm_s3_region}
+    sudo rpm -i splunk/splunk-${splunk_rpm_version}*.rpm
 
     /opt/splunk/bin/splunk enable boot-start -systemd-managed 1 --no-prompt --accept-license --answer-yes
 
