@@ -6,13 +6,17 @@ product-properties:
     - recommended
     - strict
     - stig
+  .properties.bucket_selector:
+    selected_option: none
+    value: none
+  .properties.enforce_cpu_limit:
+    selected_option: disabled
+    value: disabled
   .properties.ntp_server:
     value: ${ntp_servers}
-  .properties.openfile_limit:
-    value: 2048
   .properties.scan_report_formats:
     value:
-    - log
+    - csv
     - xml
     - html
   .properties.scanner_timeout:
