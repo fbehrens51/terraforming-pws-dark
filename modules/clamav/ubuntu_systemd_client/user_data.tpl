@@ -8,7 +8,7 @@ write_files:
 runcmd:
   - mkdir pkg
   - cd pkg
-  - wget --no-check-certificate -O - "${deb_tgz_location}" | tar xzf -
+  - wget --no-check-certificate -O - "${deb_tgz_location}" | tar xzf - --strip=1
   - sudo dpkg -i *.deb
   - sudo rm -f *.deb
   - sudo augtool set /files/etc/clamav/freshclam.conf/LogSyslog yes

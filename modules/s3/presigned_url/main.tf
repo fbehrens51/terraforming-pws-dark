@@ -5,12 +5,12 @@ data "external" "presigned_url" {
 
   query = {
     bucket_name = "${var.bucket_name}"
-    object_key  = "${var.object_key}"
+    object_prefix  = "${var.object_prefix}"
   }
 }
 
 variable "bucket_name" {}
-variable "object_key" {}
+variable "object_prefix" {}
 
 output "value" {
   value = "${lookup(data.external.presigned_url.*.result[0], "url")}"
