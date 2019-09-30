@@ -1,7 +1,7 @@
 locals {
   platform_automation_engine_file_glob       = "*.pivotal"
   platform_automation_engine_product_slug    = "platform-automation-engine"
-  platform_automation_engine_product_version = "1.0.0-beta.1"
+  platform_automation_engine_product_version = "1.0.2-beta.1"
 
   pws_dark_iam_s3_resource_file_glob    = "pws-dark-iam-s3-resource-tile*.pivotal"
   pws_dark_iam_s3_resource_product_slug = "pws-dark-iam-s3-resource-tile"
@@ -108,6 +108,9 @@ data "template_file" "platform_automation_engine_template" {
     concourse_cert_pem        = "${var.concourse_cert_pem}"
     concourse_private_key_pem = "${var.concourse_private_key_pem}"
     trusted_ca_certs          = "${var.trusted_ca_certs}"
+
+    splunk_syslog_host = "${var.splunk_syslog_host}"
+    splunk_syslog_port = "${var.splunk_syslog_port}"
   }
 }
 

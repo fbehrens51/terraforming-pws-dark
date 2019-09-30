@@ -1,4 +1,10 @@
 product-name: control-plane
+syslog-properties:
+  enabled: true
+  address: ${splunk_syslog_host}
+  port: ${splunk_syslog_port}
+  transport_protocol: tcp
+  tls_enabled: false
 product-properties:
   .properties.control_plane_database:
     selected_option: internal
