@@ -76,6 +76,14 @@ module "keys" {
 resource "aws_s3_bucket" "certs" {
   bucket_prefix = "${local.cert_bucket}"
   acl           = "private"
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "aws:kms"
+      }
+    }
+  }
 }
 
 data "template_file" "paperwork_variables" {
