@@ -54,7 +54,7 @@ resource-config:
   worker:
     instances: automatic
     instance_type:
-      id: automatic
+      id: r4.2xlarge
     internet_connected: false
     additional_vm_extensions:
     - worker_instance_profile
