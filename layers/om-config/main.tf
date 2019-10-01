@@ -63,6 +63,8 @@ module "om_config" {
   ec2_endpoint = "${var.ec2_endpoint}"
   elb_endpoint = "${var.elb_endpoint}"
 
+  volume_encryption_kms_key_arn = "${data.terraform_remote_state.paperwork.kms_key_arn}"
+
   errands_deploy_autoscaler           = "true"
   errands_deploy_notifications        = "true"
   errands_deploy_notifications_ui     = "true"

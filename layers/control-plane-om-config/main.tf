@@ -75,6 +75,8 @@ module "om_config" {
   control_plane_subnet_cidrs              = "${data.terraform_remote_state.bootstrap_control_plane.control_plane_subnet_cidrs}"
   control_plane_vpc_dns                   = "${data.terraform_remote_state.paperwork.control_plane_vpc_dns}"
 
+  volume_encryption_kms_key_arn = "${data.terraform_remote_state.paperwork.kms_key_arn}"
+
   vpc_id       = "${local.vpc_id}"
   env_name     = "${var.env_name}"
   region       = "${data.aws_region.current.name}"

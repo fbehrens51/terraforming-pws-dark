@@ -76,6 +76,7 @@ EOF
       ec2_endpoint: ${ec2_endpoint}
       elb_endpoint: ${elb_endpoint}
     encrypted: true
+    kms_key_arn: ${kms_key_arn}
     iam_instance_profile: ${iaas_configuration_iam_instance_profile}
     key_pair_name: ${iaas_configuration_ssh_key_pair_name}
     name: default

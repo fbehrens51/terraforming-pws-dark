@@ -99,6 +99,7 @@ data "template_file" "paperwork_variables" {
     splunk_role_name                            = "${var.splunk_role_name}"
     key_manager_role_name                       = "${var.key_manager_role_name}"
     kms_key_id                                  = "${module.keys.kms_key_id}"
+    kms_key_arn                                 = "${module.keys.kms_key_arn}"
     director_role_name                          = "${var.director_role_name}"
     sjb_role_name                               = "${var.director_role_name}"
     cp_vpc_id                                   = "${module.paperwork.cp_vpc_id}"

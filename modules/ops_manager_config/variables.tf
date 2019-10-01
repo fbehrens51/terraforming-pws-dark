@@ -377,6 +377,8 @@ variable "blobstore_instance_profile" {
   description = "An IAM Instance profile which permission to read and write to the buckets specified below"
 }
 
+variable "volume_encryption_kms_key_arn" {}
+
 variable "kms_key_id" {}
 
 variable "pas_buildpacks_bucket" {}

@@ -7,6 +7,29 @@ resource "aws_kms_alias" "kms_key_alias" {
 data "aws_caller_identity" "my_account" {}
 
 data "aws_iam_policy_document" "kms_key_policy_document" {
+  # This statement from the EBS docs here: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html
+  # the statement is required in order to use a kms key for ebs volume encryption
+  statement {
+    effect  = "Allow"
+    actions = ["kms:CreateGrant"]
+
+    principals {
+      type = "AWS"
+
+      identifiers = [
+        "${var.director_role_arn}",
+      ]
+    }
+
+    resources = ["*"]
+
+    condition {
+      test     = "Bool"
+      variable = "kms:GrantIsForAWSResource"
+      values   = ["true"]
+    }
+  }
+
   # the following actions were inspired by https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default-allow-users
   statement {
     sid    = "Allow access for key users"
@@ -84,6 +107,10 @@ variable "key_name" {}
 
 variable "deletion_window" {
   default = 7
+}
+
+output "kms_key_arn" {
+  value = "${element(concat(aws_kms_key.kms_key.*.arn, list("")), 0)}"
 }
 
 output "kms_key_id" {
