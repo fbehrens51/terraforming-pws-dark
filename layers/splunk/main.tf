@@ -449,6 +449,7 @@ module "splunk_master" {
   key_pair_name        = "${local.ssh_key_pair_name}"
   tags                 = "${merge(local.tags, map("Name", "${var.env_name}-splunk-master"))}"
   iam_instance_profile = "${local.splunk_role_name}"
+  ssh_banner           = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
 
   eni_ids = [
     "${local.splunk_master_eni_id}",
@@ -465,6 +466,7 @@ module "splunk_search_head" {
   key_pair_name        = "${local.ssh_key_pair_name}"
   tags                 = "${merge(local.tags, map("Name", "${var.env_name}-splunk-search-head"))}"
   iam_instance_profile = "${local.splunk_role_name}"
+  ssh_banner           = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
 
   eni_ids = [
     "${local.splunk_search_head_eni_id}",
@@ -481,6 +483,7 @@ module "splunk_forwarders" {
   key_pair_name        = "${local.ssh_key_pair_name}"
   tags                 = "${merge(local.tags, map("Name", "${var.env_name}-splunk-forwarder"))}"
   iam_instance_profile = "${local.splunk_role_name}"
+  ssh_banner           = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
 
   eni_ids = "${local.splunk_forwarders_eni_ids}"
 
@@ -495,6 +498,7 @@ module "splunk_indexers" {
   key_pair_name        = "${local.ssh_key_pair_name}"
   tags                 = "${merge(local.tags, map("Name", "${var.env_name}-splunk-indexer"))}"
   iam_instance_profile = "${local.splunk_role_name}"
+  ssh_banner           = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
 
   eni_ids = "${local.splunk_indexers_eni_ids}"
 

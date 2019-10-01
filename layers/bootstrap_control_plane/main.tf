@@ -151,6 +151,15 @@ resource "aws_s3_bucket" "mirror_bucket" {
   tags = "${merge(var.tags, map("Name", "${local.env_name} Mirror Bucket"))}"
 }
 
+data "template_cloudinit_config" "nat_user_data" {
+  part {
+    filename     = "clamav.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.amzn1_clam_av_client_config.client_cloud_config}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+}
+
 module "nat" {
   source                 = "../../modules/nat"
   private_route_table_id = "${data.terraform_remote_state.routes.cp_private_vpc_route_table_id}"
@@ -158,7 +167,8 @@ module "nat" {
   public_subnet_id       = "${module.public_subnets.subnet_ids[0]}"
   internetless           = "${var.internetless}"
   instance_type          = "${var.nat_instance_type}"
-  user_data              = "${module.amzn1_clam_av_client_config.client_cloud_config}"
+  user_data              = "${data.template_cloudinit_config.nat_user_data.rendered}"
+  ssh_banner             = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
 }
 
 module "web_elb" {

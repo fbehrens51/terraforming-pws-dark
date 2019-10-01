@@ -54,7 +54,7 @@ data "template_file" "director_template" {
     elb_endpoint = "${var.elb_endpoint}"
 
     singleton_availability_zone                 = "${var.singleton_availability_zone}"
-    custom_ssh_banner                           = "${file(var.custom_ssh_banner_file)}"
+    custom_ssh_banner                           = "${var.custom_ssh_banner}"
     smtp_domain                                 = "${var.smtp_domain}"
     smtp_enabled                                = "${var.smtp_enabled}"
     smtp_from                                   = "${var.smtp_from}"

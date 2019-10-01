@@ -15,7 +15,7 @@ variable "platform_automation_engine_worker_role_name" {}
 
 variable "region" {}
 
-variable "custom_ssh_banner_file" {
+variable "custom_ssh_banner" {
   type        = "string"
   description = "Custom SSH Banner to be used on launched VMs"
 }

@@ -57,6 +57,15 @@ module "clam_av_client_config" {
   clamav_db_mirror = "${var.clamav_db_mirror}"
 }
 
+data "template_cloudinit_config" "nat_user_data" {
+  part {
+    filename     = "clamav.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.clam_av_client_config.client_cloud_config}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+}
+
 module "infra" {
   source = "../../modules/infra"
 
@@ -70,7 +79,8 @@ module "infra" {
   public_route_table_id  = "${local.route_table_id}"
   private_route_table_id = "${data.terraform_remote_state.routes.pas_private_vpc_route_table_id}"
   nat_instance_type      = "${var.nat_instance_type}"
-  user_data              = "${module.clam_av_client_config.client_cloud_config}"
+  ssh_banner             = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
+  user_data              = "${data.template_cloudinit_config.nat_user_data.rendered}"
 }
 
 module "pas" {

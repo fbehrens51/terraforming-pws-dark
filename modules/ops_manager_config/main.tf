@@ -92,7 +92,7 @@ data "template_file" "director_template" {
     ec2_endpoint = "${var.ec2_endpoint}"
     elb_endpoint = "${var.elb_endpoint}"
 
-    custom_ssh_banner                           = "${file(var.custom_ssh_banner_file)}"
+    custom_ssh_banner                           = "${var.custom_ssh_banner}"
     rds_database                                = "director"
     rds_address                                 = "${var.rds_address}"
     rds_port                                    = "${var.rds_port}"

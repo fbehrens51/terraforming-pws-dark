@@ -167,7 +167,9 @@ module "sjb" {
   key_pair_name        = "${data.terraform_remote_state.bootstrap_control_plane.sjb_ssh_key_pair_name}"
   iam_instance_profile = "${data.terraform_remote_state.paperwork.sjb_role_name}"
   instance_type        = "${var.instance_type}"
-  tags                 = "${merge(local.modified_tags, map("Name", "${local.env_name}-sjb"))}"
+  ssh_banner           = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
+
+  tags = "${merge(local.modified_tags, map("Name", "${local.env_name}-sjb"))}"
 
   root_block_device = {
     volume_type = "gp2"

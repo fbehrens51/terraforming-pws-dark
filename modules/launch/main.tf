@@ -19,6 +19,8 @@ variable "key_pair_name" {
   default = ""
 }
 
+variable "ssh_banner" {}
+
 variable "iam_instance_profile" {
   default = ""
 }
@@ -46,6 +48,35 @@ variable "root_block_device" {
   default = {}
 }
 
+data "template_cloudinit_config" "config" {
+  part {
+    filename     = "ssh_banner.cfg"
+    content_type = "text/cloud-config"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+
+    content = <<EOF
+#cloud-config
+
+write_files:
+- path: /tmp/prompt.conf
+  content: |
+    ${indent(4, var.ssh_banner)}
+
+runcmd:
+  - cp /tmp/prompt.conf /etc/issue.net
+  - sed -i 's|^#Banner .*|Banner /etc/issue.net|' /etc/ssh/sshd_config
+  - pkill -SIGHUP sshd
+EOF
+  }
+
+  part {
+    filename     = "custom_user_data.cfg"
+    content_type = "text/cloud-config"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+    content      = "${var.user_data}"
+  }
+}
+
 resource "aws_instance" "instance" {
   count = "${var.instance_count}"
 
@@ -56,7 +87,7 @@ resource "aws_instance" "instance" {
 
   ami                  = "${var.ami_id}"
   instance_type        = "${var.instance_type}"
-  user_data            = "${var.user_data}"
+  user_data            = "${data.template_cloudinit_config.config.rendered}"
   key_name             = "${var.key_pair_name}"
   iam_instance_profile = "${var.iam_instance_profile}"
 

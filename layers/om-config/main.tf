@@ -127,7 +127,7 @@ module "om_config" {
   apps_manager_tools_url                               = "${var.apps_manager_tools_url == "" ? local.default_apps_manager_tools_url : var.apps_manager_tools_url}"
 
   ntp_servers                                 = "${var.ntp_servers}"
-  custom_ssh_banner_file                      = "${var.custom_ssh_banner_file}"
+  custom_ssh_banner                           = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
   security_configuration_trusted_certificates = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 
   rds_address     = "${data.terraform_remote_state.pas.rds_address}"
@@ -213,7 +213,7 @@ module "runtime_config_config" {
   ipsec_subnet_cidrs    = "${local.ipsec_subnet_cidrs}"
   no_ipsec_subnet_cidrs = "${local.no_ipsec_subnet_cidrs}"
 
-  custom_ssh_banner_file = "${var.custom_ssh_banner_file}"
+  custom_ssh_banner = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
 
   pivnet_api_token          = "${var.pivnet_api_token}"
   product_blobs_s3_bucket   = "${var.product_blobs_s3_bucket}"

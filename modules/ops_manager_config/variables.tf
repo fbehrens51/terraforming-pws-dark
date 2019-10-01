@@ -23,7 +23,7 @@ variable "system_domain" {
 
 variable "region" {}
 
-variable "custom_ssh_banner_file" {
+variable "custom_ssh_banner" {
   type        = "string"
   description = "Custom SSH Banner to be used on launched VMs"
 }

@@ -8,6 +8,17 @@ module "providers" {
   source = "../../modules/dark_providers"
 }
 
+data "terraform_remote_state" "paperwork" {
+  backend = "s3"
+
+  config {
+    bucket  = "${var.remote_state_bucket}"
+    key     = "paperwork"
+    region  = "${var.remote_state_region}"
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "routes" {
   backend = "s3"
 
@@ -71,7 +82,9 @@ module "bastion_host" {
   user_data      = "${data.template_cloudinit_config.user_data.rendered}"
   eni_ids        = ["${module.bootstrap_bastion.eni_id}"]
   key_pair_name  = "${module.bastion_host_key_pair.key_name}"
-  tags           = "${local.modified_tags}"
+  ssh_banner     = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
+
+  tags = "${local.modified_tags}"
 }
 
 variable "ami_id" {

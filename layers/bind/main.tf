@@ -71,6 +71,7 @@ module "bind_master_host" {
   source         = "../../modules/launch"
   ami_id         = "${module.amazon_ami.id}"
   user_data      = "${module.bind_master_user_data.user_data}"
+  ssh_banner     = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
   eni_ids        = "${data.terraform_remote_state.bootstrap_bind.bind_eni_ids}"
   key_pair_name  = "${module.bind_host_key_pair.key_name}"
   tags           = "${local.modified_tags}"
@@ -91,6 +92,7 @@ module "bind_slave_host" {
   source         = "../../modules/launch"
   ami_id         = "${module.amazon_ami.id}"
   user_data      = "${module.bind_slave_user_data.user_data}"
+  ssh_banner     = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
   eni_ids        = ["${data.terraform_remote_state.bootstrap_bind.bind_eni_ids[1]}", "${data.terraform_remote_state.bootstrap_bind.bind_eni_ids[2]}"]
   key_pair_name  = "${module.bind_host_key_pair.key_name}"
   tags           = "${local.modified_tags}"

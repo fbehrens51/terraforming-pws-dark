@@ -90,6 +90,15 @@ module "amzn1_clam_av_client_config" {
   clamav_db_mirror = "${var.clamav_db_mirror}"
 }
 
+data "template_cloudinit_config" "nat_user_data" {
+  part {
+    filename     = "clamav.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.amzn1_clam_av_client_config.client_cloud_config}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+}
+
 module "nat" {
   source                 = "../../modules/nat"
   private_route_table_id = "${data.terraform_remote_state.routes.es_private_vpc_route_table_id}"
@@ -97,7 +106,8 @@ module "nat" {
   public_subnet_id       = "${element(module.public_subnets.subnet_ids, 0)}"
   internetless           = "${var.internetless}"
   instance_type          = "${var.nat_instance_type}"
-  user_data              = "${module.amzn1_clam_av_client_config.client_cloud_config}"
+  user_data              = "${data.template_cloudinit_config.nat_user_data.rendered}"
+  ssh_banner             = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
 }
 
 variable "nat_instance_type" {

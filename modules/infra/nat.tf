@@ -6,4 +6,5 @@ module "nat" {
   internetless           = "${var.internetless}"
   instance_type          = "${var.nat_instance_type}"
   user_data              = "${var.user_data}"
+  ssh_banner             = "${var.ssh_banner}"
 }

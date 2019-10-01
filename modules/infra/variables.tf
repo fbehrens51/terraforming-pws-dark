@@ -2,6 +2,8 @@ variable "env_name" {
   type = "string"
 }
 
+variable "ssh_banner" {}
+
 variable "hosted_zone" {
   type    = "string"
   default = ""

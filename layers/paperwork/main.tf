@@ -210,6 +210,8 @@ data "aws_s3_bucket_object" "portal_smoke_test_cert" {
 
 variable "portal_smoke_test_key_s3_path" {}
 
+variable "custom_ssh_banner_file" {}
+
 data "aws_s3_bucket_object" "portal_smoke_test_key" {
   bucket = "${var.cert_bucket}"
   key    = "${var.portal_smoke_test_key_s3_path}"
@@ -403,4 +405,8 @@ output "system_domain" {
 
 output "apps_domain" {
   value = "${var.apps_domain}"
+}
+
+output "custom_ssh_banner" {
+  value = "${file(var.custom_ssh_banner_file)}"
 }

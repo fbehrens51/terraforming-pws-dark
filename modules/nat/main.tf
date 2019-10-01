@@ -12,6 +12,8 @@ variable "instance_type" {
   default = "t2.small"
 }
 
+variable "ssh_banner" {}
+
 variable "user_data" {}
 
 locals {
@@ -65,21 +67,22 @@ module "eni" {
   source_dest_check = false
 }
 
-resource "aws_instance" "nat" {
-  instance_type = "${var.instance_type}"
+module "nat_host" {
+  source = "../launch"
+
+  instance_count = "1"
+  ami_id         = "${data.aws_ami.nat_ami.image_id}"
+  user_data      = "${var.user_data}"
+
+  ssh_banner = "${var.ssh_banner}"
+  eni_ids    = ["${module.eni.eni_ids[0]}"]
+
   tags          = "${local.modified_tags}"
-  ami           = "${data.aws_ami.nat_ami.image_id}"
-
-  network_interface {
-    device_index         = 0
-    network_interface_id = "${module.eni.eni_ids[0]}"
-  }
-
-  user_data = "${var.user_data}"
+  instance_type = "${var.instance_type}"
 }
 
 resource "aws_route" "toggle_internet" {
   route_table_id         = "${var.private_route_table_id}"
-  instance_id            = "${aws_instance.nat.id}"
+  instance_id            = "${module.nat_host.instance_ids[0]}"
   destination_cidr_block = "0.0.0.0/0"
 }

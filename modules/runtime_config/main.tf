@@ -11,7 +11,7 @@ variable "no_ipsec_subnet_cidrs" {
   type = "list"
 }
 
-variable "custom_ssh_banner_file" {
+variable "custom_ssh_banner" {
   type        = "string"
   description = "Custom SSH Banner to be used on launched VMs"
 }
@@ -39,7 +39,7 @@ data "template_file" "runtime_config_template" {
     ipsec_optional        = "${var.ipsec_optional}"
     ipsec_subnet_cidrs    = "${join(",",  var.ipsec_subnet_cidrs)}"
     no_ipsec_subnet_cidrs = "${join(",", concat(var.no_ipsec_subnet_cidrs, list(local.vpc_dns_subnet)))}"
-    ssh_banner            = "${file(var.custom_ssh_banner_file)}"
+    ssh_banner            = "${var.custom_ssh_banner}"
   }
 }
 

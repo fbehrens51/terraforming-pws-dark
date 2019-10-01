@@ -11,7 +11,6 @@ variable "smtp_recipients" {}
 variable "smtp_domain" {}
 variable "smtp_enabled" {}
 variable "iaas_configuration_endpoints_ca_cert" {}
-variable "custom_ssh_banner_file" {}
 variable "env_name" {}
 variable "internetless" {}
 variable "s3_endpoint" {}
