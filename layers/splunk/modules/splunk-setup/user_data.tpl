@@ -1,10 +1,4 @@
 #cloud-config
-merge_how:
- - name: list
-   settings: [append]
- - name: dict
-   settings: [no_replace, recurse_list]
-
 bootcmd:
   - mkdir -p /opt/splunk
   - while [ ! -e /dev/xvdf ] ; do sleep 1 ; done

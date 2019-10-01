@@ -1,10 +1,4 @@
 #cloud-config
-merge_how:
- - name: list
-   settings: [append]
- - name: dict
-   settings: [no_replace, recurse_list]
-
 write_files:
 - path: /tmp/inputs.conf
   content: |

@@ -230,36 +230,42 @@ data "template_cloudinit_config" "splunk_master_cloud_init_config" {
     filename     = "serverconf.cfg"
     content_type = "text/cloud-config"
     content      = "${module.master_server_conf.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
   part {
     filename     = "webconf.cfg"
     content_type = "text/cloud-config"
     content      = "${module.master_web_conf.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
   part {
     filename     = "setup-hostname.cfg"
     content_type = "text/cloud-config"
     content      = "${module.setup_master_hostname.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
   part {
     filename     = "license.cfg"
     content_type = "text/cloud-config"
     content      = "${module.master_license_conf.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
   part {
     filename     = "setup.cfg"
     content_type = "text/cloud-config"
     content      = "${module.splunk_setup.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
   part {
     filename     = "custom.cfg"
     content_type = "text/cloud-config"
     content      = "${file(var.user_data_path)}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
   part {
@@ -285,36 +291,42 @@ data "template_cloudinit_config" "splunk_search_head_cloud_init_config" {
     filename     = "serverconf.cfg"
     content_type = "text/cloud-config"
     content      = "${module.search_head_server_conf.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
   part {
     filename     = "webconf.cfg"
     content_type = "text/cloud-config"
     content      = "${module.search_head_web_conf.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
   part {
     filename     = "setup-hostname.cfg"
     content_type = "text/cloud-config"
     content      = "${module.setup_search_head_hostname.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
   part {
     filename     = "license.cfg"
     content_type = "text/cloud-config"
     content      = "${module.slave_license_conf.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
   part {
     filename     = "setup.cfg"
     content_type = "text/cloud-config"
     content      = "${module.splunk_setup.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
   part {
     filename     = "custom.cfg"
     content_type = "text/cloud-config"
     content      = "${file(var.user_data_path)}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
   part {
@@ -340,36 +352,42 @@ data "template_cloudinit_config" "splunk_forwarders_cloud_init_config" {
     filename     = "webconf.cfg"
     content_type = "text/cloud-config"
     content      = "${module.insecure_web_conf.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
   part {
     filename     = "inputsconf.cfg"
     content_type = "text/cloud-config"
     content      = "${module.forwardes_inputs_outputs_conf.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
   part {
     filename     = "setup-hostname.cfg"
     content_type = "text/cloud-config"
     content      = "${module.setup_forwarders_hostname.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
   part {
     filename     = "license.cfg"
     content_type = "text/cloud-config"
     content      = "${module.slave_license_conf.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
   part {
     filename     = "setup.cfg"
     content_type = "text/cloud-config"
     content      = "${module.splunk_setup.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
   part {
     filename     = "custom.cfg"
     content_type = "text/cloud-config"
     content      = "${file(var.user_data_path)}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
   part {
@@ -395,42 +413,49 @@ data "template_cloudinit_config" "splunk_indexers_cloud_init_config" {
     filename     = "serverconf.cfg"
     content_type = "text/cloud-config"
     content      = "${module.indexers_server_conf.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
   part {
     filename     = "inputsconf.cfg"
     content_type = "text/cloud-config"
     content      = "${module.indexers_inputs_conf.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
   part {
     filename     = "webconf.cfg"
     content_type = "text/cloud-config"
     content      = "${module.insecure_web_conf.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
   part {
     filename     = "setup-hostname.cfg"
     content_type = "text/cloud-config"
     content      = "${module.setup_indexers_hostname.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
   part {
     filename     = "license.cfg"
     content_type = "text/cloud-config"
     content      = "${module.slave_license_conf.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
   part {
     filename     = "setup.cfg"
     content_type = "text/cloud-config"
     content      = "${module.splunk_setup.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
   part {
     filename     = "custom.cfg"
     content_type = "text/cloud-config"
     content      = "${file(var.user_data_path)}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
   part {
