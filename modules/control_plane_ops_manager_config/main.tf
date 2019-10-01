@@ -1,7 +1,7 @@
 locals {
   platform_automation_engine_file_glob       = "*.pivotal"
   platform_automation_engine_product_slug    = "platform-automation-engine"
-  platform_automation_engine_product_version = "1.0.2-beta.1"
+  platform_automation_engine_product_version = "1.0.3-beta.1"
 
   pws_dark_iam_s3_resource_file_glob    = "pws-dark-iam-s3-resource-tile*.pivotal"
   pws_dark_iam_s3_resource_product_slug = "pws-dark-iam-s3-resource-tile"
