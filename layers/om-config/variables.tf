@@ -5,7 +5,6 @@ variable "cloud_controller_encrypt_key_secret" {}
 variable "credhub_encryption_password" {}
 variable "smtp_host" {}
 variable "smtp_user" {}
-variable "smtp_password" {}
 variable "smtp_tls" {}
 variable "smtp_from" {}
 variable "smtp_port" {}

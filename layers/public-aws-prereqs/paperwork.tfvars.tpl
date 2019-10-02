@@ -44,6 +44,8 @@ ldap_role_attr = "${ldap_role_attr}"
 
 ldap_password_s3_path = "${ldap_password_s3_path}"
 
+smtp_password_s3_path = "${smtp_password_s3_path}"
+
 cert_bucket = "${cert_bucket}"
 
 root_ca_cert_s3_path = "${root_ca_cert_s3_path}"

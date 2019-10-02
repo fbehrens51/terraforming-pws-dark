@@ -61,6 +61,13 @@ data "aws_s3_bucket_object" "ldap_password" {
   key    = "${var.ldap_password_s3_path}"
 }
 
+variable "smtp_password_s3_path" {}
+
+data "aws_s3_bucket_object" "smtp_password" {
+  bucket = "${var.cert_bucket}"
+  key    = "${var.smtp_password_s3_path}"
+}
+
 variable "root_ca_cert_s3_path" {}
 
 data "aws_s3_bucket_object" "root_ca_cert" {
@@ -393,6 +400,11 @@ output "ldap_port" {
 
 output "ldap_role_attr" {
   value = "${var.ldap_role_attr}"
+}
+
+output "smtp_password" {
+  value     = "${data.aws_s3_bucket_object.smtp_password.body}"
+  sensitive = true
 }
 
 output "root_domain" {

@@ -100,7 +100,7 @@ module "om_config" {
 
   smtp_host       = "${var.smtp_host}"
   smtp_user       = "${var.smtp_user}"
-  smtp_password   = "${var.smtp_password}"
+  smtp_password   = "${data.terraform_remote_state.paperwork.smtp_password}"
   smtp_tls        = "${var.smtp_tls}"
   smtp_from       = "${var.smtp_from}"
   smtp_port       = "${var.smtp_port}"
