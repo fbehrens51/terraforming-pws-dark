@@ -39,8 +39,7 @@ data "aws_route_tables" "requester_route_table" {
 }
 
 resource "aws_route" "route_to_add_to_accepter" {
-  count = "${length(data.aws_route_tables.accepter_route_table.ids)}"
-
+  count                     = 2
   route_table_id            = "${element(data.aws_route_tables.accepter_route_table.ids, count.index)}"
   destination_cidr_block    = "${data.aws_vpc.requester_vpc.cidr_block}"
   vpc_peering_connection_id = "${data.aws_vpc_peering_connection.peering_connection.id}"
@@ -51,7 +50,7 @@ resource "aws_route" "route_to_add_to_accepter" {
 }
 
 resource "aws_route" "route_to_add_to_requestor" {
-  count = "${length(data.aws_route_tables.requester_route_table.ids)}"
+  count                     = 2
 
   route_table_id            = "${element(data.aws_route_tables.requester_route_table.ids, count.index)}"
   destination_cidr_block    = "${data.aws_vpc.accepter_vpc.cidr_block}"
