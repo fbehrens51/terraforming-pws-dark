@@ -70,36 +70,42 @@ module "route_bastion_cp" {
   source           = "./modules/routing"
   accepter_vpc_id  = "${local.bastion_vpc_id}"
   requester_vpc_id = "${local.cp_vpc_id}"
+  env_name         = "${var.env_name}"
 }
 
 module "route_bastion_pas" {
   source           = "./modules/routing"
   accepter_vpc_id  = "${local.bastion_vpc_id}"
   requester_vpc_id = "${local.pas_vpc_id}"
+  env_name         = "${var.env_name}"
 }
 
 module "route_bastion_es" {
   source           = "./modules/routing"
   accepter_vpc_id  = "${local.bastion_vpc_id}"
   requester_vpc_id = "${local.es_vpc_id}"
+  env_name         = "${var.env_name}"
 }
 
 module "route_cp_pas" {
   source           = "./modules/routing"
   accepter_vpc_id  = "${local.cp_vpc_id}"
   requester_vpc_id = "${local.pas_vpc_id}"
+  env_name         = "${var.env_name}"
 }
 
 module "route_cp_es" {
   source           = "./modules/routing"
   accepter_vpc_id  = "${local.cp_vpc_id}"
   requester_vpc_id = "${local.es_vpc_id}"
+  env_name         = "${var.env_name}"
 }
 
 module "route_pas_es" {
   source           = "./modules/routing"
   accepter_vpc_id  = "${local.pas_vpc_id}"
   requester_vpc_id = "${local.es_vpc_id}"
+  env_name         = "${var.env_name}"
 }
 
 variable "remote_state_region" {}
