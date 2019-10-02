@@ -49,19 +49,19 @@ options {
 
 # Specifications of what to log, and where the log messages are sent
 logging {
-	channel "common_log" {
-		file "/var/log/named/named.log" versions 10 size 5m;
-		severity dynamic;
-		print-category yes;
-		print-severity yes;
-		print-time yes;
-	};
-	category default { "common_log"; };
-	category general { "common_log"; };
-	category queries { "common_log"; };
-	category client { "common_log"; };
-	category security { "common_log"; };
-	category query-errors { "common_log"; };
+    channel default_syslog {
+        print-time yes;
+        print-category yes;
+        print-severity yes;
+        syslog daemon;
+        severity info;
+    };
+	category default { "default_syslog";};
+	category general { "default_syslog";};
+	category queries { "default_syslog";};
+	category client { "default_syslog";};
+	category security { "default_syslog";};
+	category query-errors { "default_syslog";};
 	category lame-servers { null; };
 };
 
