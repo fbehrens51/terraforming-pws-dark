@@ -244,7 +244,7 @@ product-properties:
   .properties.smtp_credentials:
     value:
       identity: ${smtp_user}
-      password: ${smtp_password}
+      password: %{ if smtp_user != "" }${smtp_password}%{ endif }
   .properties.smtp_enable_starttls_auto:
     value: ${smtp_tls}
   .properties.smtp_from:

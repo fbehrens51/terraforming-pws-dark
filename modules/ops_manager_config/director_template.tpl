@@ -48,7 +48,7 @@ properties-configuration:
       recipients:
         value: ${smtp_recipients}
       smtp_user: ${smtp_user}
-      smtp_password: ${smtp_password}
+      smtp_password: %{ if smtp_enabled == "true" }${smtp_password}%{ endif }
       tls: ${smtp_tls}
     hm_pager_duty_options:
       enabled: false
