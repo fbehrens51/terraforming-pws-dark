@@ -58,6 +58,39 @@ module "bind_host_key_pair" {
 
 variable "user_data_path" {}
 
+data "template_cloudinit_config" "master_bind_conf_userdata" {
+  base64_encode = false
+  gzip          = false
+
+  part {
+    filename     = "syslog.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.syslog_config.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+
+  part {
+    filename     = "master_bind_conf.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.bind_master_user_data.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+
+  part {
+    filename     = "clamav.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.clam_av_client_config.client_user_data_config}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+
+  part {
+    filename     = "other.cfg"
+    content_type = "text/cloud-config"
+    content      = "${file("${var.user_data_path}")}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+}
+
 module "bind_master_user_data" {
   source           = "../../modules/bind_dns/master/user_data"
   client_cidr      = "${var.client_cidr}"
@@ -65,15 +98,13 @@ module "bind_master_user_data" {
   secret           = "${local.bind_rndc_secret}"
   slave_ips        = "${local.slave_public_ips}"
   zone_name        = "${local.root_domain}"
-  clamav_db_mirror = "${var.clamav_db_mirror}"
-  user_data_path   = "${var.user_data_path}"
 }
 
 module "bind_master_host" {
   instance_count = 1
   source         = "../../modules/launch"
   ami_id         = "${module.amazon_ami.id}"
-  user_data      = "${module.bind_master_user_data.user_data}"
+  user_data      = "${data.template_cloudinit_config.master_bind_conf_userdata.rendered}"
   ssh_banner     = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
   eni_ids        = "${data.terraform_remote_state.bootstrap_bind.bind_eni_ids}"
   key_pair_name  = "${module.bind_host_key_pair.key_name}"
@@ -82,20 +113,61 @@ module "bind_master_host" {
 
 variable "clamav_db_mirror" {}
 
+module "clam_av_client_config" {
+  source           = "../../modules/clamav/amzn2_systemd_client"
+  clamav_db_mirror = "${var.clamav_db_mirror}"
+}
+
+module "syslog_config" {
+  source      = "../../modules/syslog"
+  root_domain = "${local.root_domain}"
+}
+
+data "template_cloudinit_config" "slave_bind_conf_userdata" {
+  base64_encode = false
+  gzip          = false
+
+  part {
+    filename     = "syslog.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.syslog_config.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+
+  part {
+    filename     = "slave_bind_conf.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.bind_slave_user_data.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+
+  part {
+    filename     = "clamav.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.clam_av_client_config.client_user_data_config}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+
+  part {
+    filename     = "other.cfg"
+    content_type = "text/cloud-config"
+    content      = "${file("${var.user_data_path}")}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+}
+
 module "bind_slave_user_data" {
   source           = "../../modules/bind_dns/slave/user_data"
   client_cidr      = "${var.client_cidr}"
   master_ip        = "${local.master_public_ip}"
   zone_name        = "${local.root_domain}"
-  clamav_db_mirror = "${var.clamav_db_mirror}"
-  user_data_path   = "${var.user_data_path}"
 }
 
 module "bind_slave_host" {
   instance_count = "${length(data.terraform_remote_state.bootstrap_bind.bind_eni_ids) - 1}"
   source         = "../../modules/launch"
   ami_id         = "${module.amazon_ami.id}"
-  user_data      = "${module.bind_slave_user_data.user_data}"
+  user_data      = "${data.template_cloudinit_config.slave_bind_conf_userdata.rendered}"
   ssh_banner     = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
   eni_ids        = ["${data.terraform_remote_state.bootstrap_bind.bind_eni_ids[1]}", "${data.terraform_remote_state.bootstrap_bind.bind_eni_ids[2]}"]
   key_pair_name  = "${module.bind_host_key_pair.key_name}"

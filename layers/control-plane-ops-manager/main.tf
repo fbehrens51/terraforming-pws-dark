@@ -52,7 +52,7 @@ variable "tags" {
   type = "map"
 }
 
-variable "user_data_path" {}
+variable "om_user_data_path" {}
 
 variable "instance_type" {}
 
@@ -92,7 +92,7 @@ module "clam_av_client_config" {
 data "template_cloudinit_config" "config" {
   part {
     content_type = "text/cloud-config"
-    content      = "${file(var.user_data_path)}"
+    content      = "${file(var.om_user_data_path)}"
   }
 
   part {

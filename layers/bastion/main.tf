@@ -62,7 +62,7 @@ data "template_cloudinit_config" "user_data" {
   part {
     filename     = "other.cfg"
     content_type = "text/cloud-config"
-    content      = "${file("${var.user_data_path}")}"
+    content      = "${file("${var.bastion_user_data_path}")}"
   }
 }
 
@@ -94,7 +94,7 @@ variable "ami_id" {
 
 variable "remote_state_region" {}
 variable "remote_state_bucket" {}
-variable "user_data_path" {}
+variable "bastion_user_data_path" {}
 variable "singleton_availability_zone" {}
 variable "internetless" {}
 
