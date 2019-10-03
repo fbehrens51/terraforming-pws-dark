@@ -31,6 +31,8 @@ module "syslog_config" {
   root_domain = "${var.zone_name}"
 }
 
+variable "user_data_path" {}
+
 data "template_cloudinit_config" "slave_bind_conf_userdata" {
   base64_encode = false
   gzip          = false
@@ -53,6 +55,13 @@ data "template_cloudinit_config" "slave_bind_conf_userdata" {
     filename     = "clamav.cfg"
     content_type = "text/cloud-config"
     content      = "${module.clam_av_client_config.client_user_data_config}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+
+  part {
+    filename     = "other.cfg"
+    content_type = "text/cloud-config"
+    content      = "${file("${var.user_data_path}")}"
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 }

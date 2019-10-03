@@ -56,6 +56,8 @@ module "bind_host_key_pair" {
   key_name = "${local.modified_name}"
 }
 
+variable "user_data_path" {}
+
 module "bind_master_user_data" {
   source           = "../../modules/bind_dns/master/user_data"
   client_cidr      = "${var.client_cidr}"
@@ -64,6 +66,7 @@ module "bind_master_user_data" {
   slave_ips        = "${local.slave_public_ips}"
   zone_name        = "${local.root_domain}"
   clamav_db_mirror = "${var.clamav_db_mirror}"
+  user_data_path   = "${var.user_data_path}"
 }
 
 module "bind_master_host" {
@@ -85,6 +88,7 @@ module "bind_slave_user_data" {
   master_ip        = "${local.master_public_ip}"
   zone_name        = "${local.root_domain}"
   clamav_db_mirror = "${var.clamav_db_mirror}"
+  user_data_path   = "${var.user_data_path}"
 }
 
 module "bind_slave_host" {
