@@ -30,16 +30,9 @@ data "aws_vpc" "vpc" {
   id = "${data.aws_route_table.private_route_table.vpc_id}"
 }
 
-data "aws_ami" "nat_ami" {
-  filter {
-    name   = "name"
-    values = ["amzn-ami-vpc-nat*"]
-  }
-
-  most_recent = true
-  owners      = ["amazon"]
+module "nat_ami" {
+  source = "../amis/encrypted/amazon-nat/lookup"
 }
-
 module "eni" {
   source = "../eni_per_subnet"
 
@@ -71,7 +64,7 @@ module "nat_host" {
   source = "../launch"
 
   instance_count = "1"
-  ami_id         = "${data.aws_ami.nat_ami.image_id}"
+  ami_id         = "${module.nat_ami.id}"
   user_data      = "${var.user_data}"
 
   ssh_banner = "${var.ssh_banner}"

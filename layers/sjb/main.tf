@@ -17,7 +17,7 @@ locals {
 }
 
 module "find_ami" {
-  source = "../../modules/amis/amazon_hvm_ami"
+  source = "../../modules/amis/encrypted/amazon2/lookup"
 }
 
 data "template_file" "setup_source_zip" {

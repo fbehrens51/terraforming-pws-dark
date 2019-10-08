@@ -68,6 +68,8 @@ module "paperwork" {
   users       = "${var.users}"
 }
 
+data "aws_caller_identity" "current_user" {}
+
 # We invoke the keys layer here to simulate having a KEYMANAGER role invoke keys
 # "out of band" in the production environment
 module "keys" {
@@ -77,6 +79,7 @@ module "keys" {
   director_role_arn   = "${module.paperwork.director_role_arn}"
   pas_bucket_role_arn = "${module.paperwork.pas_bucket_role_arn}"
   deletion_window     = "7"
+  additional_bootstrap_principal_arn = "${data.aws_caller_identity.current_user.arn}"
 }
 
 resource "aws_s3_bucket" "certs" {

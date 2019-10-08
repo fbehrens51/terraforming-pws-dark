@@ -48,7 +48,7 @@ locals {
 }
 
 module "amazon_ami" {
-  source = "../../modules/amis/amazon_hvm_ami"
+  source = "../../modules/amis/encrypted/amazon2/lookup"
 }
 
 module "bind_host_key_pair" {

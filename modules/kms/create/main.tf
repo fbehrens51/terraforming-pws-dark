@@ -41,6 +41,7 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
       identifiers = [
         "${var.director_role_arn}",
         "${var.pas_bucket_role_arn}",
+        "${var.additional_bootstrap_principal_arn}"
       ]
     }
 
@@ -102,7 +103,9 @@ resource "aws_kms_key" "kms_key" {
 
 variable "pas_bucket_role_arn" {}
 variable "director_role_arn" {}
-
+variable "additional_bootstrap_principal_arn" {
+  default = ""
+}
 variable "key_name" {}
 
 variable "deletion_window" {

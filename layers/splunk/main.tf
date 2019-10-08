@@ -93,7 +93,7 @@ variable "user_data_path" {}
 variable "license_path" {}
 
 module "amazon_ami" {
-  source = "../../modules/amis/amazon_hvm_ami"
+  source = "../../modules/amis/encrypted/amazon2/lookup"
 }
 
 module "insecure_web_conf" {
