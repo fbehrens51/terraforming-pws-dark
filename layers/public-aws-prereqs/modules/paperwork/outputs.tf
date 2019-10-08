@@ -132,6 +132,15 @@ output "user_private_keys" {
   sensitive = true
 }
 
+output "portal_end_to_end_test_user_cert_pem" {
+  value = "${module.portal_end_to_end_test_user_cert.cert_pem}"
+}
+
+output "portal_end_to_end_test_user_private_key_pem" {
+  value     = "${module.portal_end_to_end_test_user_cert.private_key_pem}"
+  sensitive = true
+}
+
 data "template_file" "usernames" {
   count    = "${length(var.users)}"
   template = "${lookup(var.users[count.index], "username")}"

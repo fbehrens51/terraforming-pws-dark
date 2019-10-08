@@ -9,31 +9,33 @@ module "providers" {
 provider "aws" {}
 
 locals {
-  cert_bucket                          = "${replace(var.env_name," ","-")}-secrets"
-  root_ca_cert_s3_path                 = "root_ca_cert.pem"
-  router_trusted_ca_certs_s3_path      = "router_trusted_ca_certs.pem"
-  trusted_ca_certs_s3_path             = "trusted_ca_certs.pem"
-  rds_ca_cert_s3_path                  = "rds_ca_cert.pem"
-  router_server_cert_s3_path           = "router_server_cert.pem"
-  router_server_key_s3_path            = "router_server_key.pem"
-  concourse_server_cert_s3_path        = "concourse_server_cert.pem"
-  concourse_server_key_s3_path         = "concourse_server_key.pem"
-  uaa_server_cert_s3_path              = "uaa_server_cert.pem"
-  uaa_server_key_s3_path               = "uaa_server_key.pem"
-  ldap_client_cert_s3_path             = "ldap_client_cert.pem"
-  ldap_client_key_s3_path              = "ldap_client_key.pem"
-  om_server_cert_s3_path               = "om_server_cert.pem"
-  om_server_key_s3_path                = "om_server_key.pem"
-  control_plane_om_server_cert_s3_path = "control_plane_om_server_cert.pem"
-  control_plane_om_server_key_s3_path  = "control_plane_om_server_key.pem"
-  splunk_server_cert_s3_path           = "splunk_server_cert.pem"
-  splunk_server_key_s3_path            = "splunk_server_key.pem"
-  splunk_monitor_server_cert_s3_path   = "splunk_monitor_server_cert.pem"
-  splunk_monitor_server_key_s3_path    = "splunk_monitor_server_key.pem"
-  portal_smoke_test_cert_s3_path       = "portal_smoke_test_cert.pem"
-  portal_smoke_test_key_s3_path        = "portal_smoke_test_key.pem"
-  ldap_password_s3_path                = "ldap_password.txt"
-  smtp_password_s3_path                = "smtp_password.txt"
+  cert_bucket                                      = "${replace(var.env_name," ","-")}-secrets"
+  root_ca_cert_s3_path                             = "root_ca_cert.pem"
+  router_trusted_ca_certs_s3_path                  = "router_trusted_ca_certs.pem"
+  trusted_ca_certs_s3_path                         = "trusted_ca_certs.pem"
+  rds_ca_cert_s3_path                              = "rds_ca_cert.pem"
+  router_server_cert_s3_path                       = "router_server_cert.pem"
+  router_server_key_s3_path                        = "router_server_key.pem"
+  concourse_server_cert_s3_path                    = "concourse_server_cert.pem"
+  concourse_server_key_s3_path                     = "concourse_server_key.pem"
+  uaa_server_cert_s3_path                          = "uaa_server_cert.pem"
+  uaa_server_key_s3_path                           = "uaa_server_key.pem"
+  ldap_client_cert_s3_path                         = "ldap_client_cert.pem"
+  ldap_client_key_s3_path                          = "ldap_client_key.pem"
+  om_server_cert_s3_path                           = "om_server_cert.pem"
+  om_server_key_s3_path                            = "om_server_key.pem"
+  control_plane_om_server_cert_s3_path             = "control_plane_om_server_cert.pem"
+  control_plane_om_server_key_s3_path              = "control_plane_om_server_key.pem"
+  splunk_server_cert_s3_path                       = "splunk_server_cert.pem"
+  splunk_server_key_s3_path                        = "splunk_server_key.pem"
+  splunk_monitor_server_cert_s3_path               = "splunk_monitor_server_cert.pem"
+  splunk_monitor_server_key_s3_path                = "splunk_monitor_server_key.pem"
+  portal_smoke_test_cert_s3_path                   = "portal_smoke_test_cert.pem"
+  portal_smoke_test_key_s3_path                    = "portal_smoke_test_key.pem"
+  ldap_password_s3_path                            = "ldap_password.txt"
+  smtp_password_s3_path                            = "smtp_password.txt"
+  portal_end_to_end_test_user_cert_pem_path        = "portal_end_to_end_test_user_cert.pem"
+  portal_end_to_end_test_user_private_key_pem_path = "portal_end_to_end_test_user_key.pem"
 
   basedn = "ou=users,dc=${join(",dc=", split(".", var.root_domain))}"
   admin  = "cn=admin,dc=${join(",dc=", split(".", var.root_domain))}"
@@ -364,8 +366,19 @@ resource "local_file" "paperwork_variables" {
   content  = "${data.template_file.paperwork_variables.rendered}"
 }
 
+# The following outputs are used by the portal test suite and are not needed by the paperwork layer
+output "portal_end_to_end_test_user_cert_pem" {
+  value = "${module.paperwork.portal_end_to_end_test_user_cert_pem}"
+}
+
+output "portal_end_to_end_test_user_private_key_pem" {
+  value     = "${module.paperwork.portal_end_to_end_test_user_private_key_pem}"
+  sensitive = true
+}
+
 # The following outputs are used by the ldap layer but are not needed by the
 # paperwork layer
+
 output "ldap_server_cert" {
   value = "${module.paperwork.ldap_server_cert}"
 }

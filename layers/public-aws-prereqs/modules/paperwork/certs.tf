@@ -10,6 +10,15 @@ module "domains" {
   root_domain = "${var.root_domain}"
 }
 
+module "portal_end_to_end_test_user_cert" {
+  source = "../client_cert"
+
+  env_name           = "${var.env_name}"
+  ca_cert_pem        = "${module.ca_cert.cert_pem}"
+  ca_private_key_pem = "${module.ca_cert.private_key_pem}"
+  common_name        = "PortalEndToEndTestUser"
+}
+
 module "splunk_server_cert" {
   source = "../server_cert"
 
