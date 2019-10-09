@@ -34,7 +34,7 @@ module "encrypt_amazon_nat" {
 
 // snapshot times out, subsequent run will pick up completed snapshot and complete successfully...
 // so need to refactor into script/local exec to handle long running snapshots.
-//module "encrypt_om_ami" {
-//  source = "../../modules/amis/encrypted/opsman/create"
-//  kms_key_id = "${data.terraform_remote_state.paperwork.kms_key_arn}"
-//}
+module "encrypt_om_ami" {
+  source = "../../modules/amis/encrypted/opsman/create"
+  kms_key_id = "${data.terraform_remote_state.paperwork.kms_key_arn}"
+}

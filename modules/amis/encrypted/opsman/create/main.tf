@@ -19,18 +19,9 @@ resource "aws_ebs_volume" "encrypted_volume" {
   snapshot_id = "${data.aws_ami.current_ami.root_snapshot_id}"
 }
 
-resource "aws_ebs_snapshot" "encrypted_snapshot" {
-  volume_id = "${aws_ebs_volume.encrypted_volume.id}"
-}
-
-resource "aws_ami" "encrypted_ami" {
-  name = "encrypted_${data.aws_ami.current_ami.name}"
-  virtualization_type = "${data.aws_ami.current_ami.virtualization_type}"
-  root_device_name    = "/dev/xvda"
-
-  ebs_block_device {
-    device_name = "/dev/xvda"
-    snapshot_id = "${aws_ebs_snapshot.encrypted_snapshot.id}"
-    volume_size = "${aws_ebs_volume.encrypted_volume.size}"
+resource "null_resource" "create_snapshot_and_ami" {
+  provisioner "local-exec" {
+    command = "bash ${path.module}/create_snapshot.sh ${aws_ebs_volume.encrypted_volume.id} encrypted_${data.aws_ami.current_ami.name}"
   }
+  depends_on = ["aws_ebs_volume.encrypted_volume"]
 }
