@@ -92,12 +92,12 @@ data "template_cloudinit_config" "master_bind_conf_userdata" {
 }
 
 module "bind_master_user_data" {
-  source           = "../../modules/bind_dns/master/user_data"
-  client_cidr      = "${var.client_cidr}"
-  master_ip        = "${local.master_public_ip}"
-  secret           = "${local.bind_rndc_secret}"
-  slave_ips        = "${local.slave_public_ips}"
-  zone_name        = "${local.root_domain}"
+  source      = "../../modules/bind_dns/master/user_data"
+  client_cidr = "${var.client_cidr}"
+  master_ip   = "${local.master_public_ip}"
+  secret      = "${local.bind_rndc_secret}"
+  slave_ips   = "${local.slave_public_ips}"
+  zone_name   = "${local.root_domain}"
 }
 
 module "bind_master_host" {
@@ -112,10 +112,12 @@ module "bind_master_host" {
 }
 
 variable "clamav_db_mirror" {}
+variable "custom_clamav_yum_repo_url" {}
 
 module "clam_av_client_config" {
   source           = "../../modules/clamav/amzn2_systemd_client"
   clamav_db_mirror = "${var.clamav_db_mirror}"
+  custom_repo_url  = "${var.custom_clamav_yum_repo_url}"
 }
 
 module "syslog_config" {
@@ -157,10 +159,10 @@ data "template_cloudinit_config" "slave_bind_conf_userdata" {
 }
 
 module "bind_slave_user_data" {
-  source           = "../../modules/bind_dns/slave/user_data"
-  client_cidr      = "${var.client_cidr}"
-  master_ip        = "${local.master_public_ip}"
-  zone_name        = "${local.root_domain}"
+  source      = "../../modules/bind_dns/slave/user_data"
+  client_cidr = "${var.client_cidr}"
+  master_ip   = "${local.master_public_ip}"
+  zone_name   = "${local.root_domain}"
 }
 
 module "bind_slave_host" {

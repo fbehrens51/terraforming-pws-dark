@@ -1,4 +1,5 @@
 variable "clamav_db_mirror" {}
+variable "custom_repo_url" {}
 
 data "template_file" "user_data" {
   template = "${file("${path.module}/user_data.tpl")}"
@@ -6,6 +7,7 @@ data "template_file" "user_data" {
   vars {
     clam_database_mirror = "${var.clamav_db_mirror}"
     clam_freshclam       = "${indent(8,file("${path.module}/clam-freshclam"))}"
+    custom_repo_url      = "${var.custom_repo_url}"
   }
 }
 

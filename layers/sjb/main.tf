@@ -152,10 +152,12 @@ data "terraform_remote_state" "bootstrap_control_plane" {
 }
 
 variable "clamav_db_mirror" {}
+variable "custom_clamav_yum_repo_url" {}
 
 module "clam_av_client_config" {
   source           = "../../modules/clamav/amzn2_systemd_client"
   clamav_db_mirror = "${var.clamav_db_mirror}"
+  custom_repo_url  = "${var.custom_clamav_yum_repo_url}"
 }
 
 module "sjb" {
