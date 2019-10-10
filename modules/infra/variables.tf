@@ -4,6 +4,8 @@ variable "env_name" {
 
 variable "ssh_banner" {}
 
+variable "bastion_private_ip" {}
+
 variable "hosted_zone" {
   type    = "string"
   default = ""

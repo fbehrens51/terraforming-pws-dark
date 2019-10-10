@@ -91,6 +91,16 @@ module "amzn1_clam_av_client_config" {
 }
 
 data "template_cloudinit_config" "nat_user_data" {
+  base64_encode = false
+  gzip          = false
+
+  part {
+    filename     = "base.cfg"
+    content_type = "text/cloud-config"
+    content      = "${file(var.user_data_path)}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+
   part {
     filename     = "clamav.cfg"
     content_type = "text/cloud-config"
@@ -104,6 +114,7 @@ module "nat" {
   private_route_table_id = "${data.terraform_remote_state.routes.es_private_vpc_route_table_id}"
   tags                   = "${local.modified_tags}"
   public_subnet_id       = "${element(module.public_subnets.subnet_ids, 0)}"
+  bastion_private_ip     = "${data.terraform_remote_state.bastion.bastion_private_ip}/32"
   internetless           = "${var.internetless}"
   instance_type          = "${var.nat_instance_type}"
   user_data              = "${data.template_cloudinit_config.nat_user_data.rendered}"
@@ -129,6 +140,7 @@ variable "availability_zones" {
 }
 
 variable "clamav_db_mirror" {}
+variable "user_data_path" {}
 
 output "public_subnet_ids" {
   value = "${module.public_subnets.subnet_ids}"

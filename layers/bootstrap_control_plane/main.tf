@@ -20,6 +20,18 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
+data "terraform_remote_state" "bastion" {
+  backend = "s3"
+
+  config {
+    bucket     = "${var.remote_state_bucket}"
+    key        = "bastion"
+    region     = "${var.remote_state_region}"
+    encrypt    = true
+    kms_key_id = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
+  }
+}
+
 data "terraform_remote_state" "routes" {
   backend = "s3"
 
@@ -131,6 +143,7 @@ resource "aws_security_group" "vms_security_group" {
 }
 
 variable "clamav_db_mirror" {}
+variable "user_data_path" {}
 
 module "amzn1_clam_av_client_config" {
   source           = "../../modules/clamav/amzn1_initd_client"
@@ -152,6 +165,16 @@ resource "aws_s3_bucket" "mirror_bucket" {
 }
 
 data "template_cloudinit_config" "nat_user_data" {
+  base64_encode = false
+  gzip          = false
+
+  part {
+    filename     = "base.cfg"
+    content_type = "text/cloud-config"
+    content      = "${file(var.user_data_path)}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+
   part {
     filename     = "clamav.cfg"
     content_type = "text/cloud-config"
@@ -166,6 +189,7 @@ module "nat" {
   tags                   = "${local.modified_tags}"
   public_subnet_id       = "${module.public_subnets.subnet_ids[0]}"
   internetless           = "${var.internetless}"
+  bastion_private_ip     = "${data.terraform_remote_state.bastion.bastion_private_ip}/32"
   instance_type          = "${var.nat_instance_type}"
   user_data              = "${data.template_cloudinit_config.nat_user_data.rendered}"
   ssh_banner             = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"

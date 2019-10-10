@@ -78,9 +78,9 @@ variable "deb_pkg_bucket" {}
 variable "clamav_deb_pkg_object_prefix" {}
 
 module "deb_tgz_url" {
-  source      = "../../modules/s3/presigned_url"
-  bucket_name = "${var.deb_pkg_bucket}"
-  object_prefix  = "${var.clamav_deb_pkg_object_prefix}"
+  source        = "../../modules/s3/presigned_url"
+  bucket_name   = "${var.deb_pkg_bucket}"
+  object_prefix = "${var.clamav_deb_pkg_object_prefix}"
 }
 
 module "clam_av_client_config" {

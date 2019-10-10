@@ -15,7 +15,9 @@ data "template_cloudinit_config" "cloud_config" {
   gzip          = false
 
   part {
-    content = "${data.template_file.user_data.rendered}"
+    content      = "${data.template_file.user_data.rendered}"
+    content_type = "text/cloud-config"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 }
 

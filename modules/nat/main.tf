@@ -16,6 +16,8 @@ variable "ssh_banner" {}
 
 variable "user_data" {}
 
+variable "bastion_private_ip" {}
+
 locals {
   env_name      = "${var.tags["Name"]}"
   modified_name = "${local.env_name} nat"
@@ -33,10 +35,16 @@ data "aws_vpc" "vpc" {
 module "nat_ami" {
   source = "../amis/encrypted/amazon-nat/lookup"
 }
+
 module "eni" {
   source = "../eni_per_subnet"
 
   ingress_rules = [
+    {
+      port        = "22"
+      protocol    = "tcp"
+      cidr_blocks = "${var.bastion_private_ip}"
+    },
     {
       port        = "0"
       protocol    = "-1"
