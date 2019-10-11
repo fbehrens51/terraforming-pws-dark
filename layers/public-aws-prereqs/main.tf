@@ -64,6 +64,7 @@ module "paperwork" {
   director_role_name    = "${var.director_role_name}"
   key_manager_role_name = "${var.key_manager_role_name}"
   splunk_role_name      = "${var.splunk_role_name}"
+  archive_role_name     = "${var.archive_role_name}"
 
   env_name    = "${var.env_name}"
   root_domain = "${var.root_domain}"
@@ -77,10 +78,10 @@ data "aws_caller_identity" "current_user" {}
 module "keys" {
   source = "../../modules/kms/create"
 
-  key_name            = "${var.kms_key_name}"
-  director_role_arn   = "${module.paperwork.director_role_arn}"
-  pas_bucket_role_arn = "${module.paperwork.pas_bucket_role_arn}"
-  deletion_window     = "7"
+  key_name                           = "${var.kms_key_name}"
+  director_role_arn                  = "${module.paperwork.director_role_arn}"
+  pas_bucket_role_arn                = "${module.paperwork.pas_bucket_role_arn}"
+  deletion_window                    = "7"
   additional_bootstrap_principal_arn = "${data.aws_caller_identity.current_user.arn}"
 }
 
@@ -108,6 +109,7 @@ data "template_file" "paperwork_variables" {
     bucket_role_name                            = "${var.pas_bucket_role_name}"
     platform_automation_engine_worker_role_name = "${var.platform_automation_engine_worker_role_name}"
     splunk_role_name                            = "${var.splunk_role_name}"
+    archive_role_name                           = "${var.archive_role_name}"
     key_manager_role_name                       = "${var.key_manager_role_name}"
     kms_key_id                                  = "${module.keys.kms_key_id}"
     kms_key_arn                                 = "${module.keys.kms_key_arn}"
@@ -178,6 +180,8 @@ variable "key_manager_role_name" {
 variable "kms_key_name" {
   type = "string"
 }
+
+variable "archive_role_name" {}
 
 variable "splunk_role_name" {}
 

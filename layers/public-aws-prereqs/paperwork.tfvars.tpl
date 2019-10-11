@@ -22,6 +22,8 @@ kms_key_id = "${kms_key_id}"
 
 kms_key_arn = "${kms_key_arn}"
 
+archive_role_name = "${archive_role_name}"
+
 splunk_role_name = "${splunk_role_name}"
 
 bucket_role_name = "${bucket_role_name}"

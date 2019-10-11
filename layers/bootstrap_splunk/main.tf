@@ -56,7 +56,8 @@ locals {
   indexers_count   = "3"
   forwarders_count = "1"
 
-  tags = "${merge(var.tags, map("Name", "${var.env_name}-splunk"))}"
+  cert_bucket = "${replace(var.env_name," ","-")}-syslog-archive"
+  tags        = "${merge(var.tags, map("Name", "${var.env_name}-splunk"))}"
 
   dns_zone_name    = "${data.terraform_remote_state.paperwork.root_domain}"
   master_dns_ip    = "${data.terraform_remote_state.bind.master_public_ip}"
@@ -99,6 +100,11 @@ locals {
       protocol    = "tcp"
       cidr_blocks = "0.0.0.0/0"
     },
+    {
+      port        = "${module.splunk_ports.splunk_s3_archive_port}"
+      protocol    = "tcp"
+      cidr_blocks = "0.0.0.0/0"
+    },
   ]
 
   splunk_egress_rules = [
@@ -124,6 +130,16 @@ variable "splunk_host_key_pair_name" {}
 
 variable "tags" {
   type = "map"
+}
+
+module "s3_bootstrap" {
+  source        = "../../modules/eni_per_subnet"
+  ingress_rules = "${local.splunk_ingress_rules}"
+  egress_rules  = "${local.splunk_egress_rules}"
+  subnet_ids    = ["${local.private_subnets}"]
+  eni_count     = "${local.forwarders_count}"
+  create_eip    = "false"
+  tags          = "${local.tags}"
 }
 
 module "master_bootstrap" {
@@ -166,6 +182,20 @@ module "search_head_bootstrap" {
   tags          = "${local.tags}"
 }
 
+resource "aws_s3_bucket" "syslog_archive" {
+  bucket = "${local.cert_bucket}"
+  acl    = "private"
+  tags   = "${local.tags}"
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "aws:kms"
+      }
+    }
+  }
+}
+
 resource "random_uuid" "splunk_http_token" {}
 
 resource "random_string" "splunk_password" {
@@ -194,6 +224,11 @@ module "splunk_host_key_pair" {
 data "aws_subnet" "private_subnets" {
   count = "${length(local.private_subnets)}"
   id    = "${local.private_subnets[count.index]}"
+}
+
+resource "aws_ebs_volume" "splunk_s3_data" {
+  availability_zone = "${element(data.aws_subnet.private_subnets.*.availability_zone, 0)}"
+  size              = 100
 }
 
 resource "aws_ebs_volume" "splunk_master_data" {
@@ -286,6 +321,14 @@ resource "dns_a_record_set" "splunk_logs_a_record" {
   ttl       = 300
 }
 
+output "s3_bucket_syslog_archive" {
+  value = "${aws_s3_bucket.syslog_archive.id}"
+}
+
+output "s3_data_volume" {
+  value = "${aws_ebs_volume.splunk_s3_data.id}"
+}
+
 output "master_data_volume" {
   value = "${aws_ebs_volume.splunk_master_data.id}"
 }
@@ -310,8 +353,16 @@ output "search_head_private_ips" {
   value = "${module.search_head_bootstrap.eni_ips}"
 }
 
+output "s3_private_ips" {
+  value = "${module.s3_bootstrap.eni_ips}"
+}
+
 output "master_private_ips" {
   value = "${module.master_bootstrap.eni_ips}"
+}
+
+output "s3_eni_ids" {
+  value = "${module.s3_bootstrap.eni_ids}"
 }
 
 output "master_eni_ids" {

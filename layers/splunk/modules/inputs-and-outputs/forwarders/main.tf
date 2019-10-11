@@ -1,5 +1,7 @@
 variable "master_ip" {}
 variable "mgmt_port" {}
+variable "s3_archive_ip" {}
+variable "s3_archive_port" {}
 variable "http_token" {}
 variable "syslog_port" {}
 variable "http_collector_port" {}
@@ -11,17 +13,24 @@ data "template_file" "outputs_conf" {
 pass4SymmKey = $${pass4SymmKey}
 master_uri = https://$${master_ip}:$${mgmt_port}
 
+[tcpout:s3Archive]
+server = $${s3_archive_ip}:$${s3_archive_port}
+sendCookedData = false
+maxQueueSeize = 25GB
+
 [tcpout:SplunkOutput]
 indexerDiscovery = SplunkDiscovery
 
 [tcpout]
-defaultGroup = SplunkOutput
+defaultGroup = SplunkOutput, s3Archive
 EOF
 
   vars {
-    pass4SymmKey = "${var.pass4SymmKey}"
-    master_ip    = "${var.master_ip}"
-    mgmt_port    = "${var.mgmt_port}"
+    pass4SymmKey    = "${var.pass4SymmKey}"
+    master_ip       = "${var.master_ip}"
+    mgmt_port       = "${var.mgmt_port}"
+    s3_archive_ip   = "${var.s3_archive_ip}"
+    s3_archive_port = "${var.s3_archive_port}"
   }
 }
 

@@ -17,3 +17,7 @@ output "splunk_tcp_port" {
 output "splunk_web_port" {
   value = "8000"
 }
+
+output "splunk_s3_archive_port" {
+  value = "10514"
+}

@@ -184,6 +184,42 @@ resource "aws_iam_role_policy_attachment" "key_manager_attach" {
   role       = "${aws_iam_role.key_manager.name}"
 }
 
+data "aws_iam_policy_document" "s3_writer" {
+  statement {
+    effect = "Allow"
+
+    actions = ["s3:Get*",
+      "s3:List*",
+      "s3:PutObject",
+      "s3:AbortMultipartUpload",
+    ]
+
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy_attachment" "archive" {
+  name       = "${var.archive_role_name}"
+  roles      = ["${aws_iam_role.archive_role.name}"]
+  policy_arn = "${aws_iam_policy.archive_writer.arn}"
+}
+
+resource "aws_iam_policy" "archive_writer" {
+  name   = "${var.archive_role_name}"
+  path   = "/"
+  policy = "${data.aws_iam_policy_document.s3_writer.json}"
+}
+
+resource "aws_iam_role" "archive_role" {
+  name               = "${var.archive_role_name}"
+  assume_role_policy = "${data.aws_iam_policy_document.role_policy.json}"
+}
+
+resource "aws_iam_instance_profile" "archive_instance_profile" {
+  name = "${aws_iam_role.archive_role.name}"
+  role = "${aws_iam_role.archive_role.name}"
+}
+
 data "aws_iam_policy_document" "s3_reader" {
   statement {
     effect = "Allow"
