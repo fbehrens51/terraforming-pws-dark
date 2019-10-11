@@ -27,9 +27,9 @@ resource "aws_ebs_volume" "encrypted_volume" {
   snapshot_id = "${data.aws_ami.current_ami.root_snapshot_id}"
 }
 
-resource "null_resource" "create_snapshot_and_ami" {
-  provisioner "local-exec" {
-    command = "bash ${path.module}/create_snapshot.sh ${aws_ebs_volume.encrypted_volume.id} encrypted_${data.aws_ami.current_ami.name}"
-  }
-  depends_on = ["aws_ebs_volume.encrypted_volume"]
+module "create_ami" {
+  source = "../../create_ami_from_volume"
+  volume_id ="${aws_ebs_volume.encrypted_volume.id}"
+  name_prefix = "encrypted_${data.aws_ami.current_ami.name}"
+  depends_on = ["${aws_ebs_volume.encrypted_volume.arn}"]
 }
