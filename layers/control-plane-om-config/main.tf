@@ -160,6 +160,10 @@ module "runtime_config_config" {
   s3_secret_access_key      = "${var.s3_secret_access_key}"
   s3_auth_type              = "${var.s3_auth_type}"
 
+  extra_user_name       = "${var.extra_user_name}"
+  extra_user_public_key = "${var.extra_user_public_key}"
+  extra_user_sudo       = "${var.extra_user_sudo}"
+
   vpc_dns = "${local.vpc_dns}"
 }
 

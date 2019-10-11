@@ -72,3 +72,18 @@ variable "ipsec_log_level" {}
 variable "ipsec_optional" {}
 
 variable "runtime_config_product_version" {}
+
+variable "extra_user_name" {
+  description = "The username of the extra user that will be added to all bosh managed VMs"
+  default     = ""
+}
+
+variable "extra_user_public_key" {
+  description = "The SSH public key of the extra user that will be added to all bosh managed VMs"
+  default     = ""
+}
+
+variable "extra_user_sudo" {
+  description = "Whether to grant sudo acces to the extra user"
+  default     = false
+}

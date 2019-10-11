@@ -10,6 +10,13 @@ resource "aws_security_group" "vms_security_group" {
   vpc_id      = "${data.aws_vpc.vpc.id}"
 
   ingress {
+    cidr_blocks = ["${var.bastion_private_ip}/32"]
+    protocol    = "tcp"
+    from_port   = 22
+    to_port     = 22
+  }
+
+  ingress {
     cidr_blocks = ["${data.aws_vpc.vpc.cidr_block}"]
     protocol    = "-1"
     from_port   = 0

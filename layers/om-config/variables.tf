@@ -166,3 +166,18 @@ variable "clamav_external_mirrors" {
 variable "clamav_mirror_instance_type" {
   default = "automatic"
 }
+
+variable "extra_user_name" {
+  description = "The username of the extra user that will be added to all bosh managed VMs"
+  default     = ""
+}
+
+variable "extra_user_public_key" {
+  description = "The SSH public key of the extra user that will be added to all bosh managed VMs"
+  default     = ""
+}
+
+variable "extra_user_sudo" {
+  description = "Whether to grant sudo acces to the extra user"
+  default     = false
+}

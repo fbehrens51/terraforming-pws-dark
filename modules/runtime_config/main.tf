@@ -40,6 +40,10 @@ data "template_file" "runtime_config_template" {
     ipsec_subnet_cidrs    = "${join(",",  var.ipsec_subnet_cidrs)}"
     no_ipsec_subnet_cidrs = "${join(",", concat(var.no_ipsec_subnet_cidrs, list(local.vpc_dns_subnet)))}"
     ssh_banner            = "${var.custom_ssh_banner}"
+
+    extra_user_name       = "${var.extra_user_name}"
+    extra_user_public_key = "${var.extra_user_public_key}"
+    extra_user_sudo       = "${var.extra_user_sudo}"
   }
 }
 
@@ -70,4 +74,19 @@ output "download_runtime_config_config" {
 output "runtime_config_template" {
   value     = "${data.template_file.runtime_config_template.rendered}"
   sensitive = true
+}
+
+variable "extra_user_name" {
+  description = "The username of the extra user that will be added to all bosh managed VMs"
+  default     = ""
+}
+
+variable "extra_user_public_key" {
+  description = "The SSH public key of the extra user that will be added to all bosh managed VMs"
+  default     = ""
+}
+
+variable "extra_user_sudo" {
+  description = "Whether to grant sudo acces to the extra user"
+  default     = false
 }
