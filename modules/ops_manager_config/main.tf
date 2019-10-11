@@ -199,8 +199,9 @@ data "template_file" "cf_template" {
     pas_vpc_azs                 = "${indent(4, join("", data.template_file.pas_vpc_azs.*.rendered))}"
     singleton_availability_zone = "${var.singleton_availability_zone}"
 
-    splunk_syslog_host = "${var.splunk_syslog_host}"
-    splunk_syslog_port = "${var.splunk_syslog_port}"
+    splunk_syslog_host    = "${var.splunk_syslog_host}"
+    splunk_syslog_port    = "${var.splunk_syslog_port}"
+    splunk_syslog_ca_cert = "${var.splunk_syslog_ca_cert}"
 
     backup_restore_instance_type                = "${var.backup_restore_instance_type}"
     clock_global_instance_type                  = "${var.clock_global_instance_type}"
