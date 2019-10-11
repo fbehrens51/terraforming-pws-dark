@@ -1,6 +1,7 @@
 # create snapshot
 VOLUME_ID=$1
 AMI_NAME=$2
+epoch_date=$(date +%s)
 
 SNAPSHOTID=$(aws ec2 create-snapshot --volume-id $VOLUME_ID --output text --query "SnapshotId")
 echo "Waiting for Snapshot ID: $SNAPSHOTID"
@@ -12,4 +13,4 @@ do printf "\rsnapshot progress: %s" $progress;
 done
 
 
-aws ec2 register-image --name $AMI_NAME --virtualization-type hvm --architecture "x86_64" --root-device-name "/dev/xvda" --block-device-mappings "[{\"DeviceName\": \"/dev/xvda\",\"Ebs\":{\"SnapshotId\":\"$SNAPSHOTID\"}}]"
+aws ec2 register-image --name $AMI_NAME-$epoch_date --virtualization-type hvm --architecture "x86_64" --root-device-name "/dev/xvda" --block-device-mappings "[{\"DeviceName\": \"/dev/xvda\",\"Ebs\":{\"SnapshotId\":\"$SNAPSHOTID\"}}]"
