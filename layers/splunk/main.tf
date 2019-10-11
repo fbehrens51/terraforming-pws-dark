@@ -190,7 +190,7 @@ module "indexers_inputs_conf" {
   input_port = "${local.splunk_indexers_input_port}"
 }
 
-module "forwardes_inputs_outputs_conf" {
+module "forwarders_inputs_outputs_conf" {
   source = "./modules/inputs-and-outputs/forwarders"
 
   syslog_port         = "${local.splunk_syslog_port}"
@@ -201,6 +201,9 @@ module "forwardes_inputs_outputs_conf" {
   pass4SymmKey        = "${local.forwarders_pass4SymmKey}"
   s3_archive_ip       = "${local.s3_archive_ip}"
   s3_archive_port     = "${local.s3_archive_port}"
+  server_cert         = "${data.terraform_remote_state.paperwork.splunk_logs_server_cert}"
+  server_key          = "${data.terraform_remote_state.paperwork.splunk_logs_server_key}"
+  ca_cert             = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 }
 
 module "slave_license_conf" {
@@ -418,7 +421,7 @@ data "template_cloudinit_config" "splunk_forwarders_cloud_init_config" {
   part {
     filename     = "inputsconf.cfg"
     content_type = "text/cloud-config"
-    content      = "${module.forwardes_inputs_outputs_conf.user_data}"
+    content      = "${module.forwarders_inputs_outputs_conf.user_data}"
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 

@@ -28,6 +28,8 @@ locals {
   control_plane_om_server_key_s3_path              = "control_plane_om_server_key.pem"
   splunk_server_cert_s3_path                       = "splunk_server_cert.pem"
   splunk_server_key_s3_path                        = "splunk_server_key.pem"
+  splunk_logs_server_cert_s3_path                  = "splunk_logs_server_cert.pem"
+  splunk_logs_server_key_s3_path                   = "splunk_logs_server_key.pem"
   splunk_monitor_server_cert_s3_path               = "splunk_monitor_server_cert.pem"
   splunk_monitor_server_key_s3_path                = "splunk_monitor_server_key.pem"
   portal_smoke_test_cert_s3_path                   = "portal_smoke_test_cert.pem"
@@ -150,6 +152,8 @@ data "template_file" "paperwork_variables" {
     control_plane_om_server_key_s3_path  = "${local.control_plane_om_server_key_s3_path}"
     splunk_server_cert_s3_path           = "${local.splunk_server_cert_s3_path}"
     splunk_server_key_s3_path            = "${local.splunk_server_key_s3_path}"
+    splunk_logs_server_cert_s3_path      = "${local.splunk_logs_server_cert_s3_path}"
+    splunk_logs_server_key_s3_path       = "${local.splunk_logs_server_key_s3_path}"
     splunk_monitor_server_cert_s3_path   = "${local.splunk_monitor_server_cert_s3_path}"
     splunk_monitor_server_key_s3_path    = "${local.splunk_monitor_server_key_s3_path}"
     portal_smoke_test_cert_s3_path       = "${local.portal_smoke_test_cert_s3_path}"
@@ -293,6 +297,20 @@ resource "aws_s3_bucket_object" "control_plane_om_server_key" {
   bucket       = "${aws_s3_bucket.certs.bucket}"
   content_type = "text/plain"
   content      = "${module.paperwork.control_plane_om_server_key}"
+}
+
+resource "aws_s3_bucket_object" "splunk_logs_server_cert" {
+  key          = "${local.splunk_logs_server_cert_s3_path}"
+  bucket       = "${aws_s3_bucket.certs.bucket}"
+  content      = "${module.paperwork.splunk_logs_server_cert}"
+  content_type = "text/plain"
+}
+
+resource "aws_s3_bucket_object" "splunk_logs_server_key" {
+  key          = "${local.splunk_logs_server_key_s3_path}"
+  bucket       = "${aws_s3_bucket.certs.bucket}"
+  content_type = "text/plain"
+  content      = "${module.paperwork.splunk_logs_server_key}"
 }
 
 resource "aws_s3_bucket_object" "splunk_server_cert" {
