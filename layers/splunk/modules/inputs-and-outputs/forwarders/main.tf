@@ -20,6 +20,7 @@ master_uri = https://$${master_ip}:$${mgmt_port}
 server = $${s3_archive_ip}:$${s3_archive_port}
 sendCookedData = false
 maxQueueSeize = 25GB
+useSSL = true
 
 [tcpout:SplunkOutput]
 indexerDiscovery = SplunkDiscovery

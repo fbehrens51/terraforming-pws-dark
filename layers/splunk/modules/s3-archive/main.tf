@@ -2,6 +2,9 @@
 # example: write_files: occurs before runcmd:
 
 variable "s3_syslog_archive" {}
+variable "ca_cert" {}
+variable "server_cert" {}
+variable "server_key" {}
 
 data "template_file" "user_data" {
   template = <<EOF
@@ -26,7 +29,19 @@ rsyslog:
     - filename: 10-cloud-config.conf
       content: |
         # load required modules
-        module(load="imtcp")
+        module(load="imtcp" # TCP listener
+            StreamDriver.Name="gtls"
+            StreamDriver.Mode="1" # run driver in TLS-only mode
+            StreamDriver.Authmode="anon"
+            )
+
+        # make gtls driver the default and set certificate files
+        global(
+            DefaultNetstreamDriver="gtls"
+            DefaultNetstreamDriverCAFile="/etc/rsyslog.d/ca.pem"
+            DefaultNetstreamDriverCertFile="/etc/rsyslog.d/cert.pem"
+            DefaultNetstreamDriverKeyFile="/etc/rsyslog.d/key.pem"
+            )
 
         # listeners repeat blocks if more listeners are needed
         # alternatively, use array syntax: port=["514","515",...]
@@ -52,6 +67,24 @@ rsyslog:
   service_reload_command: [systemctl, kill, --kill-who, main, -s, SIGHUP, rsyslog.service]
 
 write_files:
+- path: /etc/rsyslog.d/ca.pem
+  owner: root:root
+  permisions: '0400'
+  content: |
+    ${indent(4, var.ca_cert)}
+
+- path: /etc/rsyslog.d/cert.pem
+  owner: root:root
+  permisions: '0400'
+  content: |
+    ${indent(4, var.server_cert)}
+
+- path: /etc/rsyslog.d/key.pem
+  owner: root:root
+  permisions: '0400'
+  content: |
+    ${indent(4, var.server_key)}
+
 - path: /run/compress_logs_and_copy_to_s3
   owner: root:root
   permisions: '0600'

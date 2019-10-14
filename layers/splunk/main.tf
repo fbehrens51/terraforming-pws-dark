@@ -177,6 +177,9 @@ module "indexers_server_conf" {
 module "s3_archive" {
   source            = "./modules/s3-archive"
   s3_syslog_archive = "${local.s3_syslog_archive}"
+  server_cert       = "${data.terraform_remote_state.paperwork.splunk_logs_server_cert}"
+  server_key        = "${data.terraform_remote_state.paperwork.splunk_logs_server_key}"
+  ca_cert           = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 }
 
 module "splunk_setup" {
