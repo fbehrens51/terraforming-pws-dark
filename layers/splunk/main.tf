@@ -206,6 +206,10 @@ module "forwarders_inputs_outputs_conf" {
   ca_cert             = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 }
 
+module "forwarders_server_conf" {
+  source = "./modules/server-conf/forwarders"
+}
+
 module "slave_license_conf" {
   source = "./modules/license-conf/slave"
 
@@ -423,6 +427,13 @@ data "template_cloudinit_config" "splunk_forwarders_cloud_init_config" {
     filename     = "inputsconf.cfg"
     content_type = "text/cloud-config"
     content      = "${module.forwarders_inputs_outputs_conf.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+
+  part {
+    filename     = "server-conf.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.forwarders_server_conf.user_data}"
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
