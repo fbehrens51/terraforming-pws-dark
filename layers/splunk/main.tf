@@ -132,6 +132,7 @@ module "master_server_conf" {
 
   indexers_pass4SymmKey   = "${local.indexers_pass4SymmKey}"
   forwarders_pass4SymmKey = "${local.forwarders_pass4SymmKey}"
+  splunk_syslog_ca_cert   = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 }
 
 module "setup_s3_hostname" {
@@ -147,9 +148,10 @@ module "setup_master_hostname" {
 module "search_head_server_conf" {
   source = "./modules/server-conf/search-head"
 
-  master_ip    = "${local.master_ip}"
-  mgmt_port    = "${local.splunk_mgmt_port}"
-  pass4SymmKey = "${local.indexers_pass4SymmKey}"
+  master_ip             = "${local.master_ip}"
+  mgmt_port             = "${local.splunk_mgmt_port}"
+  pass4SymmKey          = "${local.indexers_pass4SymmKey}"
+  splunk_syslog_ca_cert = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 }
 
 module "setup_search_head_hostname" {
@@ -165,10 +167,11 @@ module "setup_forwarders_hostname" {
 module "indexers_server_conf" {
   source = "./modules/server-conf/indexers"
 
-  master_ip        = "${local.master_ip}"
-  mgmt_port        = "${local.splunk_mgmt_port}"
-  pass4SymmKey     = "${local.indexers_pass4SymmKey}"
-  replication_port = "${local.splunk_replication_port}"
+  master_ip             = "${local.master_ip}"
+  mgmt_port             = "${local.splunk_mgmt_port}"
+  pass4SymmKey          = "${local.indexers_pass4SymmKey}"
+  replication_port      = "${local.splunk_replication_port}"
+  splunk_syslog_ca_cert = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 }
 
 module "s3_archive" {
@@ -186,8 +189,11 @@ module "splunk_setup" {
 }
 
 module "indexers_inputs_conf" {
-  source     = "./modules/inputs-and-outputs/indexers"
-  input_port = "${local.splunk_indexers_input_port}"
+  source      = "./modules/inputs-and-outputs/indexers"
+  input_port  = "${local.splunk_indexers_input_port}"
+  server_cert = "${data.terraform_remote_state.paperwork.splunk_logs_server_cert}"
+  server_key  = "${data.terraform_remote_state.paperwork.splunk_logs_server_key}"
+  ca_cert     = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 }
 
 module "forwarders_inputs_outputs_conf" {
@@ -207,7 +213,8 @@ module "forwarders_inputs_outputs_conf" {
 }
 
 module "forwarders_server_conf" {
-  source = "./modules/server-conf/forwarders"
+  source                = "./modules/server-conf/forwarders"
+  splunk_syslog_ca_cert = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 }
 
 module "slave_license_conf" {

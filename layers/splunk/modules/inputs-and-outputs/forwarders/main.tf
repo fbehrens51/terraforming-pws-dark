@@ -23,6 +23,7 @@ maxQueueSeize = 25GB
 
 [tcpout:SplunkOutput]
 indexerDiscovery = SplunkDiscovery
+useSSL = true
 
 [tcpout]
 defaultGroup = SplunkOutput, s3Archive
