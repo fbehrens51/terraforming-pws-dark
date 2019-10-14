@@ -67,6 +67,9 @@ module "cidr_lookup" {
   vpc_cidr = "${data.aws_vpc.vpc.cidr_block}"
 }
 
+variable "root_domain" {}
+variable "splunk_syslog_ca_cert" {}
+
 variable "user_data" {}
 
 locals {

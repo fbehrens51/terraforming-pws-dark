@@ -23,18 +23,13 @@ data "terraform_remote_state" "paperwork" {
 }
 
 module "encrypt_amazon2_ami" {
-  source = "../../modules/amis/encrypted/amazon2/create"
-  kms_key_id = "${data.terraform_remote_state.paperwork.kms_key_arn}"
-}
-
-module "encrypt_amazon_nat" {
-  source = "../../modules/amis/encrypted/amazon-nat/create"
+  source     = "../../modules/amis/encrypted/amazon2/create"
   kms_key_id = "${data.terraform_remote_state.paperwork.kms_key_arn}"
 }
 
 // snapshot times out, subsequent run will pick up completed snapshot and complete successfully...
 // so need to refactor into script/local exec to handle long running snapshots.
 module "encrypt_om_ami" {
-  source = "../../modules/amis/encrypted/opsman/create"
+  source     = "../../modules/amis/encrypted/opsman/create"
   kms_key_id = "${data.terraform_remote_state.paperwork.kms_key_arn}"
 }

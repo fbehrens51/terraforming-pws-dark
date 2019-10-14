@@ -79,7 +79,8 @@ EOF
 module "syslog_config" {
   source = "../../modules/syslog"
 
-  root_domain = "${local.root_domain}"
+  root_domain           = "${local.root_domain}"
+  splunk_syslog_ca_cert = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 }
 
 data "template_cloudinit_config" "user_data" {

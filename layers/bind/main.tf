@@ -121,8 +121,9 @@ module "clam_av_client_config" {
 }
 
 module "syslog_config" {
-  source      = "../../modules/syslog"
-  root_domain = "${local.root_domain}"
+  source                = "../../modules/syslog"
+  root_domain           = "${local.root_domain}"
+  splunk_syslog_ca_cert = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 }
 
 data "template_cloudinit_config" "slave_bind_conf_userdata" {

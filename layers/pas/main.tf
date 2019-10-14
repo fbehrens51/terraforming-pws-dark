@@ -64,8 +64,9 @@ data "terraform_remote_state" "bind" {
 }
 
 module "clam_av_client_config" {
-  source           = "../../modules/clamav/amzn1_initd_client"
+  source           = "../../modules/clamav/amzn2_systemd_client"
   clamav_db_mirror = "${var.clamav_db_mirror}"
+  custom_repo_url  = "${var.custom_clamav_yum_repo_url}"
 }
 
 data "template_cloudinit_config" "nat_user_data" {
@@ -102,7 +103,11 @@ module "infra" {
   private_route_table_id = "${data.terraform_remote_state.routes.pas_private_vpc_route_table_id}"
   nat_instance_type      = "${var.nat_instance_type}"
   ssh_banner             = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
-  user_data              = "${data.template_cloudinit_config.nat_user_data.rendered}"
+
+  root_domain           = "${data.terraform_remote_state.paperwork.root_domain}"
+  splunk_syslog_ca_cert = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
+
+  user_data = "${data.template_cloudinit_config.nat_user_data.rendered}"
 }
 
 module "pas" {
@@ -248,6 +253,7 @@ variable "tags" {
 }
 
 variable "clamav_db_mirror" {}
+variable "custom_clamav_yum_repo_url" {}
 
 variable "user_data_path" {}
 
