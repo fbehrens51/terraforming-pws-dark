@@ -27,10 +27,17 @@ runcmd:
   - mkdir /home/ec2-user/workspace
   - cd /home/ec2-user/workspace
   - |
-    latest=$$(aws s3 ls s3://pws-dark-releases/ | grep ' source-code' | egrep '.zip$' | awk '{print $4}' | sort -n | tail -1)
-    aws s3 cp s3://${var.product_blobs_s3_bucket}/$$latest --region ${var.product_blobs_s3_region} .
-  - unzip source-code-*.zip
-  - rm source-code-*.zip
+    latest=$$(aws s3 ls s3://${var.transfer_s3_bucket}/pcf-eagle-automation/ | grep ' pcf-eagle-automation' | egrep '.zip$' | awk '{print $4}' | sort -n | tail -1)
+    aws s3 cp s3://${var.transfer_s3_bucket}/pcf-eagle-automation/$$latest --region ${var.transfer_s3_region} .
+  - mkdir -p pcf-eagle-automation
+  - unzip -d ./pcf-eagle-automation pcf-eagle-automation-*.zip
+  - rm pcf-eagle-automation*.zip
+  - |
+    latest=$$(aws s3 ls s3://${var.transfer_s3_bucket}/terraforming-pws-dark/ | grep ' terraforming-pws-dark' | egrep '.zip$' | awk '{print $4}' | sort -n | tail -1)
+    aws s3 cp s3://${var.transfer_s3_bucket}/terraforming-pws-dark/$$latest --region ${var.transfer_s3_region} .
+  - mkdir -p terraforming-pws-dark
+  - unzip -d ./terraforming-pws-dark terraforming-pws-dark-*.zip
+  - rm terraforming-pws-dark*.zip
 EOF
 }
 
@@ -43,18 +50,20 @@ runcmd:
 EOF
 }
 
+
+
 data "template_file" "setup_tools_zip" {
   template = <<EOF
 runcmd:
   - echo "Downloading and extracting tools.zip"
   - |
-    latest=$$(aws s3 ls s3://pws-dark-releases/ | grep ' tools' | egrep '.zip$' | awk '{print $4}' | sort -n | tail -1)
-    aws s3 cp s3://${var.product_blobs_s3_bucket}/$$latest --region ${var.product_blobs_s3_region} .
+    latest=$$(aws s3 ls s3://${var.transfer_s3_bucket}/cli-tools/ | grep ' tools' | egrep '.zip$' | awk '{print $4}' | sort -n | tail -1)
+    aws s3 cp s3://${var.transfer_s3_bucket}/cli-tools/$$latest --region ${var.transfer_s3_region} .
   - unzip tools-*.zip
   - rm tools-*.zip
   - mkdir -p /home/ec2-user/.terraform.d/plugins/linux_amd64/
   - mv tools/terraform-provider* /home/ec2-user/.terraform.d/plugins/linux_amd64/.
-  - mv tools/* /usr/local/bin/.
+  - sudo install tools/* /usr/local/bin/.
 EOF
 }
 
