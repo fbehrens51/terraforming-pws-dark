@@ -23,6 +23,8 @@ product-properties:
     value: 2048
   .cloud_controller.max_file_size:
     value: 1024
+  .cloud_controller.max_package_size:
+    value: 2147483648
   .cloud_controller.security_event_logging_enabled:
     value: true
   .cloud_controller.staging_timeout_in_seconds:
@@ -31,8 +33,6 @@ product-properties:
     value: ${system_domain}
   .diego_brain.starting_container_count_maximum:
     value: 200
-  .doppler.message_drain_buffer_size:
-    value: 10000
   .ha_proxy.skip_cert_verify:
     value: false
   .mysql.cli_history:
@@ -59,6 +59,8 @@ product-properties:
     value: false
   .properties.autoscale_api_instance_count:
     value: 1
+  .properties.autoscale_enable_notifications:
+    value: true
   .properties.autoscale_enable_verbose_logging:
     value: false
   .properties.autoscale_instance_count:
@@ -82,11 +84,10 @@ product-properties:
     value: true
   .properties.cf_networking_internal_domain:
     value: apps.internal
+  .properties.cloud_controller_completed_tasks_cutoff_age_in_days:
+    value: 31
   .properties.cloud_controller_default_health_check_timeout:
     value: 60
-  .properties.cloud_controller_default_stack:
-    selected_option: default
-    value: default
   .properties.cloud_controller_temporary_disable_deployments:
     value: false
   .properties.container_networking:
@@ -96,6 +97,8 @@ product-properties:
     selected_option: silk
     value: silk
   .properties.container_networking_interface_plugin.silk.enable_log_traffic:
+    value: true
+  .properties.container_networking_interface_plugin.silk.enable_policy_enforcement:
     value: true
   .properties.container_networking_interface_plugin.silk.iptables_accepted_udp_logs_per_sec:
     value: 100
@@ -120,10 +123,6 @@ product-properties:
   .properties.diego_log_timestamp_format:
     selected_option: rfc3339
     value: rfc3339
-  .properties.enable_cf_metric_name:
-    value: false
-  .properties.enable_log_cache:
-    value: true
   .properties.enable_smb_volume_driver:
     value: false
   .properties.enable_tls_to_internal_pxc:
@@ -148,8 +147,16 @@ product-properties:
     value: 16384
   .properties.haproxy_ssl_ciphers:
     value: DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384
+  .properties.install_cflinuxfs2:
+    selected_option: skip
+    value: skip
+  .properties.istio:
+    selected_option: disable
+    value: disable
   .properties.locket_database_max_open_connections:
     value: 200
+  .properties.log_cache_max_per_source:
+    value: 100000
   .properties.metric_registrar_blacklisted_tags:
     value: deployment,job,index,id
   .properties.metric_registrar_enabled:
@@ -181,7 +188,7 @@ product-properties:
     - name: Marketplace
       href: /marketplace
     - name: Docs
-      href: https://docs.pivotal.io/pivotalcf/2-4/pas/intro.html
+      href: https://docs.pivotal.io/pivotalcf/2-5/pas/intro.html
     - name: Tools
       href: ${apps_manager_tools_url}
   .properties.push_apps_manager_app_poll_interval:
@@ -202,8 +209,13 @@ product-properties:
     value: enable
   .properties.route_services.enable.ignore_ssl_cert_verification:
     value: false
+  .properties.route_services.enable.internal_lookup:
+    value: false
   .properties.router_backend_max_conn:
     value: 500
+  .properties.router_balancing_algorithm:
+    selected_option: round_robin
+    value: round-robin
   .properties.router_client_cert_validation:
     selected_option: request
     value: request
@@ -212,6 +224,8 @@ product-properties:
   .properties.router_keepalive_connections:
     selected_option: enable
     value: enable
+  .properties.router_prune_all_stale_routes:
+    value: false
   .properties.routing_custom_ca_certificates:
     value: |
       ${indent(6, router_trusted_ca_certificates)}
@@ -237,8 +251,6 @@ product-properties:
   .properties.smoke_tests:
     selected_option: on_demand
     value: on_demand
-  .properties.smtp_address:
-    value: ${smtp_host}
   .properties.smtp_auth_mechanism:
     value: plain
   .properties.smtp_credentials:
@@ -247,12 +259,20 @@ product-properties:
       password: %{ if smtp_user != "" }${smtp_password}%{ endif }
   .properties.smtp_enable_starttls_auto:
     value: ${smtp_tls}
+  .properties.stack_migration_acknowledgement:
+    value: X
+  .properties.smtp_address:
+    value: ${smtp_host}
   .properties.smtp_from:
     value: ${smtp_from}
   .properties.smtp_port:
     value: ${smtp_port}
+  .properties.syslog_drop_debug:
+    value: true
   .properties.syslog_host:
     value: ${splunk_syslog_host}
+  .properties.syslog_metrics_to_syslog_enabled:
+    value: true
   .properties.syslog_port:
     value: ${splunk_syslog_port}
   .properties.syslog_protocol:
@@ -415,8 +435,6 @@ product-properties:
     value: 900
   .uaa.apps_manager_access_token_lifetime:
     value: 3600
-  .uaa.apps_manager_refresh_token_lifetime:
-    value: 3600
   .uaa.cf_cli_access_token_lifetime:
     value: 7200
   .uaa.cf_cli_refresh_token_lifetime:
@@ -433,7 +451,6 @@ product-properties:
         ${indent(8, uaa_service_provider_key_credentials_cert_pem)}
       private_key_pem: |
         ${indent(8, uaa_service_provider_key_credentials_private_key_pem)}
-
   .properties.push_apps_manager_global_wrapper_footer_content:
     value: ${apps_manager_global_wrapper_footer_content}
   .properties.push_apps_manager_global_wrapper_header_content:
@@ -454,7 +471,6 @@ product-properties:
     value: ${apps_manager_square_logo}
   .properties.push_apps_manager_logo:
     value: ${apps_manager_main_logo}
-
 network-properties:
   network:
     name: pas
@@ -470,11 +486,13 @@ resource-config:
     instance_type:
       id: ${backup_restore_instance_type}
     internet_connected: false
+    max_in_flight: 1
   clock_global:
     instances: automatic
     instance_type:
       id: ${clock_global_instance_type}
     internet_connected: false
+    max_in_flight: 1
   cloud_controller:
     instances: automatic
     instance_type:
@@ -482,6 +500,7 @@ resource-config:
     internet_connected: false
     additional_vm_extensions:
     - s3_instance_profile
+    max_in_flight: 1
   cloud_controller_worker:
     instances: automatic
     instance_type:
@@ -489,6 +508,7 @@ resource-config:
     internet_connected: false
     additional_vm_extensions:
     - s3_instance_profile
+    max_in_flight: 1
   consul_server:
     instances: automatic
     persistent_disk:
@@ -496,41 +516,61 @@ resource-config:
     instance_type:
       id: ${consul_server_instance_type}
     internet_connected: false
+    max_in_flight: 1
   credhub:
     instances: automatic
     instance_type:
       id: ${credhub_instance_type}
     internet_connected: false
+    max_in_flight: 1
   diego_brain:
     instances: automatic
     instance_type:
       id: ${diego_brain_instance_type}
     internet_connected: false
+    max_in_flight: 1
   diego_cell:
     instances: automatic
     instance_type:
       id: ${diego_cell_instance_type}
     internet_connected: false
+    max_in_flight: 4%
   diego_database:
     instances: automatic
     instance_type:
       id: ${diego_database_instance_type}
     internet_connected: false
+    max_in_flight: 1
   doppler:
     instances: automatic
     instance_type:
       id: ${doppler_instance_type}
     internet_connected: false
+    max_in_flight: 1
   ha_proxy:
     instances: automatic
     instance_type:
       id: ${ha_proxy_instance_type}
     internet_connected: false
+    max_in_flight: 1
+  istio_control:
+    instances: 0
+    instance_type:
+      id: automatic
+    internet_connected: false
+    max_in_flight: 1
+  istio_router:
+    instances: 0
+    instance_type:
+      id: automatic
+    internet_connected: false
+    max_in_flight: 1
   loggregator_trafficcontroller:
     instances: automatic
     instance_type:
       id: ${loggregator_trafficcontroller_instance_type}
     internet_connected: false
+    max_in_flight: 1
   mysql:
     instances: 0
     persistent_disk:
@@ -538,21 +578,25 @@ resource-config:
     instance_type:
       id: ${mysql_instance_type}
     internet_connected: false
+    max_in_flight: 1
   mysql_monitor:
     instances: 0
     instance_type:
       id: ${mysql_monitor_instance_type}
     internet_connected: false
+    max_in_flight: 1
   mysql_proxy:
     instances: 0
     instance_type:
       id: ${mysql_proxy_instance_type}
     internet_connected: false
+    max_in_flight: 1
   nats:
     instances: automatic
     instance_type:
       id: ${nats_instance_type}
     internet_connected: false
+    max_in_flight: 1
   nfs_server:
     instances: 0
     persistent_disk:
@@ -560,22 +604,27 @@ resource-config:
     instance_type:
       id: ${nfs_server_instance_type}
     internet_connected: false
+    max_in_flight: 1
   router:
     instances: automatic
     instance_type:
       id: ${router_instance_type}
     internet_connected: false
-    elb_names: ${router_elb_names}
+    elb_names:
+    - ${router_elb_names}
+    max_in_flight: 1
   syslog_adapter:
     instances: automatic
     instance_type:
       id: ${syslog_adapter_instance_type}
     internet_connected: false
+    max_in_flight: 1
   syslog_scheduler:
     instances: automatic
     instance_type:
       id: ${syslog_scheduler_instance_type}
     internet_connected: false
+    max_in_flight: 1
   tcp_router:
     instances: 0
     persistent_disk:
@@ -583,11 +632,13 @@ resource-config:
     instance_type:
       id: ${tcp_router_instance_type}
     internet_connected: false
+    max_in_flight: 1
   uaa:
     instances: automatic
     instance_type:
       id: ${uaa_instance_type}
     internet_connected: false
+    max_in_flight: 1
 errand-config:
   deploy-autoscaler:
     post-deploy-state: ${errands_deploy_autoscaler}
@@ -609,5 +660,3 @@ errand-config:
     post-deploy-state: ${errands_smoke_tests}
   test-autoscaling:
     post-deploy-state: ${errands_test_autoscaling}
-
-
