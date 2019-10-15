@@ -229,30 +229,38 @@ data "aws_subnet" "private_subnets" {
 resource "aws_ebs_volume" "splunk_s3_data" {
   availability_zone = "${element(data.aws_subnet.private_subnets.*.availability_zone, 0)}"
   size              = 100
+  encrypted = true
+  kms_key_id = "${data.terraform_remote_state.paperwork.kms_key_arn}"
 }
 
 resource "aws_ebs_volume" "splunk_master_data" {
   availability_zone = "${element(data.aws_subnet.private_subnets.*.availability_zone, 0)}"
   size              = 1000
+  encrypted = true
+  kms_key_id = "${data.terraform_remote_state.paperwork.kms_key_arn}"
 }
 
 resource "aws_ebs_volume" "splunk_search_head_data" {
   availability_zone = "${element(data.aws_subnet.private_subnets.*.availability_zone, 0)}"
   size              = 1000
+  encrypted = true
+  kms_key_id = "${data.terraform_remote_state.paperwork.kms_key_arn}"
 }
 
 resource "aws_ebs_volume" "splunk_indexers_data" {
   count = "${local.indexers_count}"
-
   availability_zone = "${element(data.aws_subnet.private_subnets.*.availability_zone, count.index % length(data.aws_subnet.private_subnets.*.availability_zone))}"
   size              = 1000
+  encrypted = true
+  kms_key_id = "${data.terraform_remote_state.paperwork.kms_key_arn}"
 }
 
 resource "aws_ebs_volume" "splunk_forwarders_data" {
   count = "${local.forwarders_count}"
-
   availability_zone = "${element(data.aws_subnet.private_subnets.*.availability_zone, count.index % length(data.aws_subnet.private_subnets.*.availability_zone))}"
   size              = 100
+  encrypted = true
+  kms_key_id = "${data.terraform_remote_state.paperwork.kms_key_arn}"
 }
 
 module "splunk_search_head_elb" {
