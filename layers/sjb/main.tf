@@ -46,9 +46,14 @@ data "template_file" "setup_system_tools" {
 runcmd:
   - echo "Installing up system tools and utilities"
   - yum install jq git python-pip -y
-  - pip install yq
+  - pip install yq --index-url=%{ if pypi_host_secure == "1" }https%{ else }http%{ endif }://$${pypi_host}/simple --trusted-host=$${pypi_host}
 EOF
+  vars {
+    pypi_host = "${var.pypi_host}"
+    pypi_host_secure = "${var.pypi_host_secure}"
+  }
 }
+
 
 
 
