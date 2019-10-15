@@ -593,8 +593,7 @@ resource-config:
     instance_type:
       id: ${router_instance_type}
     internet_connected: false
-    elb_names:
-    - ${router_elb_names}
+    elb_names: ${router_elb_names}
   syslog_adapter:
     instances: automatic
     instance_type:
