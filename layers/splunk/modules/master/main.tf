@@ -29,18 +29,48 @@ module "base" {
   role_name                  = "splunk-master"
 }
 
-module "master_server_conf" {
-  source = "../server-conf/master"
+data "template_file" "server_conf" {
+  template = <<EOF
+[indexer_discovery]
+pass4SymmKey = ${var.forwarders_pass4SymmKey}
+indexerWeightByDiskCapacity = true
 
-  indexers_pass4SymmKey   = "${var.indexers_pass4SymmKey}"
-  forwarders_pass4SymmKey = "${var.forwarders_pass4SymmKey}"
-  splunk_syslog_ca_cert   = "${var.ca_cert}"
+[clustering]
+mode = master
+replication_factor = 2
+search_factor = 2
+pass4SymmKey = ${var.indexers_pass4SymmKey}
+EOF
 }
 
-module "master_license_conf" {
-  source = "../license-conf/master"
+data "template_file" "master_user_data" {
+  template = <<EOF
+#cloud-config
+write_files:
+- path: /tmp/server.conf
+  content: |
+    ${indent(4, data.template_file.server_conf.rendered)}
 
-  license_path = "${var.license_path}"
+- path: /tmp/splunk-ca.pem
+  content: |
+    ${indent(4, var.ca_cert)}
+
+- path: /tmp/license.lic
+  content: |
+    ${indent(4, file(var.license_path))}
+
+runcmd:
+  - |
+    set -ex
+
+    mkdir -p /opt/splunk/etc/auth/mycerts/
+    mkdir -p /opt/splunk/etc/licenses/enterprise
+    mkdir -p /opt/splunk/etc/system/local/
+
+    cp /tmp/license.lic /opt/splunk/etc/licenses/enterprise/License.lic
+    cp /tmp/server.conf /opt/splunk/etc/system/local/server.conf
+    cp /tmp/splunk-ca.pem /opt/splunk/etc/auth/mycerts/mySplunkCACertificate.pem
+EOF
 }
 
 data "template_cloudinit_config" "splunk_master_cloud_init_config" {
@@ -48,16 +78,9 @@ data "template_cloudinit_config" "splunk_master_cloud_init_config" {
   gzip          = false
 
   part {
-    filename     = "serverconf.cfg"
+    filename     = "master.cfg"
     content_type = "text/cloud-config"
-    content      = "${module.master_server_conf.user_data}"
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
-  }
-
-  part {
-    filename     = "license.cfg"
-    content_type = "text/cloud-config"
-    content      = "${module.master_license_conf.user_data}"
+    content      = "${data.template_file.master_user_data.rendered}"
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 

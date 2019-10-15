@@ -28,33 +28,55 @@ module "base" {
   role_name                  = "splunk-search-head"
 }
 
-module "search_head_server_conf" {
-  source = "../server-conf/search-head"
-
-  master_ip             = "${var.master_ip}"
-  mgmt_port             = "${module.splunk_ports.splunk_mgmt_port}"
-  pass4SymmKey          = "${var.indexers_pass4SymmKey}"
-  splunk_syslog_ca_cert = "${var.ca_cert}"
-}
-
 module "splunk_ports" {
   source = "../../../../modules/splunk_ports"
 }
 
-module "search_head_web_conf" {
-  source = "../web-conf/secure"
-
-  server_cert_content = "${var.server_cert}"
-  server_key_content  = "${var.server_key}"
-  web_port            = "${module.splunk_ports.splunk_web_port}"
-  mgmt_port           = "${module.splunk_ports.splunk_mgmt_port}"
+data "template_file" "license_slave_server_conf" {
+  template = <<EOF
+[license]
+master_uri = https://${var.master_ip}:${module.splunk_ports.splunk_mgmt_port}
+EOF
 }
 
-module "slave_license_conf" {
-  source = "../license-conf/slave"
+data "template_file" "server_conf" {
+  template = <<EOF
+[clustering]
+mode = searchhead
+master_uri = https://${var.master_ip}:${module.splunk_ports.splunk_mgmt_port}
+pass4SymmKey = ${var.indexers_pass4SymmKey}
+EOF
+}
 
-  master_ip = "${var.master_ip}"
-  mgmt_port = "${module.splunk_ports.splunk_mgmt_port}"
+data "template_file" "search_head_user_data" {
+  template = <<EOF
+#cloud-config
+write_files:
+- path: /tmp/server.conf
+  content: |
+    ${indent(4, data.template_file.server_conf.rendered)}
+
+- path: /tmp/splunk-ca.pem
+  content: |
+    ${indent(4, var.ca_cert)}
+
+- path: /tmp/license.conf
+  content: |
+    ${indent(4, data.template_file.license_slave_server_conf.rendered)}
+
+runcmd:
+  - |
+    set -ex
+
+    mkdir -p /opt/splunk/etc/apps/SplunkLicenseSettings/local/
+    mkdir -p /opt/splunk/etc/auth/mycerts/
+    mkdir -p /opt/splunk/etc/system/local/
+
+    cp /tmp/license.conf /opt/splunk/etc/apps/SplunkLicenseSettings/local/server.conf
+    cp /tmp/server.conf /opt/splunk/etc/system/local/server.conf
+    cp /tmp/splunk-ca.pem /opt/splunk/etc/auth/mycerts/mySplunkCACertificate.pem
+
+EOF
 }
 
 data "template_cloudinit_config" "splunk_search_head_cloud_init_config" {
@@ -62,30 +84,9 @@ data "template_cloudinit_config" "splunk_search_head_cloud_init_config" {
   gzip          = false
 
   part {
-    filename     = "serverconf.cfg"
+    filename     = "search-head.cfg"
     content_type = "text/cloud-config"
-    content      = "${module.search_head_server_conf.user_data}"
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
-  }
-
-  part {
-    filename     = "webconf.cfg"
-    content_type = "text/cloud-config"
-    content      = "${module.search_head_web_conf.user_data}"
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
-  }
-
-  part {
-    filename     = "license.cfg"
-    content_type = "text/cloud-config"
-    content      = "${module.slave_license_conf.user_data}"
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
-  }
-
-  part {
-    filename     = "custom.cfg"
-    content_type = "text/cloud-config"
-    content      = "${file(var.user_data_path)}"
+    content      = "${data.template_file.search_head_user_data.rendered}"
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 

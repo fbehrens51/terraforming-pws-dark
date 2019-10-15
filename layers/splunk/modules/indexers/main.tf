@@ -32,29 +32,74 @@ module "splunk_ports" {
   source = "../../../../modules/splunk_ports"
 }
 
-module "indexers_server_conf" {
-  source = "../server-conf/indexers"
+data "template_file" "server_conf" {
+  template = <<EOF
+[replication_port://${module.splunk_ports.splunk_replication_port}]
 
-  master_ip             = "${var.master_ip}"
-  mgmt_port             = "${module.splunk_ports.splunk_mgmt_port}"
-  pass4SymmKey          = "${var.indexers_pass4SymmKey}"
-  replication_port      = "${module.splunk_ports.splunk_replication_port}"
-  splunk_syslog_ca_cert = "${var.ca_cert}"
+[clustering]
+mode = slave
+master_uri = https://${var.master_ip}:${module.splunk_ports.splunk_mgmt_port}
+pass4SymmKey = ${var.indexers_pass4SymmKey}
+EOF
 }
 
-module "indexers_inputs_conf" {
-  source      = "../inputs-and-outputs/indexers"
-  input_port  = "${module.splunk_ports.splunk_tcp_port}"
-  server_cert = "${var.server_cert}"
-  server_key  = "${var.server_key}"
-  ca_cert     = "${var.ca_cert}"
+data "template_file" "inputs_conf" {
+  template = <<EOF
+[splunktcp-ssl://${module.splunk_ports.splunk_tcp_port}]
+disabled = 0
+
+[SSL]
+serverCert = /opt/splunk/etc/auth/mycerts/mySplunkServerCertificate.pem
+EOF
 }
 
-module "slave_license_conf" {
-  source = "../license-conf/slave"
+data "template_file" "license_slave_server_conf" {
+  template = <<EOF
+[license]
+master_uri = https://${var.master_ip}:${module.splunk_ports.splunk_mgmt_port}
+EOF
+}
 
-  master_ip = "${var.master_ip}"
-  mgmt_port = "${module.splunk_ports.splunk_mgmt_port}"
+data "template_file" "cloud_config" {
+  template = <<EOF
+#cloud-config
+write_files:
+- path: /tmp/server.conf
+  content: |
+    ${indent(4, data.template_file.server_conf.rendered)}
+
+- path: /tmp/splunk-ca.pem
+  content: |
+    ${indent(4, var.ca_cert)}
+
+- path: /tmp/server_cert.pem
+  content: |
+    ${indent(4, var.server_cert)}
+    ${indent(4, var.server_key)}
+    ${indent(4, var.ca_cert)}
+
+- path: /tmp/inputs.conf
+  content: |
+    ${indent(4, data.template_file.inputs_conf.rendered)}
+
+- path: /tmp/license.conf
+  content: |
+    ${indent(4, data.template_file.license_slave_server_conf.rendered)}
+
+runcmd:
+  - |
+    set -ex
+
+    mkdir -p /opt/splunk/etc/apps/SplunkLicenseSettings/local/
+    mkdir -p /opt/splunk/etc/auth/mycerts
+    mkdir -p /opt/splunk/etc/system/local/
+
+    cp /tmp/inputs.conf /opt/splunk/etc/system/local/inputs.conf
+    cp /tmp/license.conf /opt/splunk/etc/apps/SplunkLicenseSettings/local/server.conf
+    cp /tmp/server.conf /opt/splunk/etc/system/local/server.conf
+    cp /tmp/server_cert.pem /opt/splunk/etc/auth/mycerts/mySplunkServerCertificate.pem
+    cp /tmp/splunk-ca.pem /opt/splunk/etc/auth/mycerts/mySplunkCACertificate.pem
+EOF
 }
 
 data "template_cloudinit_config" "splunk_indexers_cloud_init_config" {
@@ -62,23 +107,9 @@ data "template_cloudinit_config" "splunk_indexers_cloud_init_config" {
   gzip          = false
 
   part {
-    filename     = "serverconf.cfg"
+    filename     = "indexer.cfg"
     content_type = "text/cloud-config"
-    content      = "${module.indexers_server_conf.user_data}"
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
-  }
-
-  part {
-    filename     = "inputsconf.cfg"
-    content_type = "text/cloud-config"
-    content      = "${module.indexers_inputs_conf.user_data}"
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
-  }
-
-  part {
-    filename     = "license.cfg"
-    content_type = "text/cloud-config"
-    content      = "${module.slave_license_conf.user_data}"
+    content      = "${data.template_file.cloud_config.rendered}"
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 

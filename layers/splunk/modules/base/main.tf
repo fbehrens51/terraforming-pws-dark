@@ -15,15 +15,6 @@ module "splunk_ports" {
   source = "../../../../modules/splunk_ports"
 }
 
-module "splunk_setup" {
-  source = "../splunk-setup"
-
-  admin_password       = "${var.splunk_password}"
-  splunk_rpm_version   = "${var.splunk_rpm_version}"
-  splunk_rpm_s3_bucket = "${var.splunk_rpm_s3_bucket}"
-  splunk_rpm_s3_region = "${var.splunk_rpm_s3_region}"
-}
-
 module "syslog_config" {
   source                = "../../../../modules/syslog"
   root_domain           = "${var.root_domain}"
@@ -34,6 +25,15 @@ module "clam_av_client_config" {
   source           = "../../../../modules/clamav/amzn2_systemd_client"
   clamav_db_mirror = "${var.clamav_db_mirror}"
   custom_repo_url  = "${var.custom_clamav_yum_repo_url}"
+}
+
+module "splunk_setup" {
+  source = "../splunk-setup"
+
+  admin_password       = "${var.splunk_password}"
+  splunk_rpm_version   = "${var.splunk_rpm_version}"
+  splunk_rpm_s3_bucket = "${var.splunk_rpm_s3_bucket}"
+  splunk_rpm_s3_region = "${var.splunk_rpm_s3_region}"
 }
 
 module "web_conf" {
@@ -50,7 +50,7 @@ module "setup_hostname" {
   role   = "${var.role_name}"
 }
 
-data "template_cloudinit_config" "splunk_master_cloud_init_config" {
+data "template_cloudinit_config" "base_user_data" {
   base64_encode = false
   gzip          = false
 
@@ -98,5 +98,5 @@ data "template_cloudinit_config" "splunk_master_cloud_init_config" {
 }
 
 output "user_data" {
-  value = "${data.template_cloudinit_config.splunk_master_cloud_init_config.rendered}"
+  value = "${data.template_cloudinit_config.base_user_data.rendered}"
 }
