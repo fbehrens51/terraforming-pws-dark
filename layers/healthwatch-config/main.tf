@@ -78,8 +78,9 @@ module "healthwatch_config" {
   env_name                       = "${var.env_name}"
   bosh_task_uaa_client_secret    = "${random_string.healthwatch_client_credentials_secret.result}"
 
-  splunk_syslog_host = "${module.domains.splunk_logs_fqdn}"
-  splunk_syslog_port = "${module.splunk_ports.splunk_tcp_port}"
+  splunk_syslog_host    = "${module.domains.splunk_logs_fqdn}"
+  splunk_syslog_port    = "${module.splunk_ports.splunk_tcp_port}"
+  splunk_syslog_ca_cert = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 }
 
 resource "random_string" "healthwatch_client_credentials_secret" {

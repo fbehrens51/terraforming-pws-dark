@@ -138,6 +138,7 @@ module "om_config" {
   pws_dark_iam_s3_resource_product_version = "${var.pws_dark_iam_s3_resource_product_version}"
   splunk_syslog_host                       = "${module.domains.splunk_logs_fqdn}"
   splunk_syslog_port                       = "${module.splunk_ports.splunk_tcp_port}"
+  splunk_syslog_ca_cert                    = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 }
 
 module "runtime_config_config" {
@@ -188,6 +189,7 @@ module "clamav_config" {
   s3_auth_type              = "${var.s3_auth_type}"
   splunk_syslog_host        = "${module.domains.splunk_logs_fqdn}"
   splunk_syslog_port        = "${module.splunk_ports.splunk_tcp_port}"
+  splunk_syslog_ca_cert     = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 }
 
 locals {

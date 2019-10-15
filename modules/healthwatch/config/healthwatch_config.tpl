@@ -39,14 +39,17 @@ product-properties:
   .properties.opsman.enable.url:
     value: ${om_url}
   .properties.syslog_selector:
-    selected_option: active
-    value: Yes without encryption
-  .properties.syslog_selector.active.syslog_address:
+    selected_option: active_with_tls
+    value: Yes with TLS encryption
+  .properties.syslog_selector.active_with_tls.syslog_address:
     value: ${splunk_syslog_host}
-  .properties.syslog_selector.active.syslog_port:
+  .properties.syslog_selector.active_with_tls.syslog_port:
     value: ${splunk_syslog_port}
-  .properties.syslog_selector.active.syslog_transport:
-    value: tcp
+  .properties.syslog_selector.active_with_tls.syslog_permitted_peer:
+    value: ${splunk_syslog_host}
+  .properties.syslog_selector.active_with_tls.syslog_ca_cert:
+    value: |
+      ${indent(6, splunk_syslog_ca_cert)}
 network-properties:
   network:
     name: ${network_name}

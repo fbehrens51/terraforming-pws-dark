@@ -94,7 +94,10 @@ EOF
     address: ${splunk_syslog_host}
     port: ${splunk_syslog_port}
     transport_protocol: tcp
-    tls_enabled: false
+    tls_enabled: true
+    permitted_peer: ${splunk_syslog_host}
+    ssl_ca_certificate: |
+      ${indent(6, splunk_syslog_ca_cert)}
 
 resource-configuration:
   compilation:

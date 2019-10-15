@@ -125,8 +125,9 @@ data "template_file" "director_template" {
     pas_subnets                 = "${indent(4, join("", data.template_file.pas_subnets.*.rendered))}"
     pas_vpc_azs                 = "${indent(2, join("", data.template_file.pas_vpc_azs.*.rendered))}"
 
-    splunk_syslog_host = "${var.splunk_syslog_host}"
-    splunk_syslog_port = "${var.splunk_syslog_port}"
+    splunk_syslog_host    = "${var.splunk_syslog_host}"
+    splunk_syslog_port    = "${var.splunk_syslog_port}"
+    splunk_syslog_ca_cert = "${var.splunk_syslog_ca_cert}"
   }
 }
 

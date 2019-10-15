@@ -60,8 +60,9 @@ module "compliance_scanner_config" {
   availability_zones          = "${var.availability_zones}"
   singleton_availability_zone = "${var.singleton_availability_zone}"
   ntp_servers                 = "${var.ntp_servers}"
-  syslog_host                 = "${module.domains.splunk_logs_fqdn}"
-  syslog_port                 = "${module.splunk_ports.splunk_tcp_port}"
+  splunk_syslog_host          = "${module.domains.splunk_logs_fqdn}"
+  splunk_syslog_port          = "${module.splunk_ports.splunk_tcp_port}"
+  splunk_syslog_ca_cert       = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 }
 
 output "compliance_scanner_config" {

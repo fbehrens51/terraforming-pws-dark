@@ -81,8 +81,9 @@ data "template_file" "director_template" {
     control_plane_subnets = "${indent(4, join("", data.template_file.control_plane_subnets.*.rendered))}"
     control_plane_vpc_azs = "${indent(2, join("", data.template_file.control_plane_vpc_azs.*.rendered))}"
 
-    splunk_syslog_host = "${var.splunk_syslog_host}"
-    splunk_syslog_port = "${var.splunk_syslog_port}"
+    splunk_syslog_host    = "${var.splunk_syslog_host}"
+    splunk_syslog_port    = "${var.splunk_syslog_port}"
+    splunk_syslog_ca_cert = "${var.splunk_syslog_ca_cert}"
   }
 }
 
@@ -111,8 +112,9 @@ data "template_file" "platform_automation_engine_template" {
     concourse_private_key_pem = "${var.concourse_private_key_pem}"
     trusted_ca_certs          = "${var.trusted_ca_certs}"
 
-    splunk_syslog_host = "${var.splunk_syslog_host}"
-    splunk_syslog_port = "${var.splunk_syslog_port}"
+    splunk_syslog_host    = "${var.splunk_syslog_host}"
+    splunk_syslog_port    = "${var.splunk_syslog_port}"
+    splunk_syslog_ca_cert = "${var.splunk_syslog_ca_cert}"
   }
 }
 
