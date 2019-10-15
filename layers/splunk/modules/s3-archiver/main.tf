@@ -5,6 +5,10 @@ variable "s3_syslog_archive" {}
 variable "ca_cert" {}
 variable "server_cert" {}
 variable "server_key" {}
+variable "root_domain" {}
+variable "clamav_db_mirror" {}
+variable "custom_clamav_yum_repo_url" {}
+variable "user_data_path" {}
 
 data "template_file" "user_data" {
   template = <<EOF
@@ -107,6 +111,63 @@ EOF
   }
 }
 
+module "syslog_config" {
+  source                = "../../../../modules/syslog"
+  root_domain           = "${var.root_domain}"
+  splunk_syslog_ca_cert = "${var.ca_cert}"
+}
+
+module "setup_s3_hostname" {
+  source = "../setup-hostname"
+  role   = "splunk-s3"
+}
+
+module "clam_av_client_config" {
+  source           = "../../../../modules/clamav/amzn2_systemd_client"
+  clamav_db_mirror = "${var.clamav_db_mirror}"
+  custom_repo_url  = "${var.custom_clamav_yum_repo_url}"
+}
+
+data "template_cloudinit_config" "splunk_s3_cloud_init_config" {
+  base64_encode = false
+  gzip          = false
+
+  part {
+    filename     = "syslog.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.syslog_config.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+
+  part {
+    filename     = "setup-hostname.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.setup_s3_hostname.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+
+  part {
+    filename     = "setup.cfg"
+    content_type = "text/cloud-config"
+    content      = "${data.template_file.user_data.rendered}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+
+  part {
+    filename     = "custom.cfg"
+    content_type = "text/cloud-config"
+    content      = "${file(var.user_data_path)}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+
+  part {
+    filename     = "clamav.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.clam_av_client_config.client_user_data_config}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+}
+
 output "user_data" {
-  value = "${data.template_file.user_data.rendered}"
+  value = "${data.template_cloudinit_config.splunk_s3_cloud_init_config.rendered}"
 }
