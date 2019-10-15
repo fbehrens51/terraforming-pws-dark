@@ -63,7 +63,8 @@ runcmd:
   - rm tools-*.zip
   - mkdir -p /home/ec2-user/.terraform.d/plugins/linux_amd64/
   - mv tools/terraform-provider* /home/ec2-user/.terraform.d/plugins/linux_amd64/.
-  - sudo install tools/* /usr/local/bin/.
+  - sudo install tools/* /usr/local/bin/
+  - rm -rf tools
 EOF
 }
 
