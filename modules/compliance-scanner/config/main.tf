@@ -10,8 +10,9 @@ variable "ntp_servers" {
   type = "list"
 }
 
-variable "syslog_host" {}
-variable "syslog_port" {}
+variable "splunk_syslog_host" {}
+variable "splunk_syslog_port" {}
+variable "splunk_syslog_ca_cert" {}
 
 data "template_file" "compliance_scanner_config" {
   template = "${file("${path.module}/compliance_scanner_config.tpl")}"
@@ -25,9 +26,10 @@ data "template_file" "compliance_scanner_config" {
 
     singleton_availability_zone = "${var.singleton_availability_zone}"
 
-    ntp_servers = "${join(",", var.ntp_servers)}"
-    syslog_host = "${var.syslog_host}"
-    syslog_port = "${var.syslog_port}"
+    ntp_servers           = "${join(",", var.ntp_servers)}"
+    splunk_syslog_host    = "${var.splunk_syslog_host}"
+    splunk_syslog_port    = "${var.splunk_syslog_port}"
+    splunk_syslog_ca_cert = "${var.splunk_syslog_ca_cert}"
   }
 }
 

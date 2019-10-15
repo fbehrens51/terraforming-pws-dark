@@ -282,8 +282,13 @@ product-properties:
   .properties.syslog_metrics_to_syslog_enabled:
     value: true
   .properties.syslog_tls:
-    selected_option: disabled
-    value: disabled
+    selected_option: enabled
+    value: enabled
+  .properties.syslog_tls.enabled.tls_permitted_peer:
+    value: ${splunk_syslog_host}
+  .properties.syslog_tls.enabled.tls_ca_cert:
+    value: |
+      ${indent(6, splunk_syslog_ca_cert)}
   .properties.syslog_use_tcp_for_file_forwarding_local_transport:
     value: false
   .properties.system_blobstore:
@@ -593,8 +598,7 @@ resource-config:
     instance_type:
       id: ${router_instance_type}
     internet_connected: false
-    elb_names:
-    - ${router_elb_names}
+    elb_names: ${router_elb_names}
   syslog_adapter:
     instances: automatic
     instance_type:

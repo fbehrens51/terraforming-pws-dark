@@ -8,4 +8,7 @@ module "nat" {
   instance_type          = "${var.nat_instance_type}"
   user_data              = "${var.user_data}"
   ssh_banner             = "${var.ssh_banner}"
+
+  root_domain           = "${var.root_domain}"
+  splunk_syslog_ca_cert = "${var.splunk_syslog_ca_cert}"
 }

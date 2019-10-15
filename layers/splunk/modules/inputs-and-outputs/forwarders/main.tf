@@ -4,6 +4,9 @@ variable "s3_archive_ip" {}
 variable "s3_archive_port" {}
 variable "http_token" {}
 variable "syslog_port" {}
+variable "ca_cert" {}
+variable "server_cert" {}
+variable "server_key" {}
 variable "http_collector_port" {}
 variable "pass4SymmKey" {}
 
@@ -17,9 +20,11 @@ master_uri = https://$${master_ip}:$${mgmt_port}
 server = $${s3_archive_ip}:$${s3_archive_port}
 sendCookedData = false
 maxQueueSeize = 25GB
+useSSL = true
 
 [tcpout:SplunkOutput]
 indexerDiscovery = SplunkDiscovery
+useSSL = true
 
 [tcpout]
 defaultGroup = SplunkOutput, s3Archive
@@ -63,10 +68,13 @@ EOF
 
 data "template_file" "syslog_inputs_conf" {
   template = <<EOF
-[tcp://$${syslog_port}]
+[tcp-ssl://$${syslog_port}]
 index = main
 sourcetype = pcf
 connection_host = dns
+
+[SSL]
+serverCert = /opt/splunk/etc/auth/mycerts/mySplunkServerCertificate.pem
 EOF
 
   vars {
@@ -78,6 +86,9 @@ data "template_file" "user_data" {
   template = "${file("${path.module}/user_data.tpl")}"
 
   vars {
+    server_cert               = "${var.server_cert}"
+    server_key                = "${var.server_key}"
+    ca_cert                   = "${var.ca_cert}"
     inputs_conf_content       = "${data.template_file.syslog_inputs_conf.rendered}"
     splunk_forwarder_app_conf = "${data.template_file.forwarder_app_conf.rendered}"
     outputs_conf_content      = "${data.template_file.outputs_conf.rendered}"

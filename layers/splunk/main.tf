@@ -132,6 +132,7 @@ module "master_server_conf" {
 
   indexers_pass4SymmKey   = "${local.indexers_pass4SymmKey}"
   forwarders_pass4SymmKey = "${local.forwarders_pass4SymmKey}"
+  splunk_syslog_ca_cert   = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 }
 
 module "setup_s3_hostname" {
@@ -147,9 +148,10 @@ module "setup_master_hostname" {
 module "search_head_server_conf" {
   source = "./modules/server-conf/search-head"
 
-  master_ip    = "${local.master_ip}"
-  mgmt_port    = "${local.splunk_mgmt_port}"
-  pass4SymmKey = "${local.indexers_pass4SymmKey}"
+  master_ip             = "${local.master_ip}"
+  mgmt_port             = "${local.splunk_mgmt_port}"
+  pass4SymmKey          = "${local.indexers_pass4SymmKey}"
+  splunk_syslog_ca_cert = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 }
 
 module "setup_search_head_hostname" {
@@ -165,15 +167,19 @@ module "setup_forwarders_hostname" {
 module "indexers_server_conf" {
   source = "./modules/server-conf/indexers"
 
-  master_ip        = "${local.master_ip}"
-  mgmt_port        = "${local.splunk_mgmt_port}"
-  pass4SymmKey     = "${local.indexers_pass4SymmKey}"
-  replication_port = "${local.splunk_replication_port}"
+  master_ip             = "${local.master_ip}"
+  mgmt_port             = "${local.splunk_mgmt_port}"
+  pass4SymmKey          = "${local.indexers_pass4SymmKey}"
+  replication_port      = "${local.splunk_replication_port}"
+  splunk_syslog_ca_cert = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 }
 
 module "s3_archive" {
   source            = "./modules/s3-archive"
   s3_syslog_archive = "${local.s3_syslog_archive}"
+  server_cert       = "${data.terraform_remote_state.paperwork.splunk_logs_server_cert}"
+  server_key        = "${data.terraform_remote_state.paperwork.splunk_logs_server_key}"
+  ca_cert           = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 }
 
 module "splunk_setup" {
@@ -186,11 +192,14 @@ module "splunk_setup" {
 }
 
 module "indexers_inputs_conf" {
-  source     = "./modules/inputs-and-outputs/indexers"
-  input_port = "${local.splunk_indexers_input_port}"
+  source      = "./modules/inputs-and-outputs/indexers"
+  input_port  = "${local.splunk_indexers_input_port}"
+  server_cert = "${data.terraform_remote_state.paperwork.splunk_logs_server_cert}"
+  server_key  = "${data.terraform_remote_state.paperwork.splunk_logs_server_key}"
+  ca_cert     = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 }
 
-module "forwardes_inputs_outputs_conf" {
+module "forwarders_inputs_outputs_conf" {
   source = "./modules/inputs-and-outputs/forwarders"
 
   syslog_port         = "${local.splunk_syslog_port}"
@@ -201,6 +210,14 @@ module "forwardes_inputs_outputs_conf" {
   pass4SymmKey        = "${local.forwarders_pass4SymmKey}"
   s3_archive_ip       = "${local.s3_archive_ip}"
   s3_archive_port     = "${local.s3_archive_port}"
+  server_cert         = "${data.terraform_remote_state.paperwork.splunk_logs_server_cert}"
+  server_key          = "${data.terraform_remote_state.paperwork.splunk_logs_server_key}"
+  ca_cert             = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
+}
+
+module "forwarders_server_conf" {
+  source                = "./modules/server-conf/forwarders"
+  splunk_syslog_ca_cert = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 }
 
 module "slave_license_conf" {
@@ -231,8 +248,9 @@ module "clam_av_client_config" {
 }
 
 module "syslog_config" {
-  source      = "../../modules/syslog"
-  root_domain = "${local.root_domain}"
+  source                = "../../modules/syslog"
+  root_domain           = "${local.root_domain}"
+  splunk_syslog_ca_cert = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 }
 
 data "template_cloudinit_config" "splunk_s3_cloud_init_config" {
@@ -418,7 +436,14 @@ data "template_cloudinit_config" "splunk_forwarders_cloud_init_config" {
   part {
     filename     = "inputsconf.cfg"
     content_type = "text/cloud-config"
-    content      = "${module.forwardes_inputs_outputs_conf.user_data}"
+    content      = "${module.forwarders_inputs_outputs_conf.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+
+  part {
+    filename     = "server-conf.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.forwarders_server_conf.user_data}"
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 

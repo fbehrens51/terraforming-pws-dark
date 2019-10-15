@@ -1,9 +1,15 @@
 variable "input_port" {}
+variable "ca_cert" {}
+variable "server_cert" {}
+variable "server_key" {}
 
 data "template_file" "inputs_conf" {
   template = <<EOF
-[splunktcp://$${input_port}]
+[splunktcp-ssl://$${input_port}]
 disabled = 0
+
+[SSL]
+serverCert = /opt/splunk/etc/auth/mycerts/mySplunkServerCertificate.pem
 EOF
 
   vars {
@@ -16,6 +22,9 @@ data "template_file" "user_data" {
 
   vars {
     inputs_conf_content = "${data.template_file.inputs_conf.rendered}"
+    server_cert         = "${var.server_cert}"
+    server_key          = "${var.server_key}"
+    ca_cert             = "${var.ca_cert}"
   }
 }
 

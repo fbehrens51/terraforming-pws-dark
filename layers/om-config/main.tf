@@ -199,8 +199,9 @@ module "om_config" {
   s3_secret_access_key      = "${var.s3_secret_access_key}"
   s3_auth_type              = "${var.s3_auth_type}"
 
-  splunk_syslog_host = "${module.domains.splunk_logs_fqdn}"
-  splunk_syslog_port = "${module.splunk_ports.splunk_tcp_port}"
+  splunk_syslog_host    = "${module.domains.splunk_logs_fqdn}"
+  splunk_syslog_port    = "${module.splunk_ports.splunk_tcp_port}"
+  splunk_syslog_ca_cert = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 }
 
 module "runtime_config_config" {
@@ -250,6 +251,7 @@ module "clamav_config" {
   s3_auth_type                     = "${var.s3_auth_type}"
   splunk_syslog_host               = "${module.domains.splunk_logs_fqdn}"
   splunk_syslog_port               = "${module.splunk_ports.splunk_tcp_port}"
+  splunk_syslog_ca_cert            = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 }
 
 data "aws_vpc" "bastion_vpc" {

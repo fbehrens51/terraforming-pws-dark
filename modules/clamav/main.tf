@@ -29,6 +29,8 @@ variable "splunk_syslog_host" {}
 
 variable "splunk_syslog_port" {}
 
+variable "splunk_syslog_ca_cert" {}
+
 variable "bosh_network_name" {}
 
 locals {
@@ -63,6 +65,7 @@ data "template_file" "clamav_mirror_template" {
     clamav_mirror_instance_type = "${var.clamav_mirror_instance_type}"
     splunk_syslog_host          = "${var.splunk_syslog_host}"
     splunk_syslog_port          = "${var.splunk_syslog_port}"
+    splunk_syslog_ca_cert       = "${var.splunk_syslog_ca_cert}"
   }
 }
 

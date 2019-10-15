@@ -197,4 +197,6 @@ variable "splunk_syslog_host" {}
 
 variable "splunk_syslog_port" {}
 
+variable "splunk_syslog_ca_cert" {}
+
 variable "volume_encryption_kms_key_arn" {}

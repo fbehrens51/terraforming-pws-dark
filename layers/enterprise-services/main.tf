@@ -85,9 +85,10 @@ resource "aws_route_table_association" "private_route_table_assoc" {
   route_table_id = "${data.terraform_remote_state.routes.es_private_vpc_route_table_id}"
 }
 
-module "amzn1_clam_av_client_config" {
-  source           = "../../modules/clamav/amzn1_initd_client"
+module "amzn2_clamav_config" {
+  source           = "../../modules/clamav/amzn2_systemd_client"
   clamav_db_mirror = "${var.clamav_db_mirror}"
+  custom_repo_url  = "${var.custom_clamav_yum_repo_url}"
 }
 
 data "template_cloudinit_config" "nat_user_data" {
@@ -104,7 +105,7 @@ data "template_cloudinit_config" "nat_user_data" {
   part {
     filename     = "clamav.cfg"
     content_type = "text/cloud-config"
-    content      = "${module.amzn1_clam_av_client_config.client_cloud_config}"
+    content      = "${module.amzn2_clamav_config.client_cloud_config}"
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 }
@@ -119,6 +120,8 @@ module "nat" {
   instance_type          = "${var.nat_instance_type}"
   user_data              = "${data.template_cloudinit_config.nat_user_data.rendered}"
   ssh_banner             = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
+  root_domain            = "${data.terraform_remote_state.paperwork.root_domain}"
+  splunk_syslog_ca_cert  = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 }
 
 variable "nat_instance_type" {
@@ -140,6 +143,7 @@ variable "availability_zones" {
 }
 
 variable "clamav_db_mirror" {}
+variable "custom_clamav_yum_repo_url" {}
 variable "user_data_path" {}
 
 output "public_subnet_ids" {

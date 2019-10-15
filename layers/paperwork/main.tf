@@ -182,6 +182,20 @@ data "aws_s3_bucket_object" "om_server_key" {
   key    = "${var.om_server_key_s3_path}"
 }
 
+variable "splunk_logs_server_cert_s3_path" {}
+
+data "aws_s3_bucket_object" "splunk_logs_server_cert" {
+  bucket = "${var.cert_bucket}"
+  key    = "${var.splunk_logs_server_cert_s3_path}"
+}
+
+variable "splunk_logs_server_key_s3_path" {}
+
+data "aws_s3_bucket_object" "splunk_logs_server_key" {
+  bucket = "${var.cert_bucket}"
+  key    = "${var.splunk_logs_server_key_s3_path}"
+}
+
 variable "splunk_server_cert_s3_path" {}
 
 data "aws_s3_bucket_object" "splunk_server_cert" {
@@ -345,6 +359,15 @@ output "om_server_cert" {
 
 output "om_server_key" {
   value     = "${data.aws_s3_bucket_object.om_server_key.body}"
+  sensitive = true
+}
+
+output "splunk_logs_server_cert" {
+  value = "${data.aws_s3_bucket_object.splunk_logs_server_cert.body}"
+}
+
+output "splunk_logs_server_key" {
+  value     = "${data.aws_s3_bucket_object.splunk_logs_server_key.body}"
   sensitive = true
 }
 

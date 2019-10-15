@@ -53,7 +53,7 @@ product-properties:
   .properties.skip_ssl_validation_cf:
     value: false
   .properties.skip_ssl_validation_splunk:
-    value: true
+    value: false
   .properties.space:
     value: splunk-nozzle-space
   .properties.splunk_host:

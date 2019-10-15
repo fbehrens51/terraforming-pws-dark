@@ -449,6 +449,8 @@ variable "splunk_syslog_host" {}
 
 variable "splunk_syslog_port" {}
 
+variable "splunk_syslog_ca_cert" {}
+
 variable "backup_restore_instance_type" {}
 variable "clock_global_instance_type" {}
 variable "cloud_controller_instance_type" {}

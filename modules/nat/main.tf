@@ -18,6 +18,9 @@ variable "user_data" {}
 
 variable "bastion_private_ip" {}
 
+variable "root_domain" {}
+variable "splunk_syslog_ca_cert" {}
+
 locals {
   env_name      = "${var.tags["Name"]}"
   modified_name = "${local.env_name} nat"
@@ -33,7 +36,7 @@ data "aws_vpc" "vpc" {
 }
 
 module "nat_ami" {
-  source = "../amis/encrypted/amazon-nat/lookup"
+  source = "../amis/encrypted/amazon2/lookup"
 }
 
 module "eni" {
@@ -68,12 +71,51 @@ module "eni" {
   source_dest_check = false
 }
 
+module "syslog_config" {
+  source = "../syslog"
+
+  root_domain           = "${var.root_domain}"
+  splunk_syslog_ca_cert = "${var.splunk_syslog_ca_cert}"
+}
+
+data "template_cloudinit_config" "user_data" {
+  base64_encode = false
+  gzip          = false
+
+  part {
+    filename     = "nat.cfg"
+    content_type = "text/cloud-config"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+
+    content = <<EOF
+bootcmd:
+  - |
+    sysctl -w net.ipv4.ip_forward=1
+    /sbin/iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+EOF
+  }
+
+  part {
+    filename     = "syslog.cfg"
+    content_type = "text/cloud-config"
+    content      = "${module.syslog_config.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+
+  part {
+    filename     = "other.cfg"
+    content_type = "text/cloud-config"
+    content      = "${var.user_data}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+}
+
 module "nat_host" {
   source = "../launch"
 
   instance_count = "1"
   ami_id         = "${module.nat_ami.id}"
-  user_data      = "${var.user_data}"
+  user_data      = "${data.template_cloudinit_config.user_data.rendered}"
 
   ssh_banner = "${var.ssh_banner}"
   eni_ids    = ["${module.eni.eni_ids[0]}"]

@@ -12,6 +12,7 @@ variable "bosh_task_uaa_client_secret" {}
 
 variable "splunk_syslog_host" {}
 variable "splunk_syslog_port" {}
+variable "splunk_syslog_ca_cert" {}
 
 data "template_file" "hw_vpc_azs" {
   count = "${length(var.availability_zones)}"
@@ -47,6 +48,7 @@ data "template_file" "healthwatch_config" {
     bosh_task_uaa_client_secret = "${var.bosh_task_uaa_client_secret}"
     splunk_syslog_host          = "${var.splunk_syslog_host}"
     splunk_syslog_port          = "${var.splunk_syslog_port}"
+    splunk_syslog_ca_cert       = "${var.splunk_syslog_ca_cert}"
   }
 }
 

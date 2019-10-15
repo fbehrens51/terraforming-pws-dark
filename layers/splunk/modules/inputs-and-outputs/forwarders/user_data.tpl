@@ -16,12 +16,21 @@ write_files:
   content: |
     ${indent(4, splunk_forwarder_app_conf)}
 
+- path: /tmp/server_cert.pem
+  content: |
+    ${indent(4, server_cert)}
+    ${indent(4, server_key)}
+    ${indent(4, ca_cert)}
+
 runcmd:
   - |
     set -ex
 
     mkdir -p /opt/splunk/etc/apps/splunk_httpinput/local/
     mkdir -p /opt/splunk/etc/apps/SplunkForwarder/local/
+    mkdir -p /opt/splunk/etc/auth/mycerts
+
+    cp /tmp/server_cert.pem /opt/splunk/etc/auth/mycerts/mySplunkServerCertificate.pem
 
     cp /tmp/inputs.conf /opt/splunk/etc/system/local/inputs.conf
     cp /tmp/outputs.conf /opt/splunk/etc/system/local/outputs.conf

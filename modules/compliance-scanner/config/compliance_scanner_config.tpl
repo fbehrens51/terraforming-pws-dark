@@ -22,9 +22,9 @@ product-properties:
   .properties.scanner_timeout:
     value: 1200
   .properties.syslog_host:
-    value: ${syslog_host}
+    value: ${splunk_syslog_host}
   .properties.syslog_port:
-    value: ${syslog_port}
+    value: ${splunk_syslog_port}
 network-properties:
   network:
     name: ${network_name}
@@ -43,7 +43,10 @@ errand-config:
     post-deploy-state: false
 syslog-properties:
   enabled: true
-  address: ${syslog_host}
-  port: ${syslog_port}
+  address: ${splunk_syslog_host}
+  port: ${splunk_syslog_port}
   transport_protocol: tcp
-  tls_enabled: false
+  tls_enabled: true
+  ssl_ca_certificate: |
+    ${indent(4, splunk_syslog_ca_cert)}
+  permitted_peer: ${splunk_syslog_host}
