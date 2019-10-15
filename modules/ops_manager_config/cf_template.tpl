@@ -251,6 +251,8 @@ product-properties:
   .properties.smoke_tests:
     selected_option: on_demand
     value: on_demand
+  .properties.smtp_address:
+    value: ${smtp_host}
   .properties.smtp_auth_mechanism:
     value: plain
   .properties.smtp_credentials:
@@ -261,8 +263,6 @@ product-properties:
     value: ${smtp_tls}
   .properties.stack_migration_acknowledgement:
     value: X
-  .properties.smtp_address:
-    value: ${smtp_host}
   .properties.smtp_from:
     value: ${smtp_from}
   .properties.smtp_port:
@@ -451,6 +451,7 @@ product-properties:
         ${indent(8, uaa_service_provider_key_credentials_cert_pem)}
       private_key_pem: |
         ${indent(8, uaa_service_provider_key_credentials_private_key_pem)}
+
   .properties.push_apps_manager_global_wrapper_footer_content:
     value: ${apps_manager_global_wrapper_footer_content}
   .properties.push_apps_manager_global_wrapper_header_content:
@@ -471,6 +472,7 @@ product-properties:
     value: ${apps_manager_square_logo}
   .properties.push_apps_manager_logo:
     value: ${apps_manager_main_logo}
+
 network-properties:
   network:
     name: pas
@@ -486,13 +488,11 @@ resource-config:
     instance_type:
       id: ${backup_restore_instance_type}
     internet_connected: false
-    max_in_flight: 1
   clock_global:
     instances: automatic
     instance_type:
       id: ${clock_global_instance_type}
     internet_connected: false
-    max_in_flight: 1
   cloud_controller:
     instances: automatic
     instance_type:
@@ -500,7 +500,6 @@ resource-config:
     internet_connected: false
     additional_vm_extensions:
     - s3_instance_profile
-    max_in_flight: 1
   cloud_controller_worker:
     instances: automatic
     instance_type:
@@ -508,7 +507,6 @@ resource-config:
     internet_connected: false
     additional_vm_extensions:
     - s3_instance_profile
-    max_in_flight: 1
   consul_server:
     instances: automatic
     persistent_disk:
@@ -516,61 +514,51 @@ resource-config:
     instance_type:
       id: ${consul_server_instance_type}
     internet_connected: false
-    max_in_flight: 1
   credhub:
     instances: automatic
     instance_type:
       id: ${credhub_instance_type}
     internet_connected: false
-    max_in_flight: 1
   diego_brain:
     instances: automatic
     instance_type:
       id: ${diego_brain_instance_type}
     internet_connected: false
-    max_in_flight: 1
   diego_cell:
     instances: automatic
     instance_type:
       id: ${diego_cell_instance_type}
     internet_connected: false
-    max_in_flight: 4%
   diego_database:
     instances: automatic
     instance_type:
       id: ${diego_database_instance_type}
     internet_connected: false
-    max_in_flight: 1
   doppler:
     instances: automatic
     instance_type:
       id: ${doppler_instance_type}
     internet_connected: false
-    max_in_flight: 1
   ha_proxy:
     instances: automatic
     instance_type:
       id: ${ha_proxy_instance_type}
     internet_connected: false
-    max_in_flight: 1
   istio_control:
     instances: 0
     instance_type:
       id: automatic
     internet_connected: false
-    max_in_flight: 1
   istio_router:
     instances: 0
     instance_type:
       id: automatic
     internet_connected: false
-    max_in_flight: 1
   loggregator_trafficcontroller:
     instances: automatic
     instance_type:
       id: ${loggregator_trafficcontroller_instance_type}
     internet_connected: false
-    max_in_flight: 1
   mysql:
     instances: 0
     persistent_disk:
@@ -578,25 +566,21 @@ resource-config:
     instance_type:
       id: ${mysql_instance_type}
     internet_connected: false
-    max_in_flight: 1
   mysql_monitor:
     instances: 0
     instance_type:
       id: ${mysql_monitor_instance_type}
     internet_connected: false
-    max_in_flight: 1
   mysql_proxy:
     instances: 0
     instance_type:
       id: ${mysql_proxy_instance_type}
     internet_connected: false
-    max_in_flight: 1
   nats:
     instances: automatic
     instance_type:
       id: ${nats_instance_type}
     internet_connected: false
-    max_in_flight: 1
   nfs_server:
     instances: 0
     persistent_disk:
@@ -604,7 +588,6 @@ resource-config:
     instance_type:
       id: ${nfs_server_instance_type}
     internet_connected: false
-    max_in_flight: 1
   router:
     instances: automatic
     instance_type:
@@ -612,19 +595,16 @@ resource-config:
     internet_connected: false
     elb_names:
     - ${router_elb_names}
-    max_in_flight: 1
   syslog_adapter:
     instances: automatic
     instance_type:
       id: ${syslog_adapter_instance_type}
     internet_connected: false
-    max_in_flight: 1
   syslog_scheduler:
     instances: automatic
     instance_type:
       id: ${syslog_scheduler_instance_type}
     internet_connected: false
-    max_in_flight: 1
   tcp_router:
     instances: 0
     persistent_disk:
@@ -632,13 +612,11 @@ resource-config:
     instance_type:
       id: ${tcp_router_instance_type}
     internet_connected: false
-    max_in_flight: 1
   uaa:
     instances: automatic
     instance_type:
       id: ${uaa_instance_type}
     internet_connected: false
-    max_in_flight: 1
 errand-config:
   deploy-autoscaler:
     post-deploy-state: ${errands_deploy_autoscaler}
