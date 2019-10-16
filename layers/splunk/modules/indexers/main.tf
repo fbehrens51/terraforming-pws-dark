@@ -102,7 +102,7 @@ runcmd:
 EOF
 }
 
-data "template_cloudinit_config" "splunk_indexers_cloud_init_config" {
+data "template_cloudinit_config" "user_data" {
   base64_encode = false
   gzip          = false
 
@@ -122,5 +122,5 @@ data "template_cloudinit_config" "splunk_indexers_cloud_init_config" {
 }
 
 output "user_data" {
-  value = "${data.template_cloudinit_config.splunk_indexers_cloud_init_config.rendered}"
+  value = "${data.template_cloudinit_config.user_data.rendered}"
 }

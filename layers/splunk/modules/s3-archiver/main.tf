@@ -10,7 +10,7 @@ variable "clamav_db_mirror" {}
 variable "custom_clamav_yum_repo_url" {}
 variable "user_data_path" {}
 
-data "template_file" "user_data" {
+data "template_file" "cloud_config" {
   template = <<EOF
 bootcmd:
   - mkdir -p /opt/s3_archive
@@ -117,18 +117,13 @@ module "syslog_config" {
   splunk_syslog_ca_cert = "${var.ca_cert}"
 }
 
-module "setup_s3_hostname" {
-  source = "../setup-hostname"
-  role   = "splunk-s3"
-}
-
 module "clam_av_client_config" {
   source           = "../../../../modules/clamav/amzn2_systemd_client"
   clamav_db_mirror = "${var.clamav_db_mirror}"
   custom_repo_url  = "${var.custom_clamav_yum_repo_url}"
 }
 
-data "template_cloudinit_config" "splunk_s3_cloud_init_config" {
+data "template_cloudinit_config" "cloud_config" {
   base64_encode = false
   gzip          = false
 
@@ -140,16 +135,9 @@ data "template_cloudinit_config" "splunk_s3_cloud_init_config" {
   }
 
   part {
-    filename     = "setup-hostname.cfg"
-    content_type = "text/cloud-config"
-    content      = "${module.setup_s3_hostname.user_data}"
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
-  }
-
-  part {
     filename     = "setup.cfg"
     content_type = "text/cloud-config"
-    content      = "${data.template_file.user_data.rendered}"
+    content      = "${data.template_file.cloud_config.rendered}"
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
@@ -169,5 +157,5 @@ data "template_cloudinit_config" "splunk_s3_cloud_init_config" {
 }
 
 output "user_data" {
-  value = "${data.template_cloudinit_config.splunk_s3_cloud_init_config.rendered}"
+  value = "${data.template_cloudinit_config.cloud_config.rendered}"
 }

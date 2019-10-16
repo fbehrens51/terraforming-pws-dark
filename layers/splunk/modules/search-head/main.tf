@@ -48,7 +48,7 @@ pass4SymmKey = ${var.indexers_pass4SymmKey}
 EOF
 }
 
-data "template_file" "search_head_user_data" {
+data "template_file" "cloud_config" {
   template = <<EOF
 #cloud-config
 write_files:
@@ -79,14 +79,14 @@ runcmd:
 EOF
 }
 
-data "template_cloudinit_config" "splunk_search_head_cloud_init_config" {
+data "template_cloudinit_config" "user_data" {
   base64_encode = false
   gzip          = false
 
   part {
     filename     = "search-head.cfg"
     content_type = "text/cloud-config"
-    content      = "${data.template_file.search_head_user_data.rendered}"
+    content      = "${data.template_file.cloud_config.rendered}"
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
@@ -99,5 +99,5 @@ data "template_cloudinit_config" "splunk_search_head_cloud_init_config" {
 }
 
 output "user_data" {
-  value = "${data.template_cloudinit_config.splunk_search_head_cloud_init_config.rendered}"
+  value = "${data.template_cloudinit_config.user_data.rendered}"
 }
