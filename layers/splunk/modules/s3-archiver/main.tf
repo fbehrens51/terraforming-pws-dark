@@ -71,12 +71,6 @@ rsyslog:
   service_reload_command: [systemctl, kill, --kill-who, main, -s, SIGHUP, rsyslog.service]
 
 write_files:
-- path: /etc/rsyslog.d/ca.pem
-  owner: root:root
-  permisions: '0400'
-  content: |
-    ${indent(4, var.ca_cert)}
-
 - path: /etc/rsyslog.d/cert.pem
   owner: root:root
   permisions: '0400'
