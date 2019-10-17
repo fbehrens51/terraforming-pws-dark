@@ -2,7 +2,7 @@ locals {
   pas_subnet_cidr     = "${var.pas_subnet_cidrs[0]}"
   pas_file_glob       = "cf*.pivotal"
   pas_product_slug    = "elastic-runtime"
-  pas_product_version = "2.5.12"
+  pas_product_version = "2.5.13"
 
   cf_tools_file_glob    = "pws-dark-cf-tools*"
   cf_tools_product_slug = "pws-dark-cf-tools-tile"
