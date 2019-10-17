@@ -9,6 +9,8 @@ variable "root_domain" {}
 variable "clamav_db_mirror" {}
 variable "custom_clamav_yum_repo_url" {}
 variable "user_data_path" {}
+variable "public_bucket_name" {}
+variable "public_bucket_url" {}
 
 data "template_file" "cloud_config" {
   template = <<EOF
@@ -109,6 +111,9 @@ module "syslog_config" {
   source                = "../../../../modules/syslog"
   root_domain           = "${var.root_domain}"
   splunk_syslog_ca_cert = "${var.ca_cert}"
+  public_bucket_name    = "${var.public_bucket_name}"
+  public_bucket_url     = "${var.public_bucket_url}"
+  role_name             = "s3-archiver"
 }
 
 module "clam_av_client_config" {
@@ -123,9 +128,8 @@ data "template_cloudinit_config" "cloud_config" {
 
   part {
     filename     = "syslog.cfg"
-    content_type = "text/cloud-config"
     content      = "${module.syslog_config.user_data}"
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+    content_type = "text/x-include-url"
   }
 
   part {

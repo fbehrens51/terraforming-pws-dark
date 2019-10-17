@@ -10,6 +10,8 @@ variable "splunk_rpm_version" {}
 variable "splunk_rpm_s3_bucket" {}
 variable "splunk_rpm_s3_region" {}
 variable "role_name" {}
+variable "public_bucket_name" {}
+variable "public_bucket_url" {}
 
 module "splunk_ports" {
   source = "../../../../modules/splunk_ports"
@@ -19,6 +21,9 @@ module "syslog_config" {
   source                = "../../../../modules/syslog"
   root_domain           = "${var.root_domain}"
   splunk_syslog_ca_cert = "${var.ca_cert}"
+  public_bucket_name    = "${var.public_bucket_name}"
+  public_bucket_url     = "${var.public_bucket_url}"
+  role_name             = "${var.role_name}"
 }
 
 module "clam_av_client_config" {
@@ -106,9 +111,8 @@ data "template_cloudinit_config" "user_data" {
 
   part {
     filename     = "syslog.cfg"
-    content_type = "text/cloud-config"
     content      = "${module.syslog_config.user_data}"
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+    content_type = "text/x-include-url"
   }
 
   part {

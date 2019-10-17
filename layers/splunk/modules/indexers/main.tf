@@ -11,6 +11,8 @@ variable "splunk_rpm_version" {}
 variable "splunk_rpm_s3_bucket" {}
 variable "splunk_rpm_s3_region" {}
 variable "master_ip" {}
+variable "public_bucket_name" {}
+variable "public_bucket_url" {}
 
 module "base" {
   source                     = "../base"
@@ -26,6 +28,8 @@ module "base" {
   splunk_rpm_s3_region       = "${var.splunk_rpm_s3_region}"
   user_data_path             = "${var.user_data_path}"
   role_name                  = "splunk-indexer"
+  public_bucket_name         = "${var.public_bucket_name}"
+  public_bucket_url          = "${var.public_bucket_url}"
 }
 
 module "splunk_ports" {

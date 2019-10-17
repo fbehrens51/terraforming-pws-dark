@@ -8,6 +8,34 @@ module "providers" {
 
 provider "aws" {}
 
+data "aws_iam_policy_document" "public_bucket_policy" {
+  statement {
+    effect  = "Allow"
+    actions = ["s3:GetObject"]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+
+    resources = ["${aws_s3_bucket.public_bucket.arn}/*"]
+  }
+}
+
+resource "aws_s3_bucket" "public_bucket" {
+  bucket_prefix = "${replace(var.env_name," ","-")}-public-bucket"
+  acl           = "public-read"
+}
+
+resource "aws_s3_bucket_policy" "public_bucket_policy_attachement" {
+  bucket = "${aws_s3_bucket.public_bucket.bucket}"
+  policy = "${data.aws_iam_policy_document.public_bucket_policy.json}"
+}
+
+variable "env_name" {
+  type = "string"
+}
+
 variable "root_domain" {}
 
 variable "cert_bucket" {}
@@ -57,6 +85,8 @@ variable "system_domain" {}
 variable "apps_domain" {}
 
 variable "ldap_password_s3_path" {}
+
+variable "s3_endpoint" {}
 
 data "aws_s3_bucket_object" "ldap_password" {
   bucket = "${var.cert_bucket}"
@@ -450,4 +480,12 @@ output "apps_domain" {
 
 output "custom_ssh_banner" {
   value = "${file(var.custom_ssh_banner_file)}"
+}
+
+output "public_bucket_name" {
+  value = "${aws_s3_bucket.public_bucket.bucket}"
+}
+
+output "public_bucket_url" {
+  value = "https://${aws_s3_bucket.public_bucket.bucket}.${var.s3_endpoint}"
 }

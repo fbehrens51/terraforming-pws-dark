@@ -75,6 +75,9 @@ locals {
   s3_archive_ip     = "${data.terraform_remote_state.bootstrap_splunk.s3_private_ips[0]}"
   s3_archive_port   = "${module.splunk_ports.splunk_s3_archive_port}"
   s3_syslog_archive = "${data.terraform_remote_state.bootstrap_splunk.s3_bucket_syslog_archive}"
+
+  public_bucket_name = "${data.terraform_remote_state.paperwork.public_bucket_name}"
+  public_bucket_url  = "${data.terraform_remote_state.paperwork.public_bucket_url}"
 }
 
 module "amazon_ami" {
@@ -92,6 +95,8 @@ module "s3_archiver_user_data" {
   custom_clamav_yum_repo_url = "${var.custom_clamav_yum_repo_url}"
   s3_syslog_archive          = "${data.terraform_remote_state.bootstrap_splunk.s3_bucket_syslog_archive}"
   user_data_path             = "${var.user_data_path}"
+  public_bucket_name         = "${local.public_bucket_name}"
+  public_bucket_url          = "${local.public_bucket_url}"
 }
 
 module "splunk_s3" {
@@ -127,6 +132,8 @@ module "indexers_user_data" {
   splunk_rpm_s3_bucket       = "${var.splunk_rpm_s3_bucket}"
   splunk_rpm_s3_region       = "${var.splunk_rpm_s3_region}"
   master_ip                  = "${local.master_ip}"
+  public_bucket_name         = "${local.public_bucket_name}"
+  public_bucket_url          = "${local.public_bucket_url}"
 }
 
 module "splunk_indexers" {
@@ -161,6 +168,8 @@ module "master_user_data" {
   splunk_rpm_version         = "${var.splunk_rpm_version}"
   splunk_rpm_s3_bucket       = "${var.splunk_rpm_s3_bucket}"
   splunk_rpm_s3_region       = "${var.splunk_rpm_s3_region}"
+  public_bucket_name         = "${local.public_bucket_name}"
+  public_bucket_url          = "${local.public_bucket_url}"
 }
 
 module "splunk_master" {
@@ -196,6 +205,8 @@ module "search_head_user_data" {
   splunk_rpm_s3_bucket       = "${var.splunk_rpm_s3_bucket}"
   splunk_rpm_s3_region       = "${var.splunk_rpm_s3_region}"
   master_ip                  = "${local.master_ip}"
+  public_bucket_name         = "${local.public_bucket_name}"
+  public_bucket_url          = "${local.public_bucket_url}"
 }
 
 module "splunk_search_head" {
@@ -234,6 +245,8 @@ module "forwarders_user_data" {
   splunk_http_collector_token = "${data.terraform_remote_state.bootstrap_splunk.splunk_http_collector_token}"
   s3_archive_ip               = "${local.s3_archive_ip}"
   s3_archive_port             = "${local.s3_archive_port}"
+  public_bucket_name          = "${local.public_bucket_name}"
+  public_bucket_url           = "${local.public_bucket_url}"
 }
 
 module "splunk_forwarders" {

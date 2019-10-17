@@ -1,5 +1,8 @@
 variable "root_domain" {}
 variable "splunk_syslog_ca_cert" {}
+variable "public_bucket_name" {}
+variable "public_bucket_url" {}
+variable "role_name" {}
 
 module "domains" {
   source = "../domains"
@@ -11,8 +14,19 @@ module "splunk_ports" {
   source = "../splunk_ports"
 }
 
+locals {
+  bucket_key = "${var.role_name}-${md5(data.template_file.user_data.rendered)}-syslog-user-data.yml"
+}
+
 data "template_file" "user_data" {
   template = <<EOF
+#cloud-config
+merge_how:
+ - name: list
+   settings: [append]
+ - name: dict
+   settings: [no_replace, recurse_list]
+
 bootcmd:
   - |
     set -ex
@@ -39,6 +53,15 @@ rsyslog:
 EOF
 }
 
+resource "aws_s3_bucket_object" "user_data" {
+  bucket  = "${var.public_bucket_name}"
+  key     = "${local.bucket_key}"
+  content = "${data.template_file.user_data.rendered}"
+}
+
 output "user_data" {
-  value = "${data.template_file.user_data.rendered}"
+  value = <<EOF
+#include
+${var.public_bucket_url}/${local.bucket_key}
+EOF
 }
