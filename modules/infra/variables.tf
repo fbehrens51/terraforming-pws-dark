@@ -72,6 +72,9 @@ variable "splunk_syslog_ca_cert" {}
 
 variable "user_data" {}
 
+variable "public_bucket_name" {}
+variable "public_bucket_url" {}
+
 locals {
   infrastructure_cidr = "${module.cidr_lookup.infrastructure_cidr}"
   public_cidr         = "${module.cidr_lookup.public_cidr}"

@@ -122,6 +122,9 @@ module "nat" {
   ssh_banner             = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
   root_domain            = "${data.terraform_remote_state.paperwork.root_domain}"
   splunk_syslog_ca_cert  = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
+
+  public_bucket_name = "${data.terraform_remote_state.paperwork.public_bucket_name}"
+  public_bucket_url  = "${data.terraform_remote_state.paperwork.public_bucket_url}"
 }
 
 variable "nat_instance_type" {

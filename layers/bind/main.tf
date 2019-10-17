@@ -65,9 +65,8 @@ data "template_cloudinit_config" "master_bind_conf_userdata" {
 
   part {
     filename     = "syslog.cfg"
-    content_type = "text/cloud-config"
     content      = "${module.syslog_config.user_data}"
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+    content_type = "text/x-include-url"
   }
 
   part {
@@ -132,6 +131,10 @@ module "syslog_config" {
   source                = "../../modules/syslog"
   root_domain           = "${local.root_domain}"
   splunk_syslog_ca_cert = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
+
+  role_name          = "bind"
+  public_bucket_name = "${data.terraform_remote_state.paperwork.public_bucket_name}"
+  public_bucket_url  = "${data.terraform_remote_state.paperwork.public_bucket_url}"
 }
 
 data "template_cloudinit_config" "slave_bind_conf_userdata" {
@@ -140,9 +143,8 @@ data "template_cloudinit_config" "slave_bind_conf_userdata" {
 
   part {
     filename     = "syslog.cfg"
-    content_type = "text/cloud-config"
     content      = "${module.syslog_config.user_data}"
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+    content_type = "text/x-include-url"
   }
 
   part {

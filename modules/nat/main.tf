@@ -20,6 +20,8 @@ variable "bastion_private_ip" {}
 
 variable "root_domain" {}
 variable "splunk_syslog_ca_cert" {}
+variable "public_bucket_name" {}
+variable "public_bucket_url" {}
 
 locals {
   env_name      = "${var.tags["Name"]}"
@@ -76,6 +78,9 @@ module "syslog_config" {
 
   root_domain           = "${var.root_domain}"
   splunk_syslog_ca_cert = "${var.splunk_syslog_ca_cert}"
+  role_name             = "${replace(local.modified_name, " ", "-")}"
+  public_bucket_name    = "${var.public_bucket_name}"
+  public_bucket_url     = "${var.public_bucket_url}"
 }
 
 data "template_cloudinit_config" "user_data" {
@@ -97,9 +102,8 @@ EOF
 
   part {
     filename     = "syslog.cfg"
-    content_type = "text/cloud-config"
     content      = "${module.syslog_config.user_data}"
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+    content_type = "text/x-include-url"
   }
 
   part {

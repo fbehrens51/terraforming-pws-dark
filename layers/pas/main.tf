@@ -108,6 +108,9 @@ module "infra" {
   splunk_syslog_ca_cert = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 
   user_data = "${data.template_cloudinit_config.nat_user_data.rendered}"
+
+  public_bucket_name = "${data.terraform_remote_state.paperwork.public_bucket_name}"
+  public_bucket_url  = "${data.terraform_remote_state.paperwork.public_bucket_url}"
 }
 
 module "pas" {
