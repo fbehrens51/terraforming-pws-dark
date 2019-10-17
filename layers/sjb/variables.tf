@@ -11,8 +11,8 @@ variable "tags" {
   type = "map"
 }
 
-variable "pypi_host" {
-}
+variable "pypi_host" {}
+
 variable "pypi_host_secure" {
   default = true
 }

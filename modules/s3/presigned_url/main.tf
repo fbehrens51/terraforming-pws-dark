@@ -4,8 +4,8 @@ data "external" "presigned_url" {
   program = ["bash", "${path.module}/presign.sh"]
 
   query = {
-    bucket_name = "${var.bucket_name}"
-    object_prefix  = "${var.object_prefix}"
+    bucket_name   = "${var.bucket_name}"
+    object_prefix = "${var.object_prefix}"
   }
 }
 

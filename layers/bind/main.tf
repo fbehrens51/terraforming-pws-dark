@@ -31,11 +31,12 @@ data "terraform_remote_state" "bootstrap_bind" {
 }
 
 locals {
-  env_name          = "${var.tags["Name"]}"
-  modified_name     = "${local.env_name} bind"
-  modified_tags     = "${merge(var.tags, map("Name", "${local.modified_name}"))}"
-  bind_rndc_secret  = "${data.terraform_remote_state.bootstrap_bind.bind_rndc_secret}"
-  master_private_ip = "${data.terraform_remote_state.bootstrap_bind.bind_eni_ips[0]}"
+  env_name                   = "${var.tags["Name"]}"
+  modified_name              = "${local.env_name} bind"
+  modified_tags              = "${merge(var.tags, map("Name", "${local.modified_name}"))}"
+  bind_rndc_secret           = "${data.terraform_remote_state.bootstrap_bind.bind_rndc_secret}"
+  master_private_ip          = "${data.terraform_remote_state.bootstrap_bind.bind_eni_ips[0]}"
+  bind_master_data_volume_id = "${data.terraform_remote_state.bootstrap_bind.bind_master_data_volume_id}"
 
   root_domain = "${data.terraform_remote_state.paperwork.root_domain}"
 
@@ -109,6 +110,13 @@ module "bind_master_host" {
   eni_ids        = "${data.terraform_remote_state.bootstrap_bind.bind_eni_ids}"
   key_pair_name  = "${module.bind_host_key_pair.key_name}"
   tags           = "${local.modified_tags}"
+}
+
+resource "aws_volume_attachment" "bind_master_data_volume_attachment" {
+  skip_destroy = true
+  device_name  = "/dev/sdf"
+  instance_id  = "${module.bind_master_host.instance_ids[0]}"
+  volume_id    = "${local.bind_master_data_volume_id}"
 }
 
 variable "clamav_db_mirror" {}

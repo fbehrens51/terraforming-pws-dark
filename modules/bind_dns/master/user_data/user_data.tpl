@@ -3,6 +3,14 @@ users:
   - default
   - name: named
 
+bootcmd:
+  - mkdir -p /var/named
+  - while [ ! -e /dev/xvdf ] ; do sleep 1 ; done
+  - if [ "$(file -b -s /dev/xvdf)" == "data" ]; then mkfs -t ext4 /dev/xvdf; fi
+
+mounts:
+  - [ "/dev/xvdf", "/var/named", "ext4", "defaults,nofail", "0", "2" ]
+
 runcmd:
   - sudo yum update -y
   - sudo yum install bind bind-utils -y
@@ -14,8 +22,7 @@ runcmd:
   - sudo chmod 0700 /var/log/named
   - sudo chown named:named /var/named/data/*
   - sudo chown root:named /etc/rndc.key
-  - sudo /sbin/service named stop
-  - sudo /sbin/service named start
+  - sudo systemctl restart named
 
 write_files:
   - encoding: b64
