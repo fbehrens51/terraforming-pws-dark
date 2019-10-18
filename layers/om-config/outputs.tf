@@ -38,6 +38,14 @@ output "clamav_mirror_template" {
   sensitive = true
 }
 
+output "clamav_release_public_bucket_key" {
+  value = "${var.clamav_release_public_bucket_key}"
+}
+
+output "clamav_release_sha1" {
+  value = "${var.clamav_release_sha1}"
+}
+
 output "download_pas_config" {
   value     = "${module.om_config.download_pas_config}"
   sensitive = true
