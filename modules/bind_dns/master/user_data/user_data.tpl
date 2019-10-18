@@ -12,6 +12,8 @@ mounts:
   - [ "/dev/xvdf", "/var/named", "ext4", "defaults,nofail", "0", "2" ]
 
 runcmd:
+  - cp /tmp/${zone_file_name} /var/named/data/${zone_file_name}
+  - cp /tmp/${reverse_file_name} /var/named/data/${reverse_file_name}
   - sudo yum update -y
   - sudo yum install bind bind-utils -y
   - sudo chkconfig --level 345 named on
@@ -31,11 +33,11 @@ write_files:
     permissions: '0644'
   - encoding: b64
     content: ${zone_content}
-    path: /var/named/data/${zone_file_name}
+    path: /tmp/${zone_file_name}
     permissions: '0644'
   - encoding: b64
     content: ${reverse_content}
-    path: /var/named/data/${reverse_file_name}
+    path: /tmp/${reverse_file_name}
     permissions: '0644'
   - encoding: b64
     content: ${rndc_content}
