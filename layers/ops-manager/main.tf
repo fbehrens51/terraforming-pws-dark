@@ -59,7 +59,7 @@ variable "instance_type" {}
 module "ops_manager" {
   instance_count = "1"
 
-  source               = "../../modules/launch_ignore_user_data"
+  source               = "../../modules/launch"
   ami_id               = "${var.om_ami_id}"
   iam_instance_profile = "${local.director_role_name}"
   instance_type        = "${var.instance_type}"
@@ -67,6 +67,7 @@ module "ops_manager" {
   tags                 = "${local.tags}"
   eni_ids              = ["${local.om_eni_id}"]
   user_data            = "${data.template_cloudinit_config.config.rendered}"
+  ssh_banner           = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
 
   root_block_device = {
     volume_type = "gp2"
@@ -74,22 +75,18 @@ module "ops_manager" {
   }
 }
 
-variable "deb_pkg_bucket" {}
-variable "clamav_deb_pkg_object_prefix" {}
-
-module "deb_tgz_url" {
-  source        = "../../modules/s3/presigned_url"
-  bucket_name   = "${var.deb_pkg_bucket}"
-  object_prefix = "${var.clamav_deb_pkg_object_prefix}"
-}
+variable "clamav_deb_pkg_object_key" {}
 
 module "clam_av_client_config" {
   source           = "../../modules/clamav/ubuntu_systemd_client"
   clamav_db_mirror = "database.clamav.net"
-  deb_tgz_location = "${module.deb_tgz_url.value}"
+  deb_tgz_location = "${data.terraform_remote_state.paperwork.public_bucket_url}/${var.clamav_deb_pkg_object_key}"
 }
 
 data "template_cloudinit_config" "config" {
+  base64_encode = false
+  gzip          = false
+
   part {
     content_type = "text/cloud-config"
     content      = "${file(var.om_user_data_path)}"
