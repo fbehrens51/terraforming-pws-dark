@@ -12,6 +12,7 @@ mounts:
   - [ "/dev/xvdf", "/var/named", "ext4", "defaults,nofail", "0", "2" ]
 
 runcmd:
+  - mkdir -p /var/named/data
   - mv /run/${zone_file_name} /var/named/data/${zone_file_name}
   - mv /run/${reverse_file_name} /var/named/data/${reverse_file_name}
   - sudo yum update -y
