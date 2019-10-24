@@ -99,6 +99,13 @@ resource-configuration:
       id: automatic
     internet_connected: false
 vmextensions-configuration:
+- name: disable_director_encryption
+  cloud_properties:
+    ephemeral_disk:
+      encrypted: false
+      kms_key_arn: ~
+      size: 65_536
+      type: gp2
 - name: worker_instance_profile
   cloud_properties:
     iam_instance_profile: ${platform_automation_engine_worker_role_name}

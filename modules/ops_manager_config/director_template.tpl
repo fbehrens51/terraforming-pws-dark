@@ -113,6 +113,13 @@ resource-configuration:
       id: automatic
     internet_connected: false
 vmextensions-configuration:
+- name: disable_director_encryption
+  cloud_properties:
+    ephemeral_disk:
+      encrypted: false
+      kms_key_arn: ~
+      size: 65_536
+      type: gp2
 - name: s3_instance_profile
   cloud_properties:
     iam_instance_profile: ${blobstore_instance_profile}
