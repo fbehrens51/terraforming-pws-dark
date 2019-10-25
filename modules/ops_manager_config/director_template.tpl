@@ -106,6 +106,8 @@ resource-configuration:
       id: automatic
     internet_connected: false
   director:
+    additional_vm_extensions:
+    - disable_director_encryption
     instances: automatic
     persistent_disk:
       size_mb: automatic
