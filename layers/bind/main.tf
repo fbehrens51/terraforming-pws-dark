@@ -78,16 +78,20 @@ data "template_cloudinit_config" "master_bind_conf_userdata" {
 
   part {
     filename     = "clamav.cfg"
-    content_type = "text/cloud-config"
-    content      = "${module.clam_av_client_config.client_user_data_config}"
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+    content_type = "text/x-include-url"
+    content      = "${data.terraform_remote_state.paperwork.amazon2_clamav_user_data}"
   }
 
   part {
-    filename     = "other.cfg"
-    content_type = "text/cloud-config"
-    content      = "${file("${var.user_data_path}")}"
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+    filename     = "user_accounts_user_data.cfg"
+    content_type = "text/x-include-url"
+    content      = "${data.terraform_remote_state.paperwork.user_accounts_user_data}"
+  }
+
+  part {
+    filename     = "banner.cfg"
+    content_type = "text/x-include-url"
+    content      = "${data.terraform_remote_state.paperwork.custom_banner_user_data}"
   }
 }
 
@@ -105,7 +109,6 @@ module "bind_master_host" {
   source         = "../../modules/launch"
   ami_id         = "${module.amazon_ami.id}"
   user_data      = "${data.template_cloudinit_config.master_bind_conf_userdata.rendered}"
-  ssh_banner     = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
   eni_ids        = "${data.terraform_remote_state.bootstrap_bind.bind_eni_ids}"
   key_pair_name  = "${module.bind_host_key_pair.key_name}"
   tags           = "${local.modified_tags}"
@@ -116,15 +119,6 @@ resource "aws_volume_attachment" "bind_master_data_volume_attachment" {
   device_name  = "/dev/sdf"
   instance_id  = "${module.bind_master_host.instance_ids[0]}"
   volume_id    = "${local.bind_master_data_volume_id}"
-}
-
-variable "clamav_db_mirror" {}
-variable "custom_clamav_yum_repo_url" {}
-
-module "clam_av_client_config" {
-  source           = "../../modules/clamav/amzn2_systemd_client"
-  clamav_db_mirror = "${var.clamav_db_mirror}"
-  custom_repo_url  = "${var.custom_clamav_yum_repo_url}"
 }
 
 module "syslog_config" {
@@ -156,16 +150,20 @@ data "template_cloudinit_config" "slave_bind_conf_userdata" {
 
   part {
     filename     = "clamav.cfg"
-    content_type = "text/cloud-config"
-    content      = "${module.clam_av_client_config.client_user_data_config}"
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+    content_type = "text/x-include-url"
+    content      = "${data.terraform_remote_state.paperwork.amazon2_clamav_user_data}"
   }
 
   part {
-    filename     = "other.cfg"
-    content_type = "text/cloud-config"
-    content      = "${file("${var.user_data_path}")}"
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+    filename     = "user_accounts_user_data.cfg"
+    content_type = "text/x-include-url"
+    content      = "${data.terraform_remote_state.paperwork.user_accounts_user_data}"
+  }
+
+  part {
+    filename     = "banner.cfg"
+    content_type = "text/x-include-url"
+    content      = "${data.terraform_remote_state.paperwork.custom_banner_user_data}"
   }
 }
 
@@ -181,7 +179,6 @@ module "bind_slave_host" {
   source         = "../../modules/launch"
   ami_id         = "${module.amazon_ami.id}"
   user_data      = "${data.template_cloudinit_config.slave_bind_conf_userdata.rendered}"
-  ssh_banner     = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
   eni_ids        = ["${data.terraform_remote_state.bootstrap_bind.bind_eni_ids[1]}", "${data.terraform_remote_state.bootstrap_bind.bind_eni_ids[2]}"]
   key_pair_name  = "${module.bind_host_key_pair.key_name}"
   tags           = "${local.modified_tags}"

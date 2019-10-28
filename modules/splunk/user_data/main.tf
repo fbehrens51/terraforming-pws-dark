@@ -24,7 +24,6 @@ resource "random_string" "splunk_password" {
 }
 
 output "user_data" {
-  //  value = "${data.template_file.user_data.rendered}"
   value = "${data.template_cloudinit_config.splunk_conf_userdata.rendered}"
 }
 

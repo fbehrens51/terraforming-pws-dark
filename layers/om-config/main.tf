@@ -128,7 +128,7 @@ module "om_config" {
 
   ntp_servers                                 = "${var.ntp_servers}"
   custom_ssh_banner                           = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
-  security_configuration_trusted_certificates = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
+  security_configuration_trusted_certificates = "${data.terraform_remote_state.paperwork.trusted_with_additional_ca_certs}"
 
   rds_address     = "${data.terraform_remote_state.pas.rds_address}"
   rds_password    = "${data.terraform_remote_state.pas.rds_password}"

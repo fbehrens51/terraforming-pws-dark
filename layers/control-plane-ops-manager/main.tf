@@ -67,7 +67,6 @@ module "ops_manager" {
   tags                 = "${local.tags}"
   eni_ids              = ["${local.om_eni_id}"]
   user_data            = "${data.template_cloudinit_config.config.rendered}"
-  ssh_banner           = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
 
   root_block_device = {
     volume_type = "gp2"
@@ -109,6 +108,12 @@ CLOUDINIT
     content_type = "text/cloud-config"
     content      = "${module.clam_av_client_config.client_user_data_config}"
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+
+  part {
+    filename     = "banner.cfg"
+    content_type = "text/x-include-url"
+    content      = "${data.terraform_remote_state.paperwork.custom_banner_user_data}"
   }
 }
 

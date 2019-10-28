@@ -134,7 +134,6 @@ module "ldap_host" {
   eni_ids       = "${module.bootstrap.eni_ids}"
   user_data     = "${file(var.user_data_path)}"
   key_pair_name = "${module.ldap_host_key_pair.key_name}"
-  ssh_banner    = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
 
   tags = "${local.modified_tags}"
 }

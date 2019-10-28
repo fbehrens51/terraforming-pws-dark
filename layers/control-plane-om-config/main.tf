@@ -86,7 +86,7 @@ module "om_config" {
 
   concourse_cert_pem        = "${data.terraform_remote_state.paperwork.concourse_server_cert}"
   concourse_private_key_pem = "${data.terraform_remote_state.paperwork.concourse_server_key}"
-  trusted_ca_certs          = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
+  trusted_ca_certs          = "${data.terraform_remote_state.paperwork.trusted_with_additional_ca_certs}"
 
   root_domain = "${local.root_domain}"
 
@@ -113,7 +113,7 @@ module "om_config" {
 
   ntp_servers                                 = "${var.ntp_servers}"
   custom_ssh_banner                           = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
-  security_configuration_trusted_certificates = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
+  security_configuration_trusted_certificates = "${data.terraform_remote_state.paperwork.trusted_with_additional_ca_certs}"
 
   # director_rds_address  = "${data.terraform_remote_state.bootstrap_control_plane.director_rds_address}"
   # director_rds_password = "${data.terraform_remote_state.bootstrap_control_plane.director_rds_password}"

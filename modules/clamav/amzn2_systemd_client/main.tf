@@ -1,5 +1,7 @@
 variable "clamav_db_mirror" {}
 variable "custom_repo_url" {}
+variable "public_bucket_name" {}
+variable "public_bucket_url" {}
 
 data "template_file" "user_data" {
   template = "${file("${path.module}/user_data.tpl")}"
@@ -21,10 +23,19 @@ data "template_cloudinit_config" "cloud_config" {
   }
 }
 
-output "client_user_data_config" {
-  value = "${data.template_file.user_data.rendered}"
+locals {
+  bucket_key = "amazon2-clamav-${md5(data.template_file.user_data.rendered)}-user-data.yml"
 }
 
-output "client_cloud_config" {
-  value = "${data.template_cloudinit_config.cloud_config.rendered}"
+resource "aws_s3_bucket_object" "user_data" {
+  bucket  = "${var.public_bucket_name}"
+  key     = "${local.bucket_key}"
+  content = "${data.template_file.user_data.rendered}"
+}
+
+output "amazon2_clamav_user_data" {
+  value = <<EOF
+#include
+${var.public_bucket_url}/${local.bucket_key}
+EOF
 }

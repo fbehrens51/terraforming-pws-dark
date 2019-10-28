@@ -14,7 +14,4 @@ variable "instance_type" {
   default = "t2.small"
 }
 
-variable "user_data_path" {}
 variable "license_path" {}
-variable "clamav_db_mirror" {}
-variable "custom_clamav_yum_repo_url" {}

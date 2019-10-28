@@ -12,8 +12,6 @@ variable "instance_type" {
   default = "t2.small"
 }
 
-variable "ssh_banner" {}
-
 variable "user_data" {}
 
 variable "bastion_private_ip" {}
@@ -120,9 +118,7 @@ module "nat_host" {
   instance_count = "1"
   ami_id         = "${module.nat_ami.id}"
   user_data      = "${data.template_cloudinit_config.user_data.rendered}"
-
-  ssh_banner = "${var.ssh_banner}"
-  eni_ids    = ["${module.eni.eni_ids[0]}"]
+  eni_ids        = ["${module.eni.eni_ids[0]}"]
 
   tags          = "${local.modified_tags}"
   instance_type = "${var.instance_type}"

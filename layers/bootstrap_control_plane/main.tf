@@ -144,12 +144,6 @@ resource "aws_security_group" "vms_security_group" {
   tags = "${merge(local.modified_tags, map("Name", "${local.env_name}-vms-security-group"))}"
 }
 
-module "amzn2_clamav_config" {
-  source           = "../../modules/clamav/amzn2_systemd_client"
-  clamav_db_mirror = "${var.clamav_db_mirror}"
-  custom_repo_url  = "${var.custom_clamav_yum_repo_url}"
-}
-
 resource "aws_s3_bucket" "transfer_bucket" {
   bucket        = "${local.bucket_prefix}-transfer"
   force_destroy = true
@@ -169,17 +163,21 @@ data "template_cloudinit_config" "nat_user_data" {
   gzip          = false
 
   part {
-    filename     = "base.cfg"
-    content_type = "text/cloud-config"
-    content      = "${file(var.user_data_path)}"
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+    filename     = "clamav.cfg"
+    content_type = "text/x-include-url"
+    content      = "${data.terraform_remote_state.paperwork.amazon2_clamav_user_data}"
   }
 
   part {
-    filename     = "clamav.cfg"
-    content_type = "text/cloud-config"
-    content      = "${module.amzn2_clamav_config.client_cloud_config}"
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+    filename     = "banner.cfg"
+    content_type = "text/x-include-url"
+    content      = "${data.terraform_remote_state.paperwork.custom_banner_user_data}"
+  }
+
+  part {
+    filename     = "user_accounts_user_data.cfg"
+    content_type = "text/x-include-url"
+    content      = "${data.terraform_remote_state.paperwork.user_accounts_user_data}"
   }
 }
 
@@ -192,7 +190,6 @@ module "nat" {
   bastion_private_ip     = "${data.terraform_remote_state.bastion.bastion_private_ip}/32"
   instance_type          = "${var.nat_instance_type}"
   user_data              = "${data.template_cloudinit_config.nat_user_data.rendered}"
-  ssh_banner             = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
   root_domain            = "${data.terraform_remote_state.paperwork.root_domain}"
   splunk_syslog_ca_cert  = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 

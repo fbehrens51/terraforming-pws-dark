@@ -87,16 +87,18 @@ module "amazon_ami" {
 module "s3_archiver_user_data" {
   source = "./modules/s3-archiver"
 
-  server_cert                = "${data.terraform_remote_state.paperwork.splunk_logs_server_cert}"
-  server_key                 = "${data.terraform_remote_state.paperwork.splunk_logs_server_key}"
-  ca_cert                    = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
-  root_domain                = "${local.root_domain}"
-  clamav_db_mirror           = "${var.clamav_db_mirror}"
-  custom_clamav_yum_repo_url = "${var.custom_clamav_yum_repo_url}"
-  s3_syslog_archive          = "${data.terraform_remote_state.bootstrap_splunk.s3_bucket_syslog_archive}"
-  user_data_path             = "${var.user_data_path}"
-  public_bucket_name         = "${local.public_bucket_name}"
-  public_bucket_url          = "${local.public_bucket_url}"
+  server_cert = "${data.terraform_remote_state.paperwork.splunk_logs_server_cert}"
+  server_key  = "${data.terraform_remote_state.paperwork.splunk_logs_server_key}"
+  ca_cert     = "${data.terraform_remote_state.paperwork.trusted_with_additional_ca_certs}"
+  root_domain = "${local.root_domain}"
+
+  clamav_user_data = "${data.terraform_remote_state.paperwork.amazon2_clamav_user_data}"
+
+  s3_syslog_archive       = "${data.terraform_remote_state.bootstrap_splunk.s3_bucket_syslog_archive}"
+  user_accounts_user_data = "${data.terraform_remote_state.paperwork.user_accounts_user_data}"
+  public_bucket_name      = "${local.public_bucket_name}"
+  public_bucket_url       = "${local.public_bucket_url}"
+  banner_user_data        = "${data.terraform_remote_state.paperwork.custom_banner_user_data}"
 }
 
 module "splunk_s3" {
@@ -107,7 +109,6 @@ module "splunk_s3" {
   key_pair_name        = "${local.ssh_key_pair_name}"
   tags                 = "${merge(local.tags, map("Name", "${var.env_name}-splunk-s3"))}"
   iam_instance_profile = "${local.archive_role_name}"
-  ssh_banner           = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
 
   eni_ids = [
     "${local.splunk_s3_eni_id}",
@@ -119,21 +120,23 @@ module "splunk_s3" {
 module "indexers_user_data" {
   source = "./modules/indexers"
 
-  server_cert                = "${data.terraform_remote_state.paperwork.splunk_logs_server_cert}"
-  server_key                 = "${data.terraform_remote_state.paperwork.splunk_logs_server_key}"
-  ca_cert                    = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
-  indexers_pass4SymmKey      = "${local.indexers_pass4SymmKey}"
-  user_data_path             = "${var.user_data_path}"
-  root_domain                = "${local.root_domain}"
-  clamav_db_mirror           = "${var.clamav_db_mirror}"
-  custom_clamav_yum_repo_url = "${var.custom_clamav_yum_repo_url}"
-  splunk_password            = "${data.terraform_remote_state.bootstrap_splunk.splunk_password}"
-  splunk_rpm_version         = "${var.splunk_rpm_version}"
-  splunk_rpm_s3_bucket       = "${var.splunk_rpm_s3_bucket}"
-  splunk_rpm_s3_region       = "${var.splunk_rpm_s3_region}"
-  master_ip                  = "${local.master_ip}"
-  public_bucket_name         = "${local.public_bucket_name}"
-  public_bucket_url          = "${local.public_bucket_url}"
+  server_cert             = "${data.terraform_remote_state.paperwork.splunk_logs_server_cert}"
+  server_key              = "${data.terraform_remote_state.paperwork.splunk_logs_server_key}"
+  ca_cert                 = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
+  indexers_pass4SymmKey   = "${local.indexers_pass4SymmKey}"
+  user_accounts_user_data = "${data.terraform_remote_state.paperwork.user_accounts_user_data}"
+  root_domain             = "${local.root_domain}"
+
+  clamav_user_data = "${data.terraform_remote_state.paperwork.amazon2_clamav_user_data}"
+
+  splunk_password      = "${data.terraform_remote_state.bootstrap_splunk.splunk_password}"
+  splunk_rpm_version   = "${var.splunk_rpm_version}"
+  splunk_rpm_s3_bucket = "${var.splunk_rpm_s3_bucket}"
+  splunk_rpm_s3_region = "${var.splunk_rpm_s3_region}"
+  master_ip            = "${local.master_ip}"
+  public_bucket_name   = "${local.public_bucket_name}"
+  public_bucket_url    = "${local.public_bucket_url}"
+  banner_user_data     = "${data.terraform_remote_state.paperwork.custom_banner_user_data}"
 }
 
 module "splunk_indexers" {
@@ -144,7 +147,6 @@ module "splunk_indexers" {
   key_pair_name        = "${local.ssh_key_pair_name}"
   tags                 = "${merge(local.tags, map("Name", "${var.env_name}-splunk-indexer"))}"
   iam_instance_profile = "${local.splunk_role_name}"
-  ssh_banner           = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
 
   eni_ids = "${local.splunk_indexers_eni_ids}"
 
@@ -154,22 +156,24 @@ module "splunk_indexers" {
 module "master_user_data" {
   source = "./modules/master"
 
-  server_cert                = "${data.terraform_remote_state.paperwork.splunk_monitor_server_cert}"
-  server_key                 = "${data.terraform_remote_state.paperwork.splunk_monitor_server_key}"
-  ca_cert                    = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
-  indexers_pass4SymmKey      = "${local.indexers_pass4SymmKey}"
-  forwarders_pass4SymmKey    = "${local.forwarders_pass4SymmKey}"
-  license_path               = "${var.license_path}"
-  user_data_path             = "${var.user_data_path}"
-  root_domain                = "${local.root_domain}"
-  clamav_db_mirror           = "${var.clamav_db_mirror}"
-  custom_clamav_yum_repo_url = "${var.custom_clamav_yum_repo_url}"
-  splunk_password            = "${data.terraform_remote_state.bootstrap_splunk.splunk_password}"
-  splunk_rpm_version         = "${var.splunk_rpm_version}"
-  splunk_rpm_s3_bucket       = "${var.splunk_rpm_s3_bucket}"
-  splunk_rpm_s3_region       = "${var.splunk_rpm_s3_region}"
-  public_bucket_name         = "${local.public_bucket_name}"
-  public_bucket_url          = "${local.public_bucket_url}"
+  server_cert             = "${data.terraform_remote_state.paperwork.splunk_monitor_server_cert}"
+  server_key              = "${data.terraform_remote_state.paperwork.splunk_monitor_server_key}"
+  ca_cert                 = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
+  indexers_pass4SymmKey   = "${local.indexers_pass4SymmKey}"
+  forwarders_pass4SymmKey = "${local.forwarders_pass4SymmKey}"
+  license_path            = "${var.license_path}"
+  user_accounts_user_data = "${data.terraform_remote_state.paperwork.user_accounts_user_data}"
+  root_domain             = "${local.root_domain}"
+
+  clamav_user_data = "${data.terraform_remote_state.paperwork.amazon2_clamav_user_data}"
+
+  splunk_password      = "${data.terraform_remote_state.bootstrap_splunk.splunk_password}"
+  splunk_rpm_version   = "${var.splunk_rpm_version}"
+  splunk_rpm_s3_bucket = "${var.splunk_rpm_s3_bucket}"
+  splunk_rpm_s3_region = "${var.splunk_rpm_s3_region}"
+  public_bucket_name   = "${local.public_bucket_name}"
+  public_bucket_url    = "${local.public_bucket_url}"
+  banner_user_data     = "${data.terraform_remote_state.paperwork.custom_banner_user_data}"
 }
 
 module "splunk_master" {
@@ -180,7 +184,6 @@ module "splunk_master" {
   key_pair_name        = "${local.ssh_key_pair_name}"
   tags                 = "${merge(local.tags, map("Name", "${var.env_name}-splunk-master"))}"
   iam_instance_profile = "${local.splunk_role_name}"
-  ssh_banner           = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
 
   eni_ids = [
     "${local.splunk_master_eni_id}",
@@ -192,21 +195,23 @@ module "splunk_master" {
 module "search_head_user_data" {
   source = "./modules/search-head"
 
-  server_cert                = "${data.terraform_remote_state.paperwork.splunk_server_cert}"
-  server_key                 = "${data.terraform_remote_state.paperwork.splunk_server_key}"
-  ca_cert                    = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
-  indexers_pass4SymmKey      = "${local.indexers_pass4SymmKey}"
-  user_data_path             = "${var.user_data_path}"
-  root_domain                = "${local.root_domain}"
-  clamav_db_mirror           = "${var.clamav_db_mirror}"
-  custom_clamav_yum_repo_url = "${var.custom_clamav_yum_repo_url}"
-  splunk_password            = "${data.terraform_remote_state.bootstrap_splunk.splunk_password}"
-  splunk_rpm_version         = "${var.splunk_rpm_version}"
-  splunk_rpm_s3_bucket       = "${var.splunk_rpm_s3_bucket}"
-  splunk_rpm_s3_region       = "${var.splunk_rpm_s3_region}"
-  master_ip                  = "${local.master_ip}"
-  public_bucket_name         = "${local.public_bucket_name}"
-  public_bucket_url          = "${local.public_bucket_url}"
+  server_cert             = "${data.terraform_remote_state.paperwork.splunk_server_cert}"
+  server_key              = "${data.terraform_remote_state.paperwork.splunk_server_key}"
+  ca_cert                 = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
+  indexers_pass4SymmKey   = "${local.indexers_pass4SymmKey}"
+  user_accounts_user_data = "${data.terraform_remote_state.paperwork.user_accounts_user_data}"
+  root_domain             = "${local.root_domain}"
+
+  clamav_user_data = "${data.terraform_remote_state.paperwork.amazon2_clamav_user_data}"
+
+  splunk_password      = "${data.terraform_remote_state.bootstrap_splunk.splunk_password}"
+  splunk_rpm_version   = "${var.splunk_rpm_version}"
+  splunk_rpm_s3_bucket = "${var.splunk_rpm_s3_bucket}"
+  splunk_rpm_s3_region = "${var.splunk_rpm_s3_region}"
+  master_ip            = "${local.master_ip}"
+  public_bucket_name   = "${local.public_bucket_name}"
+  public_bucket_url    = "${local.public_bucket_url}"
+  banner_user_data     = "${data.terraform_remote_state.paperwork.custom_banner_user_data}"
 }
 
 module "splunk_search_head" {
@@ -217,7 +222,6 @@ module "splunk_search_head" {
   key_pair_name        = "${local.ssh_key_pair_name}"
   tags                 = "${merge(local.tags, map("Name", "${var.env_name}-splunk-search-head"))}"
   iam_instance_profile = "${local.splunk_role_name}"
-  ssh_banner           = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
 
   eni_ids = [
     "${local.splunk_search_head_eni_id}",
@@ -229,14 +233,15 @@ module "splunk_search_head" {
 module "forwarders_user_data" {
   source = "./modules/forwarders"
 
-  server_cert                 = "${data.terraform_remote_state.paperwork.splunk_logs_server_cert}"
-  server_key                  = "${data.terraform_remote_state.paperwork.splunk_logs_server_key}"
-  ca_cert                     = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
-  forwarders_pass4SymmKey     = "${local.forwarders_pass4SymmKey}"
-  user_data_path              = "${var.user_data_path}"
-  root_domain                 = "${local.root_domain}"
-  clamav_db_mirror            = "${var.clamav_db_mirror}"
-  custom_clamav_yum_repo_url  = "${var.custom_clamav_yum_repo_url}"
+  server_cert             = "${data.terraform_remote_state.paperwork.splunk_logs_server_cert}"
+  server_key              = "${data.terraform_remote_state.paperwork.splunk_logs_server_key}"
+  ca_cert                 = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
+  forwarders_pass4SymmKey = "${local.forwarders_pass4SymmKey}"
+  user_accounts_user_data = "${data.terraform_remote_state.paperwork.user_accounts_user_data}"
+  root_domain             = "${local.root_domain}"
+
+  clamav_user_data = "${data.terraform_remote_state.paperwork.amazon2_clamav_user_data}"
+
   splunk_password             = "${data.terraform_remote_state.bootstrap_splunk.splunk_password}"
   splunk_rpm_version          = "${var.splunk_rpm_version}"
   splunk_rpm_s3_bucket        = "${var.splunk_rpm_s3_bucket}"
@@ -247,6 +252,7 @@ module "forwarders_user_data" {
   s3_archive_port             = "${local.s3_archive_port}"
   public_bucket_name          = "${local.public_bucket_name}"
   public_bucket_url           = "${local.public_bucket_url}"
+  banner_user_data            = "${data.terraform_remote_state.paperwork.custom_banner_user_data}"
 }
 
 module "splunk_forwarders" {
@@ -257,7 +263,6 @@ module "splunk_forwarders" {
   key_pair_name        = "${local.ssh_key_pair_name}"
   tags                 = "${merge(local.tags, map("Name", "${var.env_name}-splunk-forwarder"))}"
   iam_instance_profile = "${local.splunk_role_name}"
-  ssh_banner           = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
 
   eni_ids = "${local.splunk_forwarders_eni_ids}"
 

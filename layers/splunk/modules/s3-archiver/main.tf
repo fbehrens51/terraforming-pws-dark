@@ -6,11 +6,13 @@ variable "ca_cert" {}
 variable "server_cert" {}
 variable "server_key" {}
 variable "root_domain" {}
-variable "clamav_db_mirror" {}
-variable "custom_clamav_yum_repo_url" {}
-variable "user_data_path" {}
+
+variable "clamav_user_data" {}
+
+variable "user_accounts_user_data" {}
 variable "public_bucket_name" {}
 variable "public_bucket_url" {}
+variable "banner_user_data" {}
 
 data "template_file" "cloud_config" {
   template = <<EOF
@@ -116,12 +118,6 @@ module "syslog_config" {
   role_name             = "s3-archiver"
 }
 
-module "clam_av_client_config" {
-  source           = "../../../../modules/clamav/amzn2_systemd_client"
-  clamav_db_mirror = "${var.clamav_db_mirror}"
-  custom_repo_url  = "${var.custom_clamav_yum_repo_url}"
-}
-
 data "template_cloudinit_config" "cloud_config" {
   base64_encode = false
   gzip          = false
@@ -140,16 +136,21 @@ data "template_cloudinit_config" "cloud_config" {
   }
 
   part {
-    filename     = "custom.cfg"
-    content_type = "text/cloud-config"
-    content      = "${file(var.user_data_path)}"
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+    filename     = "user_accounts_user_data.cfg"
+    content_type = "text/x-include-url"
+    content      = "${var.user_accounts_user_data}"
   }
 
   part {
     filename     = "clamav.cfg"
-    content_type = "text/cloud-config"
-    content      = "${module.clam_av_client_config.client_user_data_config}"
+    content_type = "text/x-include-url"
+    content      = "${var.clamav_user_data}"
+  }
+
+  part {
+    filename     = "banner.cfg"
+    content_type = "text/x-include-url"
+    content      = "${var.banner_user_data}"
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 }

@@ -82,7 +82,6 @@ module "bastion_host" {
   user_data      = "${data.template_cloudinit_config.user_data.rendered}"
   eni_ids        = ["${module.bootstrap_bastion.eni_id}"]
   key_pair_name  = "${module.bastion_host_key_pair.key_name}"
-  ssh_banner     = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
 
   tags = "${local.modified_tags}"
 }

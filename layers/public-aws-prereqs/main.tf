@@ -13,6 +13,7 @@ locals {
   root_ca_cert_s3_path                             = "root_ca_cert.pem"
   router_trusted_ca_certs_s3_path                  = "router_trusted_ca_certs.pem"
   trusted_ca_certs_s3_path                         = "trusted_ca_certs.pem"
+  additional_trusted_ca_certs_s3_path              = "additional_trusted_ca_certs.pem"
   rds_ca_cert_s3_path                              = "rds_ca_cert.pem"
   router_server_cert_s3_path                       = "router_server_cert.pem"
   router_server_key_s3_path                        = "router_server_key.pem"
@@ -137,6 +138,7 @@ data "template_file" "paperwork_variables" {
     root_ca_cert_s3_path                 = "${local.root_ca_cert_s3_path}"
     router_trusted_ca_certs_s3_path      = "${local.router_trusted_ca_certs_s3_path}"
     trusted_ca_certs_s3_path             = "${local.trusted_ca_certs_s3_path}"
+    additional_trusted_ca_certs_s3_path  = "${local.additional_trusted_ca_certs_s3_path}"
     rds_ca_cert_s3_path                  = "${local.rds_ca_cert_s3_path}"
     router_server_cert_s3_path           = "${local.router_server_cert_s3_path}"
     router_server_key_s3_path            = "${local.router_server_key_s3_path}"
@@ -218,7 +220,14 @@ resource "aws_s3_bucket_object" "root_ca_cert" {
 resource "aws_s3_bucket_object" "trusted_ca_certs" {
   key          = "${local.trusted_ca_certs_s3_path}"
   bucket       = "${aws_s3_bucket.certs.bucket}"
-  content      = "${module.paperwork.trusted_ca_certs}${var.additional_trusted_ca_certs}"
+  content      = "${module.paperwork.trusted_ca_certs}"
+  content_type = "text/plain"
+}
+
+resource "aws_s3_bucket_object" "additional_trusted_ca_certs" {
+  key          = "${local.additional_trusted_ca_certs_s3_path}"
+  bucket       = "${aws_s3_bucket.certs.bucket}"
+  content      = "${var.additional_trusted_ca_certs}"
   content_type = "text/plain"
 }
 

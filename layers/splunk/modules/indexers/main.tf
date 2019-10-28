@@ -2,10 +2,11 @@ variable "server_cert" {}
 variable "server_key" {}
 variable "ca_cert" {}
 variable "indexers_pass4SymmKey" {}
-variable "user_data_path" {}
+variable "user_accounts_user_data" {}
 variable "root_domain" {}
-variable "clamav_db_mirror" {}
-variable "custom_clamav_yum_repo_url" {}
+
+variable "clamav_user_data" {}
+
 variable "splunk_password" {}
 variable "splunk_rpm_version" {}
 variable "splunk_rpm_s3_bucket" {}
@@ -13,23 +14,26 @@ variable "splunk_rpm_s3_region" {}
 variable "master_ip" {}
 variable "public_bucket_name" {}
 variable "public_bucket_url" {}
+variable "banner_user_data" {}
 
 module "base" {
-  source                     = "../base"
-  server_cert                = "${var.server_cert}"
-  server_key                 = "${var.server_key}"
-  ca_cert                    = "${var.ca_cert}"
-  root_domain                = "${var.root_domain}"
-  clamav_db_mirror           = "${var.clamav_db_mirror}"
-  custom_clamav_yum_repo_url = "${var.custom_clamav_yum_repo_url}"
-  splunk_password            = "${var.splunk_password}"
-  splunk_rpm_version         = "${var.splunk_rpm_version}"
-  splunk_rpm_s3_bucket       = "${var.splunk_rpm_s3_bucket}"
-  splunk_rpm_s3_region       = "${var.splunk_rpm_s3_region}"
-  user_data_path             = "${var.user_data_path}"
-  role_name                  = "splunk-indexer"
-  public_bucket_name         = "${var.public_bucket_name}"
-  public_bucket_url          = "${var.public_bucket_url}"
+  source           = "../base"
+  server_cert      = "${var.server_cert}"
+  server_key       = "${var.server_key}"
+  ca_cert          = "${var.ca_cert}"
+  root_domain      = "${var.root_domain}"
+  clamav_user_data = "${var.clamav_user_data}"
+
+  splunk_password = "${var.splunk_password}"
+
+  splunk_rpm_version      = "${var.splunk_rpm_version}"
+  splunk_rpm_s3_bucket    = "${var.splunk_rpm_s3_bucket}"
+  splunk_rpm_s3_region    = "${var.splunk_rpm_s3_region}"
+  user_accounts_user_data = "${var.user_accounts_user_data}"
+  role_name               = "splunk-indexer"
+  public_bucket_name      = "${var.public_bucket_name}"
+  public_bucket_url       = "${var.public_bucket_url}"
+  banner_user_data        = "${var.banner_user_data}"
 }
 
 module "splunk_ports" {
@@ -68,25 +72,15 @@ data "template_file" "cloud_config" {
   template = <<EOF
 #cloud-config
 write_files:
-- path: /tmp/server.conf
+- path: /run/server.conf
   content: |
     ${indent(4, data.template_file.server_conf.rendered)}
 
-- path: /tmp/splunk-ca.pem
-  content: |
-    ${indent(4, var.ca_cert)}
-
-- path: /tmp/server_cert.pem
-  content: |
-    ${indent(4, var.server_cert)}
-    ${indent(4, var.server_key)}
-    ${indent(4, var.ca_cert)}
-
-- path: /tmp/inputs.conf
+- path: /run/inputs.conf
   content: |
     ${indent(4, data.template_file.inputs_conf.rendered)}
 
-- path: /tmp/license.conf
+- path: /run/license.conf
   content: |
     ${indent(4, data.template_file.license_slave_server_conf.rendered)}
 
@@ -98,11 +92,11 @@ runcmd:
     mkdir -p /opt/splunk/etc/auth/mycerts
     mkdir -p /opt/splunk/etc/system/local/
 
-    cp /tmp/inputs.conf /opt/splunk/etc/system/local/inputs.conf
-    cp /tmp/license.conf /opt/splunk/etc/apps/SplunkLicenseSettings/local/server.conf
-    cp /tmp/server.conf /opt/splunk/etc/system/local/server.conf
-    cp /tmp/server_cert.pem /opt/splunk/etc/auth/mycerts/mySplunkServerCertificate.pem
-    cp /tmp/splunk-ca.pem /opt/splunk/etc/auth/mycerts/mySplunkCACertificate.pem
+    cp /run/inputs.conf /opt/splunk/etc/system/local/inputs.conf
+    cp /run/license.conf /opt/splunk/etc/apps/SplunkLicenseSettings/local/server.conf
+    cp /run/server.conf /opt/splunk/etc/system/local/server.conf
+    cat /run/server.crt /run/server.key /run/splunk-ca.pem > /opt/splunk/etc/auth/mycerts/mySplunkServerCertificate.pem
+    cp /run/splunk-ca.pem /opt/splunk/etc/auth/mycerts/mySplunkCACertificate.pem
 EOF
 }
 

@@ -85,28 +85,26 @@ resource "aws_route_table_association" "private_route_table_assoc" {
   route_table_id = "${data.terraform_remote_state.routes.es_private_vpc_route_table_id}"
 }
 
-module "amzn2_clamav_config" {
-  source           = "../../modules/clamav/amzn2_systemd_client"
-  clamav_db_mirror = "${var.clamav_db_mirror}"
-  custom_repo_url  = "${var.custom_clamav_yum_repo_url}"
-}
-
 data "template_cloudinit_config" "nat_user_data" {
   base64_encode = false
   gzip          = false
 
   part {
-    filename     = "base.cfg"
-    content_type = "text/cloud-config"
-    content      = "${file(var.user_data_path)}"
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+    filename     = "clamav.cfg"
+    content_type = "text/x-include-url"
+    content      = "${data.terraform_remote_state.paperwork.amazon2_clamav_user_data}"
   }
 
   part {
-    filename     = "clamav.cfg"
-    content_type = "text/cloud-config"
-    content      = "${module.amzn2_clamav_config.client_cloud_config}"
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+    filename     = "banner.cfg"
+    content_type = "text/x-include-url"
+    content      = "${data.terraform_remote_state.paperwork.custom_banner_user_data}"
+  }
+
+  part {
+    filename     = "user_accounts_user_data.cfg"
+    content_type = "text/x-include-url"
+    content      = "${data.terraform_remote_state.paperwork.user_accounts_user_data}"
   }
 }
 
@@ -119,7 +117,6 @@ module "nat" {
   internetless           = "${var.internetless}"
   instance_type          = "${var.nat_instance_type}"
   user_data              = "${data.template_cloudinit_config.nat_user_data.rendered}"
-  ssh_banner             = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
   root_domain            = "${data.terraform_remote_state.paperwork.root_domain}"
   splunk_syslog_ca_cert  = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 
@@ -144,10 +141,6 @@ variable "tags" {
 variable "availability_zones" {
   type = "list"
 }
-
-variable "clamav_db_mirror" {}
-variable "custom_clamav_yum_repo_url" {}
-variable "user_data_path" {}
 
 output "public_subnet_ids" {
   value = "${module.public_subnets.subnet_ids}"

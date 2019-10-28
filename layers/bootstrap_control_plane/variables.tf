@@ -1,9 +1,6 @@
 variable "remote_state_bucket" {}
 variable "remote_state_region" {}
 variable "control_plane_host_key_pair_name" {}
-variable "clamav_db_mirror" {}
-variable "user_data_path" {}
-variable "custom_clamav_yum_repo_url" {}
 
 variable "singleton_availability_zone" {}
 

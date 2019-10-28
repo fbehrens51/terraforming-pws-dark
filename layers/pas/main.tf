@@ -63,28 +63,26 @@ data "terraform_remote_state" "bind" {
   }
 }
 
-module "clam_av_client_config" {
-  source           = "../../modules/clamav/amzn2_systemd_client"
-  clamav_db_mirror = "${var.clamav_db_mirror}"
-  custom_repo_url  = "${var.custom_clamav_yum_repo_url}"
-}
-
 data "template_cloudinit_config" "nat_user_data" {
   base64_encode = false
   gzip          = false
 
   part {
-    filename     = "base.cfg"
-    content_type = "text/cloud-config"
-    content      = "${file(var.user_data_path)}"
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+    filename     = "clamav.cfg"
+    content_type = "text/x-include-url"
+    content      = "${data.terraform_remote_state.paperwork.amazon2_clamav_user_data}"
   }
 
   part {
-    filename     = "clamav.cfg"
-    content_type = "text/cloud-config"
-    content      = "${module.clam_av_client_config.client_cloud_config}"
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+    filename     = "banner.cfg"
+    content_type = "text/x-include-url"
+    content      = "${data.terraform_remote_state.paperwork.custom_banner_user_data}"
+  }
+
+  part {
+    filename     = "user_accounts_user_data.cfg"
+    content_type = "text/x-include-url"
+    content      = "${data.terraform_remote_state.paperwork.user_accounts_user_data}"
   }
 }
 
@@ -102,10 +100,8 @@ module "infra" {
   bastion_private_ip     = "${data.terraform_remote_state.bastion.bastion_private_ip}"
   private_route_table_id = "${data.terraform_remote_state.routes.pas_private_vpc_route_table_id}"
   nat_instance_type      = "${var.nat_instance_type}"
-  ssh_banner             = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
-
-  root_domain           = "${data.terraform_remote_state.paperwork.root_domain}"
-  splunk_syslog_ca_cert = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
+  root_domain            = "${data.terraform_remote_state.paperwork.root_domain}"
+  splunk_syslog_ca_cert  = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 
   user_data = "${data.template_cloudinit_config.nat_user_data.rendered}"
 
@@ -254,9 +250,6 @@ variable "internetless" {}
 variable "tags" {
   type = "map"
 }
-
-variable "clamav_db_mirror" {}
-variable "custom_clamav_yum_repo_url" {}
 
 variable "user_data_path" {}
 

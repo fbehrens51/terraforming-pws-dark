@@ -32,6 +32,33 @@ resource "aws_s3_bucket_policy" "public_bucket_policy_attachement" {
   policy = "${data.aws_iam_policy_document.public_bucket_policy.json}"
 }
 
+module "clam_av_client_config" {
+  source             = "../../modules/clamav/amzn2_systemd_client"
+  clamav_db_mirror   = "${var.clamav_db_mirror}"
+  custom_repo_url    = "${var.custom_clamav_yum_repo_url}"
+  public_bucket_name = "${aws_s3_bucket.public_bucket.bucket}"
+  public_bucket_url  = "${local.public_bucket_url}"
+}
+
+module "custom_banner_config" {
+  source             = "../../modules/cloud_init/custom_banner"
+  ssh_banner         = "${file(var.custom_ssh_banner_file)}"
+  public_bucket_name = "${aws_s3_bucket.public_bucket.bucket}"
+  public_bucket_url  = "${local.public_bucket_url}"
+}
+
+variable "user_accounts_user_data_path" {}
+
+module "user_accounts_config" {
+  source                  = "../../modules/cloud_init/user_accounts"
+  user_accounts_user_data = "${file(var.user_accounts_user_data_path)}"
+  public_bucket_name      = "${aws_s3_bucket.public_bucket.bucket}"
+  public_bucket_url       = "${local.public_bucket_url}"
+}
+
+variable "clamav_db_mirror" {}
+variable "custom_clamav_yum_repo_url" {}
+
 variable "env_name" {
   type = "string"
 }
@@ -119,6 +146,13 @@ variable "trusted_ca_certs_s3_path" {}
 data "aws_s3_bucket_object" "trusted_ca_certs" {
   bucket = "${var.cert_bucket}"
   key    = "${var.trusted_ca_certs_s3_path}"
+}
+
+variable "additional_trusted_ca_certs_s3_path" {}
+
+data "aws_s3_bucket_object" "additional_trusted_ca_certs" {
+  bucket = "${var.cert_bucket}"
+  key    = "${var.additional_trusted_ca_certs_s3_path}"
 }
 
 variable "rds_ca_cert_s3_path" {}
@@ -334,6 +368,10 @@ output "trusted_ca_certs" {
   value = "${data.aws_s3_bucket_object.trusted_ca_certs.body}"
 }
 
+output "trusted_with_additional_ca_certs" {
+  value = "${data.aws_s3_bucket_object.trusted_ca_certs.body}${data.aws_s3_bucket_object.additional_trusted_ca_certs.body}"
+}
+
 output "rds_ca_cert" {
   value = "${data.aws_s3_bucket_object.rds_ca_cert.body}"
 }
@@ -486,6 +524,22 @@ output "public_bucket_name" {
   value = "${aws_s3_bucket.public_bucket.bucket}"
 }
 
+locals {
+  public_bucket_url = "https://${aws_s3_bucket.public_bucket.bucket}.${var.s3_endpoint}"
+}
+
 output "public_bucket_url" {
-  value = "https://${aws_s3_bucket.public_bucket.bucket}.${var.s3_endpoint}"
+  value = "${local.public_bucket_url}"
+}
+
+output "amazon2_clamav_user_data" {
+  value = "${module.clam_av_client_config.amazon2_clamav_user_data}"
+}
+
+output "custom_banner_user_data" {
+  value = "${module.custom_banner_config.custom_banner_user_data}"
+}
+
+output "user_accounts_user_data" {
+  value = "${module.user_accounts_config.user_accounts_user_data}"
 }

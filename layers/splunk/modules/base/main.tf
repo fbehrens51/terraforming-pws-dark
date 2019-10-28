@@ -1,10 +1,11 @@
 variable "server_cert" {}
 variable "server_key" {}
 variable "ca_cert" {}
-variable "user_data_path" {}
+variable "user_accounts_user_data" {}
 variable "root_domain" {}
-variable "clamav_db_mirror" {}
-variable "custom_clamav_yum_repo_url" {}
+
+variable "clamav_user_data" {}
+
 variable "splunk_password" {}
 variable "splunk_rpm_version" {}
 variable "splunk_rpm_s3_bucket" {}
@@ -12,6 +13,8 @@ variable "splunk_rpm_s3_region" {}
 variable "role_name" {}
 variable "public_bucket_name" {}
 variable "public_bucket_url" {}
+
+variable "banner_user_data" {}
 
 module "splunk_ports" {
   source = "../../../../modules/splunk_ports"
@@ -24,12 +27,6 @@ module "syslog_config" {
   public_bucket_name    = "${var.public_bucket_name}"
   public_bucket_url     = "${var.public_bucket_url}"
   role_name             = "${var.role_name}"
-}
-
-module "clam_av_client_config" {
-  source           = "../../../../modules/clamav/amzn2_systemd_client"
-  clamav_db_mirror = "${var.clamav_db_mirror}"
-  custom_repo_url  = "${var.custom_clamav_yum_repo_url}"
 }
 
 data "template_file" "web_conf" {
@@ -56,18 +53,21 @@ mounts:
   - [ "/dev/xvdf", "/opt/splunk", "ext4", "defaults,nofail", "0", "2" ]
 
 write_files:
-- path: /tmp/web.conf
+- path: /run/splunk-ca.pem
   content: |
-    ${indent(4, data.template_file.web_conf.rendered)}
+    ${indent(4, var.ca_cert)}
 
-- path: /tmp/server.crt
+- path: /run/server.crt
   content: |
     ${indent(4, var.server_cert)}
 
-- path: /tmp/server.key
+- path: /run/server.key
   content: |
     ${indent(4, var.server_key)}
 
+- path: /run/web.conf
+  content: |
+    ${indent(4, data.template_file.web_conf.rendered)}
 
 runcmd:
   - |
@@ -80,9 +80,9 @@ runcmd:
     mkdir -p /opt/splunk/etc/system/local/
     mkdir -p /opt/splunk/etc/auth/mycerts/
 
-    cp /tmp/web.conf /opt/splunk/etc/system/local/web.conf
-    cp /tmp/server.crt /opt/splunk/etc/auth/mycerts/mySplunkWebCertificate.pem
-    cp /tmp/server.key /opt/splunk/etc/auth/mycerts/mySplunkWebPrivateKey.key
+    cp /run/web.conf /opt/splunk/etc/system/local/web.conf
+    cp /run/server.crt /opt/splunk/etc/auth/mycerts/mySplunkWebCertificate.pem
+    cp /run/server.key /opt/splunk/etc/auth/mycerts/mySplunkWebPrivateKey.key
 
     aws s3 cp s3://${var.splunk_rpm_s3_bucket}/ . --recursive --exclude='*' --include='splunk/splunk-${var.splunk_rpm_version}*' --region ${var.splunk_rpm_s3_region}
     sudo rpm -i splunk/splunk-${var.splunk_rpm_version}*.rpm
@@ -116,23 +116,28 @@ data "template_cloudinit_config" "user_data" {
   }
 
   part {
-    filename     = "custom.cfg"
-    content_type = "text/cloud-config"
-    content      = "${file(var.user_data_path)}"
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+    filename     = "user_accounts_user_data.cfg"
+    content_type = "text/x-include-url"
+    content      = "${var.user_accounts_user_data}"
   }
 
   part {
     filename     = "clamav.cfg"
-    content_type = "text/cloud-config"
-    content      = "${module.clam_av_client_config.client_user_data_config}"
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+    content_type = "text/x-include-url"
+    content      = "${var.clamav_user_data}"
   }
 
   part {
     filename     = "splunk-and-web.cfg"
     content_type = "text/cloud-config"
     content      = "${data.template_file.cloud_config.rendered}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+
+  part {
+    filename     = "banner.cfg"
+    content_type = "text/x-include-url"
+    content      = "${var.banner_user_data}"
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 }

@@ -130,17 +130,21 @@ data "template_cloudinit_config" "user_data" {
   }
 
   part {
-    filename     = "other.cfg"
-    content_type = "text/cloud-config"
-    content      = "${file("${var.user_data_path}")}"
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+    filename     = "user_accounts_user_data.cfg"
+    content_type = "text/x-include-url"
+    content      = "${data.terraform_remote_state.paperwork.user_accounts_user_data}"
   }
 
   part {
     filename     = "clamav.cfg"
-    content_type = "text/cloud-config"
-    content      = "${module.clam_av_client_config.client_user_data_config}"
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+    content_type = "text/x-include-url"
+    content      = "${data.terraform_remote_state.paperwork.amazon2_clamav_user_data}"
+  }
+
+  part {
+    filename     = "banner.cfg"
+    content_type = "text/x-include-url"
+    content      = "${data.terraform_remote_state.paperwork.custom_banner_user_data}"
   }
 }
 
@@ -166,15 +170,6 @@ data "terraform_remote_state" "bootstrap_control_plane" {
   }
 }
 
-variable "clamav_db_mirror" {}
-variable "custom_clamav_yum_repo_url" {}
-
-module "clam_av_client_config" {
-  source           = "../../modules/clamav/amzn2_systemd_client"
-  clamav_db_mirror = "${var.clamav_db_mirror}"
-  custom_repo_url  = "${var.custom_clamav_yum_repo_url}"
-}
-
 module "sjb" {
   instance_count       = 1
   source               = "../../modules/launch"
@@ -184,7 +179,6 @@ module "sjb" {
   key_pair_name        = "${data.terraform_remote_state.bootstrap_control_plane.sjb_ssh_key_pair_name}"
   iam_instance_profile = "${data.terraform_remote_state.paperwork.sjb_role_name}"
   instance_type        = "${var.instance_type}"
-  ssh_banner           = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
 
   tags = "${merge(local.modified_tags, map("Name", "${local.env_name}-sjb"))}"
 
