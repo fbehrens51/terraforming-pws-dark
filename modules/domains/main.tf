@@ -19,12 +19,6 @@ locals {
   control_plane_om_subdomain = "om.ci"
   control_plane_om_fqdn      = "${local.control_plane_om_subdomain}.${var.root_domain}"
 
-  control_plane_uaa_subdomain = "uaa.ci"
-  control_plane_uaa_fqdn      = "${local.control_plane_uaa_subdomain}.${var.root_domain}"
-
-  control_plane_credhub_subdomain = "credhub.ci"
-  control_plane_credhub_fqdn      = "${local.control_plane_credhub_subdomain}.${var.root_domain}"
-
   control_plane_plane_subdomain = "plane.ci"
   control_plane_plane_fqdn      = "${local.control_plane_plane_subdomain}.${var.root_domain}"
 
@@ -59,28 +53,12 @@ output "control_plane_om_fqdn" {
   value = "${local.control_plane_om_fqdn}"
 }
 
-output "control_plane_uaa_subdomain" {
-  value = "${local.control_plane_uaa_subdomain}"
-}
-
-output "control_plane_uaa_fqdn" {
-  value = "${local.control_plane_uaa_fqdn}"
-}
-
 output "control_plane_plane_subdomain" {
   value = "${local.control_plane_plane_subdomain}"
 }
 
 output "control_plane_plane_fqdn" {
   value = "${local.control_plane_plane_fqdn}"
-}
-
-output "control_plane_credhub_subdomain" {
-  value = "${local.control_plane_credhub_subdomain}"
-}
-
-output "control_plane_credhub_fqdn" {
-  value = "${local.control_plane_credhub_fqdn}"
 }
 
 output "om_subdomain" {

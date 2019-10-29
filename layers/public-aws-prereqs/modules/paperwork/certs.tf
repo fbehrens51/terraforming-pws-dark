@@ -111,8 +111,6 @@ module "concourse_server_cert" {
   common_name        = "${var.env_name} Concourse"
 
   domains = [
-    "${module.domains.control_plane_credhub_fqdn}",
-    "${module.domains.control_plane_uaa_fqdn}",
     "${module.domains.control_plane_plane_fqdn}",
   ]
 }
