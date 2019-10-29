@@ -86,15 +86,11 @@ module "om_config" {
 
   concourse_cert_pem        = "${data.terraform_remote_state.paperwork.concourse_server_cert}"
   concourse_private_key_pem = "${data.terraform_remote_state.paperwork.concourse_server_key}"
-  trusted_ca_certs          = "${data.terraform_remote_state.paperwork.trusted_with_additional_ca_certs}"
+  concourse_users           = "${var.concourse_users}"
 
   root_domain = "${local.root_domain}"
 
   web_elb_names = ["${data.terraform_remote_state.bootstrap_control_plane.web_elb_id}"]
-
-  uaa_elb_names = ["${data.terraform_remote_state.bootstrap_control_plane.uaa_elb_id}"]
-
-  credhub_elb_names = ["${data.terraform_remote_state.bootstrap_control_plane.credhub_elb_id}"]
 
   smtp_host       = "${var.smtp_host}"
   smtp_user       = "${var.smtp_user}"
@@ -106,7 +102,7 @@ module "om_config" {
   smtp_domain     = "${var.smtp_domain}"
   smtp_enabled    = "${var.smtp_enabled}"
 
-  platform_automation_engine_worker_role_name = "${data.terraform_remote_state.paperwork.platform_automation_engine_worker_role_name}"
+  concourse_worker_role_name = "${data.terraform_remote_state.paperwork.platform_automation_engine_worker_role_name}"
 
   iaas_configuration_endpoints_ca_cert    = "${var.iaas_configuration_endpoints_ca_cert}"
   iaas_configuration_iam_instance_profile = "${data.terraform_remote_state.paperwork.director_role_name}"
@@ -120,6 +116,13 @@ module "om_config" {
   # director_rds_port     = "${data.terraform_remote_state.bootstrap_control_plane.director_rds_port}"
   # director_rds_username = "${data.terraform_remote_state.bootstrap_control_plane.director_rds_username}"
 
+  postgres_db_name  = "concourse"
+  postgres_ca_cert  = "${data.terraform_remote_state.paperwork.rds_ca_cert}"
+  postgres_host     = "${data.terraform_remote_state.bootstrap_control_plane.rds_address}"
+  postgres_port     = "${data.terraform_remote_state.bootstrap_control_plane.rds_port}"
+  postgres_username = "${data.terraform_remote_state.bootstrap_control_plane.rds_username}"
+  postgres_password = "${data.terraform_remote_state.bootstrap_control_plane.rds_password}"
+  concourse_version = "${var.concourse_version}"
 
   # rds_ca_cert_pem = "${data.terraform_remote_state.paperwork.rds_ca_cert_pem}"
 

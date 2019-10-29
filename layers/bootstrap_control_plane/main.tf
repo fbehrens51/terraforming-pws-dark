@@ -197,6 +197,29 @@ module "nat" {
   public_bucket_url  = "${data.terraform_remote_state.paperwork.public_bucket_url}"
 }
 
+module "rds" {
+  source = "../../modules/rds"
+
+  rds_db_username    = "${var.rds_db_username}"
+  rds_instance_class = "${var.rds_instance_class}"
+  rds_instance_count = "1"
+
+  engine = "postgres"
+
+  # RDS decided to upgrade the mysql patch version automatically from 10.1.31 to
+  # 10.1.34, which makes terraform see this as a change. Use a prefix version to
+  # prevent this from happening with postgres.
+  engine_version = "9.5"
+
+  db_port = 5432
+
+  env_name           = "${local.modified_name}"
+  availability_zones = "${slice(var.availability_zones, 0, 2)}"
+  vpc_id             = "${data.aws_vpc.vpc.id}"
+  cidr_block         = "${local.rds_cidr_block}"
+  tags               = "${local.modified_tags}"
+}
+
 module "web_elb" {
   source            = "../../modules/two_port_elb/create"
   env_name          = "${local.env_name}"
@@ -208,32 +231,6 @@ module "web_elb" {
   short_name        = "web"
   port              = 443
   additional_port   = 2222
-}
-
-module "uaa_elb" {
-  source            = "../../modules/elb/create"
-  env_name          = "${local.env_name}"
-  internetless      = "${var.internetless}"
-  public_subnet_ids = "${module.public_subnets.subnet_ids}"
-  tags              = "${var.tags}"
-  vpc_id            = "${local.vpc_id}"
-  egress_cidrs      = "${module.private_subnets.subnet_cidr_blocks}"
-  short_name        = "uaa"
-  port              = 443
-  instance_port     = 8443
-}
-
-module "credhub_elb" {
-  source            = "../../modules/elb/create"
-  env_name          = "${local.env_name}"
-  internetless      = "${var.internetless}"
-  public_subnet_ids = "${module.public_subnets.subnet_ids}"
-  tags              = "${var.tags}"
-  vpc_id            = "${local.vpc_id}"
-  egress_cidrs      = "${module.private_subnets.subnet_cidr_blocks}"
-  short_name        = "credhub"
-  port              = 443
-  instance_port     = 8844
 }
 
 module "domains" {
@@ -267,20 +264,6 @@ resource "dns_cname_record" "atc_cname" {
   ttl   = 300
 }
 
-resource "dns_cname_record" "uaa_cname" {
-  zone  = "${local.root_domain}."
-  name  = "${module.domains.control_plane_uaa_subdomain}"
-  cname = "${module.uaa_elb.dns_name}."
-  ttl   = 300
-}
-
-resource "dns_cname_record" "credhub_cname" {
-  zone  = "${local.root_domain}."
-  name  = "${module.domains.control_plane_credhub_subdomain}"
-  cname = "${module.credhub_elb.dns_name}."
-  ttl   = 300
-}
-
 resource "random_integer" "bucket" {
   min = 1
   max = 100000
@@ -304,6 +287,7 @@ locals {
   bucket_prefix    = "${replace(local.env_name, " ", "-")}"
 
   public_cidr_block  = "${cidrsubnet(data.aws_vpc.vpc.cidr_block, 1, 0)}"
+  rds_cidr_block     = "${cidrsubnet(local.public_cidr_block, 2, 3)}"
   private_cidr_block = "${cidrsubnet(data.aws_vpc.vpc.cidr_block, 1, 1)}"
   sjb_cidr_block     = "${cidrsubnet(local.private_cidr_block, 2, 3)}"
 

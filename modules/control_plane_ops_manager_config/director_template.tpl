@@ -110,4 +110,4 @@ vmextensions-configuration:
       type: gp2
 - name: worker_instance_profile
   cloud_properties:
-    iam_instance_profile: ${platform_automation_engine_worker_role_name}
+    iam_instance_profile: ${concourse_worker_role_name}

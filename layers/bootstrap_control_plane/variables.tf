@@ -1,6 +1,8 @@
 variable "remote_state_bucket" {}
 variable "remote_state_region" {}
 variable "control_plane_host_key_pair_name" {}
+variable "rds_db_username" {}
+variable "rds_instance_class" {}
 
 variable "singleton_availability_zone" {}
 

@@ -95,3 +95,10 @@ variable "extra_user_sudo" {
   description = "Whether to grant sudo acces to the extra user"
   default     = false
 }
+
+variable "concourse_version" {}
+
+variable "concourse_users" {
+  description = "An array of usernames that will be given admin permissions in concourse.  The passwords of those users will be automatically generated."
+  type        = "list"
+}

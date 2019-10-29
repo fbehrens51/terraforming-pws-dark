@@ -11,7 +11,12 @@ variable "env_name" {
   description = "Identifier for the deployment. This will be used to add an `env` tag to BOSH-deployed VMs"
 }
 
-variable "platform_automation_engine_worker_role_name" {}
+variable "concourse_users" {
+  description = "An array of usernames that will be given admin permissions in concourse.  The passwords of those users will be automatically generated."
+  type        = "list"
+}
+
+variable "concourse_worker_role_name" {}
 
 variable "region" {}
 
@@ -77,16 +82,6 @@ variable "web_elb_names" {
   description = "List of elb names which ATC / TSA should be attached to."
 }
 
-variable "uaa_elb_names" {
-  type        = "list"
-  description = "List of elb names which UAA should be attached to."
-}
-
-variable "credhub_elb_names" {
-  type        = "list"
-  description = "List of elb names which Credhub should be attached to."
-}
-
 variable "concourse_cert_pem" {
   type        = "string"
   description = "Server certificate used by the Control Plane. Must be valid for *.ci.<ROOT_DOMAIN>"
@@ -95,11 +90,6 @@ variable "concourse_cert_pem" {
 variable "concourse_private_key_pem" {
   type        = "string"
   description = "Server key used by the Control Plane. Must be valid for *.ci.<ROOT_DOMAIN>"
-}
-
-variable "trusted_ca_certs" {
-  type        = "string"
-  description = "Concatenated CA certificates trusted by Control Plane"
 }
 
 # ========================
@@ -191,6 +181,8 @@ variable "s3_secret_access_key" {}
 
 variable "s3_auth_type" {}
 
+variable "concourse_version" {}
+
 variable "pws_dark_iam_s3_resource_product_version" {}
 
 variable "splunk_syslog_host" {}
@@ -200,3 +192,10 @@ variable "splunk_syslog_port" {}
 variable "splunk_syslog_ca_cert" {}
 
 variable "volume_encryption_kms_key_arn" {}
+
+variable "postgres_host" {}
+variable "postgres_port" {}
+variable "postgres_db_name" {}
+variable "postgres_username" {}
+variable "postgres_password" {}
+variable "postgres_ca_cert" {}

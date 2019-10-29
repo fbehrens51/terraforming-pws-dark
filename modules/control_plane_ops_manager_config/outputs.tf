@@ -1,15 +1,25 @@
-output "platform_automation_engine_template" {
-  value = "${data.template_file.platform_automation_engine_template.rendered}"
+output "create_db_script_content" {
+  value     = "${data.template_file.create_db.rendered}"
+  sensitive = true
+}
+
+output "concourse_template" {
+  value = "${data.template_file.concourse_template.rendered}"
 }
 
 output "director_template" {
   value = "${data.template_file.director_template.rendered}"
 }
 
-output "download_platform_automation_engine_config" {
-  value = "${data.template_file.download_platform_automation_engine_config.rendered}"
+output "download_concourse_config" {
+  value = "${data.template_file.download_concourse_config.rendered}"
 }
 
 output "download_pws_dark_iam_s3_resource_config" {
   value = "${data.template_file.download_pws_dark_iam_s3_resource_config.rendered}"
+}
+
+output "concourse_username_and_passwords" {
+  value     = "${zipmap(var.concourse_users, random_string.user_passwords.*.result)}"
+  sensitive = true
 }

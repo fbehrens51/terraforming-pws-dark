@@ -67,30 +67,19 @@ output "web_elb_id" {
   value = "${module.web_elb.my_elb_id}"
 }
 
-output "uaa_elb_id" {
-  value = "${module.uaa_elb.my_elb_id}"
+output "rds_address" {
+  value = "${module.rds.rds_address}"
 }
 
-output "credhub_elb_id" {
-  value = "${module.credhub_elb.my_elb_id}"
+output "rds_port" {
+  value = "${module.rds.rds_port}"
 }
 
-# output "director_rds_address" {
-#   value = "${module.director_rds.rds_address}"
-# }
+output "rds_username" {
+  value = "${module.rds.rds_username}"
+}
 
-
-# output "director_rds_password" {
-#   value = "${module.director_rds.rds_password}"
-# }
-
-
-# output "director_rds_port" {
-#   value = "${module.director_rds.rds_port}"
-# }
-
-
-# output "director_rds_username" {
-#   value = "${module.director_rds.rds_username}"
-# }
-
+output "rds_password" {
+  value     = "${module.rds.rds_password}"
+  sensitive = true
+}

@@ -1,5 +1,10 @@
-output "platform_automation_engine_template" {
-  value     = "${module.om_config.platform_automation_engine_template}"
+output "create_db_script_content" {
+  value     = "${module.om_config.create_db_script_content}"
+  sensitive = true
+}
+
+output "concourse_template" {
+  value     = "${module.om_config.concourse_template}"
   sensitive = true
 }
 
@@ -8,8 +13,8 @@ output "director_template" {
   sensitive = true
 }
 
-output "download_platform_automation_engine_config" {
-  value     = "${module.om_config.download_platform_automation_engine_config}"
+output "download_concourse_config" {
+  value     = "${module.om_config.download_concourse_config}"
   sensitive = true
 }
 
@@ -53,5 +58,10 @@ output "download_runtime_config_config" {
 
 output "runtime_config_template" {
   value     = "${module.runtime_config_config.runtime_config_template}"
+  sensitive = true
+}
+
+output "concourse_username_and_passwords" {
+  value     = "${module.om_config.concourse_username_and_passwords}"
   sensitive = true
 }

@@ -1,7 +1,7 @@
 locals {
-  platform_automation_engine_file_glob       = "*.pivotal"
-  platform_automation_engine_product_slug    = "platform-automation-engine"
-  platform_automation_engine_product_version = "1.0.3-beta.1"
+  concourse_file_glob       = "*.pivotal"
+  concourse_product_slug    = "pws-dark-concourse-tile"
+  concourse_product_version = "${var.concourse_version}"
 
   pws_dark_iam_s3_resource_file_glob    = "pws-dark-iam-s3-resource-tile*.pivotal"
   pws_dark_iam_s3_resource_product_slug = "pws-dark-iam-s3-resource-tile"
@@ -76,7 +76,7 @@ data "template_file" "director_template" {
 
     kms_key_arn = "${var.volume_encryption_kms_key_arn}"
 
-    platform_automation_engine_worker_role_name = "${var.platform_automation_engine_worker_role_name}"
+    concourse_worker_role_name = "${var.concourse_worker_role_name}"
 
     control_plane_subnets = "${indent(4, join("", data.template_file.control_plane_subnets.*.rendered))}"
     control_plane_vpc_azs = "${indent(2, join("", data.template_file.control_plane_vpc_azs.*.rendered))}"
@@ -93,28 +93,58 @@ module "domains" {
   root_domain = "${var.root_domain}"
 }
 
-data "template_file" "platform_automation_engine_template" {
-  template = "${file("${path.module}/platform_automation_engine_template.tpl")}"
+data "template_file" "create_db" {
+  template = "${file("${path.module}/create_db.tpl")}"
+
+  vars = {
+    postgres_host     = "${var.postgres_host}"
+    postgres_port     = "${var.postgres_port}"
+    postgres_username = "${var.postgres_username}"
+    postgres_password = "${var.postgres_password}"
+  }
+}
+
+resource "random_string" "user_passwords" {
+  count = "${length(var.concourse_users)}"
+
+  length = "16"
+}
+
+data "template_file" "users_to_add" {
+  count = "${length(var.concourse_users)}"
+
+  template = <<EOF
+- username: ${var.concourse_users[count.index]}
+  password:
+    secret: ${bcrypt(element(random_string.user_passwords.*.result, count.index), 15)}
+EOF
+}
+
+data "template_file" "concourse_template" {
+  template = "${file("${path.module}/concourse_template.tpl")}"
 
   vars = {
     singleton_availability_zone = "${var.singleton_availability_zone}"
     control_plane_vpc_azs       = "${indent(4, join("", data.template_file.control_plane_vpc_azs.*.rendered))}"
 
-    uaa_elb_names     = "[${join(",", var.uaa_elb_names)}]"
-    credhub_elb_names = "[${join(",", var.credhub_elb_names)}]"
-    web_elb_names     = "[${join(",", var.web_elb_names)}]"
+    web_elb_names = "[${join(",", var.web_elb_names)}]"
 
-    uaa_endpoint     = "${module.domains.control_plane_uaa_fqdn}"
-    credhub_endpoint = "${module.domains.control_plane_credhub_fqdn}"
-    plane_endpoint   = "${module.domains.control_plane_plane_fqdn}"
+    plane_endpoint = "${module.domains.control_plane_plane_fqdn}"
 
     concourse_cert_pem        = "${var.concourse_cert_pem}"
     concourse_private_key_pem = "${var.concourse_private_key_pem}"
-    trusted_ca_certs          = "${var.trusted_ca_certs}"
 
     splunk_syslog_host    = "${var.splunk_syslog_host}"
     splunk_syslog_port    = "${var.splunk_syslog_port}"
     splunk_syslog_ca_cert = "${var.splunk_syslog_ca_cert}"
+
+    postgres_host     = "${var.postgres_host}"
+    postgres_port     = "${var.postgres_port}"
+    postgres_db_name  = "${var.postgres_db_name}"
+    postgres_username = "${var.postgres_username}"
+    postgres_password = "${var.postgres_password}"
+    postgres_ca_cert  = "${var.postgres_ca_cert}"
+    users_to_add      = "${join("", data.template_file.users_to_add.*.rendered)}"
   }
 }
 
@@ -137,13 +167,13 @@ data "template_file" "download_pws_dark_iam_s3_resource_config" {
   }
 }
 
-data "template_file" "download_platform_automation_engine_config" {
+data "template_file" "download_concourse_config" {
   template = "${file("${path.module}/download_product_config.tpl")}"
 
   vars = {
-    pivnet_file_glob    = "${local.platform_automation_engine_file_glob}"
-    pivnet_product_slug = "${local.platform_automation_engine_product_slug}"
-    product_version     = "${local.platform_automation_engine_product_version}"
+    pivnet_file_glob    = "${local.concourse_file_glob}"
+    pivnet_product_slug = "${local.concourse_product_slug}"
+    product_version     = "${local.concourse_product_version}"
 
     pivnet_api_token = "${var.pivnet_api_token}"
     s3_bucket        = "${var.product_blobs_s3_bucket}"
