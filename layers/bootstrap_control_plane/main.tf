@@ -218,6 +218,8 @@ module "rds" {
   vpc_id             = "${data.aws_vpc.vpc.id}"
   cidr_block         = "${local.rds_cidr_block}"
   tags               = "${local.modified_tags}"
+
+  kms_key_id = "${data.terraform_remote_state.paperwork.kms_key_arn}"
 }
 
 module "web_elb" {

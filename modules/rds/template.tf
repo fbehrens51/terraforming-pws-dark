@@ -73,6 +73,9 @@ resource "aws_db_instance" "rds" {
   backup_retention_period = 7
   apply_immediately       = true
 
+  kms_key_id        = "${var.kms_key_id}"
+  storage_encrypted = true
+
   count = "${var.rds_instance_count}"
 
   tags = "${var.tags}"

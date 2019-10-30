@@ -37,4 +37,6 @@ variable "tags" {
   type = "map"
 }
 
+variable "kms_key_id" {}
+
 variable "cidr_block" {}

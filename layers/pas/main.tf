@@ -148,6 +148,8 @@ module "rds" {
   vpc_id             = "${module.infra.vpc_id}"
   cidr_block         = "${module.calculated_subnets.rds_cidr}"
   tags               = "${local.modified_tags}"
+
+  kms_key_id = "${data.terraform_remote_state.paperwork.kms_key_arn}"
 }
 
 module "pas_elb" {
