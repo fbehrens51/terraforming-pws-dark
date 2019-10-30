@@ -45,6 +45,9 @@ module "splunk_ports" {
 
 data "template_file" "server_conf" {
   template = <<EOF
+[applicationsManagement]
+allowInternetAccess = false
+
 [sslConfig]
 serverCert = /opt/splunk/etc/auth/mycerts/mySplunkServerCertificate.pem
 sslRootCAPath = /opt/splunk/etc/auth/mycerts/mySplunkCACertificate.pem
@@ -163,8 +166,8 @@ EOF
 }
 
 data "template_cloudinit_config" "user_data" {
-  base64_encode = false
-  gzip          = false
+  base64_encode = true
+  gzip          = true
 
   part {
     filename     = "forwarder.cfg"

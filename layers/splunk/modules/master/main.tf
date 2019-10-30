@@ -44,6 +44,9 @@ data "template_file" "server_conf" {
 pass4SymmKey = ${var.forwarders_pass4SymmKey}
 indexerWeightByDiskCapacity = true
 
+[applicationsManagement]
+allowInternetAccess = false
+
 [clustering]
 mode = master
 replication_factor = 2
@@ -83,8 +86,8 @@ EOF
 }
 
 data "template_cloudinit_config" "user_data" {
-  base64_encode = false
-  gzip          = false
+  base64_encode = true
+  gzip          = true
 
   part {
     filename     = "master.cfg"

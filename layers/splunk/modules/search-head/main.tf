@@ -49,6 +49,9 @@ EOF
 
 data "template_file" "server_conf" {
   template = <<EOF
+[applicationsManagement]
+allowInternetAccess = false
+
 [clustering]
 mode = searchhead
 master_uri = https://${var.master_ip}:${module.splunk_ports.splunk_mgmt_port}
@@ -88,8 +91,8 @@ EOF
 }
 
 data "template_cloudinit_config" "user_data" {
-  base64_encode = false
-  gzip          = false
+  base64_encode = true
+  gzip          = true
 
   part {
     filename     = "search-head.cfg"
