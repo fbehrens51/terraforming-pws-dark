@@ -25,7 +25,7 @@ resource "aws_elb" "elb" {
     healthy_threshold   = 2
     unhealthy_threshold = 2
     timeout             = 2
-    target              = "TCP:${var.port}"
+    target              = "${var.health_check}"
     interval            = 5
   }
 
@@ -48,6 +48,8 @@ variable "elb_tag" {
 }
 
 variable "name" {}
+
+variable "health_check" {}
 
 output "elb_id" {
   value = "${element(concat(aws_elb.elb.*.id, list("")), 0)}"

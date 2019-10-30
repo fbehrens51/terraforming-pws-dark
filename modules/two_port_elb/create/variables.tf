@@ -25,3 +25,7 @@ variable "port" {
 variable "additional_port" {
   type = "string"
 }
+
+variable "health_check" {
+  default = ""
+}

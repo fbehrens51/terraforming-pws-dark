@@ -233,6 +233,7 @@ module "web_elb" {
   short_name        = "web"
   port              = 443
   additional_port   = 2222
+  health_check      = "HTTP:8080/api/v1/info"                        # Concourse web healthcheck
 }
 
 module "domains" {

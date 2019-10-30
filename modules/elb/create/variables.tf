@@ -25,3 +25,7 @@ variable "port" {
 variable "instance_port" {
   default = ""
 }
+
+variable "health_check" {
+  default = ""
+}

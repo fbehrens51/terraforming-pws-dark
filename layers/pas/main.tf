@@ -161,6 +161,7 @@ module "pas_elb" {
   vpc_id            = "${local.vpc_id}"
   egress_cidrs      = "${module.pas.pas_subnet_cidrs}"
   short_name        = "pas"
+  health_check      = "HTTP:8080/health"                  # Gorouter healthcheck
 }
 
 module "domains" {
