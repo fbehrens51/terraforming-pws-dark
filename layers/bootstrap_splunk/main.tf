@@ -213,6 +213,11 @@ resource "random_string" "forwarders_pass4SymmKey" {
   special = false
 }
 
+resource "random_string" "search_heads_pass4SymmKey" {
+  length  = "32"
+  special = false
+}
+
 # TODO: Do not create key pairs or parameterize their creation, they should not
 # be used on location accounts should be created as part of user data.  Should
 # we create a module to generate?
@@ -414,6 +419,11 @@ output "splunk_http_collector_token" {
 
 output "forwarders_pass4SymmKey" {
   value     = "${random_string.forwarders_pass4SymmKey.result}"
+  sensitive = true
+}
+
+output "search_heads_pass4SymmKey" {
+  value     = "${random_string.search_heads_pass4SymmKey.result}"
   sensitive = true
 }
 

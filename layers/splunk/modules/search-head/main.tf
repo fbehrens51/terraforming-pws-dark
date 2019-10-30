@@ -1,9 +1,11 @@
 variable "server_cert" {}
 variable "server_key" {}
 variable "ca_cert" {}
-variable "indexers_pass4SymmKey" {}
 variable "user_accounts_user_data" {}
 variable "root_domain" {}
+
+variable "indexers_pass4SymmKey" {}
+variable "search_heads_pass4SymmKey" {}
 
 variable "clamav_user_data" {}
 
@@ -58,6 +60,7 @@ allowInternetAccess = false
 
 [shclustering]
 serverCert = /opt/splunk/etc/auth/mycerts/mySplunkServerCertificate.pem
+pass4SymmKey = ${var.search_heads_pass4SymmKey}
 
 [clustering]
 mode = searchhead
