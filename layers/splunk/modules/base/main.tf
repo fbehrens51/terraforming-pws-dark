@@ -96,6 +96,7 @@ runcmd:
     KillMode=mixed
     KillSignal=SIGINT
     TimeoutStopSec=10min
+    LimitNPROC=16000
     END
     systemctl daemon-reload
 
