@@ -64,6 +64,30 @@ pass4SymmKey = ${var.indexers_pass4SymmKey}
 EOF
 }
 
+module "splunk_ports" {
+  source = "../../../../modules/splunk_ports"
+}
+
+data "template_file" "outputs_conf" {
+  template = <<EOF
+[indexAndForward]
+index = false
+
+[indexer_discovery:SplunkDiscovery]
+pass4SymmKey = ${var.forwarders_pass4SymmKey}
+master_uri = https://localhost:${module.splunk_ports.splunk_mgmt_port}
+
+[tcpout:SplunkOutput]
+indexerDiscovery = SplunkDiscovery
+useSSL = true
+
+[tcpout]
+defaultGroup = SplunkOutput
+forwardedindex.filter.disable = true
+indexAndForward = false
+EOF
+}
+
 data "template_file" "cloud_config" {
   template = <<EOF
 #cloud-config
@@ -71,6 +95,10 @@ write_files:
 - path: /run/server.conf
   content: |
     ${indent(4, data.template_file.server_conf.rendered)}
+
+- path: /run/outputs.conf
+  content: |
+    ${indent(4, data.template_file.outputs_conf.rendered)}
 
 - path: /run/splunk-ca.pem
   content: |
@@ -90,6 +118,7 @@ runcmd:
 
     cp /run/license.lic /opt/splunk/etc/licenses/enterprise/License.lic
     cp /run/server.conf /opt/splunk/etc/system/local/server.conf
+    cp /run/outputs.conf /opt/splunk/etc/system/local/outputs.conf
     cat /run/server.crt /run/server.key /run/splunk-ca.pem > /opt/splunk/etc/auth/mycerts/mySplunkServerCertificate.pem
     cp /run/splunk-ca.pem /opt/splunk/etc/auth/mycerts/mySplunkCACertificate.pem
 EOF
