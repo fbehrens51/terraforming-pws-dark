@@ -91,8 +91,8 @@ module "syslog_config" {
 }
 
 data "template_cloudinit_config" "user_data" {
-  base64_encode = false
-  gzip          = false
+  base64_encode = true
+  gzip          = true
 
   part {
     filename     = "syslog.cfg"

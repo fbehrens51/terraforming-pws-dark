@@ -60,8 +60,8 @@ module "bind_host_key_pair" {
 variable "user_data_path" {}
 
 data "template_cloudinit_config" "master_bind_conf_userdata" {
-  base64_encode = false
-  gzip          = false
+  base64_encode = true
+  gzip          = true
 
   part {
     filename     = "syslog.cfg"
@@ -132,8 +132,8 @@ module "syslog_config" {
 }
 
 data "template_cloudinit_config" "slave_bind_conf_userdata" {
-  base64_encode = false
-  gzip          = false
+  base64_encode = true
+  gzip          = true
 
   part {
     filename     = "syslog.cfg"

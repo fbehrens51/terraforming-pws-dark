@@ -83,8 +83,8 @@ module "clam_av_client_config" {
 }
 
 data "template_cloudinit_config" "config" {
-  base64_encode = false
-  gzip          = false
+  base64_encode = true
+  gzip          = true
 
   part {
     content_type = "text/cloud-config"
