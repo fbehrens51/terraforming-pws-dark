@@ -40,6 +40,10 @@ module "base" {
 
 data "template_file" "server_conf" {
   template = <<EOF
+[sslConfig]
+serverCert = /opt/splunk/etc/auth/mycerts/mySplunkServerCertificate.pem
+sslRootCAPath = /opt/splunk/etc/auth/mycerts/mySplunkCACertificate.pem
+
 [indexer_discovery]
 pass4SymmKey = ${var.forwarders_pass4SymmKey}
 indexerWeightByDiskCapacity = true
@@ -81,6 +85,7 @@ runcmd:
 
     cp /run/license.lic /opt/splunk/etc/licenses/enterprise/License.lic
     cp /run/server.conf /opt/splunk/etc/system/local/server.conf
+    cat /run/server.crt /run/server.key /run/splunk-ca.pem > /opt/splunk/etc/auth/mycerts/mySplunkServerCertificate.pem
     cp /run/splunk-ca.pem /opt/splunk/etc/auth/mycerts/mySplunkCACertificate.pem
 EOF
 }

@@ -49,8 +49,15 @@ EOF
 
 data "template_file" "server_conf" {
   template = <<EOF
+[sslConfig]
+serverCert = /opt/splunk/etc/auth/mycerts/mySplunkServerCertificate.pem
+sslRootCAPath = /opt/splunk/etc/auth/mycerts/mySplunkCACertificate.pem
+
 [applicationsManagement]
 allowInternetAccess = false
+
+[shclustering]
+serverCert = /opt/splunk/etc/auth/mycerts/mySplunkServerCertificate.pem
 
 [clustering]
 mode = searchhead
@@ -85,8 +92,8 @@ runcmd:
 
     cp /run/license.conf /opt/splunk/etc/apps/SplunkLicenseSettings/local/server.conf
     cp /run/server.conf /opt/splunk/etc/system/local/server.conf
+    cat /run/server.crt /run/server.key /run/splunk-ca.pem > /opt/splunk/etc/auth/mycerts/mySplunkServerCertificate.pem
     cp /run/splunk-ca.pem /opt/splunk/etc/auth/mycerts/mySplunkCACertificate.pem
-
 EOF
 }
 

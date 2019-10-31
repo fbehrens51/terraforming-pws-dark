@@ -42,10 +42,18 @@ module "splunk_ports" {
 
 data "template_file" "server_conf" {
   template = <<EOF
-[replication_port://${module.splunk_ports.splunk_replication_port}]
+[sslConfig]
+serverCert = /opt/splunk/etc/auth/mycerts/mySplunkServerCertificate.pem
+sslRootCAPath = /opt/splunk/etc/auth/mycerts/mySplunkCACertificate.pem
+
+[replication_port-ssl://${module.splunk_ports.splunk_replication_port}]
+serverCert = /opt/splunk/etc/auth/mycerts/mySplunkServerCertificate.pem
 
 [applicationsManagement]
 allowInternetAccess = false
+
+[shclustering]
+serverCert = /opt/splunk/etc/auth/mycerts/mySplunkServerCertificate.pem
 
 [clustering]
 mode = slave
