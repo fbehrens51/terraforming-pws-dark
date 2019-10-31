@@ -158,14 +158,15 @@ module "splunk_indexers" {
 module "master_user_data" {
   source = "./modules/master"
 
-  server_cert             = "${data.terraform_remote_state.paperwork.splunk_monitor_server_cert}"
-  server_key              = "${data.terraform_remote_state.paperwork.splunk_monitor_server_key}"
-  ca_cert                 = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
-  indexers_pass4SymmKey   = "${local.indexers_pass4SymmKey}"
-  forwarders_pass4SymmKey = "${local.forwarders_pass4SymmKey}"
-  license_path            = "${var.license_path}"
-  user_accounts_user_data = "${data.terraform_remote_state.paperwork.user_accounts_user_data}"
-  root_domain             = "${local.root_domain}"
+  server_cert               = "${data.terraform_remote_state.paperwork.splunk_monitor_server_cert}"
+  server_key                = "${data.terraform_remote_state.paperwork.splunk_monitor_server_key}"
+  ca_cert                   = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
+  indexers_pass4SymmKey     = "${local.indexers_pass4SymmKey}"
+  forwarders_pass4SymmKey   = "${local.forwarders_pass4SymmKey}"
+  search_heads_pass4SymmKey = "${local.search_heads_pass4SymmKey}"
+  license_path              = "${var.license_path}"
+  user_accounts_user_data   = "${data.terraform_remote_state.paperwork.user_accounts_user_data}"
+  root_domain               = "${local.root_domain}"
 
   clamav_user_data = "${data.terraform_remote_state.paperwork.amazon2_clamav_user_data}"
 

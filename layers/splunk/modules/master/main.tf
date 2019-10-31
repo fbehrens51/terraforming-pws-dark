@@ -3,6 +3,7 @@ variable "server_key" {}
 variable "ca_cert" {}
 variable "indexers_pass4SymmKey" {}
 variable "forwarders_pass4SymmKey" {}
+variable "search_heads_pass4SymmKey" {}
 variable "license_path" {}
 variable "user_accounts_user_data" {}
 variable "root_domain" {}
@@ -50,6 +51,10 @@ indexerWeightByDiskCapacity = true
 
 [applicationsManagement]
 allowInternetAccess = false
+
+[shclustering]
+serverCert = /opt/splunk/etc/auth/mycerts/mySplunkServerCertificate.pem
+pass4SymmKey = ${var.search_heads_pass4SymmKey}
 
 [clustering]
 mode = master
