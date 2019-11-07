@@ -24,12 +24,18 @@ locals {
   es_vpc_id      = "${data.terraform_remote_state.paperwork.es_vpc_id}"
   cp_vpc_id      = "${data.terraform_remote_state.paperwork.cp_vpc_id}"
   bastion_vpc_id = "${data.terraform_remote_state.paperwork.bastion_vpc_id}"
+
+  pas_s3_vpc_endpoint_id     = "${data.terraform_remote_state.paperwork.pas_s3_vpc_endpoint_id}"
+  es_s3_vpc_endpoint_id      = "${data.terraform_remote_state.paperwork.es_s3_vpc_endpoint_id}"
+  cp_s3_vpc_endpoint_id      = "${data.terraform_remote_state.paperwork.cp_s3_vpc_endpoint_id}"
+  bastion_s3_vpc_endpoint_id = "${data.terraform_remote_state.paperwork.bastion_s3_vpc_endpoint_id}"
 }
 
 module "pas_vpc_route_tables" {
-  source       = "./modules/vpc_route_tables"
-  internetless = "${var.internetless}"
-  vpc_id       = "${local.pas_vpc_id}"
+  source             = "./modules/vpc_route_tables"
+  internetless       = "${var.internetless}"
+  vpc_id             = "${local.pas_vpc_id}"
+  s3_vpc_endpoint_id = "${local.pas_s3_vpc_endpoint_id}"
 
   tags = {
     Name = "${var.env_name} | PAS"
@@ -37,9 +43,10 @@ module "pas_vpc_route_tables" {
 }
 
 module "bastion_vpc_route_tables" {
-  source       = "./modules/vpc_route_tables"
-  internetless = "${var.internetless}"
-  vpc_id       = "${local.bastion_vpc_id}"
+  source             = "./modules/vpc_route_tables"
+  internetless       = "${var.internetless}"
+  vpc_id             = "${local.bastion_vpc_id}"
+  s3_vpc_endpoint_id = "${local.bastion_s3_vpc_endpoint_id}"
 
   tags = {
     Name = "${var.env_name} | BASTION"
@@ -47,9 +54,10 @@ module "bastion_vpc_route_tables" {
 }
 
 module "es_vpc_route_tables" {
-  source       = "./modules/vpc_route_tables"
-  internetless = "${var.internetless}"
-  vpc_id       = "${local.es_vpc_id}"
+  source             = "./modules/vpc_route_tables"
+  internetless       = "${var.internetless}"
+  vpc_id             = "${local.es_vpc_id}"
+  s3_vpc_endpoint_id = "${local.es_s3_vpc_endpoint_id}"
 
   tags = {
     Name = "${var.env_name} | ENT SVCS"
@@ -57,9 +65,10 @@ module "es_vpc_route_tables" {
 }
 
 module "cp_vpc_route_tables" {
-  source       = "./modules/vpc_route_tables"
-  internetless = "${var.internetless}"
-  vpc_id       = "${local.cp_vpc_id}"
+  source             = "./modules/vpc_route_tables"
+  internetless       = "${var.internetless}"
+  vpc_id             = "${local.cp_vpc_id}"
+  s3_vpc_endpoint_id = "${local.cp_s3_vpc_endpoint_id}"
 
   tags = {
     Name = "${var.env_name} | CP"
