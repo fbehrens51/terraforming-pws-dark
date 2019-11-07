@@ -1,4 +1,5 @@
 variable "vpc_id" {}
+variable "s3_vpc_endpoint_id" {}
 
 variable "tags" {
   type = "map"
@@ -48,12 +49,22 @@ resource "aws_route_table" "public_route_table" {
   tags = "${local.public_tags}"
 }
 
+resource "aws_vpc_endpoint_route_table_association" "public_s3_vpc_endpoint" {
+  vpc_endpoint_id = "${var.s3_vpc_endpoint_id}"
+  route_table_id  = "${aws_route_table.public_route_table.id}"
+}
+
 resource "aws_route_table" "private_route_table" {
   count = 1
 
   vpc_id = "${var.vpc_id}"
 
   tags = "${local.private_tags}"
+}
+
+resource "aws_vpc_endpoint_route_table_association" "private_s3_vpc_endpoint" {
+  vpc_endpoint_id = "${var.s3_vpc_endpoint_id}"
+  route_table_id  = "${aws_route_table.private_route_table.id}"
 }
 
 output "public_route_table_id" {
