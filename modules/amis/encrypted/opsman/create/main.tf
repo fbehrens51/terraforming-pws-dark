@@ -4,7 +4,7 @@ data "aws_caller_identity" "current" {}
 
 data "aws_ami" "current_ami" {
   most_recent = true
-  name_regex  = "^pivotal-ops-manager-v2.5.[0-9]*-build.[0-9]*$"
+  name_regex  = "^pivotal-ops-manager-v2.6.[0-9]*-build.[0-9]*$"
   owners      = ["${data.aws_caller_identity.current.account_id}"]
 }
 
