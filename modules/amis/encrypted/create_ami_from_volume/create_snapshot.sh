@@ -13,4 +13,4 @@ do printf "\rsnapshot progress: %s" $progress;
 done
 
 
-aws ec2 register-image --name $AMI_NAME-$epoch_date --virtualization-type hvm --architecture "x86_64" --root-device-name "/dev/xvda" --block-device-mappings "[{\"DeviceName\": \"/dev/xvda\",\"Ebs\":{\"SnapshotId\":\"$SNAPSHOTID\"}}]"
+aws ec2 register-image --name $AMI_NAME-$epoch_date --virtualization-type hvm --architecture "x86_64" --root-device-name "/dev/xvda" --block-device-mappings "[{\"DeviceName\": \"/dev/xvda\",\"Ebs\":{\"SnapshotId\":\"$SNAPSHOTID\"}}]" --ena-support
