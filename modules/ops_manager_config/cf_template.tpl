@@ -53,6 +53,8 @@ product-properties:
     value: 30
   .mysql_proxy.startup_delay:
     value: 0
+  .mysql_proxy.enable_inactive_mysql_port:
+    value: false
   .nfs_server.blobstore_internal_access_rules:
     value: allow 10.0.0.0/8;,allow 172.16.0.0/12;,allow 192.168.0.0/16;
   .properties.autoscale_api_disable_connection_pooling:
@@ -129,9 +131,15 @@ product-properties:
     value: false
   .properties.experimental_dynamic_egress_enforcement:
     value: false
+
   .properties.garden_disk_cleanup:
     selected_option: reserved
     value: reserved
+  .properties.enable_garden_containerd_mode:
+    value: true
+  .properties.garden_disk_cleanup.reserved.reserved_space_for_other_jobs_in_mb:
+    value: 15360
+
   .properties.gorouter_ssl_ciphers:
     value: ECDHE-RSA-AES128-GCM-SHA256:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
   .properties.haproxy_client_cert_validation:
@@ -147,9 +155,6 @@ product-properties:
     value: 16384
   .properties.haproxy_ssl_ciphers:
     value: DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384
-  .properties.install_cflinuxfs2:
-    selected_option: skip
-    value: skip
   .properties.istio:
     selected_option: disable
     value: disable
@@ -261,12 +266,12 @@ product-properties:
       password: %{ if smtp_user != "" }${smtp_password}%{ endif }
   .properties.smtp_enable_starttls_auto:
     value: ${smtp_tls}
-  .properties.stack_migration_acknowledgement:
-    value: X
   .properties.smtp_from:
     value: ${smtp_from}
   .properties.smtp_port:
     value: ${smtp_port}
+  .properties.syslog_agent_enabled:
+    value: false
   .properties.syslog_drop_debug:
     value: true
   .properties.syslog_host:
@@ -280,6 +285,8 @@ product-properties:
   .properties.syslog_drop_debug:
     value: true
   .properties.syslog_metrics_to_syslog_enabled:
+    value: true
+  .properties.system_metrics_enabled:
     value: true
   .properties.syslog_tls:
     selected_option: enabled
@@ -487,6 +494,9 @@ network-properties:
     name: ${singleton_availability_zone}
 resource-config:
   backup_restore:
+    swap_as_percent_of_memory_size: automatic
+    additional_networks: []
+    additional_vm_extensions: []
     instances: automatic
     persistent_disk:
       size_mb: automatic
@@ -494,11 +504,16 @@ resource-config:
       id: ${backup_restore_instance_type}
     internet_connected: false
   clock_global:
+    swap_as_percent_of_memory_size: automatic
+    additional_networks: []
+    additional_vm_extensions: []
     instances: automatic
     instance_type:
       id: ${clock_global_instance_type}
     internet_connected: false
   cloud_controller:
+    swap_as_percent_of_memory_size: automatic
+    additional_networks: []
     instances: automatic
     instance_type:
       id: ${cloud_controller_instance_type}
@@ -506,6 +521,8 @@ resource-config:
     additional_vm_extensions:
     - s3_instance_profile
   cloud_controller_worker:
+    swap_as_percent_of_memory_size: automatic
+    additional_networks: []
     instances: automatic
     instance_type:
       id: ${cloud_controller_worker_instance_type}
@@ -513,6 +530,9 @@ resource-config:
     additional_vm_extensions:
     - s3_instance_profile
   consul_server:
+    swap_as_percent_of_memory_size: automatic
+    additional_networks: []
+    additional_vm_extensions: []
     instances: automatic
     persistent_disk:
       size_mb: automatic
@@ -520,51 +540,82 @@ resource-config:
       id: ${consul_server_instance_type}
     internet_connected: false
   credhub:
+    swap_as_percent_of_memory_size: automatic
+    additional_networks: []
+    additional_vm_extensions: []
     instances: automatic
     instance_type:
       id: ${credhub_instance_type}
     internet_connected: false
   diego_brain:
+    swap_as_percent_of_memory_size: automatic
+    additional_networks: []
+    additional_vm_extensions: []
     instances: automatic
     instance_type:
       id: ${diego_brain_instance_type}
     internet_connected: false
   diego_cell:
+    swap_as_percent_of_memory_size: automatic
+    additional_networks: []
+    additional_vm_extensions: []
+    max_in_flight: 4%
     instances: automatic
     instance_type:
       id: ${diego_cell_instance_type}
     internet_connected: false
   diego_database:
+    swap_as_percent_of_memory_size: automatic
+    additional_networks: []
+    additional_vm_extensions: []
     instances: automatic
     instance_type:
       id: ${diego_database_instance_type}
     internet_connected: false
   doppler:
+    swap_as_percent_of_memory_size: automatic
+    additional_networks: []
+    additional_vm_extensions: []
     instances: automatic
     instance_type:
       id: ${doppler_instance_type}
     internet_connected: false
   ha_proxy:
+    swap_as_percent_of_memory_size: automatic
+    additional_networks: []
+    additional_vm_extensions: []
     instances: automatic
     instance_type:
       id: ${ha_proxy_instance_type}
     internet_connected: false
   istio_control:
+    swap_as_percent_of_memory_size: automatic
+    additional_networks: []
+    additional_vm_extensions: []
     instances: 0
     instance_type:
       id: automatic
     internet_connected: false
   istio_router:
+    swap_as_percent_of_memory_size: automatic
+    additional_networks: []
+    additional_vm_extensions: []
     instances: 0
     instance_type:
       id: automatic
     internet_connected: false
   loggregator_trafficcontroller:
+    swap_as_percent_of_memory_size: automatic
+    additional_networks: []
+    additional_vm_extensions: []
     instances: automatic
     instance_type:
       id: ${loggregator_trafficcontroller_instance_type}
     internet_connected: false
   mysql:
+    swap_as_percent_of_memory_size: automatic
+    additional_networks: []
+    additional_vm_extensions: []
     instances: 0
     persistent_disk:
       size_mb: automatic
@@ -572,21 +623,33 @@ resource-config:
       id: ${mysql_instance_type}
     internet_connected: false
   mysql_monitor:
+    swap_as_percent_of_memory_size: automatic
+    additional_networks: []
+    additional_vm_extensions: []
     instances: 0
     instance_type:
       id: ${mysql_monitor_instance_type}
     internet_connected: false
   mysql_proxy:
+    swap_as_percent_of_memory_size: automatic
+    additional_networks: []
+    additional_vm_extensions: []
     instances: 0
     instance_type:
       id: ${mysql_proxy_instance_type}
     internet_connected: false
   nats:
+    swap_as_percent_of_memory_size: automatic
+    additional_networks: []
+    additional_vm_extensions: []
     instances: automatic
     instance_type:
       id: ${nats_instance_type}
     internet_connected: false
   nfs_server:
+    swap_as_percent_of_memory_size: automatic
+    additional_networks: []
+    additional_vm_extensions: []
     instances: 0
     persistent_disk:
       size_mb: automatic
@@ -594,29 +657,52 @@ resource-config:
       id: ${nfs_server_instance_type}
     internet_connected: false
   router:
+    swap_as_percent_of_memory_size: automatic
+    additional_networks: []
+    additional_vm_extensions: []
     instances: automatic
     instance_type:
       id: ${router_instance_type}
     internet_connected: false
     elb_names: ${router_elb_names}
   syslog_adapter:
+    swap_as_percent_of_memory_size: automatic
+    additional_networks: []
+    additional_vm_extensions: []
     instances: automatic
     instance_type:
       id: ${syslog_adapter_instance_type}
     internet_connected: false
   syslog_scheduler:
+    swap_as_percent_of_memory_size: automatic
+    additional_networks: []
+    additional_vm_extensions: []
     instances: automatic
     instance_type:
       id: ${syslog_scheduler_instance_type}
     internet_connected: false
   tcp_router:
+    swap_as_percent_of_memory_size: automatic
+    additional_networks: []
+    additional_vm_extensions: []
     instances: 0
     persistent_disk:
       size_mb: automatic
     instance_type:
       id: ${tcp_router_instance_type}
     internet_connected: false
+  route_syncer:
+    swap_as_percent_of_memory_size: automatic
+    additional_networks: []
+    additional_vm_extensions: []
+    instances: 0
+    instance_type:
+      id: automatic
+    internet_connected: false
   uaa:
+    swap_as_percent_of_memory_size: automatic
+    additional_networks: []
+    additional_vm_extensions: []
     instances: automatic
     instance_type:
       id: ${uaa_instance_type}
