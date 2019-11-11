@@ -110,7 +110,7 @@ resource-configuration:
     - disable_director_encryption
     instances: automatic
     persistent_disk:
-      size_mb: automatic
+      size_mb: "153600"
     instance_type:
       id: automatic
     internet_connected: false
