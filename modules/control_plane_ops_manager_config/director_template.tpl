@@ -13,6 +13,26 @@ networks-configuration:
     subnets:
     ${control_plane_subnets}
 
+iaas-configurations:
+- additional_cloud_properties:${iaas_configuration_endpoints_ca_cert != "" ? <<EOF
+
+    connection_options:
+      ca_cert: |
+        ${indent(8, iaas_configuration_endpoints_ca_cert)}
+EOF
+: "" }
+    ec2_endpoint: ${ec2_endpoint}
+    elb_endpoint: ${elb_endpoint}
+  encrypted: true
+  kms_key_arn: ${kms_key_arn}
+  iam_instance_profile: ${iaas_configuration_iam_instance_profile}
+  key_pair_name: ${iaas_configuration_ssh_key_pair_name}
+  name: default
+  region: ${iaas_configuration_region}
+  security_group: ${iaas_configuration_security_group}
+  ssh_private_key: |
+    ${indent(4, iaas_configuration_ssh_private_key)}
+
 properties-configuration:
   director_configuration:
     allow_legacy_agents: true
@@ -52,25 +72,6 @@ properties-configuration:
   dns_configuration:
     excluded_recursors: []
     handlers: []
-  iaas_configuration:
-    additional_cloud_properties:${iaas_configuration_endpoints_ca_cert != "" ? <<EOF
-
-      connection_options:
-        ca_cert: |
-          ${indent(10, iaas_configuration_endpoints_ca_cert)}
-EOF 
-: "" }
-      ec2_endpoint: ${ec2_endpoint}
-      elb_endpoint: ${elb_endpoint}
-    encrypted: true
-    kms_key_arn: ${kms_key_arn}
-    iam_instance_profile: ${iaas_configuration_iam_instance_profile}
-    key_pair_name: ${iaas_configuration_ssh_key_pair_name}
-    name: default
-    region: ${iaas_configuration_region}
-    security_group: ${iaas_configuration_security_group}
-    ssh_private_key: |
-      ${indent(6, iaas_configuration_ssh_private_key)}
   security_configuration:
     generate_vm_passwords: true
     opsmanager_root_ca_trusted_certs: false
