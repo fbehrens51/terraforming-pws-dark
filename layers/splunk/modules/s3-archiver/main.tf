@@ -6,6 +6,7 @@ variable "ca_cert" {}
 variable "server_cert" {}
 variable "server_key" {}
 variable "root_domain" {}
+variable "s3_region" {}
 
 variable "clamav_user_data" {}
 
@@ -17,9 +18,10 @@ variable "banner_user_data" {}
 data "template_file" "cloud_config" {
   template = <<EOF
 bootcmd:
-  - mkdir -p /opt/s3_archive
-  - while [ ! -e /dev/xvdf ] ; do sleep 1 ; done
-  - if [ "$(file -b -s /dev/xvdf)" == "data" ]; then mkfs -t ext4 /dev/xvdf; fi
+  - |
+    mkdir -p /opt/s3_archive
+    while [ ! -e /dev/xvdf ] ; do sleep 1 ; done
+    if [ "$(file -b -s /dev/xvdf)" == "data" ]; then mkfs -t ext4 /dev/xvdf; fi
 
 mounts:
   - [ "/dev/xvdf", "/opt/s3_archive", "ext4", "defaults,nofail", "0", "2" ]
@@ -99,12 +101,13 @@ write_files:
   content: |
     SHELL=/bin/bash
     MAILTO=""
-    0 1 * * * root /opt/s3_archive/bin/compress_logs_and_copy_to_s3 $${s3_syslog_archive}
+    0 1 * * * root /opt/s3_archive/bin/compress_logs_and_copy_to_s3 $${s3_syslog_archive} $${s3_region}
 
 EOF
 
   vars {
     s3_syslog_archive = "${var.s3_syslog_archive}"
+    s3_region         = "${var.s3_region}"
     script            = "${indent(4,file("${path.module}/script.bash"))}"
   }
 }

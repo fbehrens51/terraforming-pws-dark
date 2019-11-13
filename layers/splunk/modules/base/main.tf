@@ -45,9 +45,10 @@ data "template_file" "cloud_config" {
   template = <<EOF
 #cloud-config
 bootcmd:
-  - mkdir -p /opt/splunk
-  - while [ ! -e /dev/xvdf ] ; do sleep 1 ; done
-  - if [ "$(file -b -s /dev/xvdf)" == "data" ]; then mkfs -t ext4 /dev/xvdf; fi
+  - |
+    mkdir -p /opt/splunk
+    while [ ! -e /dev/xvdf ] ; do sleep 1 ; done
+    if [ "$(file -b -s /dev/xvdf)" == "data" ]; then mkfs -t ext4 /dev/xvdf; fi
 
 mounts:
   - [ "/dev/xvdf", "/opt/splunk", "ext4", "defaults,nofail", "0", "2" ]
@@ -84,8 +85,8 @@ runcmd:
     cp /run/server.crt /opt/splunk/etc/auth/mycerts/mySplunkWebCertificate.pem
     cp /run/server.key /opt/splunk/etc/auth/mycerts/mySplunkWebPrivateKey.key
 
-    aws s3 cp s3://${var.splunk_rpm_s3_bucket}/ . --recursive --exclude='*' --include='splunk/splunk-${var.splunk_rpm_version}*' --region ${var.splunk_rpm_s3_region}
-    sudo rpm -i splunk/splunk-${var.splunk_rpm_version}*.rpm
+    aws --region ${var.splunk_rpm_s3_region} s3 cp --no-progress s3://${var.splunk_rpm_s3_bucket}/ . --recursive --exclude='*' --include='splunk/splunk-${var.splunk_rpm_version}*'
+    rpm -i splunk/splunk-${var.splunk_rpm_version}*.rpm
 
     /opt/splunk/bin/splunk enable boot-start -systemd-managed 1 --no-prompt --accept-license --answer-yes
 

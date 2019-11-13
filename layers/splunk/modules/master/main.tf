@@ -53,7 +53,6 @@ indexerWeightByDiskCapacity = true
 allowInternetAccess = false
 
 [shclustering]
-serverCert = /opt/splunk/etc/auth/mycerts/mySplunkServerCertificate.pem
 pass4SymmKey = ${var.search_heads_pass4SymmKey}
 
 [clustering]

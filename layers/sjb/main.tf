@@ -23,21 +23,20 @@ module "find_ami" {
 data "template_file" "setup_source_zip" {
   template = <<EOF
 runcmd:
-  - echo "Downloading and extracting source.zip"
-  - mkdir /home/ec2-user/workspace
-  - cd /home/ec2-user/workspace
   - |
-    latest=$$(aws s3 ls s3://${var.transfer_s3_bucket}/pcf-eagle-automation/ | grep ' pcf-eagle-automation' | egrep '.zip$' | awk '{print $4}' | sort -n | tail -1)
-    aws s3 cp s3://${var.transfer_s3_bucket}/pcf-eagle-automation/$$latest --region ${var.transfer_s3_region} .
-  - mkdir -p pcf-eagle-automation
-  - unzip -d ./pcf-eagle-automation pcf-eagle-automation-*.zip
-  - rm pcf-eagle-automation*.zip
-  - |
-    latest=$$(aws s3 ls s3://${var.transfer_s3_bucket}/terraforming-pws-dark/ | grep ' terraforming-pws-dark' | egrep '.zip$' | awk '{print $4}' | sort -n | tail -1)
-    aws s3 cp s3://${var.transfer_s3_bucket}/terraforming-pws-dark/$$latest --region ${var.transfer_s3_region} .
-  - mkdir -p terraforming-pws-dark
-  - unzip -d ./terraforming-pws-dark terraforming-pws-dark-*.zip
-  - rm terraforming-pws-dark*.zip
+    echo "Downloading and extracting source.zip"
+    mkdir /home/ec2-user/workspace
+    cd /home/ec2-user/workspace
+    latest=$$(aws --region ${var.transfer_s3_region} s3 ls s3://${var.transfer_s3_bucket}/pcf-eagle-automation/ | awk '/ pcf-eagle-automation.*\.zip$/ {print $4}' | sort -n | tail -1)
+    aws --region ${var.transfer_s3_region} s3 cp --no-progress s3://${var.transfer_s3_bucket}/pcf-eagle-automation/$$latest .
+    mkdir -p pcf-eagle-automation
+    unzip -d ./pcf-eagle-automation $$latest
+    rm $$latest
+    latest=$$(aws --region ${var.transfer_s3_region} s3 ls s3://${var.transfer_s3_bucket}/terraforming-pws-dark/ | awk '/ terraforming-pws-dark.*\.zip$/ {print $4}' | sort -n | tail -1)
+    aws --region ${var.transfer_s3_region} s3 cp --no-progress s3://${var.transfer_s3_bucket}/terraforming-pws-dark/$$latest .
+    mkdir -p terraforming-pws-dark
+    unzip -d ./terraforming-pws-dark $$latest
+    rm $$latest
 EOF
 }
 
@@ -58,16 +57,16 @@ EOF
 data "template_file" "setup_tools_zip" {
   template = <<EOF
 runcmd:
-  - echo "Downloading and extracting tools.zip"
   - |
-    latest=$$(aws s3 ls s3://${var.transfer_s3_bucket}/cli-tools/ | grep ' tools' | egrep '.zip$' | awk '{print $4}' | sort -n | tail -1)
-    aws s3 cp s3://${var.transfer_s3_bucket}/cli-tools/$$latest --region ${var.transfer_s3_region} .
-  - unzip tools-*.zip
-  - rm tools-*.zip
-  - mkdir -p /home/ec2-user/.terraform.d/plugins/linux_amd64/
-  - mv tools/terraform-provider* /home/ec2-user/.terraform.d/plugins/linux_amd64/.
-  - sudo install tools/* /usr/local/bin/
-  - rm -rf tools
+    echo "Downloading and extracting tools.zip"
+    latest=$$(aws --region ${var.transfer_s3_region} s3 ls s3://${var.transfer_s3_bucket}/cli-tools/ | awk '/ tools.*\.zip$/ {print $4}' | sort -n | tail -1)
+    aws --region ${var.transfer_s3_region} s3 cp s3://${var.transfer_s3_bucket}/cli-tools/$$latest .
+    unzip $$latest
+    rm $$latest
+    mkdir -p /home/ec2-user/.terraform.d/plugins/linux_amd64/
+    mv tools/terraform-provider* /home/ec2-user/.terraform.d/plugins/linux_amd64/.
+    sudo install tools/* /usr/local/bin/
+    rm -rf tools
 EOF
 }
 

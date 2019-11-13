@@ -27,10 +27,9 @@ merge_how:
  - name: dict
    settings: [no_replace, recurse_list]
 
-bootcmd:
-  - |
-    set -ex
-    yum install rsyslog-gnutls -y
+packages:
+ - rsyslog-gnutls
+package_reboot_if_required: true
 
 write_files:
   - content: |

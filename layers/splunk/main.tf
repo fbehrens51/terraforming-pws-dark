@@ -100,6 +100,7 @@ module "s3_archiver_user_data" {
   public_bucket_name      = "${local.public_bucket_name}"
   public_bucket_url       = "${local.public_bucket_url}"
   banner_user_data        = "${data.terraform_remote_state.paperwork.custom_banner_user_data}"
+  s3_region               = "${var.splunk_rpm_s3_region}"
 }
 
 module "splunk_s3" {

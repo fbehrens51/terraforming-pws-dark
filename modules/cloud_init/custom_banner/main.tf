@@ -7,14 +7,15 @@ merge_how:
  - name: dict
    settings: [no_replace, recurse_list]
 write_files:
-- path: /tmp/prompt.conf
+- path: /run/prompt.conf
   content: |
     ${indent(4, var.ssh_banner)}
 
 runcmd:
-  - cp /tmp/prompt.conf /etc/issue.net
-  - sed -i 's|^#Banner .*|Banner /etc/issue.net|' /etc/ssh/sshd_config
-  - pkill -SIGHUP sshd
+  - |
+    cp /run/prompt.conf /etc/issue.net
+    sed -i 's|^#Banner .*|Banner /etc/issue.net|' /etc/ssh/sshd_config
+    pkill -P 1 -SIGHUP sshd
 EOF
 }
 

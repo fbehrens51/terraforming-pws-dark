@@ -3,12 +3,13 @@
 set -ex
 
 #bucket="pwsd-staging-syslog-archive"
-if [[ $# != 1 ]]; then
-   echo "$0 <bucketname> - bucketname is required"
+if [[ $# != 2 ]]; then
+   echo "$0 <bucketname> <region_name> - both bucketname and region_name are required"
    exit 1
 fi
 
 bucket=$1
+export AWS_DEFAULT_REGION=$2
 
 function logger() {
     message=$1
@@ -30,7 +31,7 @@ function s3cmd() {
     source=$1
     bucket=$2
     key=$3
-    aws s3 cp ${source} s3://${bucket}/${key}
+    aws s3 cp --no-progress ${source} s3://${bucket}/${key}
 }
 
 function send_to_s3(){
