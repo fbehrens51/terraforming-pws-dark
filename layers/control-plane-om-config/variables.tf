@@ -17,9 +17,7 @@ variable "s3_endpoint" {}
 variable "ec2_endpoint" {}
 variable "elb_endpoint" {}
 variable "pivnet_api_token" {}
-variable "product_blobs_s3_bucket" {}
-variable "product_blobs_s3_endpoint" {}
-variable "product_blobs_s3_region" {}
+variable "region" {}
 
 variable "s3_access_key_id" {
   default = ""

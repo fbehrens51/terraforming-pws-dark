@@ -169,11 +169,7 @@ variable "ops_manager_ssh_private_key" {}
 
 variable "pivnet_api_token" {}
 
-variable "product_blobs_s3_bucket" {}
-
-variable "product_blobs_s3_region" {}
-
-variable "product_blobs_s3_endpoint" {}
+variable "mirror_bucket_name" {}
 
 variable "s3_access_key_id" {}
 

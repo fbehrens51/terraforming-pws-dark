@@ -83,3 +83,11 @@ output "rds_password" {
   value     = "${module.rds.rds_password}"
   sensitive = true
 }
+
+output "mirror_bucket_name" {
+  value = "${aws_s3_bucket.mirror_bucket.bucket}"
+}
+
+output "transfer_bucket_name" {
+  value = "${aws_s3_bucket.transfer_bucket.bucket}"
+}

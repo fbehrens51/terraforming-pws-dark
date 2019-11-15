@@ -30,6 +30,17 @@ data "terraform_remote_state" "bootstrap_splunk" {
   }
 }
 
+data "terraform_remote_state" "bootstrap_control_plane" {
+  backend = "s3"
+
+  config {
+    bucket  = "${var.remote_state_bucket}"
+    key     = "bootstrap_control_plane"
+    region  = "${var.remote_state_region}"
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "pas" {
   backend = "s3"
 
@@ -42,6 +53,10 @@ data "terraform_remote_state" "pas" {
 }
 
 data "aws_region" "current" {}
+
+locals {
+  mirror_bucket_name = "${data.terraform_remote_state.bootstrap_control_plane.mirror_bucket_name}"
+}
 
 module "domains" {
   source = "../../modules/domains"
@@ -189,15 +204,15 @@ module "om_config" {
   ldap_port              = "${data.terraform_remote_state.paperwork.ldap_port}"
   ldap_role_attr         = "${data.terraform_remote_state.paperwork.ldap_role_attr}"
 
-  pivnet_api_token          = "${var.pivnet_api_token}"
-  product_blobs_s3_bucket   = "${var.product_blobs_s3_bucket}"
-  product_blobs_s3_endpoint = "${var.product_blobs_s3_endpoint}"
-  product_blobs_s3_region   = "${var.product_blobs_s3_region}"
-  portal_product_version    = "${var.portal_product_version}"
-  cf_tools_product_version  = "${var.cf_tools_product_version}"
-  s3_access_key_id          = "${var.s3_access_key_id}"
-  s3_secret_access_key      = "${var.s3_secret_access_key}"
-  s3_auth_type              = "${var.s3_auth_type}"
+  pivnet_api_token         = "${var.pivnet_api_token}"
+  mirror_bucket_name       = "${local.mirror_bucket_name}"
+  s3_endpoint              = "${var.s3_endpoint}"
+  region                   = "${var.region}"
+  portal_product_version   = "${var.portal_product_version}"
+  cf_tools_product_version = "${var.cf_tools_product_version}"
+  s3_access_key_id         = "${var.s3_access_key_id}"
+  s3_secret_access_key     = "${var.s3_secret_access_key}"
+  s3_auth_type             = "${var.s3_auth_type}"
 
   splunk_syslog_host    = "${module.domains.splunk_logs_fqdn}"
   splunk_syslog_port    = "${module.splunk_ports.splunk_tcp_port}"
@@ -216,13 +231,13 @@ module "runtime_config_config" {
 
   custom_ssh_banner = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
 
-  pivnet_api_token          = "${var.pivnet_api_token}"
-  product_blobs_s3_bucket   = "${var.product_blobs_s3_bucket}"
-  product_blobs_s3_endpoint = "${var.product_blobs_s3_endpoint}"
-  product_blobs_s3_region   = "${var.product_blobs_s3_region}"
-  s3_access_key_id          = "${var.s3_access_key_id}"
-  s3_secret_access_key      = "${var.s3_secret_access_key}"
-  s3_auth_type              = "${var.s3_auth_type}"
+  pivnet_api_token     = "${var.pivnet_api_token}"
+  mirror_bucket_name   = "${local.mirror_bucket_name}"
+  s3_endpoint          = "${var.s3_endpoint}"
+  region               = "${var.region}"
+  s3_access_key_id     = "${var.s3_access_key_id}"
+  s3_secret_access_key = "${var.s3_secret_access_key}"
+  s3_auth_type         = "${var.s3_auth_type}"
 
   extra_user_name       = "${var.extra_user_name}"
   extra_user_public_key = "${var.extra_user_public_key}"
@@ -243,9 +258,9 @@ module "clamav_config" {
   clamav_enable_on_access_scanning = "${var.clamav_enable_on_access_scanning}"
   clamav_mirror_instance_type      = "${var.clamav_mirror_instance_type}"
   pivnet_api_token                 = "${var.pivnet_api_token}"
-  product_blobs_s3_bucket          = "${var.product_blobs_s3_bucket}"
-  product_blobs_s3_endpoint        = "${var.product_blobs_s3_endpoint}"
-  product_blobs_s3_region          = "${var.product_blobs_s3_region}"
+  mirror_bucket_name               = "${local.mirror_bucket_name}"
+  s3_endpoint                      = "${var.s3_endpoint}"
+  region                           = "${var.region}"
   s3_access_key_id                 = "${var.s3_access_key_id}"
   s3_secret_access_key             = "${var.s3_secret_access_key}"
   s3_auth_type                     = "${var.s3_auth_type}"

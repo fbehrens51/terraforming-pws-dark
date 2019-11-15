@@ -41,6 +41,17 @@ data "terraform_remote_state" "bootstrap_splunk" {
   }
 }
 
+data "terraform_remote_state" "bootstrap_control_plane" {
+  backend = "s3"
+
+  config {
+    bucket  = "${var.remote_state_bucket}"
+    key     = "bootstrap_control_plane"
+    region  = "${var.remote_state_region}"
+    encrypt = true
+  }
+}
+
 module "splunk_ports" {
   source = "../../modules/splunk_ports"
 }
@@ -79,6 +90,8 @@ locals {
 
   public_bucket_name = "${data.terraform_remote_state.paperwork.public_bucket_name}"
   public_bucket_url  = "${data.terraform_remote_state.paperwork.public_bucket_url}"
+
+  transfer_bucket_name = "${data.terraform_remote_state.bootstrap_control_plane.transfer_bucket_name}"
 }
 
 module "amazon_ami" {
@@ -100,7 +113,7 @@ module "s3_archiver_user_data" {
   public_bucket_name      = "${local.public_bucket_name}"
   public_bucket_url       = "${local.public_bucket_url}"
   banner_user_data        = "${data.terraform_remote_state.paperwork.custom_banner_user_data}"
-  s3_region               = "${var.splunk_rpm_s3_region}"
+  region                  = "${var.region}"
 }
 
 module "splunk_s3" {
@@ -134,8 +147,8 @@ module "indexers_user_data" {
 
   splunk_password      = "${data.terraform_remote_state.bootstrap_splunk.splunk_password}"
   splunk_rpm_version   = "${var.splunk_rpm_version}"
-  splunk_rpm_s3_bucket = "${var.splunk_rpm_s3_bucket}"
-  splunk_rpm_s3_region = "${var.splunk_rpm_s3_region}"
+  transfer_bucket_name = "${local.transfer_bucket_name}"
+  region               = "${var.region}"
   master_ip            = "${local.master_ip}"
   public_bucket_name   = "${local.public_bucket_name}"
   public_bucket_url    = "${local.public_bucket_url}"
@@ -173,8 +186,8 @@ module "master_user_data" {
 
   splunk_password      = "${data.terraform_remote_state.bootstrap_splunk.splunk_password}"
   splunk_rpm_version   = "${var.splunk_rpm_version}"
-  splunk_rpm_s3_bucket = "${var.splunk_rpm_s3_bucket}"
-  splunk_rpm_s3_region = "${var.splunk_rpm_s3_region}"
+  transfer_bucket_name = "${local.transfer_bucket_name}"
+  region               = "${var.region}"
   public_bucket_name   = "${local.public_bucket_name}"
   public_bucket_url    = "${local.public_bucket_url}"
   banner_user_data     = "${data.terraform_remote_state.paperwork.custom_banner_user_data}"
@@ -212,8 +225,8 @@ module "search_head_user_data" {
 
   splunk_password      = "${data.terraform_remote_state.bootstrap_splunk.splunk_password}"
   splunk_rpm_version   = "${var.splunk_rpm_version}"
-  splunk_rpm_s3_bucket = "${var.splunk_rpm_s3_bucket}"
-  splunk_rpm_s3_region = "${var.splunk_rpm_s3_region}"
+  transfer_bucket_name = "${local.transfer_bucket_name}"
+  region               = "${var.region}"
   master_ip            = "${local.master_ip}"
   public_bucket_name   = "${local.public_bucket_name}"
   public_bucket_url    = "${local.public_bucket_url}"
@@ -250,8 +263,8 @@ module "forwarders_user_data" {
 
   splunk_password             = "${data.terraform_remote_state.bootstrap_splunk.splunk_password}"
   splunk_rpm_version          = "${var.splunk_rpm_version}"
-  splunk_rpm_s3_bucket        = "${var.splunk_rpm_s3_bucket}"
-  splunk_rpm_s3_region        = "${var.splunk_rpm_s3_region}"
+  transfer_bucket_name        = "${local.transfer_bucket_name}"
+  region                      = "${var.region}"
   master_ip                   = "${local.master_ip}"
   splunk_http_collector_token = "${data.terraform_remote_state.bootstrap_splunk.splunk_http_collector_token}"
   s3_archive_ip               = "${local.s3_archive_ip}"

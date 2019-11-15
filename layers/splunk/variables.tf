@@ -7,8 +7,7 @@ variable "tags" {
 }
 
 variable "splunk_rpm_version" {}
-variable "splunk_rpm_s3_bucket" {}
-variable "splunk_rpm_s3_region" {}
+variable "region" {}
 
 variable "instance_type" {
   default = "t2.small"

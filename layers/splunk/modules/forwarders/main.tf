@@ -9,8 +9,8 @@ variable "clamav_user_data" {}
 
 variable "splunk_password" {}
 variable "splunk_rpm_version" {}
-variable "splunk_rpm_s3_bucket" {}
-variable "splunk_rpm_s3_region" {}
+variable "transfer_bucket_name" {}
+variable "region" {}
 variable "master_ip" {}
 variable "splunk_http_collector_token" {}
 variable "s3_archive_ip" {}
@@ -30,8 +30,8 @@ module "base" {
 
   splunk_password         = "${var.splunk_password}"
   splunk_rpm_version      = "${var.splunk_rpm_version}"
-  splunk_rpm_s3_bucket    = "${var.splunk_rpm_s3_bucket}"
-  splunk_rpm_s3_region    = "${var.splunk_rpm_s3_region}"
+  transfer_bucket_name    = "${var.transfer_bucket_name}"
+  region    = "${var.region}"
   user_accounts_user_data = "${var.user_accounts_user_data}"
   role_name               = "splunk-forwarder"
   public_bucket_name      = "${var.public_bucket_name}"

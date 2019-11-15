@@ -6,7 +6,7 @@ variable "ca_cert" {}
 variable "server_cert" {}
 variable "server_key" {}
 variable "root_domain" {}
-variable "s3_region" {}
+variable "region" {}
 
 variable "clamav_user_data" {}
 
@@ -101,13 +101,13 @@ write_files:
   content: |
     SHELL=/bin/bash
     MAILTO=""
-    0 1 * * * root /opt/s3_archive/bin/compress_logs_and_copy_to_s3 $${s3_syslog_archive} $${s3_region}
+    0 1 * * * root /opt/s3_archive/bin/compress_logs_and_copy_to_s3 $${s3_syslog_archive} $${region}
 
 EOF
 
   vars {
     s3_syslog_archive = "${var.s3_syslog_archive}"
-    s3_region         = "${var.s3_region}"
+    region         = "${var.region}"
     script            = "${indent(4,file("${path.module}/script.bash"))}"
   }
 }

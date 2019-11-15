@@ -8,8 +8,8 @@ variable "clamav_user_data" {}
 
 variable "splunk_password" {}
 variable "splunk_rpm_version" {}
-variable "splunk_rpm_s3_bucket" {}
-variable "splunk_rpm_s3_region" {}
+variable "transfer_bucket_name" {}
+variable "region" {}
 variable "role_name" {}
 variable "public_bucket_name" {}
 variable "public_bucket_url" {}
@@ -85,7 +85,7 @@ runcmd:
     cp /run/server.crt /opt/splunk/etc/auth/mycerts/mySplunkWebCertificate.pem
     cp /run/server.key /opt/splunk/etc/auth/mycerts/mySplunkWebPrivateKey.key
 
-    aws --region ${var.splunk_rpm_s3_region} s3 cp --no-progress s3://${var.splunk_rpm_s3_bucket}/ . --recursive --exclude='*' --include='splunk/splunk-${var.splunk_rpm_version}*'
+    aws --region ${var.region} s3 cp --no-progress s3://${var.transfer_bucket_name}/ . --recursive --exclude='*' --include='splunk/splunk-${var.splunk_rpm_version}*'
     rpm -i splunk/splunk-${var.splunk_rpm_version}*.rpm
 
     /opt/splunk/bin/splunk enable boot-start -systemd-managed 1 --no-prompt --accept-license --answer-yes

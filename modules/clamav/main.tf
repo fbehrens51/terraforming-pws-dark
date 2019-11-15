@@ -14,9 +14,9 @@ variable "availability_zones" {
 variable "clamav_mirror_instance_type" {}
 
 variable "pivnet_api_token" {}
-variable "product_blobs_s3_bucket" {}
-variable "product_blobs_s3_endpoint" {}
-variable "product_blobs_s3_region" {}
+variable "mirror_bucket_name" {}
+variable "s3_endpoint" {}
+variable "region" {}
 variable "s3_access_key_id" {}
 variable "s3_secret_access_key" {}
 variable "s3_auth_type" {}
@@ -87,10 +87,10 @@ data "template_file" "download_clamav_mirror_config" {
     product_version     = "${local.clamav_product_version}"
 
     pivnet_api_token = "${var.pivnet_api_token}"
-    s3_bucket        = "${var.product_blobs_s3_bucket}"
+    s3_bucket        = "${var.mirror_bucket_name}"
 
-    s3_endpoint          = "${var.product_blobs_s3_endpoint}"
-    s3_region_name       = "${var.product_blobs_s3_region}"
+    s3_endpoint          = "${var.s3_endpoint}"
+    s3_region_name       = "${var.region}"
     s3_access_key_id     = "${var.s3_access_key_id}"
     s3_secret_access_key = "${var.s3_secret_access_key}"
     s3_auth_type         = "${var.s3_auth_type}"
@@ -106,10 +106,10 @@ data "template_file" "download_clamav_addon_config" {
     product_version     = "${local.clamav_product_version}"
 
     pivnet_api_token = "${var.pivnet_api_token}"
-    s3_bucket        = "${var.product_blobs_s3_bucket}"
+    s3_bucket        = "${var.mirror_bucket_name}"
 
-    s3_endpoint          = "${var.product_blobs_s3_endpoint}"
-    s3_region_name       = "${var.product_blobs_s3_region}"
+    s3_endpoint          = "${var.s3_endpoint}"
+    s3_region_name       = "${var.region}"
     s3_access_key_id     = "${var.s3_access_key_id}"
     s3_secret_access_key = "${var.s3_secret_access_key}"
     s3_auth_type         = "${var.s3_auth_type}"

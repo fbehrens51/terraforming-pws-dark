@@ -157,10 +157,10 @@ data "template_file" "download_pws_dark_iam_s3_resource_config" {
     product_version     = "${var.pws_dark_iam_s3_resource_product_version}"
 
     pivnet_api_token = "${var.pivnet_api_token}"
-    s3_bucket        = "${var.product_blobs_s3_bucket}"
+    s3_bucket        = "${var.mirror_bucket_name}"
 
-    s3_endpoint          = "${var.product_blobs_s3_endpoint}"
-    s3_region_name       = "${var.product_blobs_s3_region}"
+    s3_endpoint          = "${var.s3_endpoint}"
+    s3_region_name       = "${var.region}"
     s3_access_key_id     = "${var.s3_access_key_id}"
     s3_secret_access_key = "${var.s3_secret_access_key}"
     s3_auth_type         = "${var.s3_auth_type}"
@@ -176,10 +176,10 @@ data "template_file" "download_concourse_config" {
     product_version     = "${local.concourse_product_version}"
 
     pivnet_api_token = "${var.pivnet_api_token}"
-    s3_bucket        = "${var.product_blobs_s3_bucket}"
+    s3_bucket        = "${var.mirror_bucket_name}"
 
-    s3_endpoint          = "${var.product_blobs_s3_endpoint}"
-    s3_region_name       = "${var.product_blobs_s3_region}"
+    s3_endpoint          = "${var.s3_endpoint}"
+    s3_region_name       = "${var.region}"
     s3_access_key_id     = "${var.s3_access_key_id}"
     s3_secret_access_key = "${var.s3_secret_access_key}"
     s3_auth_type         = "${var.s3_auth_type}"
