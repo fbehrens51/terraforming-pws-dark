@@ -203,6 +203,11 @@ resource "random_string" "splunk_password" {
   special = false
 }
 
+resource "random_string" "cf_splunk_password" {
+  length  = "32"
+  special = false
+}
+
 resource "random_string" "indexers_pass4SymmKey" {
   length  = "32"
   special = false
@@ -434,6 +439,11 @@ output "indexers_pass4SymmKey" {
 
 output "splunk_password" {
   value     = "${random_string.splunk_password.result}"
+  sensitive = true
+}
+
+output "cf_splunk_password" {
+  value     = "${random_string.cf_splunk_password.result}"
   sensitive = true
 }
 

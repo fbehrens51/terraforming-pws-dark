@@ -17,6 +17,9 @@ product-properties:
     value: 0
   .properties.apply_open_security_group:
     value: true
+  .properties.client_secret:
+    value:
+      secret: ((properties_client_secret.secret))
   .properties.consumer_queue_size:
     value: 10000
   .properties.enable_event_tracing:
@@ -72,15 +75,25 @@ network-properties:
     name: ${singleton_availability_zone}
 resource-config:
   delete-all:
-    instances: automatic
+    max_in_flight: 1
+    additional_networks: []
+    additional_vm_extensions: []
+    elb_names: []
     instance_type:
       id: automatic
+    instances: automatic
     internet_connected: false
+    swap_as_percent_of_memory_size: automatic
   deploy-all:
-    instances: automatic
+    max_in_flight: 1
+    additional_networks: []
+    additional_vm_extensions: []
+    elb_names: []
     instance_type:
       id: automatic
+    instances: automatic
     internet_connected: false
+    swap_as_percent_of_memory_size: automatic
 errand-config:
   delete-all:
     pre-delete-state: true
