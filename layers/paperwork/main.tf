@@ -8,7 +8,42 @@ module "providers" {
 
 provider "aws" {}
 
+data "aws_region" "current" {}
+
+locals {
+  s3_service_name = "com.amazonaws.${data.aws_region.current.name}.s3"
+}
+
+resource "aws_vpc_endpoint" "pas_s3" {
+  vpc_id       = "${var.pas_vpc_id}"
+  service_name = "${local.s3_service_name}"
+}
+
+resource "aws_vpc_endpoint" "cp_s3" {
+  vpc_id       = "${var.cp_vpc_id}"
+  service_name = "${local.s3_service_name}"
+}
+
+resource "aws_vpc_endpoint" "es_s3" {
+  vpc_id       = "${var.es_vpc_id}"
+  service_name = "${local.s3_service_name}"
+}
+
+resource "aws_vpc_endpoint" "bastion_s3" {
+  vpc_id       = "${var.bastion_vpc_id}"
+  service_name = "${local.s3_service_name}"
+}
+
+# There are several scenarios relevant to accessing this bucket:
+#   1. Unauthenticated access from within the VPC
+#      - The bucket policy applies and there is an explicit allow for requests via the vpc endpoint.
+#   2. Authenticated access outside the VPC
+#      - The identity policy applies and there is an explicit allow (likely for s3:*)
+#   3. Unauthenticated access outside the VPC
+#      - The bucket policy applies and the request is denied because there is no explicit allow
+# This comes from AWS docs here: https://aws.amazon.com/premiumsupport/knowledge-center/s3-private-connection-no-authentication/
 data "aws_iam_policy_document" "public_bucket_policy" {
+  // Allow unauthenticated access only via the vpc endpoints
   statement {
     effect  = "Allow"
     actions = ["s3:GetObject"]
@@ -18,13 +53,44 @@ data "aws_iam_policy_document" "public_bucket_policy" {
       identifiers = ["*"]
     }
 
+    condition {
+      test     = "StringEquals"
+      variable = "aws:sourceVpce"
+
+      values = [
+        "${aws_vpc_endpoint.pas_s3.id}",
+        "${aws_vpc_endpoint.es_s3.id}",
+        "${aws_vpc_endpoint.cp_s3.id}",
+        "${aws_vpc_endpoint.bastion_s3.id}",
+      ]
+    }
+
+    resources = ["${aws_s3_bucket.public_bucket.arn}/*"]
+  }
+
+  // Prevent access without TLS
+  statement {
+    effect  = "Deny"
+    actions = ["s3:Get*"]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+
+    condition {
+      test     = "Bool"
+      variable = "aws:SecureTransport"
+
+      values = ["false"]
+    }
+
     resources = ["${aws_s3_bucket.public_bucket.arn}/*"]
   }
 }
 
 resource "aws_s3_bucket" "public_bucket" {
   bucket_prefix = "${replace(var.env_name," ","-")}-public-bucket"
-  acl           = "public-read"
 }
 
 resource "aws_s3_bucket_policy" "public_bucket_policy_attachement" {
@@ -530,6 +596,22 @@ locals {
 
 output "public_bucket_url" {
   value = "${local.public_bucket_url}"
+}
+
+output "pas_s3_vpc_endpoint_id" {
+  value = "${aws_vpc_endpoint.pas_s3.id}"
+}
+
+output "cp_s3_vpc_endpoint_id" {
+  value = "${aws_vpc_endpoint.cp_s3.id}"
+}
+
+output "es_s3_vpc_endpoint_id" {
+  value = "${aws_vpc_endpoint.es_s3.id}"
+}
+
+output "bastion_s3_vpc_endpoint_id" {
+  value = "${aws_vpc_endpoint.bastion_s3.id}"
 }
 
 output "amazon2_clamav_user_data" {
