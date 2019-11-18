@@ -12,7 +12,7 @@ locals {
 
   healthwatch_file_glob       = "p-healthwatch*.pivotal"
   healthwatch_product_slug    = "p-healthwatch"
-  healthwatch_product_version = "1.6.1"
+  healthwatch_product_version = "1.7.0"
 
   compliance_scanner_file_glob       = "p-compliance-scanner*.pivotal"
   compliance_scanner_product_slug    = "p-compliance-scanner"
