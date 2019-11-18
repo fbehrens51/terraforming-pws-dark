@@ -24,11 +24,23 @@ data "terraform_remote_state" "pas" {
   }
 }
 
+data "terraform_remote_state" "bootstrap_control_plane" {
+  backend = "s3"
+
+  config {
+    bucket  = "${var.remote_state_bucket}"
+    key     = "bootstrap_control_plane"
+    region  = "${var.remote_state_region}"
+    encrypt = true
+  }
+}
+
 module "providers" {
   source = "../../modules/dark_providers"
 }
 
 locals {
+  mirror_bucket    = "${data.terraform_remote_state.bootstrap_control_plane.mirror_bucket_name}"
   hyphenated_name  = "${lower(replace(var.name, " ", "-"))}"
   base_tile_path   = "${data.aws_s3_bucket_object.base_tile.bucket}/${data.aws_s3_bucket_object.base_tile.key}"
   copied_tile_path = "${replace(basename(local.base_tile_path), "p-isolation-segment", "p-isolation-segment-${local.hyphenated_name}")}"
@@ -48,7 +60,7 @@ module "config" {
   source = "../../modules/isolation_segment_config"
 
   iso_seg_tile_suffix = "${local.hyphenated_name}"
-  mirror_bucket       = "${var.mirror_bucket}"
+  mirror_bucket       = "${local.mirror_bucket}"
 
   pivnet_api_token     = "${var.pivnet_api_token}"
   s3_access_key_id     = "${var.s3_access_key_id}"
@@ -70,7 +82,7 @@ module "config" {
 }
 
 data "aws_s3_bucket_object" "base_tile" {
-  bucket = "${var.mirror_bucket}"
+  bucket = "${local.mirror_bucket}"
   key    = "[p-isolation-segment,${module.config.version}]p-isolation-segment-${module.config.version}.pivotal"
 }
 
@@ -87,6 +99,6 @@ resource "null_resource" "replicator" {
 
   provisioner "local-exec" {
     when    = "destroy"
-    command = "aws s3 rm s3://${var.mirror_bucket}/${local.copied_tile_path}"
+    command = "aws s3 rm s3://${local.mirror_bucket}/${local.copied_tile_path}"
   }
 }
