@@ -24,7 +24,7 @@ locals {
 
   splunk_file_glob       = "splunk-nozzle*.pivotal"
   splunk_product_slug    = "splunk-nozzle"
-  splunk_product_version = "1.1.1"
+  splunk_product_version = "1.1.2"
 }
 
 data "template_file" "pas_vpc_azs" {
