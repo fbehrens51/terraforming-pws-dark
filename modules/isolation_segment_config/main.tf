@@ -57,6 +57,24 @@ data "template_file" "download_config" {
   }
 }
 
+data "template_file" "base_tile_download_config" {
+  template = "${file("${path.module}/download_product_config.tpl")}"
+
+  vars = {
+    pivnet_api_token    = "${var.pivnet_api_token}"
+    pivnet_file_glob    = "*.pivotal"
+    pivnet_product_slug = "p-isolation-segment"
+    product_version     = "${local.isolation_segment_version}"
+
+    s3_endpoint          = "${var.s3_endpoint}"
+    s3_region_name       = "${var.region}"
+    s3_access_key_id     = "${var.s3_access_key_id}"
+    s3_secret_access_key = "${var.s3_secret_access_key}"
+    s3_auth_type         = "${var.s3_auth_type}"
+    s3_bucket            = "${var.mirror_bucket}"
+  }
+}
+
 data "template_file" "tile_config" {
   template = "${file("${path.module}/isolation_segment_template.tpl")}"
 
@@ -78,6 +96,10 @@ data "template_file" "tile_config" {
 
 output "version" {
   value = "${local.isolation_segment_version}"
+}
+
+output "base_tile_download_config" {
+  value = "${data.template_file.base_tile_download_config.rendered}"
 }
 
 output "download_config" {
