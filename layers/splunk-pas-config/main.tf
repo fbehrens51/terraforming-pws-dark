@@ -47,6 +47,7 @@ module "firehose_config" {
   api_endpoint                = "${local.api_endpoint}"
   splunk_url                  = "${local.splunk_http_collector_url}"
   splunk_token                = "${local.splunk_http_collector_token}"
+  client_secret               = "${data.terraform_remote_state.bootstrap_splunk.cf_splunk_password}"
   network_name                = "${var.network_name}"
   availability_zones          = "${var.availability_zones}"
   singleton_availability_zone = "${var.singleton_availability_zone}"

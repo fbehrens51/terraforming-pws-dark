@@ -6,20 +6,17 @@ product-properties:
     value: true
   .properties.api_endpoint:
     value: ${api_endpoint}
-  .properties.api_password:
-    value:
-      secret: ((api_password))
-  .properties.api_user:
-    value: splunk-firehose
   .properties.app_cache_invalidate_ttl:
     value: 0s
   .properties.app_limits:
     value: 0
   .properties.apply_open_security_group:
     value: true
+  .properties.client_id:
+    value: splunk-nozzle
   .properties.client_secret:
     value:
-      secret: ((properties_client_secret.secret))
+      secret: ${client_secret}
   .properties.consumer_queue_size:
     value: 10000
   .properties.enable_event_tracing:
