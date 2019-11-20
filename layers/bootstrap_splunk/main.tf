@@ -56,8 +56,8 @@ locals {
   indexers_count   = "3"
   forwarders_count = "1"
 
-  cert_bucket = "${replace(var.env_name," ","-")}-syslog-archive"
-  tags        = "${merge(var.tags, map("Name", "${var.env_name}-splunk"))}"
+  syslog_archive_bucket = "${replace(var.env_name," ","-")}-syslog-archive"
+  tags                  = "${merge(var.tags, map("Name", "${var.env_name}-splunk"))}"
 
   dns_zone_name    = "${data.terraform_remote_state.paperwork.root_domain}"
   master_dns_ip    = "${data.terraform_remote_state.bind.master_public_ip}"
@@ -183,7 +183,7 @@ module "search_head_bootstrap" {
 }
 
 resource "aws_s3_bucket" "syslog_archive" {
-  bucket = "${local.cert_bucket}"
+  bucket = "${local.syslog_archive_bucket}"
   acl    = "private"
   tags   = "${local.tags}"
 
