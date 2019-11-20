@@ -84,6 +84,10 @@ output "rds_password" {
   sensitive = true
 }
 
+output "ops_manager_bucket_name" {
+  value = "${module.ops_manager.bucket}"
+}
+
 output "mirror_bucket_name" {
   value = "${aws_s3_bucket.mirror_bucket.bucket}"
 }

@@ -315,6 +315,10 @@ output "rds_username" {
   value = "${module.rds.rds_username}"
 }
 
+output "ops_manager_bucket" {
+  value = "${module.ops_manager.bucket}"
+}
+
 output "pas_buildpacks_bucket" {
   value = "${module.pas.pas_buildpacks_bucket}"
 }
