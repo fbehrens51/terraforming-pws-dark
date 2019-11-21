@@ -41,6 +41,17 @@ data "terraform_remote_state" "routes" {
   }
 }
 
+data "terraform_remote_state" "encrypt_amis" {
+  backend = "s3"
+
+  config {
+    bucket  = "${var.remote_state_bucket}"
+    key     = "encrypt_amis"
+    region  = "${var.remote_state_region}"
+    encrypt = true
+  }
+}
+
 locals {
   env_name      = "${var.tags["Name"]}"
   modified_name = "${local.env_name} enterprise services"
@@ -110,6 +121,7 @@ data "template_cloudinit_config" "nat_user_data" {
 
 module "nat" {
   source                 = "../../modules/nat"
+  ami_id                 = "${data.terraform_remote_state.encrypt_amis.encrypted_amazon2_ami_id}"
   private_route_table_id = "${data.terraform_remote_state.routes.es_private_vpc_route_table_id}"
   tags                   = "${local.modified_tags}"
   public_subnet_id       = "${element(module.public_subnets.subnet_ids, 0)}"

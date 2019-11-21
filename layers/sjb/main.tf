@@ -16,10 +16,6 @@ locals {
   root_domain = "${data.terraform_remote_state.paperwork.root_domain}"
 }
 
-module "find_ami" {
-  source = "../../modules/amis/encrypted/amazon2/lookup"
-}
-
 data "terraform_remote_state" "paperwork" {
   backend = "s3"
 
@@ -37,6 +33,17 @@ data "terraform_remote_state" "bootstrap_control_plane" {
   config {
     bucket  = "${var.remote_state_bucket}"
     key     = "bootstrap_control_plane"
+    region  = "${var.remote_state_region}"
+    encrypt = true
+  }
+}
+
+data "terraform_remote_state" "encrypt_amis" {
+  backend = "s3"
+
+  config {
+    bucket  = "${var.remote_state_bucket}"
+    key     = "encrypt_amis"
     region  = "${var.remote_state_region}"
     encrypt = true
   }
@@ -176,7 +183,7 @@ data "template_cloudinit_config" "user_data" {
 module "sjb" {
   instance_count       = 1
   source               = "../../modules/launch"
-  ami_id               = "${module.find_ami.id}"
+  ami_id               = "${data.terraform_remote_state.encrypt_amis.encrypted_amazon2_ami_id}"
   user_data            = "${data.template_cloudinit_config.user_data.rendered}"
   eni_ids              = "${data.terraform_remote_state.bootstrap_control_plane.sjb_eni_ids}"
   key_pair_name        = "${data.terraform_remote_state.bootstrap_control_plane.sjb_ssh_key_pair_name}"

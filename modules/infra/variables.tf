@@ -2,6 +2,8 @@ variable "env_name" {
   type = "string"
 }
 
+variable "nat_ami_id" {}
+
 variable "bastion_private_ip" {}
 
 variable "hosted_zone" {

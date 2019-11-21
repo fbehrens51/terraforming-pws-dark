@@ -20,6 +20,7 @@ variable "root_domain" {}
 variable "splunk_syslog_ca_cert" {}
 variable "public_bucket_name" {}
 variable "public_bucket_url" {}
+variable "ami_id" {}
 
 locals {
   env_name      = "${var.tags["Name"]}"
@@ -33,10 +34,6 @@ data "aws_route_table" "private_route_table" {
 
 data "aws_vpc" "vpc" {
   id = "${data.aws_route_table.private_route_table.vpc_id}"
-}
-
-module "nat_ami" {
-  source = "../amis/encrypted/amazon2/lookup"
 }
 
 module "eni" {
@@ -116,7 +113,7 @@ module "nat_host" {
   source = "../launch"
 
   instance_count = "1"
-  ami_id         = "${module.nat_ami.id}"
+  ami_id         = "${var.ami_id}"
   user_data      = "${data.template_cloudinit_config.user_data.rendered}"
   eni_ids        = ["${module.eni.eni_ids[0]}"]
 

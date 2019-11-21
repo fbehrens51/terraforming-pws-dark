@@ -63,6 +63,17 @@ data "terraform_remote_state" "bind" {
   }
 }
 
+data "terraform_remote_state" "encrypt_amis" {
+  backend = "s3"
+
+  config {
+    bucket  = "${var.remote_state_bucket}"
+    key     = "encrypt_amis"
+    region  = "${var.remote_state_region}"
+    encrypt = true
+  }
+}
+
 data "template_cloudinit_config" "nat_user_data" {
   base64_encode = false
   gzip          = false
@@ -88,6 +99,8 @@ data "template_cloudinit_config" "nat_user_data" {
 
 module "infra" {
   source = "../../modules/infra"
+
+  nat_ami_id = "${data.terraform_remote_state.encrypt_amis.encrypted_amazon2_ami_id}"
 
   env_name               = "${var.env_name}"
   availability_zones     = "${var.availability_zones}"

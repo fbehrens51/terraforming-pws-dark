@@ -52,6 +52,17 @@ data "terraform_remote_state" "bootstrap_control_plane" {
   }
 }
 
+data "terraform_remote_state" "encrypt_amis" {
+  backend = "s3"
+
+  config {
+    bucket  = "${var.remote_state_bucket}"
+    key     = "encrypt_amis"
+    region  = "${var.remote_state_region}"
+    encrypt = true
+  }
+}
+
 module "splunk_ports" {
   source = "../../modules/splunk_ports"
 }
@@ -92,10 +103,8 @@ locals {
   public_bucket_url  = "${data.terraform_remote_state.paperwork.public_bucket_url}"
 
   transfer_bucket_name = "${data.terraform_remote_state.bootstrap_control_plane.transfer_bucket_name}"
-}
 
-module "amazon_ami" {
-  source = "../../modules/amis/encrypted/amazon2/lookup"
+  encrypted_amazon2_ami_id = "${data.terraform_remote_state.encrypt_amis.encrypted_amazon2_ami_id}"
 }
 
 module "s3_archiver_user_data" {
@@ -119,7 +128,7 @@ module "s3_archiver_user_data" {
 module "splunk_s3" {
   source               = "../../modules/launch"
   instance_count       = 1
-  ami_id               = "${module.amazon_ami.id}"
+  ami_id               = "${local.encrypted_amazon2_ami_id}"
   instance_type        = "${var.instance_type}"
   key_pair_name        = "${local.ssh_key_pair_name}"
   tags                 = "${merge(local.tags, map("Name", "${var.env_name}-splunk-s3"))}"
@@ -158,7 +167,7 @@ module "indexers_user_data" {
 module "splunk_indexers" {
   source               = "../../modules/launch"
   instance_count       = "${length(local.splunk_indexers_eni_ids)}"
-  ami_id               = "${module.amazon_ami.id}"
+  ami_id               = "${local.encrypted_amazon2_ami_id}"
   instance_type        = "${var.instance_type}"
   key_pair_name        = "${local.ssh_key_pair_name}"
   tags                 = "${merge(local.tags, map("Name", "${var.env_name}-splunk-indexer"))}"
@@ -196,7 +205,7 @@ module "master_user_data" {
 module "splunk_master" {
   source               = "../../modules/launch"
   instance_count       = 1
-  ami_id               = "${module.amazon_ami.id}"
+  ami_id               = "${local.encrypted_amazon2_ami_id}"
   instance_type        = "${var.instance_type}"
   key_pair_name        = "${local.ssh_key_pair_name}"
   tags                 = "${merge(local.tags, map("Name", "${var.env_name}-splunk-master"))}"
@@ -236,7 +245,7 @@ module "search_head_user_data" {
 module "splunk_search_head" {
   source               = "../../modules/launch"
   instance_count       = 1
-  ami_id               = "${module.amazon_ami.id}"
+  ami_id               = "${local.encrypted_amazon2_ami_id}"
   instance_type        = "${var.instance_type}"
   key_pair_name        = "${local.ssh_key_pair_name}"
   tags                 = "${merge(local.tags, map("Name", "${var.env_name}-splunk-search-head"))}"
@@ -277,7 +286,7 @@ module "forwarders_user_data" {
 module "splunk_forwarders" {
   source               = "../../modules/launch"
   instance_count       = "${length(local.splunk_forwarders_eni_ids)}"
-  ami_id               = "${module.amazon_ami.id}"
+  ami_id               = "${local.encrypted_amazon2_ami_id}"
   instance_type        = "${var.instance_type}"
   key_pair_name        = "${local.ssh_key_pair_name}"
   tags                 = "${merge(local.tags, map("Name", "${var.env_name}-splunk-forwarder"))}"

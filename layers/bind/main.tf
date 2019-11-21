@@ -30,6 +30,17 @@ data "terraform_remote_state" "bootstrap_bind" {
   }
 }
 
+data "terraform_remote_state" "encrypt_amis" {
+  backend = "s3"
+
+  config {
+    bucket  = "${var.remote_state_bucket}"
+    key     = "encrypt_amis"
+    region  = "${var.remote_state_region}"
+    encrypt = true
+  }
+}
+
 locals {
   env_name                   = "${var.tags["Name"]}"
   modified_name              = "${local.env_name} bind"
@@ -46,10 +57,8 @@ locals {
 
   slave_ips        = "${concat(data.terraform_remote_state.bootstrap_bind.bind_eip_ips, data.terraform_remote_state.bootstrap_bind.bind_eni_ips)}"
   slave_public_ips = ["${element(local.slave_ips, 1)}", "${element(local.slave_ips, 2)}"]
-}
 
-module "amazon_ami" {
-  source = "../../modules/amis/encrypted/amazon2/lookup"
+  encrypted_amazon2_ami_id = "${data.terraform_remote_state.encrypt_amis.encrypted_amazon2_ami_id}"
 }
 
 module "bind_host_key_pair" {
@@ -107,7 +116,7 @@ module "bind_master_user_data" {
 module "bind_master_host" {
   instance_count = 1
   source         = "../../modules/launch"
-  ami_id         = "${module.amazon_ami.id}"
+  ami_id         = "${local.encrypted_amazon2_ami_id}"
   user_data      = "${data.template_cloudinit_config.master_bind_conf_userdata.rendered}"
   eni_ids        = "${data.terraform_remote_state.bootstrap_bind.bind_eni_ids}"
   key_pair_name  = "${module.bind_host_key_pair.key_name}"
@@ -177,7 +186,7 @@ module "bind_slave_user_data" {
 module "bind_slave_host" {
   instance_count = "${length(data.terraform_remote_state.bootstrap_bind.bind_eni_ids) - 1}"
   source         = "../../modules/launch"
-  ami_id         = "${module.amazon_ami.id}"
+  ami_id         = "${local.encrypted_amazon2_ami_id}"
   user_data      = "${data.template_cloudinit_config.slave_bind_conf_userdata.rendered}"
   eni_ids        = ["${data.terraform_remote_state.bootstrap_bind.bind_eni_ids[1]}", "${data.terraform_remote_state.bootstrap_bind.bind_eni_ids[2]}"]
   key_pair_name  = "${module.bind_host_key_pair.key_name}"
