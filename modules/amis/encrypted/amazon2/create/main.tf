@@ -16,9 +16,7 @@ data "aws_ami" "current_ami" {
   owners = []
 }
 
-data "aws_region" "current_region" {
-  current = true
-}
+data "aws_region" "current_region" {}
 
 resource "random_integer" "name_extension" {
   max = 999999999
