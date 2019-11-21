@@ -18,14 +18,14 @@ data "aws_ami" "current_ami" {
 
 data "aws_region" "current_region" {}
 
-resource "random_integer" "name_extension" {
-  max = 999999999
-  min = 0
-}
 resource "aws_ami_copy" "encrypted_amazon2_ami" {
-  name = "encrypted_${data.aws_ami.current_ami.name}-${random_integer.name_extension.result}"
-  source_ami_id = "${data.aws_ami.current_ami.id}"
+  name              = "encrypted_${data.aws_ami.current_ami.name}"
+  source_ami_id     = "${data.aws_ami.current_ami.id}"
   source_ami_region = "${data.aws_region.current_region.name}"
-  encrypted = true
-  kms_key_id = "${var.kms_key_id}"
+  encrypted         = true
+  kms_key_id        = "${var.kms_key_id}"
+}
+
+output "encrypted_ami_id" {
+  value = "${aws_ami_copy.encrypted_amazon2_ami.id}"
 }

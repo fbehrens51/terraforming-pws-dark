@@ -26,3 +26,7 @@ module "encrypt_amazon2_ami" {
   source     = "../../modules/amis/encrypted/amazon2/create"
   kms_key_id = "${data.terraform_remote_state.paperwork.kms_key_arn}"
 }
+
+output "encrypted_amazon2_ami_id" {
+  value = "${module.encrypt_amazon2_ami.encrypted_ami_id}"
+}
