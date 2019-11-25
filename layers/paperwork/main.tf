@@ -46,7 +46,7 @@ data "aws_iam_policy_document" "public_bucket_policy" {
   // Allow unauthenticated access only via the vpc endpoints
   statement {
     effect  = "Allow"
-    actions = ["s3:GetObject"]
+    actions = ["s3:GetObject", "s3:ListBucket"]
 
     principals {
       type        = "AWS"
@@ -65,13 +65,12 @@ data "aws_iam_policy_document" "public_bucket_policy" {
       ]
     }
 
-    resources = ["${aws_s3_bucket.public_bucket.arn}/*"]
+    resources = ["${aws_s3_bucket.public_bucket.arn}", "${aws_s3_bucket.public_bucket.arn}/*"]
   }
 
-  // Prevent access without TLS
   statement {
     effect  = "Deny"
-    actions = ["s3:Get*"]
+    actions = ["s3:*"]
 
     principals {
       type        = "AWS"
@@ -85,7 +84,7 @@ data "aws_iam_policy_document" "public_bucket_policy" {
       values = ["false"]
     }
 
-    resources = ["${aws_s3_bucket.public_bucket.arn}/*"]
+    resources = ["${aws_s3_bucket.public_bucket.arn}", "${aws_s3_bucket.public_bucket.arn}/*"]
   }
 }
 
