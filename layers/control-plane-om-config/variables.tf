@@ -43,8 +43,6 @@ variable "availability_zones" {
   type = "list"
 }
 
-variable "pws_dark_iam_s3_resource_product_version" {}
-
 variable "clamav_cpu_limit" {
   description = "The enforced CPU limit.  This value is in percentage, 0 up to 100."
 }

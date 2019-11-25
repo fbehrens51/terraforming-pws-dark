@@ -135,17 +135,16 @@ module "om_config" {
 
   # Used by the download config
 
-  pivnet_api_token                         = "${var.pivnet_api_token}"
-  mirror_bucket_name                       = "${local.mirror_bucket_name}"
-  s3_endpoint                              = "${var.s3_endpoint}"
-  region                                   = "${var.region}"
-  s3_access_key_id                         = "${var.s3_access_key_id}"
-  s3_secret_access_key                     = "${var.s3_secret_access_key}"
-  s3_auth_type                             = "${var.s3_auth_type}"
-  pws_dark_iam_s3_resource_product_version = "${var.pws_dark_iam_s3_resource_product_version}"
-  splunk_syslog_host                       = "${module.domains.splunk_logs_fqdn}"
-  splunk_syslog_port                       = "${module.splunk_ports.splunk_tcp_port}"
-  splunk_syslog_ca_cert                    = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
+  pivnet_api_token      = "${var.pivnet_api_token}"
+  mirror_bucket_name    = "${local.mirror_bucket_name}"
+  s3_endpoint           = "${var.s3_endpoint}"
+  region                = "${var.region}"
+  s3_access_key_id      = "${var.s3_access_key_id}"
+  s3_secret_access_key  = "${var.s3_secret_access_key}"
+  s3_auth_type          = "${var.s3_auth_type}"
+  splunk_syslog_host    = "${module.domains.splunk_logs_fqdn}"
+  splunk_syslog_port    = "${module.splunk_ports.splunk_tcp_port}"
+  splunk_syslog_ca_cert = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 }
 
 module "runtime_config_config" {

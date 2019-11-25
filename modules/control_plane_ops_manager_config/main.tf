@@ -2,9 +2,6 @@ locals {
   concourse_file_glob       = "*.pivotal"
   concourse_product_slug    = "pws-dark-concourse-tile"
   concourse_product_version = "${var.concourse_version}"
-
-  pws_dark_iam_s3_resource_file_glob    = "pws-dark-iam-s3-resource-tile*.pivotal"
-  pws_dark_iam_s3_resource_product_slug = "pws-dark-iam-s3-resource-tile"
 }
 
 data "aws_vpc" "vpc" {
@@ -145,25 +142,6 @@ data "template_file" "concourse_template" {
     postgres_password = "${var.postgres_password}"
     postgres_ca_cert  = "${var.postgres_ca_cert}"
     users_to_add      = "${join("", data.template_file.users_to_add.*.rendered)}"
-  }
-}
-
-data "template_file" "download_pws_dark_iam_s3_resource_config" {
-  template = "${file("${path.module}/download_product_config.tpl")}"
-
-  vars = {
-    pivnet_file_glob    = "${local.pws_dark_iam_s3_resource_file_glob}"
-    pivnet_product_slug = "${local.pws_dark_iam_s3_resource_product_slug}"
-    product_version     = "${var.pws_dark_iam_s3_resource_product_version}"
-
-    pivnet_api_token = "${var.pivnet_api_token}"
-    s3_bucket        = "${var.mirror_bucket_name}"
-
-    s3_endpoint          = "${var.s3_endpoint}"
-    s3_region_name       = "${var.region}"
-    s3_access_key_id     = "${var.s3_access_key_id}"
-    s3_secret_access_key = "${var.s3_secret_access_key}"
-    s3_auth_type         = "${var.s3_auth_type}"
   }
 }
 

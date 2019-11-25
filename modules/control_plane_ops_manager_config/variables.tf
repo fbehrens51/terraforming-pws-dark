@@ -179,8 +179,6 @@ variable "s3_auth_type" {}
 
 variable "concourse_version" {}
 
-variable "pws_dark_iam_s3_resource_product_version" {}
-
 variable "splunk_syslog_host" {}
 
 variable "splunk_syslog_port" {}

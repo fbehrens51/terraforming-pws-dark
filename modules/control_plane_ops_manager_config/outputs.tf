@@ -15,10 +15,6 @@ output "download_concourse_config" {
   value = "${data.template_file.download_concourse_config.rendered}"
 }
 
-output "download_pws_dark_iam_s3_resource_config" {
-  value = "${data.template_file.download_pws_dark_iam_s3_resource_config.rendered}"
-}
-
 output "concourse_username_and_passwords" {
   value     = "${zipmap(var.concourse_users, random_string.user_passwords.*.result)}"
   sensitive = true

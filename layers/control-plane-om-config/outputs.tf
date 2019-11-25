@@ -18,11 +18,6 @@ output "download_concourse_config" {
   sensitive = true
 }
 
-output "download_pws_dark_iam_s3_resource_config" {
-  value     = "${module.om_config.download_pws_dark_iam_s3_resource_config}"
-  sensitive = true
-}
-
 output "clamav_addon_template" {
   value     = "${module.clamav_config.clamav_addon_template}"
   sensitive = true
