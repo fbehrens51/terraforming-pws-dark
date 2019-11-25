@@ -560,9 +560,11 @@ resource-config:
     additional_networks: []
     additional_vm_extensions: []
     max_in_flight: 4%
-    instances: automatic
+    # 2 r5.xlarge instances is our standard 'Isolation segment' capacity @ 30.5
+    # GB per instance, this value should also be updated in the isolation segment config
+    instances: 2
     instance_type:
-      id: ${diego_cell_instance_type}
+      id: r5.xlarge
     internet_connected: false
   diego_database:
     swap_as_percent_of_memory_size: automatic
