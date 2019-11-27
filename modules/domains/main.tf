@@ -4,6 +4,9 @@ locals {
   ldap_subdomain = "ldap"
   ldap_fqdn      = "${local.ldap_subdomain}.${var.root_domain}"
 
+  smtp_subdomain = "smtp"
+  smtp_fqdn      = "${local.smtp_subdomain}.${var.root_domain}"
+
   splunk_subdomain = "splunk"
   splunk_fqdn      = "${local.splunk_subdomain}.${var.root_domain}"
 
@@ -35,6 +38,14 @@ output "ldap_subdomain" {
 
 output "ldap_fqdn" {
   value = "${local.ldap_fqdn}"
+}
+
+output "smtp_subdomain" {
+  value = "${local.smtp_subdomain}"
+}
+
+output "smtp_fqdn" {
+  value = "${local.smtp_fqdn}"
 }
 
 output "splunk_subdomain" {

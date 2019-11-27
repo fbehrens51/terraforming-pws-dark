@@ -65,6 +65,15 @@ output "splunk_logs_server_key" {
   sensitive = true
 }
 
+output "smtp_server_cert" {
+  value = "${module.smtp_server_cert.cert_pem}"
+}
+
+output "smtp_server_key" {
+  value     = "${module.smtp_server_cert.private_key_pem}"
+  sensitive = true
+}
+
 output "splunk_server_cert" {
   value = "${module.splunk_server_cert.cert_pem}"
 }

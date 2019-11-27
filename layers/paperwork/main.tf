@@ -227,6 +227,20 @@ data "aws_s3_bucket_object" "rds_ca_cert" {
   key    = "${var.rds_ca_cert_s3_path}"
 }
 
+variable "smtp_relay_password_s3_path" {}
+
+data "aws_s3_bucket_object" "smtp_relay_password" {
+  bucket = "${var.cert_bucket}"
+  key    = "${var.smtp_relay_password_s3_path}"
+}
+
+variable "smtp_relay_ca_cert_s3_path" {}
+
+data "aws_s3_bucket_object" "smtp_relay_ca_cert" {
+  bucket = "${var.cert_bucket}"
+  key    = "${var.smtp_relay_ca_cert_s3_path}"
+}
+
 variable "router_server_cert_s3_path" {}
 
 data "aws_s3_bucket_object" "router_server_cert" {
@@ -323,6 +337,20 @@ variable "splunk_logs_server_key_s3_path" {}
 data "aws_s3_bucket_object" "splunk_logs_server_key" {
   bucket = "${var.cert_bucket}"
   key    = "${var.splunk_logs_server_key_s3_path}"
+}
+
+variable "smtp_server_cert_s3_path" {}
+
+data "aws_s3_bucket_object" "smtp_server_cert" {
+  bucket = "${var.cert_bucket}"
+  key    = "${var.smtp_server_cert_s3_path}"
+}
+
+variable "smtp_server_key_s3_path" {}
+
+data "aws_s3_bucket_object" "smtp_server_key" {
+  bucket = "${var.cert_bucket}"
+  key    = "${var.smtp_server_key_s3_path}"
 }
 
 variable "splunk_server_cert_s3_path" {}
@@ -441,6 +469,14 @@ output "rds_ca_cert" {
   value = "${data.aws_s3_bucket_object.rds_ca_cert.body}"
 }
 
+output "smtp_relay_ca_cert" {
+  value = "${data.aws_s3_bucket_object.smtp_relay_ca_cert.body}"
+}
+
+output "smtp_relay_password" {
+  value = "${data.aws_s3_bucket_object.smtp_relay_password.body}"
+}
+
 output "router_server_cert" {
   value = "${data.aws_s3_bucket_object.router_server_cert.body}"
 }
@@ -501,6 +537,15 @@ output "splunk_logs_server_cert" {
 
 output "splunk_logs_server_key" {
   value     = "${data.aws_s3_bucket_object.splunk_logs_server_key.body}"
+  sensitive = true
+}
+
+output "smtpd_server_cert" {
+  value = "${data.aws_s3_bucket_object.smtp_server_cert.body}"
+}
+
+output "smtpd_server_key" {
+  value     = "${data.aws_s3_bucket_object.smtp_server_key.body}"
   sensitive = true
 }
 

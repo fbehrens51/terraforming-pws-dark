@@ -60,6 +60,10 @@ additional_trusted_ca_certs_s3_path = "${additional_trusted_ca_certs_s3_path}"
 
 rds_ca_cert_s3_path = "${rds_ca_cert_s3_path}"
 
+smtp_relay_ca_cert_s3_path = "${smtp_relay_ca_cert_s3_path}"
+
+smtp_relay_password_s3_path = "${smtp_relay_password_s3_path}"
+
 router_server_cert_s3_path = "${router_server_cert_s3_path}"
 
 router_server_key_s3_path = "${router_server_key_s3_path}"
@@ -95,6 +99,10 @@ splunk_server_key_s3_path = "${splunk_server_key_s3_path}"
 splunk_monitor_server_cert_s3_path = "${splunk_monitor_server_cert_s3_path}"
 
 splunk_monitor_server_key_s3_path = "${splunk_monitor_server_key_s3_path}"
+
+smtp_server_cert_s3_path = "${smtp_server_cert_s3_path}"
+
+smtp_server_key_s3_path = "${smtp_server_key_s3_path}"
 
 portal_smoke_test_cert_s3_path = "${portal_smoke_test_cert_s3_path}"
 

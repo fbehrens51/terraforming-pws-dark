@@ -15,6 +15,8 @@ locals {
   trusted_ca_certs_s3_path                         = "trusted_ca_certs.pem"
   additional_trusted_ca_certs_s3_path              = "additional_trusted_ca_certs.pem"
   rds_ca_cert_s3_path                              = "rds_ca_cert.pem"
+  smtp_relay_password_s3_path                      = "smtp_relay_password.pem"
+  smtp_relay_ca_cert_s3_path                       = "smtp_relay_ca_cert.pem"
   router_server_cert_s3_path                       = "router_server_cert.pem"
   router_server_key_s3_path                        = "router_server_key.pem"
   concourse_server_cert_s3_path                    = "concourse_server_cert.pem"
@@ -33,6 +35,8 @@ locals {
   splunk_logs_server_key_s3_path                   = "splunk_logs_server_key.pem"
   splunk_monitor_server_cert_s3_path               = "splunk_monitor_server_cert.pem"
   splunk_monitor_server_key_s3_path                = "splunk_monitor_server_key.pem"
+  smtp_server_cert_s3_path                         = "smtp_server_cert.pem"
+  smtp_server_key_s3_path                          = "smtp_server_key.pem"
   portal_smoke_test_cert_s3_path                   = "portal_smoke_test_cert.pem"
   portal_smoke_test_key_s3_path                    = "portal_smoke_test_key.pem"
   ldap_password_s3_path                            = "ldap_password.txt"
@@ -140,6 +144,8 @@ data "template_file" "paperwork_variables" {
     trusted_ca_certs_s3_path             = "${local.trusted_ca_certs_s3_path}"
     additional_trusted_ca_certs_s3_path  = "${local.additional_trusted_ca_certs_s3_path}"
     rds_ca_cert_s3_path                  = "${local.rds_ca_cert_s3_path}"
+    smtp_relay_ca_cert_s3_path           = "${local.smtp_relay_ca_cert_s3_path}"
+    smtp_relay_password_s3_path          = "${local.smtp_relay_password_s3_path}"
     router_server_cert_s3_path           = "${local.router_server_cert_s3_path}"
     router_server_key_s3_path            = "${local.router_server_key_s3_path}"
     concourse_server_cert_s3_path        = "${local.concourse_server_cert_s3_path}"
@@ -158,6 +164,8 @@ data "template_file" "paperwork_variables" {
     splunk_logs_server_key_s3_path       = "${local.splunk_logs_server_key_s3_path}"
     splunk_monitor_server_cert_s3_path   = "${local.splunk_monitor_server_cert_s3_path}"
     splunk_monitor_server_key_s3_path    = "${local.splunk_monitor_server_key_s3_path}"
+    smtp_server_cert_s3_path             = "${local.smtp_server_cert_s3_path}"
+    smtp_server_key_s3_path              = "${local.smtp_server_key_s3_path}"
     portal_smoke_test_cert_s3_path       = "${local.portal_smoke_test_cert_s3_path}"
     portal_smoke_test_key_s3_path        = "${local.portal_smoke_test_key_s3_path}"
   }
@@ -235,6 +243,20 @@ resource "aws_s3_bucket_object" "rds_ca_cert" {
   key          = "${local.rds_ca_cert_s3_path}"
   bucket       = "${aws_s3_bucket.certs.bucket}"
   content      = "${var.rds_ca_cert_pem}"
+  content_type = "text/plain"
+}
+
+resource "aws_s3_bucket_object" "smtp_relay_ca_cert" {
+  key          = "${local.smtp_relay_ca_cert_s3_path}"
+  bucket       = "${aws_s3_bucket.certs.bucket}"
+  content      = "${var.smtp_relay_ca_cert_pem}"
+  content_type = "text/plain"
+}
+
+resource "aws_s3_bucket_object" "smtp_relay_password" {
+  key          = "${local.smtp_relay_password_s3_path}"
+  bucket       = "${aws_s3_bucket.certs.bucket}"
+  content      = "${var.smtp_relay_password}"
   content_type = "text/plain"
 }
 
@@ -320,6 +342,20 @@ resource "aws_s3_bucket_object" "splunk_logs_server_key" {
   bucket       = "${aws_s3_bucket.certs.bucket}"
   content_type = "text/plain"
   content      = "${module.paperwork.splunk_logs_server_key}"
+}
+
+resource "aws_s3_bucket_object" "smtp_server_cert" {
+  key          = "${local.smtp_server_cert_s3_path}"
+  bucket       = "${aws_s3_bucket.certs.bucket}"
+  content      = "${module.paperwork.smtp_server_cert}"
+  content_type = "text/plain"
+}
+
+resource "aws_s3_bucket_object" "smtp_server_key" {
+  key          = "${local.smtp_server_key_s3_path}"
+  bucket       = "${aws_s3_bucket.certs.bucket}"
+  content_type = "text/plain"
+  content      = "${module.paperwork.smtp_server_key}"
 }
 
 resource "aws_s3_bucket_object" "splunk_server_cert" {
@@ -435,6 +471,14 @@ output "user_certs" {
 }
 
 variable "rds_ca_cert_pem" {
+  type = "string"
+}
+
+variable "smtp_relay_ca_cert_pem" {
+  type = "string"
+}
+
+variable "smtp_relay_password" {
   type = "string"
 }
 

@@ -10,6 +10,15 @@ module "domains" {
   root_domain = "${var.root_domain}"
 }
 
+module "smtp_server_cert" {
+  source             = "../server_cert"
+  ca_cert_pem        = "${module.ca_cert.cert_pem}"
+  ca_private_key_pem = "${module.ca_cert.private_key_pem}"
+  env_name           = "${var.env_name}"
+  common_name        = "${module.domains.smtp_subdomain}"
+  domains            = ["${module.domains.smtp_fqdn}"]
+}
+
 module "portal_end_to_end_test_user_cert" {
   source = "../client_cert"
 
