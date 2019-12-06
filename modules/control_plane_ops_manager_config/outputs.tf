@@ -19,3 +19,8 @@ output "concourse_username_and_passwords" {
   value     = "${zipmap(var.concourse_users, random_string.user_passwords.*.result)}"
   sensitive = true
 }
+
+output "download_compliance_scanner_config" {
+  value     = "${data.template_file.download_compliance_scanner_config.rendered}"
+  sensitive = true
+}

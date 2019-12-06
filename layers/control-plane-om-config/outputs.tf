@@ -46,6 +46,11 @@ output "download_clamav_mirror_config" {
   sensitive = true
 }
 
+output "download_compliance_scanner_config" {
+  value     = "${module.om_config.download_compliance_scanner_config}"
+  sensitive = true
+}
+
 output "download_runtime_config_config" {
   value     = "${module.runtime_config_config.download_runtime_config_config}"
   sensitive = true
