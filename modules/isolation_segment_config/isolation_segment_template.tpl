@@ -128,11 +128,11 @@ resource-config:
     additional_networks: []
     additional_vm_extensions: []
     elb_names: []
-    # 2 r5.xlarge instances is our standard 'Isolation segment' capacity @ 30.5
-    # GB per instance, this value should also be updated in the PAS config
+    # 4 r5.large instances is our standard 'Isolation segment' capacity @ 16
+    # GB per instance, this value should also be updated in the isolation segment config
+    instances: 4
     instance_type:
-      id: r5.xlarge
-    instances: 2
+      id: r5.large
     internet_connected: false
     swap_as_percent_of_memory_size: automatic
   isolated_ha_proxy_${iso_seg_tile_suffix_underscore}:
