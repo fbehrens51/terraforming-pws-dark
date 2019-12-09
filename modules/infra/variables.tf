@@ -17,7 +17,9 @@ variable "dns_suffix" {
 
 variable "public_route_table_id" {}
 
-variable "private_route_table_id" {}
+variable "private_route_table_ids" {
+  type = "list"
+}
 
 variable "use_route53" {}
 

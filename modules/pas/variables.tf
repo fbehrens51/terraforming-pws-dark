@@ -10,7 +10,9 @@ variable "vpc_id" {
   type = "string"
 }
 
-variable "route_table_id" {}
+variable "route_table_ids" {
+  type = "list"
+}
 
 variable "public_subnet_ids" {
   type = "list"

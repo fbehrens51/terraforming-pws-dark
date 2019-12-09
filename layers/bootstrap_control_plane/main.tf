@@ -116,7 +116,7 @@ module "private_subnets" {
 resource "aws_route_table_association" "private_route_table_assoc" {
   count          = "${length(var.availability_zones)}"
   subnet_id      = "${module.private_subnets.subnet_ids[count.index]}"
-  route_table_id = "${data.terraform_remote_state.routes.cp_private_vpc_route_table_id}"
+  route_table_id = "${data.terraform_remote_state.routes.cp_private_vpc_route_table_ids[count.index]}"
 }
 
 module "om_key_pair" {
@@ -193,17 +193,18 @@ data "template_cloudinit_config" "nat_user_data" {
 }
 
 module "nat" {
-  source                 = "../../modules/nat"
-  ami_id                 = "${data.terraform_remote_state.encrypt_amis.encrypted_amazon2_ami_id}"
-  private_route_table_id = "${data.terraform_remote_state.routes.cp_private_vpc_route_table_id}"
-  tags                   = "${local.modified_tags}"
-  public_subnet_id       = "${module.public_subnets.subnet_ids[0]}"
-  internetless           = "${var.internetless}"
-  bastion_private_ip     = "${data.terraform_remote_state.bastion.bastion_private_ip}/32"
-  instance_type          = "${var.nat_instance_type}"
-  user_data              = "${data.template_cloudinit_config.nat_user_data.rendered}"
-  root_domain            = "${data.terraform_remote_state.paperwork.root_domain}"
-  splunk_syslog_ca_cert  = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
+  source                  = "../../modules/nat"
+  ami_id                  = "${data.terraform_remote_state.encrypt_amis.encrypted_amazon2_ami_id}"
+  private_route_table_ids = "${data.terraform_remote_state.routes.cp_private_vpc_route_table_ids}"
+  vpc_id                  = "${data.terraform_remote_state.paperwork.cp_vpc_id}"
+  tags                    = "${local.modified_tags}"
+  public_subnet_ids       = "${module.public_subnets.subnet_ids}"
+  internetless            = "${var.internetless}"
+  bastion_private_ip      = "${data.terraform_remote_state.bastion.bastion_private_ip}/32"
+  instance_type           = "${var.nat_instance_type}"
+  user_data               = "${data.template_cloudinit_config.nat_user_data.rendered}"
+  root_domain             = "${data.terraform_remote_state.paperwork.root_domain}"
+  splunk_syslog_ca_cert   = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 
   public_bucket_name = "${data.terraform_remote_state.paperwork.public_bucket_name}"
   public_bucket_url  = "${data.terraform_remote_state.paperwork.public_bucket_url}"
@@ -336,7 +337,7 @@ module "sjb_subnet" {
 resource "aws_route_table_association" "sjb_route_table_assoc" {
   count          = "1"
   subnet_id      = "${module.sjb_subnet.subnet_ids[count.index]}"
-  route_table_id = "${data.terraform_remote_state.routes.cp_private_vpc_route_table_id}"
+  route_table_id = "${data.terraform_remote_state.routes.cp_private_vpc_route_table_ids[count.index]}"
 }
 
 module "sjb_bootstrap" {

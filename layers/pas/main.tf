@@ -102,19 +102,19 @@ module "infra" {
 
   nat_ami_id = "${data.terraform_remote_state.encrypt_amis.encrypted_amazon2_ami_id}"
 
-  env_name               = "${var.env_name}"
-  availability_zones     = "${var.availability_zones}"
-  internetless           = "${var.internetless}"
-  dns_suffix             = ""
-  tags                   = "${local.modified_tags}"
-  use_route53            = false
-  vpc_id                 = "${local.vpc_id}"
-  public_route_table_id  = "${local.route_table_id}"
-  bastion_private_ip     = "${data.terraform_remote_state.bastion.bastion_private_ip}"
-  private_route_table_id = "${data.terraform_remote_state.routes.pas_private_vpc_route_table_id}"
-  nat_instance_type      = "${var.nat_instance_type}"
-  root_domain            = "${data.terraform_remote_state.paperwork.root_domain}"
-  splunk_syslog_ca_cert  = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
+  env_name                = "${var.env_name}"
+  availability_zones      = "${var.availability_zones}"
+  internetless            = "${var.internetless}"
+  dns_suffix              = ""
+  tags                    = "${local.modified_tags}"
+  use_route53             = false
+  vpc_id                  = "${local.vpc_id}"
+  public_route_table_id   = "${local.route_table_id}"
+  bastion_private_ip      = "${data.terraform_remote_state.bastion.bastion_private_ip}"
+  private_route_table_ids = "${data.terraform_remote_state.routes.pas_private_vpc_route_table_ids}"
+  nat_instance_type       = "${var.nat_instance_type}"
+  root_domain             = "${data.terraform_remote_state.paperwork.root_domain}"
+  splunk_syslog_ca_cert   = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
 
   user_data = "${data.template_cloudinit_config.nat_user_data.rendered}"
 
@@ -128,7 +128,7 @@ module "pas" {
   dns_suffix         = ""
   env_name           = "${var.env_name}"
   public_subnet_ids  = "${module.infra.public_subnet_ids}"
-  route_table_id     = "${data.terraform_remote_state.routes.pas_private_vpc_route_table_id}"
+  route_table_ids    = "${data.terraform_remote_state.routes.pas_private_vpc_route_table_ids}"
   tags               = "${local.modified_tags}"
   vpc_id             = "${local.vpc_id}"
   zone_id            = "${module.infra.zone_id}"

@@ -1,6 +1,10 @@
 variable "vpc_id" {}
 variable "s3_vpc_endpoint_id" {}
 
+variable "availability_zones" {
+  type = "list"
+}
+
 variable "tags" {
   type = "map"
 }
@@ -55,7 +59,7 @@ resource "aws_vpc_endpoint_route_table_association" "public_s3_vpc_endpoint" {
 }
 
 resource "aws_route_table" "private_route_table" {
-  count = 1
+  count = "${length(var.availability_zones)}"
 
   vpc_id = "${var.vpc_id}"
 
@@ -63,14 +67,15 @@ resource "aws_route_table" "private_route_table" {
 }
 
 resource "aws_vpc_endpoint_route_table_association" "private_s3_vpc_endpoint" {
+  count           = "${length(var.availability_zones)}"
   vpc_endpoint_id = "${var.s3_vpc_endpoint_id}"
-  route_table_id  = "${aws_route_table.private_route_table.id}"
+  route_table_id  = "${element(aws_route_table.private_route_table.*.id, count.index)}"
 }
 
 output "public_route_table_id" {
   value = "${element(concat(aws_route_table.public_route_table.*.id, list("")), 0)}"
 }
 
-output "private_route_table_id" {
-  value = "${element(concat(aws_route_table.private_route_table.*.id, list("")), 0)}"
+output "private_route_table_ids" {
+  value = "${aws_route_table.private_route_table.*.id}"
 }

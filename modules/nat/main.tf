@@ -4,9 +4,15 @@ variable "tags" {
   type = "map"
 }
 
-variable "private_route_table_id" {}
+variable "vpc_id" {}
 
-variable "public_subnet_id" {}
+variable "private_route_table_ids" {
+  type = "list"
+}
+
+variable "public_subnet_ids" {
+  type = "list"
+}
 
 variable "instance_type" {
   default = "t2.small"
@@ -28,12 +34,8 @@ locals {
   modified_tags = "${merge(var.tags, map("Name", "${local.modified_name}"))}"
 }
 
-data "aws_route_table" "private_route_table" {
-  route_table_id = "${var.private_route_table_id}"
-}
-
 data "aws_vpc" "vpc" {
-  id = "${data.aws_route_table.private_route_table.vpc_id}"
+  id = "${var.vpc_id}"
 }
 
 module "eni" {
@@ -60,8 +62,8 @@ module "eni" {
     },
   ]
 
-  subnet_ids = ["${var.public_subnet_id}"]
-  eni_count  = 1
+  subnet_ids = ["${var.public_subnet_ids}"]
+  eni_count  = "${length(var.private_route_table_ids)}"
   tags       = "${local.modified_tags}"
   create_eip = "${!var.internetless}"
 
@@ -112,17 +114,18 @@ EOF
 module "nat_host" {
   source = "../launch"
 
-  instance_count = "1"
+  instance_count = "${length(var.private_route_table_ids)}"
   ami_id         = "${var.ami_id}"
   user_data      = "${data.template_cloudinit_config.user_data.rendered}"
-  eni_ids        = ["${module.eni.eni_ids[0]}"]
+  eni_ids        = "${module.eni.eni_ids}"
 
   tags          = "${local.modified_tags}"
   instance_type = "${var.instance_type}"
 }
 
 resource "aws_route" "toggle_internet" {
-  route_table_id         = "${var.private_route_table_id}"
-  instance_id            = "${module.nat_host.instance_ids[0]}"
+  count                  = "${length(var.private_route_table_ids)}"
+  route_table_id         = "${var.private_route_table_ids[count.index]}"
+  instance_id            = "${module.nat_host.instance_ids[count.index]}"
   destination_cidr_block = "0.0.0.0/0"
 }
