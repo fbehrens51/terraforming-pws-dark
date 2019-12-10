@@ -66,8 +66,6 @@ module "bind_host_key_pair" {
   key_name = "${local.modified_name}"
 }
 
-variable "user_data_path" {}
-
 data "template_cloudinit_config" "master_bind_conf_userdata" {
   base64_encode = true
   gzip          = true

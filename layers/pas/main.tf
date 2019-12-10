@@ -268,8 +268,6 @@ variable "tags" {
   type = "map"
 }
 
-variable "user_data_path" {}
-
 locals {
   env_name         = "${var.tags["Name"]}"
   modified_name    = "${local.env_name} pas"
