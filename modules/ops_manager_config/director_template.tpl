@@ -54,9 +54,10 @@ properties-configuration:
       database: ${rds_database}
       host: ${rds_address}
       port: ${rds_port}
-      tls_ca: null
+      tls_ca: |
+        ${indent(8, rds_ca_cert)}
       tls_certificate: null
-      tls_enabled: false
+      tls_enabled: true
       user: ${rds_username}
       password: ${rds_password}
     hm_emailer_options:

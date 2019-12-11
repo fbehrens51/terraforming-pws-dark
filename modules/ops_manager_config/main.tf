@@ -98,6 +98,7 @@ data "template_file" "director_template" {
     rds_port                                    = "${var.rds_port}"
     rds_username                                = "${var.rds_username}"
     rds_password                                = "${var.rds_password}"
+    rds_ca_cert                                 = "${var.rds_ca_cert_pem}"
     smtp_domain                                 = "${var.smtp_domain}"
     smtp_enabled                                = "${var.smtp_enabled}"
     smtp_from                                   = "${var.smtp_from}"
