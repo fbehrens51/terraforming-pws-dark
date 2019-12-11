@@ -2,30 +2,8 @@ data "aws_vpc" "vpc" {
   id = "${var.vpc_id}"
 }
 
-locals {
-  newbits = "${ceil(log(length(var.availability_zones), 2))}"
-}
-
-resource "aws_subnet" "rds_subnets" {
-  count             = "${length(var.availability_zones)}"
-  vpc_id            = "${var.vpc_id}"
-  cidr_block        = "${cidrsubnet(var.cidr_block, local.newbits, count.index)}"
-  availability_zone = "${element(var.availability_zones, count.index)}"
-
-  tags = "${merge(var.tags, map("Name", "${var.env_name}-rds-subnet${count.index}"))}"
-}
-
-resource "aws_db_subnet_group" "rds_subnet_group" {
-  name        = "${var.env_name}_db_subnet_group"
-  description = "RDS Subnet Group"
-
-  subnet_ids = ["${aws_subnet.rds_subnets.*.id}"]
-
-  tags = "${merge(var.tags, map("Name", "${var.env_name}-db-subnet-group"))}"
-}
-
 resource "aws_security_group" "rds_security_group" {
-  name        = "rds_security_group"
+  name        = "${var.env_name} rds security group"
   description = "RDS Instance Security Group"
   vpc_id      = "${var.vpc_id}"
 
@@ -41,6 +19,14 @@ resource "aws_security_group" "rds_security_group" {
     protocol    = "-1"
     from_port   = 0
     to_port     = 0
+  }
+
+  # We changed how the name of the SG is determined.  Without the following
+  # lifecycle, terraform will try to destroy the SG before creating the new
+  # ones.  The destroy will fail because there is an RDS instance still using
+  # the SG.
+  lifecycle {
+    create_before_destroy = true
   }
 
   tags = "${merge(var.tags, map("Name", "${var.env_name}-rds-security-group"))}"
@@ -59,7 +45,7 @@ resource "aws_db_instance" "rds" {
   identifier              = "${replace(var.env_name," ","-")}"
   username                = "${var.rds_db_username}"
   password                = "${random_string.rds_password.result}"
-  db_subnet_group_name    = "${aws_db_subnet_group.rds_subnet_group.name}"
+  db_subnet_group_name    = "${var.subnet_group_name}"
   publicly_accessible     = false
   vpc_security_group_ids  = ["${aws_security_group.rds_security_group.id}"]
   iops                    = 1000

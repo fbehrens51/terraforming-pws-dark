@@ -210,8 +210,8 @@ module "nat" {
   public_bucket_url  = "${data.terraform_remote_state.paperwork.public_bucket_url}"
 }
 
-module "rds" {
-  source = "../../modules/rds"
+module "postgres" {
+  source = "../../modules/rds/instance"
 
   rds_db_username    = "${var.rds_db_username}"
   rds_instance_class = "${var.rds_instance_class}"
@@ -225,63 +225,47 @@ module "rds" {
 
   db_port = 5432
 
-  env_name           = "${local.modified_name}"
-  availability_zones = "${slice(var.availability_zones, 0, 2)}"
-  vpc_id             = "${data.aws_vpc.vpc.id}"
-  cidr_block         = "${local.postgres_rds_cidr_block}"
-  tags               = "${local.modified_tags}"
+  env_name = "${local.modified_name}"
+  vpc_id   = "${data.aws_vpc.vpc.id}"
+  tags     = "${local.modified_tags}"
+
+  subnet_group_name = "${module.rds_subnet_group.subnet_group_name}"
 
   kms_key_id = "${data.terraform_remote_state.paperwork.kms_key_arn}"
 }
 
-resource "aws_security_group" "mysql_rds_security_group" {
-  name        = "mysql_rds_security_group"
-  description = "MySQL RDS Instance Security Group"
-  vpc_id      = "${data.aws_vpc.vpc.id}"
+module "mysql" {
+  source = "../../modules/rds/instance"
 
-  ingress {
-    cidr_blocks = ["${data.aws_vpc.vpc.cidr_block}"]
-    protocol    = "tcp"
-    from_port   = "3306"
-    to_port     = "3306"
-  }
+  rds_db_username    = "${var.rds_db_username}"
+  rds_instance_class = "${var.rds_instance_class}"
 
-  egress {
-    cidr_blocks = ["${data.aws_vpc.vpc.cidr_block}"]
-    protocol    = "-1"
-    from_port   = 0
-    to_port     = 0
-  }
+  engine = "mariadb"
 
-  tags = "${merge(var.tags, map("Name", "${local.modified_name}-mysql-rds-security-group"))}"
+  # RDS decided to upgrade the mysql patch version automatically from 10.1.31 to
+  # 10.1.34, which makes terraform see this as a change. Use a prefix version to
+  # prevent this from happening with postgres.
+  engine_version = "10.1"
+
+  db_port = 3306
+
+  env_name = "${local.modified_name} mysql"
+  vpc_id   = "${data.aws_vpc.vpc.id}"
+  tags     = "${local.modified_tags}"
+
+  subnet_group_name = "${module.rds_subnet_group.subnet_group_name}"
+
+  kms_key_id = "${data.terraform_remote_state.paperwork.kms_key_arn}"
 }
 
-resource "random_string" "rds_password" {
-  length  = 16
-  special = false
-}
+module "rds_subnet_group" {
+  source = "../../modules/rds/subnet_group"
 
-resource "aws_db_instance" "rds" {
-  allocated_storage       = 100
-  instance_class          = "${var.rds_instance_class}"
-  engine                  = "mariadb"
-  engine_version          = "10.1"
-  identifier              = "${replace(local.modified_name," ","-")}-mysql"
-  username                = "${var.rds_db_username}"
-  password                = "${random_string.rds_password.result}"
-  db_subnet_group_name    = "${module.rds.subnet_group_name}"
-  publicly_accessible     = false
-  vpc_security_group_ids  = ["${aws_security_group.mysql_rds_security_group.id}"]
-  iops                    = 1000
-  multi_az                = true
-  skip_final_snapshot     = true
-  backup_retention_period = 7
-  apply_immediately       = true
-
-  kms_key_id        = "${data.terraform_remote_state.paperwork.kms_key_arn}"
-  storage_encrypted = true
-
-  tags = "${local.modified_tags}"
+  env_name           = "${local.modified_name}"
+  availability_zones = "${slice(var.availability_zones, 0, 2)}"
+  vpc_id             = "${data.aws_vpc.vpc.id}"
+  cidr_block         = "${local.rds_cidr_block}"
+  tags               = "${local.modified_tags}"
 }
 
 module "web_elb" {
@@ -351,11 +335,10 @@ locals {
   modified_tags    = "${merge(var.tags, map("Name", "${local.modified_name}"))}"
   bucket_prefix    = "${replace(local.env_name, " ", "-")}"
 
-  public_cidr_block       = "${cidrsubnet(data.aws_vpc.vpc.cidr_block, 1, 0)}"
-  mysql_rds_cidr_block    = "${cidrsubnet(local.public_cidr_block, 2, 2)}"
-  postgres_rds_cidr_block = "${cidrsubnet(local.public_cidr_block, 2, 3)}"
-  private_cidr_block      = "${cidrsubnet(data.aws_vpc.vpc.cidr_block, 1, 1)}"
-  sjb_cidr_block          = "${cidrsubnet(local.private_cidr_block, 2, 3)}"
+  public_cidr_block  = "${cidrsubnet(data.aws_vpc.vpc.cidr_block, 1, 0)}"
+  rds_cidr_block     = "${cidrsubnet(local.public_cidr_block, 2, 3)}"
+  private_cidr_block = "${cidrsubnet(data.aws_vpc.vpc.cidr_block, 1, 1)}"
+  sjb_cidr_block     = "${cidrsubnet(local.private_cidr_block, 2, 3)}"
 
   om_ingress_rules = [
     {

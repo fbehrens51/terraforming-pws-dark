@@ -141,7 +141,7 @@ module "om_key_pair" {
 }
 
 module "rds" {
-  source = "../../modules/rds"
+  source = "../../modules/rds/instance"
 
   rds_db_username    = "${var.rds_db_username}"
   rds_instance_class = "${var.rds_instance_class}"
@@ -155,13 +155,23 @@ module "rds" {
 
   db_port = 3306
 
+  env_name = "${var.env_name}"
+  vpc_id   = "${module.infra.vpc_id}"
+  tags     = "${local.modified_tags}"
+
+  subnet_group_name = "${module.rds_subnet_group.subnet_group_name}"
+
+  kms_key_id = "${data.terraform_remote_state.paperwork.kms_key_arn}"
+}
+
+module "rds_subnet_group" {
+  source = "../../modules/rds/subnet_group"
+
   env_name           = "${var.env_name}"
   availability_zones = "${var.availability_zones}"
   vpc_id             = "${module.infra.vpc_id}"
   cidr_block         = "${module.calculated_subnets.rds_cidr}"
   tags               = "${local.modified_tags}"
-
-  kms_key_id = "${data.terraform_remote_state.paperwork.kms_key_arn}"
 }
 
 module "pas_elb" {

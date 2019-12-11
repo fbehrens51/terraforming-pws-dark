@@ -20,10 +20,6 @@ variable "env_name" {
   type = "string"
 }
 
-variable "availability_zones" {
-  type = "list"
-}
-
 variable "vpc_id" {
   type = "string"
 }
@@ -32,6 +28,6 @@ variable "tags" {
   type = "map"
 }
 
-variable "kms_key_id" {}
+variable "subnet_group_name" {}
 
-variable "cidr_block" {}
+variable "kms_key_id" {}

@@ -68,36 +68,36 @@ output "web_elb_id" {
 }
 
 output "postgres_rds_address" {
-  value = "${module.rds.rds_address}"
+  value = "${module.postgres.rds_address}"
 }
 
 output "postgres_rds_port" {
-  value = "${module.rds.rds_port}"
+  value = "${module.postgres.rds_port}"
 }
 
 output "postgres_rds_username" {
-  value = "${module.rds.rds_username}"
+  value = "${module.postgres.rds_username}"
 }
 
 output "postgres_rds_password" {
-  value     = "${module.rds.rds_password}"
+  value     = "${module.postgres.rds_password}"
   sensitive = true
 }
 
 output "mysql_rds_address" {
-  value = "${aws_db_instance.rds.address}"
+  value = "${module.mysql.rds_address}"
 }
 
 output "mysql_rds_port" {
-  value = "${aws_db_instance.rds.port}"
+  value = "${module.mysql.rds_port}"
 }
 
 output "mysql_rds_username" {
-  value = "${aws_db_instance.rds.username}"
+  value = "${module.mysql.rds_username}"
 }
 
 output "mysql_rds_password" {
-  value     = "${random_string.rds_password.result}"
+  value     = "${module.mysql.rds_password}"
   sensitive = true
 }
 
