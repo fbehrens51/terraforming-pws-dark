@@ -41,11 +41,22 @@ properties-configuration:
     bosh_recreate_persistent_disks_on_next_deploy: false
     custom_ssh_banner: |
       ${indent(6, custom_ssh_banner)}
-    database_type: internal
+    database_type: external
     director_worker_count: 5
     encryption:
       keys: []
       providers: []
+    external_database_options:
+      connection_options: {}
+      database: ${rds_db_name}
+      host: ${rds_host}
+      port: ${rds_port}
+      tls_ca: |
+        ${indent(8, rds_ca_cert)}
+      tls_certificate: null
+      tls_enabled: true
+      user: ${rds_username}
+      password: ${rds_password}
     hm_emailer_options:
       domain: ${smtp_domain}
       enabled: ${smtp_enabled}

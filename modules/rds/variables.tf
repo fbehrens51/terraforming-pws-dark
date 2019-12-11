@@ -16,11 +16,6 @@ variable "engine_version" {
 
 variable "db_port" {}
 
-variable "rds_instance_count" {
-  type    = "string"
-  default = 0
-}
-
 variable "env_name" {
   type = "string"
 }

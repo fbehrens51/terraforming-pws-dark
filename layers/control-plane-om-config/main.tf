@@ -120,12 +120,20 @@ module "om_config" {
   # director_rds_port     = "${data.terraform_remote_state.bootstrap_control_plane.director_rds_port}"
   # director_rds_username = "${data.terraform_remote_state.bootstrap_control_plane.director_rds_username}"
 
+  # BOSH director database variables
+  mysql_db_name  = "director"
+  mysql_ca_cert  = "${data.terraform_remote_state.paperwork.rds_ca_cert}"
+  mysql_host     = "${data.terraform_remote_state.bootstrap_control_plane.mysql_rds_address}"
+  mysql_port     = "${data.terraform_remote_state.bootstrap_control_plane.mysql_rds_port}"
+  mysql_username = "${data.terraform_remote_state.bootstrap_control_plane.mysql_rds_username}"
+  mysql_password = "${data.terraform_remote_state.bootstrap_control_plane.mysql_rds_password}"
+  # Concourse database variables
   postgres_db_name  = "concourse"
   postgres_ca_cert  = "${data.terraform_remote_state.paperwork.rds_ca_cert}"
-  postgres_host     = "${data.terraform_remote_state.bootstrap_control_plane.rds_address}"
-  postgres_port     = "${data.terraform_remote_state.bootstrap_control_plane.rds_port}"
-  postgres_username = "${data.terraform_remote_state.bootstrap_control_plane.rds_username}"
-  postgres_password = "${data.terraform_remote_state.bootstrap_control_plane.rds_password}"
+  postgres_host     = "${data.terraform_remote_state.bootstrap_control_plane.postgres_rds_address}"
+  postgres_port     = "${data.terraform_remote_state.bootstrap_control_plane.postgres_rds_port}"
+  postgres_username = "${data.terraform_remote_state.bootstrap_control_plane.postgres_rds_username}"
+  postgres_password = "${data.terraform_remote_state.bootstrap_control_plane.postgres_rds_password}"
   concourse_version = "${var.concourse_version}"
 
   # rds_ca_cert_pem = "${data.terraform_remote_state.paperwork.rds_ca_cert_pem}"

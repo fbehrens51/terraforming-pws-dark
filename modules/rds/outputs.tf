@@ -18,3 +18,7 @@ output "rds_password" {
 output "rds_db_name" {
   value = "${element(concat(aws_db_instance.rds.*.name, list("")), 0)}"
 }
+
+output "subnet_group_name" {
+  value = "${aws_db_subnet_group.rds_subnet_group.name}"
+}

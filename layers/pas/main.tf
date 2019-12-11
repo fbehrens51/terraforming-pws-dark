@@ -145,7 +145,6 @@ module "rds" {
 
   rds_db_username    = "${var.rds_db_username}"
   rds_instance_class = "${var.rds_instance_class}"
-  rds_instance_count = "1"
 
   engine = "mariadb"
 

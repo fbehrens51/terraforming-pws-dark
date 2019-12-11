@@ -7,7 +7,7 @@ locals {
 }
 
 resource "aws_subnet" "rds_subnets" {
-  count             = "${var.rds_instance_count > 0 ? length(var.availability_zones) : 0}"
+  count             = "${length(var.availability_zones)}"
   vpc_id            = "${var.vpc_id}"
   cidr_block        = "${cidrsubnet(var.cidr_block, local.newbits, count.index)}"
   availability_zone = "${element(var.availability_zones, count.index)}"
@@ -22,8 +22,6 @@ resource "aws_db_subnet_group" "rds_subnet_group" {
   subnet_ids = ["${aws_subnet.rds_subnets.*.id}"]
 
   tags = "${merge(var.tags, map("Name", "${var.env_name}-db-subnet-group"))}"
-
-  count = "${var.rds_instance_count > 0 ? 1 : 0}"
 }
 
 resource "aws_security_group" "rds_security_group" {
@@ -45,13 +43,10 @@ resource "aws_security_group" "rds_security_group" {
     to_port     = 0
   }
 
-  tags  = "${merge(var.tags, map("Name", "${var.env_name}-rds-security-group"))}"
-  count = "${var.rds_instance_count > 0 ? 1 : 0}"
+  tags = "${merge(var.tags, map("Name", "${var.env_name}-rds-security-group"))}"
 }
 
 resource "random_string" "rds_password" {
-  count = "${var.rds_instance_count > 0 ? 1 : 0}"
-
   length  = 16
   special = false
 }
@@ -75,8 +70,6 @@ resource "aws_db_instance" "rds" {
 
   kms_key_id        = "${var.kms_key_id}"
   storage_encrypted = true
-
-  count = "${var.rds_instance_count}"
 
   tags = "${var.tags}"
 }

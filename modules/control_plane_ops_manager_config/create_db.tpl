@@ -2,12 +2,14 @@
 
 export PGPASSWORD=${postgres_password}
 
-dbname="concourse"
-
-psql="psql -h ${postgres_host} -p ${postgres_port} -U ${postgres_username} $dbname"
+psql="psql -h ${postgres_host} -p ${postgres_port} -U ${postgres_username} ${postgres_db_name}"
 if ! $psql -c "SELECT 1;" >/dev/null 2>&1; then
-    createdb -h ${postgres_host} -p ${postgres_port} -U ${postgres_username} $dbname
-    echo "Created database $dbname."
+    createdb -h ${postgres_host} -p ${postgres_port} -U ${postgres_username} ${postgres_db_name}
+    echo "Created database ${postgres_db_name}."
 else
-    echo "Database $dbname already exists."
+    echo "Database ${postgres_db_name} already exists."
 fi
+
+mysql -h ${mysql_host} -P ${mysql_port} -u ${mysql_username} --password=${mysql_password} <<SQL
+create database if not exists ${mysql_db_name};
+SQL

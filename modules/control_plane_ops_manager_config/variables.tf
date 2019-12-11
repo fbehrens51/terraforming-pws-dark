@@ -193,3 +193,10 @@ variable "postgres_db_name" {}
 variable "postgres_username" {}
 variable "postgres_password" {}
 variable "postgres_ca_cert" {}
+
+variable "mysql_host" {}
+variable "mysql_port" {}
+variable "mysql_db_name" {}
+variable "mysql_username" {}
+variable "mysql_password" {}
+variable "mysql_ca_cert" {}

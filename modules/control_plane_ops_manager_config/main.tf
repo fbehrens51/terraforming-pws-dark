@@ -54,6 +54,13 @@ data "template_file" "director_template" {
     ec2_endpoint = "${var.ec2_endpoint}"
     elb_endpoint = "${var.elb_endpoint}"
 
+    rds_host     = "${var.mysql_host}"
+    rds_port     = "${var.mysql_port}"
+    rds_db_name  = "${var.mysql_db_name}"
+    rds_username = "${var.mysql_username}"
+    rds_password = "${var.mysql_password}"
+    rds_ca_cert  = "${var.mysql_ca_cert}"
+
     singleton_availability_zone                 = "${var.singleton_availability_zone}"
     custom_ssh_banner                           = "${var.custom_ssh_banner}"
     smtp_domain                                 = "${var.smtp_domain}"
@@ -102,6 +109,13 @@ data "template_file" "create_db" {
     postgres_port     = "${var.postgres_port}"
     postgres_username = "${var.postgres_username}"
     postgres_password = "${var.postgres_password}"
+    postgres_db_name  = "${var.postgres_db_name}"
+
+    mysql_host     = "${var.mysql_host}"
+    mysql_port     = "${var.mysql_port}"
+    mysql_username = "${var.mysql_username}"
+    mysql_password = "${var.mysql_password}"
+    mysql_db_name  = "${var.mysql_db_name}"
   }
 }
 
