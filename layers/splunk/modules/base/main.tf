@@ -32,8 +32,9 @@ module "syslog_config" {
 data "template_file" "web_conf" {
   template = <<EOF
 [settings]
-httpport           = ${module.splunk_ports.splunk_web_port}
-mgmtHostPort       = 127.0.0.1:${module.splunk_ports.splunk_mgmt_port}
+updateCheckerBaseURL = 0
+httpport             = ${module.splunk_ports.splunk_web_port}
+mgmtHostPort         = 127.0.0.1:${module.splunk_ports.splunk_mgmt_port}
 
 enableSplunkWebSSL = true
 serverCert         = /opt/splunk/etc/auth/mycerts/mySplunkWebCertificate.pem
