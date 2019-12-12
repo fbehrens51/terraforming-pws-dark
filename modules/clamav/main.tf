@@ -35,7 +35,7 @@ variable "bosh_network_name" {}
 
 locals {
   clamav_product_slug    = "p-clamav-addon"
-  clamav_product_version = "2.0.12"
+  clamav_product_version = "2.1.6"
 
   clamav_addon_file_glob  = "p-clamav-[0-9]*.pivotal"
   clamav_mirror_file_glob = "p-clamav-mirror-[0-9]*.pivotal"
