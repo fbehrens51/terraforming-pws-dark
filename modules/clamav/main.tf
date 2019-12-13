@@ -37,8 +37,8 @@ locals {
   clamav_product_slug    = "p-clamav-addon"
   clamav_product_version = "2.1.6"
 
-  clamav_addon_file_glob  = "p-clamav-[0-9]*.pivotal"
-  clamav_mirror_file_glob = "p-clamav-mirror-[0-9]*.pivotal"
+  clamav_addon_file_glob  = "p-antivirus-[0-9]*.pivotal"
+  clamav_mirror_file_glob = "p-antivirus-mirror-[0-9]*.pivotal"
 }
 
 data "template_file" "pas_vpc_azs" {
