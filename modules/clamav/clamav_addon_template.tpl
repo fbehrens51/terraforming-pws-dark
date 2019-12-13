@@ -1,4 +1,4 @@
-product-name: p-clamav
+product-name: p-antivirus
 product-properties:
   .properties.action:
     selected_option: notify
