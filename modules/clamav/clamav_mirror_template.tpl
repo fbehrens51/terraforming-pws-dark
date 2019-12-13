@@ -1,4 +1,4 @@
-product-name: p-clamav-mirror
+product-name: p-antivirus-mirror
 product-properties:
 
 ${
@@ -42,7 +42,7 @@ network-properties:
   singleton_availability_zone:
     name: ${singleton_availability_zone}
 resource-config:
-  clamav-mirror:
+  antivirus-mirror:
     instances: automatic
     persistent_disk:
       size_mb: automatic
