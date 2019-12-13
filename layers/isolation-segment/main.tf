@@ -83,7 +83,7 @@ module "config" {
 
 data "aws_s3_bucket_object" "base_tile" {
   bucket = "${local.mirror_bucket}"
-  key    = "[p-isolation-segment,${module.config.version}]p-isolation-segment-${module.config.version}.pivotal"
+  key    = "[p-isolation-segment,${module.config.product_version}]p-isolation-segment-${module.config.file_version}.pivotal"
 }
 
 resource "null_resource" "replicator" {

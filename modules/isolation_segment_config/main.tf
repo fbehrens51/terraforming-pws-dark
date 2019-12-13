@@ -1,5 +1,6 @@
 locals {
-  isolation_segment_version = "2.7.6-build.2"
+  isolation_segment_product_version = "2.7.6"
+  isolation_segment_file_version    = "2.7.6-build.2"
 }
 
 variable "pivnet_api_token" {}
@@ -46,7 +47,7 @@ data "template_file" "download_config" {
     pivnet_api_token    = "${var.pivnet_api_token}"
     pivnet_file_glob    = "*.pivotal"
     pivnet_product_slug = "p-isolation-segment-${var.iso_seg_tile_suffix}"
-    product_version     = "${local.isolation_segment_version}"
+    product_version     = "${local.isolation_segment_product_version}"
 
     s3_endpoint          = "${var.s3_endpoint}"
     s3_region_name       = "${var.region}"
@@ -64,7 +65,7 @@ data "template_file" "base_tile_download_config" {
     pivnet_api_token    = "${var.pivnet_api_token}"
     pivnet_file_glob    = "*.pivotal"
     pivnet_product_slug = "p-isolation-segment"
-    product_version     = "${local.isolation_segment_version}"
+    product_version     = "${local.isolation_segment_product_version}"
 
     s3_endpoint          = "${var.s3_endpoint}"
     s3_region_name       = "${var.region}"
@@ -94,8 +95,12 @@ data "template_file" "tile_config" {
   }
 }
 
-output "version" {
-  value = "${local.isolation_segment_version}"
+output "product_version" {
+  value = "${local.isolation_segment_product_version}"
+}
+
+output "file_version" {
+  value = "${local.isolation_segment_file_version}"
 }
 
 output "base_tile_download_config" {
