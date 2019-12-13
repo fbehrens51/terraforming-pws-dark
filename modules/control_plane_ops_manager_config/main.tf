@@ -5,7 +5,7 @@ locals {
 
   compliance_scanner_file_glob       = "p-compliance-scanner*.pivotal"
   compliance_scanner_product_slug    = "p-compliance-scanner"
-  compliance_scanner_product_version = "1.1.19"
+  compliance_scanner_product_version = "1.2.16"
 }
 
 data "aws_vpc" "vpc" {
