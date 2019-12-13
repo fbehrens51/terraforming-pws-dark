@@ -63,6 +63,7 @@ module "compliance_scanner_config" {
   splunk_syslog_host          = "${module.domains.splunk_logs_fqdn}"
   splunk_syslog_port          = "${module.splunk_ports.splunk_tcp_port}"
   splunk_syslog_ca_cert       = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
+  custom_ssh_banner           = "${data.terraform_remote_state.paperwork.custom_ssh_banner}"
 }
 
 output "compliance_scanner_config" {

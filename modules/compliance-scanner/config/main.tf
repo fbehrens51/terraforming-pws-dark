@@ -13,6 +13,7 @@ variable "ntp_servers" {
 variable "splunk_syslog_host" {}
 variable "splunk_syslog_port" {}
 variable "splunk_syslog_ca_cert" {}
+variable "custom_ssh_banner" {}
 
 data "template_file" "compliance_scanner_config" {
   template = "${file("${path.module}/compliance_scanner_config.tpl")}"
@@ -30,6 +31,7 @@ data "template_file" "compliance_scanner_config" {
     splunk_syslog_host    = "${var.splunk_syslog_host}"
     splunk_syslog_port    = "${var.splunk_syslog_port}"
     splunk_syslog_ca_cert = "${var.splunk_syslog_ca_cert}"
+    custom_ssh_banner     = "${var.custom_ssh_banner}"
   }
 }
 
