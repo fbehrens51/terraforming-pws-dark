@@ -13,7 +13,8 @@ product-properties:
     selected_option: disabled
     value: disabled
   .properties.login_banner:
-    value: ${custom_ssh_banner}
+    value: |
+      ${indent(6, custom_ssh_banner)}
   .properties.ntp_server:
     value: ${ntp_servers}
   .properties.scan_report_formats:
