@@ -99,10 +99,6 @@ write_files:
   content: |
     ${indent(4, data.template_file.outputs_conf.rendered)}
 
-- path: /run/splunk-ca.pem
-  content: |
-    ${indent(4, var.ca_cert)}
-
 - path: /run/license.lic
   content: |
     ${indent(4, file(var.license_path))}
