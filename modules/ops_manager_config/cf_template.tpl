@@ -84,8 +84,9 @@ product-properties:
     value: 120
   .properties.cf_networking_enable_space_developer_self_service:
     value: true
-  .properties.cf_networking_internal_domain:
-    value: apps.internal
+  .properties.cf_networking_internal_domains:
+    value:
+    -  name: apps.internal
   .properties.cloud_controller_completed_tasks_cutoff_age_in_days:
     value: 31
   .properties.cloud_controller_default_health_check_timeout:
@@ -113,13 +114,12 @@ product-properties:
   .properties.credhub_database:
     selected_option: internal_mysql
     value: internal_mysql
-  .properties.credhub_key_encryption_passwords:
+  .properties.credhub_internal_provider_keys:
     value:
     - key:
         secret: ${credhub_encryption_password}
       name: credhub
       primary: true
-      provider: internal
   .properties.diego_database_max_open_connections:
     value: 100
   .properties.diego_log_timestamp_format:
@@ -229,8 +229,6 @@ product-properties:
   .properties.router_keepalive_connections:
     selected_option: enable
     value: enable
-  .properties.router_prune_all_stale_routes:
-    value: false
   .properties.routing_custom_ca_certificates:
     value: |
       ${indent(6, router_trusted_ca_certificates)}
@@ -270,21 +268,15 @@ product-properties:
     value: ${smtp_from}
   .properties.smtp_port:
     value: ${smtp_port}
-  .properties.syslog_agent_enabled:
-    value: false
   .properties.syslog_drop_debug:
     value: true
   .properties.syslog_host:
     value: ${splunk_syslog_host}
-  .properties.syslog_metrics_to_syslog_enabled:
-    value: true
   .properties.syslog_port:
     value: ${splunk_syslog_port}
   .properties.syslog_protocol:
     value: tcp
   .properties.syslog_drop_debug:
-    value: true
-  .properties.syslog_metrics_to_syslog_enabled:
     value: true
   .properties.system_metrics_enabled:
     value: true
@@ -529,16 +521,6 @@ resource-config:
     internet_connected: false
     additional_vm_extensions:
     - s3_instance_profile
-  consul_server:
-    swap_as_percent_of_memory_size: automatic
-    additional_networks: []
-    additional_vm_extensions: []
-    instances: automatic
-    persistent_disk:
-      size_mb: automatic
-    instance_type:
-      id: ${consul_server_instance_type}
-    internet_connected: false
   credhub:
     swap_as_percent_of_memory_size: automatic
     additional_networks: []
@@ -667,22 +649,6 @@ resource-config:
       id: ${router_instance_type}
     internet_connected: false
     elb_names: ${router_elb_names}
-  syslog_adapter:
-    swap_as_percent_of_memory_size: automatic
-    additional_networks: []
-    additional_vm_extensions: []
-    instances: automatic
-    instance_type:
-      id: ${syslog_adapter_instance_type}
-    internet_connected: false
-  syslog_scheduler:
-    swap_as_percent_of_memory_size: automatic
-    additional_networks: []
-    additional_vm_extensions: []
-    instances: automatic
-    instance_type:
-      id: ${syslog_scheduler_instance_type}
-    internet_connected: false
   tcp_router:
     swap_as_percent_of_memory_size: automatic
     additional_networks: []

@@ -51,6 +51,9 @@ product-properties:
         private_key_pem: |
           ${indent(10, router_private_key_pem)}
       name: cert
+  .properties.networking_point_of_entry:
+    selected_option: terminate_at_router
+    value: terminate_at_router
   .properties.nfs_volume_driver:
     selected_option: disable
     value: disable
@@ -72,8 +75,6 @@ product-properties:
   .properties.router_keepalive_connections:
     selected_option: enable
     value: enable
-  .properties.router_prune_all_stale_routes:
-    value: false
   .properties.routing_custom_ca_certificates:
     value: |
       ${indent(6, router_trusted_ca_certificates)}
