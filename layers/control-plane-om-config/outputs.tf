@@ -32,10 +32,6 @@ output "clamav_release_public_bucket_key" {
   value = "${var.clamav_release_public_bucket_key}"
 }
 
-output "clamav_release_sha1" {
-  value = "${var.clamav_release_sha1}"
-}
-
 output "download_clamav_addon_config" {
   value     = "${module.clamav_config.download_clamav_addon_config}"
   sensitive = true

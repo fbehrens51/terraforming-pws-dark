@@ -68,10 +68,6 @@ variable "clamav_release_public_bucket_key" {
   description = "The object key of the clamav release. This will be used to add clamav to the bosh director."
 }
 
-variable "clamav_release_sha1" {
-  description = "The object sha1 of the clamav release. This will be used to add clamav to the bosh director."
-}
-
 variable "ipsec_log_level" {}
 variable "ipsec_optional" {}
 
