@@ -16,6 +16,8 @@ variable "public_bucket_url" {}
 
 variable "banner_user_data" {}
 
+variable "instance_user_data" {}
+
 module "splunk_ports" {
   source = "../../../../modules/splunk_ports"
 }
@@ -109,8 +111,8 @@ EOF
 }
 
 data "template_cloudinit_config" "user_data" {
-  base64_encode = false
-  gzip          = false
+  base64_encode = true
+  gzip          = true
 
   part {
     filename     = "syslog.cfg"
@@ -134,6 +136,13 @@ data "template_cloudinit_config" "user_data" {
     filename     = "splunk-and-web.cfg"
     content_type = "text/cloud-config"
     content      = "${data.template_file.cloud_config.rendered}"
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+
+  part {
+    filename     = "specific-instance.cfg"
+    content_type = "text/cloud-config"
+    content      = "${var.instance_user_data}"
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 

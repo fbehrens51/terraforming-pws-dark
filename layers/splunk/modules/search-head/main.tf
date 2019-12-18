@@ -37,6 +37,7 @@ module "base" {
   public_bucket_name      = "${var.public_bucket_name}"
   public_bucket_url       = "${var.public_bucket_url}"
   banner_user_data        = "${var.banner_user_data}"
+  instance_user_data      = "${data.template_file.cloud_config.rendered}"
 }
 
 module "splunk_ports" {
@@ -121,25 +122,7 @@ runcmd:
 EOF
 }
 
-data "template_cloudinit_config" "user_data" {
-  base64_encode = true
-  gzip          = true
-
-  part {
-    filename     = "search-head.cfg"
-    content_type = "text/cloud-config"
-    content      = "${data.template_file.cloud_config.rendered}"
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
-  }
-
-  part {
-    filename     = "base.cfg"
-    content_type = "text/cloud-config"
-    content      = "${module.base.user_data}"
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
-  }
-}
 
 output "user_data" {
-  value = "${data.template_cloudinit_config.user_data.rendered}"
+  value = "${module.base.user_data}"
 }
