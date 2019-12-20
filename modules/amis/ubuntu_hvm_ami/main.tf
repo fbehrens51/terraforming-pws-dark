@@ -2,14 +2,6 @@ data "aws_ami" "ubuntu_hvm_ami" {
   most_recent = true
 
   filter {
-    name = "owner-id"
-
-    values = [
-      "099720109477",
-    ] # Canonical
-  }
-
-  filter {
     name = "name"
 
     values = [
@@ -40,6 +32,8 @@ data "aws_ami" "ubuntu_hvm_ami" {
       "ebs",
     ]
   }
+
+  owners = ["099720109477"]
 }
 
 output "id" {

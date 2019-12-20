@@ -1,5 +1,5 @@
 provider "aws" {
-  version = "<= 1.54"
+  version = "~> 2.43.0"
 }
 
 provider "random" {
@@ -7,15 +7,15 @@ provider "random" {
 }
 
 provider "tls" {
-  version = "~> 1.2.0"
+  version = "~> 2.1.1"
 }
 
 provider "template" {
-  version = "~> 2.0.0"
+  version = "~> 2.1.2"
 }
 
 provider "null" {
-  version = "~> 2.0.0"
+  version = "~> 2.1.2"
 }
 
 provider "external" {
@@ -27,5 +27,5 @@ provider "dns" {
 }
 
 terraform {
-  required_version = "< 0.12.0"
+  required_version = "~> 0.12.18"
 }

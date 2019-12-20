@@ -1,17 +1,9 @@
 data "aws_ami" "amazon_linux_hvm_ami" {
   most_recent = true
 
-  filter {
-    name = "owner-alias"
-
-    values = [
-      "amazon",
-    ]
-  }
-
   name_regex = "^amzn2-ami-hvm-[0-9.]+-x86_64-ebs$"
 
-  owners = []
+  owners = ["amazon"]
 }
 
 output "id" {
