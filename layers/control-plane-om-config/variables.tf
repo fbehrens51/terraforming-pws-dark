@@ -1,12 +1,7 @@
 variable "remote_state_bucket" {}
 variable "remote_state_region" {}
 variable "singleton_availability_zone" {}
-variable "smtp_host" {}
-variable "smtp_user" {}
-variable "smtp_password" {}
-variable "smtp_tls" {}
 variable "smtp_from" {}
-variable "smtp_port" {}
 variable "smtp_recipients" {}
 variable "smtp_domain" {}
 variable "smtp_enabled" {}

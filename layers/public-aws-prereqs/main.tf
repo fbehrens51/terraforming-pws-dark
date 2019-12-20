@@ -40,7 +40,6 @@ locals {
   portal_smoke_test_cert_s3_path                   = "portal_smoke_test_cert.pem"
   portal_smoke_test_key_s3_path                    = "portal_smoke_test_key.pem"
   ldap_password_s3_path                            = "ldap_password.txt"
-  smtp_password_s3_path                            = "smtp_password.txt"
   portal_end_to_end_test_user_cert_pem_path        = "portal_end_to_end_test_user_cert.pem"
   portal_end_to_end_test_user_private_key_pem_path = "portal_end_to_end_test_user_key.pem"
 
@@ -49,11 +48,6 @@ locals {
 }
 
 resource "random_string" "ldap_password" {
-  length  = "16"
-  special = false
-}
-
-resource "random_string" "smtp_password" {
   length  = "16"
   special = false
 }
@@ -135,8 +129,6 @@ data "template_file" "paperwork_variables" {
     ldap_port             = "636"
     ldap_role_attr        = "role"
     ldap_password_s3_path = "${local.ldap_password_s3_path}"
-
-    smtp_password_s3_path = "${local.smtp_password_s3_path}"
 
     cert_bucket                          = "${aws_s3_bucket.certs.bucket}"
     root_ca_cert_s3_path                 = "${local.root_ca_cert_s3_path}"
@@ -419,13 +411,6 @@ resource "aws_s3_bucket_object" "ldap_password" {
   bucket       = "${aws_s3_bucket.certs.bucket}"
   content_type = "text/plain"
   content      = "${random_string.ldap_password.result}"
-}
-
-resource "aws_s3_bucket_object" "smtp_password" {
-  key          = "${local.smtp_password_s3_path}"
-  bucket       = "${aws_s3_bucket.certs.bucket}"
-  content_type = "text/plain"
-  content      = "${random_string.smtp_password.result}"
 }
 
 resource "local_file" "paperwork_variables" {

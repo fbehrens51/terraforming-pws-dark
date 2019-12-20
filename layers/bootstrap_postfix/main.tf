@@ -101,9 +101,11 @@ locals {
     },
   ]
 
+  smtp_client_port = "25"
+
   postfix_ingress_rules = [
     {
-      port        = "25"
+      port        = "${local.smtp_client_port}"
       protocol    = "tcp"
       cidr_blocks = "0.0.0.0/0"
     },
@@ -174,6 +176,10 @@ output "postfix_eip_ips" {
 
 output "smtp_relay_port" {
   value = "${var.smtp_relay_port}"
+}
+
+output "smtp_client_port" {
+  value = "${local.smtp_client_port}"
 }
 
 output "smtp_client_user" {

@@ -52,10 +52,26 @@ data "terraform_remote_state" "pas" {
   }
 }
 
+data "terraform_remote_state" "bootstrap_postfix" {
+  backend = "s3"
+
+  config {
+    bucket  = "${var.remote_state_bucket}"
+    key     = "bootstrap_postfix"
+    region  = "${var.remote_state_region}"
+    encrypt = true
+  }
+}
+
 data "aws_region" "current" {}
 
 locals {
   mirror_bucket_name = "${data.terraform_remote_state.bootstrap_control_plane.mirror_bucket_name}"
+
+  smtp_host     = "${module.domains.smtp_fqdn}"
+  smtp_port     = "${data.terraform_remote_state.bootstrap_postfix.smtp_client_port}"
+  smtp_user     = "${data.terraform_remote_state.bootstrap_postfix.smtp_client_user}"
+  smtp_password = "${data.terraform_remote_state.bootstrap_postfix.smtp_client_password}"
 }
 
 module "domains" {
@@ -113,12 +129,12 @@ module "om_config" {
   router_private_key_pem         = "${data.terraform_remote_state.paperwork.router_server_key}"
   router_trusted_ca_certificates = "${data.terraform_remote_state.paperwork.router_trusted_ca_certs}"
 
-  smtp_host       = "${var.smtp_host}"
-  smtp_user       = "${var.smtp_user}"
-  smtp_password   = "${data.terraform_remote_state.paperwork.smtp_password}"
-  smtp_tls        = "${var.smtp_tls}"
+  smtp_host       = "${local.smtp_host}"
+  smtp_user       = "${local.smtp_user}"
+  smtp_password   = "${local.smtp_password}"
+  smtp_port       = "${local.smtp_port}"
+  smtp_tls        = "true"
   smtp_from       = "${var.smtp_from}"
-  smtp_port       = "${var.smtp_port}"
   smtp_recipients = "${var.smtp_recipients}"
   smtp_domain     = "${var.smtp_domain}"
   smtp_enabled    = "${var.smtp_enabled}"
