@@ -139,7 +139,7 @@ module "ldap_host" {
   source        = "../../modules/launch"
   ami_id        = module.ubuntu_ami.id
   eni_ids       = module.bootstrap.eni_ids
-  user_data     = file(var.user_data_path)
+  user_data     = data.terraform_remote_state.paperwork.outputs.user_accounts_user_data
   key_pair_name = module.ldap_host_key_pair.key_name
 
   tags = local.modified_tags
@@ -204,9 +204,6 @@ variable "tags" {
 }
 
 variable "ldap_host_key_pair_name" {
-}
-
-variable "user_data_path" {
 }
 
 output "ldap_private_ip" {
