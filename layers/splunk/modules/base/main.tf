@@ -1,22 +1,47 @@
-variable "server_cert" {}
-variable "server_key" {}
-variable "ca_cert" {}
-variable "user_accounts_user_data" {}
-variable "root_domain" {}
+variable "server_cert" {
+}
 
-variable "clamav_user_data" {}
+variable "server_key" {
+}
 
-variable "splunk_password" {}
-variable "splunk_rpm_version" {}
-variable "transfer_bucket_name" {}
-variable "region" {}
-variable "role_name" {}
-variable "public_bucket_name" {}
-variable "public_bucket_url" {}
+variable "ca_cert" {
+}
 
-variable "banner_user_data" {}
+variable "user_accounts_user_data" {
+}
 
-variable "instance_user_data" {}
+variable "root_domain" {
+}
+
+variable "clamav_user_data" {
+}
+
+variable "splunk_password" {
+}
+
+variable "splunk_rpm_version" {
+}
+
+variable "transfer_bucket_name" {
+}
+
+variable "region" {
+}
+
+variable "role_name" {
+}
+
+variable "public_bucket_name" {
+}
+
+variable "public_bucket_url" {
+}
+
+variable "banner_user_data" {
+}
+
+variable "instance_user_data" {
+}
 
 module "splunk_ports" {
   source = "../../../../modules/splunk_ports"
@@ -24,11 +49,11 @@ module "splunk_ports" {
 
 module "syslog_config" {
   source                = "../../../../modules/syslog"
-  root_domain           = "${var.root_domain}"
-  splunk_syslog_ca_cert = "${var.ca_cert}"
-  public_bucket_name    = "${var.public_bucket_name}"
-  public_bucket_url     = "${var.public_bucket_url}"
-  role_name             = "${var.role_name}"
+  root_domain           = var.root_domain
+  splunk_syslog_ca_cert = var.ca_cert
+  public_bucket_name    = var.public_bucket_name
+  public_bucket_url     = var.public_bucket_url
+  role_name             = var.role_name
 }
 
 data "template_file" "web_conf" {
@@ -42,6 +67,7 @@ enableSplunkWebSSL = true
 serverCert         = /opt/splunk/etc/auth/mycerts/mySplunkWebCertificate.pem
 privKeyPath        = /opt/splunk/etc/auth/mycerts/mySplunkWebPrivateKey.key
 EOF
+
 }
 
 data "template_file" "cloud_config" {
@@ -108,6 +134,7 @@ runcmd:
     /opt/splunk/bin/splunk cmd splunkd rest --noauth POST /services/authentication/users "name=admin&password=${var.splunk_password}&roles=admin"
     /opt/splunk/bin/splunk restart
 EOF
+
 }
 
 data "template_cloudinit_config" "user_data" {
@@ -116,44 +143,45 @@ data "template_cloudinit_config" "user_data" {
 
   part {
     filename     = "syslog.cfg"
-    content      = "${module.syslog_config.user_data}"
+    content      = module.syslog_config.user_data
     content_type = "text/x-include-url"
   }
 
   part {
     filename     = "user_accounts_user_data.cfg"
     content_type = "text/x-include-url"
-    content      = "${var.user_accounts_user_data}"
+    content      = var.user_accounts_user_data
   }
 
   part {
     filename     = "clamav.cfg"
     content_type = "text/x-include-url"
-    content      = "${var.clamav_user_data}"
+    content      = var.clamav_user_data
   }
 
   part {
     filename     = "splunk-and-web.cfg"
     content_type = "text/cloud-config"
-    content      = "${data.template_file.cloud_config.rendered}"
+    content      = data.template_file.cloud_config.rendered
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
   part {
     filename     = "specific-instance.cfg"
     content_type = "text/cloud-config"
-    content      = "${var.instance_user_data}"
+    content      = var.instance_user_data
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
   part {
     filename     = "banner.cfg"
     content_type = "text/x-include-url"
-    content      = "${var.banner_user_data}"
+    content      = var.banner_user_data
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 }
 
 output "user_data" {
-  value = "${data.template_cloudinit_config.user_data.rendered}"
+  value = data.template_cloudinit_config.user_data.rendered
 }
+

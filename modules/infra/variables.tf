@@ -1,39 +1,44 @@
 variable "env_name" {
-  type = "string"
+  type = string
 }
 
-variable "nat_ami_id" {}
+variable "nat_ami_id" {
+}
 
-variable "bastion_private_ip" {}
+variable "bastion_private_ip" {
+}
 
 variable "hosted_zone" {
-  type    = "string"
+  type    = string
   default = ""
 }
 
 variable "dns_suffix" {
-  type = "string"
+  type = string
 }
 
-variable "public_route_table_id" {}
+variable "public_route_table_id" {
+}
 
 variable "private_route_table_ids" {
-  type = "list"
+  type = list(string)
 }
 
-variable "use_route53" {}
+variable "use_route53" {
+}
 
 variable "availability_zones" {
-  type = "list"
+  type = list(string)
 }
 
 variable "tags" {
-  type        = "map"
+  type        = map(string)
   default     = {}
   description = "Key/value tags to assign to all AWS resources"
 }
 
-variable "internetless" {}
+variable "internetless" {
+}
 
 //variable "nat_ami_map" {
 //  type = "map"
@@ -62,22 +67,31 @@ variable "vpc_id" {
   description = "pre-exsting VPC ID"
 }
 
-variable "nat_instance_type" {}
+variable "nat_instance_type" {
+}
 
 module "cidr_lookup" {
   source   = "../calculate_subnets"
-  vpc_cidr = "${data.aws_vpc.vpc.cidr_block}"
+  vpc_cidr = data.aws_vpc.vpc.cidr_block
 }
 
-variable "root_domain" {}
-variable "splunk_syslog_ca_cert" {}
+variable "root_domain" {
+}
 
-variable "user_data" {}
+variable "splunk_syslog_ca_cert" {
+}
 
-variable "public_bucket_name" {}
-variable "public_bucket_url" {}
+variable "user_data" {
+}
+
+variable "public_bucket_name" {
+}
+
+variable "public_bucket_url" {
+}
 
 locals {
-  infrastructure_cidr = "${module.cidr_lookup.infrastructure_cidr}"
-  public_cidr         = "${module.cidr_lookup.public_cidr}"
+  infrastructure_cidr = module.cidr_lookup.infrastructure_cidr
+  public_cidr         = module.cidr_lookup.public_cidr
 }
+

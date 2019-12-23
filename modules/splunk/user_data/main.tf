@@ -1,9 +1,9 @@
 //TODO: Add timeout ~ 5minutes for user data to fail
 data "template_file" "user_data" {
-  template = "${file("${path.module}/user_data.tpl")}"
+  template = file("${path.module}/user_data.tpl")
 
-  vars {
-    password = "${random_string.splunk_password.result}"
+  vars = {
+    password = random_string.splunk_password.result
   }
 }
 
@@ -14,7 +14,7 @@ data "template_cloudinit_config" "splunk_conf_userdata" {
   part {
     filename     = "splunk_conf.cfg"
     content_type = "text/cloud-config"
-    content      = "${data.template_file.user_data.rendered}"
+    content      = data.template_file.user_data.rendered
   }
 }
 
@@ -24,10 +24,11 @@ resource "random_string" "splunk_password" {
 }
 
 output "user_data" {
-  value = "${data.template_cloudinit_config.splunk_conf_userdata.rendered}"
+  value = data.template_cloudinit_config.splunk_conf_userdata.rendered
 }
 
 output "password" {
-  value     = "${random_string.splunk_password.result}"
+  value     = random_string.splunk_password.result
   sensitive = true
 }
+

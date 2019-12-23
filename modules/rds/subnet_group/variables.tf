@@ -1,17 +1,19 @@
 variable "env_name" {
-  type = "string"
+  type = string
 }
 
 variable "availability_zones" {
-  type = "list"
+  type = list(string)
 }
 
 variable "vpc_id" {
-  type = "string"
+  type = string
 }
 
 variable "tags" {
-  type = "map"
+  type = map(string)
 }
 
-variable "cidr_block" {}
+variable "cidr_block" {
+}
+

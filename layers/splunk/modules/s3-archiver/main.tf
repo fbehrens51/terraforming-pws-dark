@@ -1,19 +1,38 @@
 # read the cloud-init docs to understand in which "phase" each of the sections (bootcmd vs runcmd) are run.
 # example: write_files: occurs before runcmd:
 
-variable "s3_syslog_archive" {}
-variable "ca_cert" {}
-variable "server_cert" {}
-variable "server_key" {}
-variable "root_domain" {}
-variable "region" {}
+variable "s3_syslog_archive" {
+}
 
-variable "clamav_user_data" {}
+variable "ca_cert" {
+}
 
-variable "user_accounts_user_data" {}
-variable "public_bucket_name" {}
-variable "public_bucket_url" {}
-variable "banner_user_data" {}
+variable "server_cert" {
+}
+
+variable "server_key" {
+}
+
+variable "root_domain" {
+}
+
+variable "region" {
+}
+
+variable "clamav_user_data" {
+}
+
+variable "user_accounts_user_data" {
+}
+
+variable "public_bucket_name" {
+}
+
+variable "public_bucket_url" {
+}
+
+variable "banner_user_data" {
+}
 
 data "template_file" "cloud_config" {
   template = <<EOF
@@ -105,19 +124,20 @@ write_files:
 
 EOF
 
-  vars {
-    s3_syslog_archive = "${var.s3_syslog_archive}"
-    region         = "${var.region}"
-    script            = "${indent(4,file("${path.module}/script.bash"))}"
+
+  vars = {
+    s3_syslog_archive = var.s3_syslog_archive
+    region            = var.region
+    script            = indent(4, file("${path.module}/script.bash"))
   }
 }
 
 module "syslog_config" {
   source                = "../../../../modules/syslog"
-  root_domain           = "${var.root_domain}"
-  splunk_syslog_ca_cert = "${var.ca_cert}"
-  public_bucket_name    = "${var.public_bucket_name}"
-  public_bucket_url     = "${var.public_bucket_url}"
+  root_domain           = var.root_domain
+  splunk_syslog_ca_cert = var.ca_cert
+  public_bucket_name    = var.public_bucket_name
+  public_bucket_url     = var.public_bucket_url
   role_name             = "s3-archiver"
 }
 
@@ -127,37 +147,38 @@ data "template_cloudinit_config" "cloud_config" {
 
   part {
     filename     = "syslog.cfg"
-    content      = "${module.syslog_config.user_data}"
+    content      = module.syslog_config.user_data
     content_type = "text/x-include-url"
   }
 
   part {
     filename     = "setup.cfg"
     content_type = "text/cloud-config"
-    content      = "${data.template_file.cloud_config.rendered}"
+    content      = data.template_file.cloud_config.rendered
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
   part {
     filename     = "user_accounts_user_data.cfg"
     content_type = "text/x-include-url"
-    content      = "${var.user_accounts_user_data}"
+    content      = var.user_accounts_user_data
   }
 
   part {
     filename     = "clamav.cfg"
     content_type = "text/x-include-url"
-    content      = "${var.clamav_user_data}"
+    content      = var.clamav_user_data
   }
 
   part {
     filename     = "banner.cfg"
     content_type = "text/x-include-url"
-    content      = "${var.banner_user_data}"
+    content      = var.banner_user_data
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 }
 
 output "user_data" {
-  value = "${data.template_cloudinit_config.cloud_config.rendered}"
+  value = data.template_cloudinit_config.cloud_config.rendered
 }
+

@@ -1,17 +1,27 @@
-variable "remote_state_bucket" {}
-variable "remote_state_region" {}
-variable "control_plane_host_key_pair_name" {}
-variable "rds_db_username" {}
-variable "rds_instance_class" {}
+variable "remote_state_bucket" {
+}
 
-variable "singleton_availability_zone" {}
+variable "remote_state_region" {
+}
+
+variable "control_plane_host_key_pair_name" {
+}
+
+variable "rds_db_username" {
+}
+
+variable "rds_instance_class" {
+}
+
+variable "singleton_availability_zone" {
+}
 
 variable "sjb_egress_rules" {
-  type = "list"
+  type = list(object({ port = string, protocol = string, cidr_blocks = string }))
 }
 
 variable "sjb_ingress_rules" {
-  type = "list"
+  type = list(object({ port = string, protocol = string, cidr_blocks = string }))
 }
 
 # variable "remote_state_bucket" {}
@@ -26,17 +36,17 @@ variable "nat_instance_type" {
 }
 
 variable "availability_zones" {
-  type = "list"
+  type = list(string)
 }
 
-variable "internetless" {}
+variable "internetless" {
+}
 
 variable "tags" {
-  type = "map"
+  type = map(string)
 }
 
 # variable "s3_endpoint" {}
 # variable "ec2_endpoint" {}
 # variable "elb_endpoint" {}
 # variable "region" {}
-

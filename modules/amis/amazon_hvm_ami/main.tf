@@ -7,13 +7,14 @@ data "aws_ami" "amazon_linux_hvm_ami" {
 }
 
 output "id" {
-  value = "${data.aws_ami.amazon_linux_hvm_ami.id}"
+  value = data.aws_ami.amazon_linux_hvm_ami.id
 }
 
 output "name" {
-  value = "${data.aws_ami.amazon_linux_hvm_ami.name}"
+  value = data.aws_ami.amazon_linux_hvm_ami.name
 }
 
 output "tags" {
-  value = "${data.aws_ami.amazon_linux_hvm_ami.tags}"
+  value = data.aws_ami.amazon_linux_hvm_ami.tags
 }
+

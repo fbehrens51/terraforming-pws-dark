@@ -6,7 +6,7 @@ locals {
 }
 
 resource "aws_vpc" "bastion_vpc" {
-  cidr_block = "${local.bastion_vpc_cidr}"
+  cidr_block = local.bastion_vpc_cidr
 
   tags = {
     Name = "${var.env_name} | bastion vpc"
@@ -14,7 +14,7 @@ resource "aws_vpc" "bastion_vpc" {
 }
 
 resource "aws_internet_gateway" "bastion_igw" {
-  vpc_id = "${aws_vpc.bastion_vpc.id}"
+  vpc_id = aws_vpc.bastion_vpc.id
 
   tags = {
     Name = "${var.env_name} | bastion igw"
@@ -22,7 +22,7 @@ resource "aws_internet_gateway" "bastion_igw" {
 }
 
 resource "aws_vpc" "control_plane_vpc" {
-  cidr_block = "${local.control_plane_vpc_cidr}"
+  cidr_block = local.control_plane_vpc_cidr
 
   tags = {
     Name = "${var.env_name} | control plane vpc"
@@ -30,7 +30,7 @@ resource "aws_vpc" "control_plane_vpc" {
 }
 
 resource "aws_internet_gateway" "control_plane_igw" {
-  vpc_id = "${aws_vpc.control_plane_vpc.id}"
+  vpc_id = aws_vpc.control_plane_vpc.id
 
   tags = {
     Name = "${var.env_name} | control plane igw"
@@ -38,7 +38,7 @@ resource "aws_internet_gateway" "control_plane_igw" {
 }
 
 resource "aws_vpc" "pas_vpc" {
-  cidr_block = "${local.pas_vpc_cidr}"
+  cidr_block = local.pas_vpc_cidr
 
   tags = {
     Name = "${var.env_name} | pas vpc"
@@ -46,7 +46,7 @@ resource "aws_vpc" "pas_vpc" {
 }
 
 resource "aws_internet_gateway" "pas_igw" {
-  vpc_id = "${aws_vpc.pas_vpc.id}"
+  vpc_id = aws_vpc.pas_vpc.id
 
   tags = {
     Name = "${var.env_name} | pas igw"
@@ -54,7 +54,7 @@ resource "aws_internet_gateway" "pas_igw" {
 }
 
 resource "aws_vpc" "enterprise_services_vpc" {
-  cidr_block = "${local.enterprise_services_vpc_cidr}"
+  cidr_block = local.enterprise_services_vpc_cidr
 
   tags = {
     Name = "${var.env_name} | enterprise services vpc"
@@ -62,7 +62,7 @@ resource "aws_vpc" "enterprise_services_vpc" {
 }
 
 resource "aws_internet_gateway" "enterprise_services_igw" {
-  vpc_id = "${aws_vpc.enterprise_services_vpc.id}"
+  vpc_id = aws_vpc.enterprise_services_vpc.id
 
   tags = {
     Name = "${var.env_name} | enterprise services igw"
@@ -70,8 +70,8 @@ resource "aws_internet_gateway" "enterprise_services_igw" {
 }
 
 resource "aws_vpc_peering_connection" "bastion_pas" {
-  peer_vpc_id = "${aws_vpc.bastion_vpc.id}"
-  vpc_id      = "${aws_vpc.pas_vpc.id}"
+  peer_vpc_id = aws_vpc.bastion_vpc.id
+  vpc_id      = aws_vpc.pas_vpc.id
   auto_accept = true
 
   tags = {
@@ -80,8 +80,8 @@ resource "aws_vpc_peering_connection" "bastion_pas" {
 }
 
 resource "aws_vpc_peering_connection" "bastion_enterprise_services" {
-  peer_vpc_id = "${aws_vpc.bastion_vpc.id}"
-  vpc_id      = "${aws_vpc.enterprise_services_vpc.id}"
+  peer_vpc_id = aws_vpc.bastion_vpc.id
+  vpc_id      = aws_vpc.enterprise_services_vpc.id
   auto_accept = true
 
   tags = {
@@ -90,8 +90,8 @@ resource "aws_vpc_peering_connection" "bastion_enterprise_services" {
 }
 
 resource "aws_vpc_peering_connection" "bastion_control_plane" {
-  peer_vpc_id = "${aws_vpc.bastion_vpc.id}"
-  vpc_id      = "${aws_vpc.control_plane_vpc.id}"
+  peer_vpc_id = aws_vpc.bastion_vpc.id
+  vpc_id      = aws_vpc.control_plane_vpc.id
   auto_accept = true
 
   tags = {
@@ -100,8 +100,8 @@ resource "aws_vpc_peering_connection" "bastion_control_plane" {
 }
 
 resource "aws_vpc_peering_connection" "pas_enterprise_services" {
-  peer_vpc_id = "${aws_vpc.pas_vpc.id}"
-  vpc_id      = "${aws_vpc.enterprise_services_vpc.id}"
+  peer_vpc_id = aws_vpc.pas_vpc.id
+  vpc_id      = aws_vpc.enterprise_services_vpc.id
   auto_accept = true
 
   tags = {
@@ -110,8 +110,8 @@ resource "aws_vpc_peering_connection" "pas_enterprise_services" {
 }
 
 resource "aws_vpc_peering_connection" "control_plane_enterprise_services" {
-  peer_vpc_id = "${aws_vpc.control_plane_vpc.id}"
-  vpc_id      = "${aws_vpc.enterprise_services_vpc.id}"
+  peer_vpc_id = aws_vpc.control_plane_vpc.id
+  vpc_id      = aws_vpc.enterprise_services_vpc.id
   auto_accept = true
 
   tags = {
@@ -120,11 +120,12 @@ resource "aws_vpc_peering_connection" "control_plane_enterprise_services" {
 }
 
 resource "aws_vpc_peering_connection" "control_plane_pas" {
-  peer_vpc_id = "${aws_vpc.control_plane_vpc.id}"
-  vpc_id      = "${aws_vpc.pas_vpc.id}"
+  peer_vpc_id = aws_vpc.control_plane_vpc.id
+  vpc_id      = aws_vpc.pas_vpc.id
   auto_accept = true
 
   tags = {
     Name = "${var.env_name} | control plane/pas vpc peering"
   }
 }
+

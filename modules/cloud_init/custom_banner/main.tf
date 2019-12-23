@@ -17,20 +17,26 @@ runcmd:
     sed -i 's|^#Banner .*|Banner /etc/issue.net|' /etc/ssh/sshd_config
     pkill -P 1 -SIGHUP sshd
 EOF
+
 }
 
-variable "ssh_banner" {}
-variable "public_bucket_name" {}
-variable "public_bucket_url" {}
+variable "ssh_banner" {
+}
+
+variable "public_bucket_name" {
+}
+
+variable "public_bucket_url" {
+}
 
 locals {
   bucket_key = "custom_banner-${md5(data.template_file.custom_banner_user_data_part.rendered)}-user-data.yml"
 }
 
 resource "aws_s3_bucket_object" "user_data" {
-  bucket  = "${var.public_bucket_name}"
-  key     = "${local.bucket_key}"
-  content = "${data.template_file.custom_banner_user_data_part.rendered}"
+  bucket  = var.public_bucket_name
+  key     = local.bucket_key
+  content = data.template_file.custom_banner_user_data_part.rendered
 }
 
 output "custom_banner_user_data" {
@@ -38,4 +44,6 @@ output "custom_banner_user_data" {
 #include
 ${var.public_bucket_url}/${local.bucket_key}
 EOF
+
 }
+

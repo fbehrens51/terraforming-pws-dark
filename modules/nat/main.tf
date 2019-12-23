@@ -1,41 +1,59 @@
-variable "internetless" {}
-
-variable "tags" {
-  type = "map"
+variable "internetless" {
 }
 
-variable "vpc_id" {}
+variable "tags" {
+  type = map(string)
+}
+
+variable "vpc_id" {
+}
 
 variable "private_route_table_ids" {
-  type = "list"
+  type = list(string)
 }
 
 variable "public_subnet_ids" {
-  type = "list"
+  type = list(string)
 }
 
 variable "instance_type" {
   default = "t2.small"
 }
 
-variable "user_data" {}
+variable "user_data" {
+}
 
-variable "bastion_private_ip" {}
+variable "bastion_private_ip" {
+}
 
-variable "root_domain" {}
-variable "splunk_syslog_ca_cert" {}
-variable "public_bucket_name" {}
-variable "public_bucket_url" {}
-variable "ami_id" {}
+variable "root_domain" {
+}
+
+variable "splunk_syslog_ca_cert" {
+}
+
+variable "public_bucket_name" {
+}
+
+variable "public_bucket_url" {
+}
+
+variable "ami_id" {
+}
 
 locals {
-  env_name      = "${var.tags["Name"]}"
+  env_name      = var.tags["Name"]
   modified_name = "${local.env_name} nat"
-  modified_tags = "${merge(var.tags, map("Name", "${local.modified_name}"))}"
+  modified_tags = merge(
+    var.tags,
+    {
+      "Name" = local.modified_name
+    },
+  )
 }
 
 data "aws_vpc" "vpc" {
-  id = "${var.vpc_id}"
+  id = var.vpc_id
 }
 
 module "eni" {
@@ -45,12 +63,12 @@ module "eni" {
     {
       port        = "22"
       protocol    = "tcp"
-      cidr_blocks = "${var.bastion_private_ip}"
+      cidr_blocks = var.bastion_private_ip
     },
     {
       port        = "0"
       protocol    = "-1"
-      cidr_blocks = "${data.aws_vpc.vpc.cidr_block}"
+      cidr_blocks = data.aws_vpc.vpc.cidr_block
     },
   ]
 
@@ -62,10 +80,10 @@ module "eni" {
     },
   ]
 
-  subnet_ids = ["${var.public_subnet_ids}"]
-  eni_count  = "${length(var.private_route_table_ids)}"
-  tags       = "${local.modified_tags}"
-  create_eip = "${!var.internetless}"
+  subnet_ids = var.public_subnet_ids
+  eni_count  = length(var.private_route_table_ids)
+  tags       = local.modified_tags
+  create_eip = ! var.internetless
 
   source_dest_check = false
 }
@@ -73,11 +91,11 @@ module "eni" {
 module "syslog_config" {
   source = "../syslog"
 
-  root_domain           = "${var.root_domain}"
-  splunk_syslog_ca_cert = "${var.splunk_syslog_ca_cert}"
-  role_name             = "${replace(local.modified_name, " ", "-")}"
-  public_bucket_name    = "${var.public_bucket_name}"
-  public_bucket_url     = "${var.public_bucket_url}"
+  root_domain           = var.root_domain
+  splunk_syslog_ca_cert = var.splunk_syslog_ca_cert
+  role_name             = replace(local.modified_name, " ", "-")
+  public_bucket_name    = var.public_bucket_name
+  public_bucket_url     = var.public_bucket_url
 }
 
 data "template_cloudinit_config" "user_data" {
@@ -95,18 +113,19 @@ bootcmd:
     sysctl -w net.ipv4.ip_forward=1
     /sbin/iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 EOF
+
   }
 
   part {
     filename     = "syslog.cfg"
-    content      = "${module.syslog_config.user_data}"
+    content      = module.syslog_config.user_data
     content_type = "text/x-include-url"
   }
 
   part {
     filename     = "other.cfg"
     content_type = "text/cloud-config"
-    content      = "${var.user_data}"
+    content      = var.user_data
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 }
@@ -114,18 +133,19 @@ EOF
 module "nat_host" {
   source = "../launch"
 
-  instance_count = "${length(var.private_route_table_ids)}"
-  ami_id         = "${var.ami_id}"
-  user_data      = "${data.template_cloudinit_config.user_data.rendered}"
-  eni_ids        = "${module.eni.eni_ids}"
+  instance_count = length(var.private_route_table_ids)
+  ami_id         = var.ami_id
+  user_data      = data.template_cloudinit_config.user_data.rendered
+  eni_ids        = module.eni.eni_ids
 
-  tags          = "${local.modified_tags}"
-  instance_type = "${var.instance_type}"
+  tags          = local.modified_tags
+  instance_type = var.instance_type
 }
 
 resource "aws_route" "toggle_internet" {
-  count                  = "${length(var.private_route_table_ids)}"
-  route_table_id         = "${var.private_route_table_ids[count.index]}"
-  instance_id            = "${module.nat_host.instance_ids[count.index]}"
+  count                  = length(var.private_route_table_ids)
+  route_table_id         = var.private_route_table_ids[count.index]
+  instance_id            = module.nat_host.instance_ids[count.index]
   destination_cidr_block = "0.0.0.0/0"
 }
+

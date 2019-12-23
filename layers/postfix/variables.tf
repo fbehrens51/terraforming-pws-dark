@@ -1,9 +1,16 @@
-variable "smtp_relay_host" {}
-variable "smtp_relay_username" {}
+variable "smtp_relay_host" {
+}
 
-variable "remote_state_region" {}
-variable "remote_state_bucket" {}
+variable "smtp_relay_username" {
+}
+
+variable "remote_state_region" {
+}
+
+variable "remote_state_bucket" {
+}
 
 variable "tags" {
-  type = "map"
+  type = map(string)
 }
+

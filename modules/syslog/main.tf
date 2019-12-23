@@ -1,13 +1,22 @@
-variable "root_domain" {}
-variable "splunk_syslog_ca_cert" {}
-variable "public_bucket_name" {}
-variable "public_bucket_url" {}
-variable "role_name" {}
+variable "root_domain" {
+}
+
+variable "splunk_syslog_ca_cert" {
+}
+
+variable "public_bucket_name" {
+}
+
+variable "public_bucket_url" {
+}
+
+variable "role_name" {
+}
 
 module "domains" {
   source = "../domains"
 
-  root_domain = "${var.root_domain}"
+  root_domain = var.root_domain
 }
 
 module "splunk_ports" {
@@ -50,12 +59,13 @@ rsyslog:
         $ActionSendStreamDriverAuthMode x509/name
         $ActionSendStreamDriverPermittedPeer ${module.domains.splunk_logs_fqdn}
 EOF
+
 }
 
 resource "aws_s3_bucket_object" "user_data" {
-  bucket  = "${var.public_bucket_name}"
-  key     = "${local.bucket_key}"
-  content = "${data.template_file.user_data.rendered}"
+  bucket  = var.public_bucket_name
+  key     = local.bucket_key
+  content = data.template_file.user_data.rendered
 }
 
 output "user_data" {
@@ -63,4 +73,6 @@ output "user_data" {
 #include
 ${var.public_bucket_url}/${local.bucket_key}
 EOF
+
 }
+

@@ -1,20 +1,22 @@
-provider "aws" {}
+provider "aws" {
+}
 
 module "providers" {
   source = "../../modules/dark_providers"
 }
 
 terraform {
-  backend "s3" {}
+  backend "s3" {
+  }
 }
 
 data "terraform_remote_state" "paperwork" {
   backend = "s3"
 
-  config {
-    bucket  = "${var.remote_state_bucket}"
+  config = {
+    bucket  = var.remote_state_bucket
     key     = "paperwork"
-    region  = "${var.remote_state_region}"
+    region  = var.remote_state_region
     encrypt = true
   }
 }
@@ -22,10 +24,10 @@ data "terraform_remote_state" "paperwork" {
 data "terraform_remote_state" "bastion" {
   backend = "s3"
 
-  config {
-    bucket  = "${var.remote_state_bucket}"
+  config = {
+    bucket  = var.remote_state_bucket
     key     = "bastion"
-    region  = "${var.remote_state_region}"
+    region  = var.remote_state_region
     encrypt = true
   }
 }
@@ -33,10 +35,10 @@ data "terraform_remote_state" "bastion" {
 data "terraform_remote_state" "routes" {
   backend = "s3"
 
-  config {
-    bucket  = "${var.remote_state_bucket}"
+  config = {
+    bucket  = var.remote_state_bucket
     key     = "routes"
-    region  = "${var.remote_state_region}"
+    region  = var.remote_state_region
     encrypt = true
   }
 }
@@ -44,10 +46,10 @@ data "terraform_remote_state" "routes" {
 data "terraform_remote_state" "bootstrap_bind" {
   backend = "s3"
 
-  config {
-    bucket  = "${var.remote_state_bucket}"
+  config = {
+    bucket  = var.remote_state_bucket
     key     = "bootstrap_bind"
-    region  = "${var.remote_state_region}"
+    region  = var.remote_state_region
     encrypt = true
   }
 }
@@ -55,10 +57,10 @@ data "terraform_remote_state" "bootstrap_bind" {
 data "terraform_remote_state" "bind" {
   backend = "s3"
 
-  config {
-    bucket  = "${var.remote_state_bucket}"
+  config = {
+    bucket  = var.remote_state_bucket
     key     = "bind"
-    region  = "${var.remote_state_region}"
+    region  = var.remote_state_region
     encrypt = true
   }
 }
@@ -66,62 +68,72 @@ data "terraform_remote_state" "bind" {
 data "terraform_remote_state" "encrypt_amis" {
   backend = "s3"
 
-  config {
-    bucket  = "${var.remote_state_bucket}"
+  config = {
+    bucket  = var.remote_state_bucket
     key     = "encrypt_amis"
-    region  = "${var.remote_state_region}"
+    region  = var.remote_state_region
     encrypt = true
   }
 }
 
 data "aws_vpc" "vpc" {
-  id = "${data.terraform_remote_state.paperwork.cp_vpc_id}"
+  id = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
 }
 
 module "ops_manager" {
   source = "../../modules/ops_manager/infra"
 
-  bucket_suffix = "${local.bucket_suffix}"
-  env_name      = "${local.env_name}"
-  om_eip        = "${!var.internetless}"
+  bucket_suffix = local.bucket_suffix
+  env_name      = local.env_name
+  om_eip        = ! var.internetless
   private       = false
-  subnet_id     = "${module.public_subnets.subnet_ids[0]}"
-  tags          = "${local.modified_tags}"
-  vpc_id        = "${local.vpc_id}"
-  ingress_rules = ["${local.om_ingress_rules}"]
+  subnet_id     = module.public_subnets.subnet_ids[0]
+  tags          = local.modified_tags
+  vpc_id        = local.vpc_id
+  ingress_rules = local.om_ingress_rules
 }
 
 module "public_subnets" {
   source             = "../../modules/subnet_per_az"
-  availability_zones = ["${var.availability_zones}"]
-  vpc_id             = "${data.aws_vpc.vpc.id}"
-  cidr_block         = "${local.public_cidr_block}"
-  tags               = "${merge(local.modified_tags, map("Name", "${local.modified_name}-public"))}"
+  availability_zones = var.availability_zones
+  vpc_id             = data.aws_vpc.vpc.id
+  cidr_block         = local.public_cidr_block
+  tags = merge(
+    local.modified_tags,
+    {
+      "Name" = "${local.modified_name}-public"
+    },
+  )
 }
 
 resource "aws_route_table_association" "public_route_table_assoc" {
-  count          = "${length(var.availability_zones)}"
-  subnet_id      = "${module.public_subnets.subnet_ids[count.index]}"
-  route_table_id = "${data.terraform_remote_state.routes.cp_public_vpc_route_table_id}"
+  count          = length(var.availability_zones)
+  subnet_id      = module.public_subnets.subnet_ids[count.index]
+  route_table_id = data.terraform_remote_state.routes.outputs.cp_public_vpc_route_table_id
 }
 
 module "private_subnets" {
   source             = "../../modules/subnet_per_az"
-  availability_zones = ["${var.availability_zones}"]
-  vpc_id             = "${data.aws_vpc.vpc.id}"
-  cidr_block         = "${local.private_cidr_block}"
-  tags               = "${merge(local.modified_tags, map("Name", "${local.modified_name}-private"))}"
+  availability_zones = var.availability_zones
+  vpc_id             = data.aws_vpc.vpc.id
+  cidr_block         = local.private_cidr_block
+  tags = merge(
+    local.modified_tags,
+    {
+      "Name" = "${local.modified_name}-private"
+    },
+  )
 }
 
 resource "aws_route_table_association" "private_route_table_assoc" {
-  count          = "${length(var.availability_zones)}"
-  subnet_id      = "${module.private_subnets.subnet_ids[count.index]}"
-  route_table_id = "${data.terraform_remote_state.routes.cp_private_vpc_route_table_ids[count.index]}"
+  count          = length(var.availability_zones)
+  subnet_id      = module.private_subnets.subnet_ids[count.index]
+  route_table_id = data.terraform_remote_state.routes.outputs.cp_private_vpc_route_table_ids[count.index]
 }
 
 module "om_key_pair" {
   source   = "../../modules/key_pair"
-  key_name = "${local.om_key_name}"
+  key_name = local.om_key_name
 }
 
 resource "aws_security_group" "vms_security_group" {
@@ -129,17 +141,17 @@ resource "aws_security_group" "vms_security_group" {
 
   name        = "vms_security_group"
   description = "VMs Security Group"
-  vpc_id      = "${data.aws_vpc.vpc.id}"
+  vpc_id      = data.aws_vpc.vpc.id
 
   ingress {
-    cidr_blocks = ["${data.terraform_remote_state.bastion.bastion_private_ip}/32"]
+    cidr_blocks = ["${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"]
     protocol    = "tcp"
     from_port   = 22
     to_port     = 22
   }
 
   ingress {
-    cidr_blocks = ["${data.aws_vpc.vpc.cidr_block}"]
+    cidr_blocks = [data.aws_vpc.vpc.cidr_block]
     protocol    = "-1"
     from_port   = 0
     to_port     = 0
@@ -152,21 +164,36 @@ resource "aws_security_group" "vms_security_group" {
     to_port     = 0
   }
 
-  tags = "${merge(local.modified_tags, map("Name", "${local.env_name}-vms-security-group"))}"
+  tags = merge(
+    local.modified_tags,
+    {
+      "Name" = "${local.env_name}-vms-security-group"
+    },
+  )
 }
 
 resource "aws_s3_bucket" "transfer_bucket" {
   bucket        = "${local.bucket_prefix}-transfer"
   force_destroy = true
 
-  tags = "${merge(var.tags, map("Name", "${local.env_name} Transfer Bucket"))}"
+  tags = merge(
+    var.tags,
+    {
+      "Name" = "${local.env_name} Transfer Bucket"
+    },
+  )
 }
 
 resource "aws_s3_bucket" "mirror_bucket" {
   bucket        = "${local.bucket_prefix}-mirror"
   force_destroy = true
 
-  tags = "${merge(var.tags, map("Name", "${local.env_name} Mirror Bucket"))}"
+  tags = merge(
+    var.tags,
+    {
+      "Name" = "${local.env_name} Mirror Bucket"
+    },
+  )
 }
 
 data "template_cloudinit_config" "nat_user_data" {
@@ -176,45 +203,45 @@ data "template_cloudinit_config" "nat_user_data" {
   part {
     filename     = "clamav.cfg"
     content_type = "text/x-include-url"
-    content      = "${data.terraform_remote_state.paperwork.amazon2_clamav_user_data}"
+    content      = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
   }
 
   part {
     filename     = "banner.cfg"
     content_type = "text/x-include-url"
-    content      = "${data.terraform_remote_state.paperwork.custom_banner_user_data}"
+    content      = data.terraform_remote_state.paperwork.outputs.custom_banner_user_data
   }
 
   part {
     filename     = "user_accounts_user_data.cfg"
     content_type = "text/x-include-url"
-    content      = "${data.terraform_remote_state.paperwork.user_accounts_user_data}"
+    content      = data.terraform_remote_state.paperwork.outputs.user_accounts_user_data
   }
 }
 
 module "nat" {
   source                  = "../../modules/nat"
-  ami_id                  = "${data.terraform_remote_state.encrypt_amis.encrypted_amazon2_ami_id}"
-  private_route_table_ids = "${data.terraform_remote_state.routes.cp_private_vpc_route_table_ids}"
-  vpc_id                  = "${data.terraform_remote_state.paperwork.cp_vpc_id}"
-  tags                    = "${local.modified_tags}"
-  public_subnet_ids       = "${module.public_subnets.subnet_ids}"
-  internetless            = "${var.internetless}"
-  bastion_private_ip      = "${data.terraform_remote_state.bastion.bastion_private_ip}/32"
-  instance_type           = "${var.nat_instance_type}"
-  user_data               = "${data.template_cloudinit_config.nat_user_data.rendered}"
-  root_domain             = "${data.terraform_remote_state.paperwork.root_domain}"
-  splunk_syslog_ca_cert   = "${data.terraform_remote_state.paperwork.trusted_ca_certs}"
+  ami_id                  = data.terraform_remote_state.encrypt_amis.outputs.encrypted_amazon2_ami_id
+  private_route_table_ids = data.terraform_remote_state.routes.outputs.cp_private_vpc_route_table_ids
+  vpc_id                  = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
+  tags                    = local.modified_tags
+  public_subnet_ids       = module.public_subnets.subnet_ids
+  internetless            = var.internetless
+  bastion_private_ip      = "${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"
+  instance_type           = var.nat_instance_type
+  user_data               = data.template_cloudinit_config.nat_user_data.rendered
+  root_domain             = data.terraform_remote_state.paperwork.outputs.root_domain
+  splunk_syslog_ca_cert   = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
 
-  public_bucket_name = "${data.terraform_remote_state.paperwork.public_bucket_name}"
-  public_bucket_url  = "${data.terraform_remote_state.paperwork.public_bucket_url}"
+  public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name
+  public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url
 }
 
 module "postgres" {
   source = "../../modules/rds/instance"
 
-  rds_db_username    = "${var.rds_db_username}"
-  rds_instance_class = "${var.rds_instance_class}"
+  rds_db_username    = var.rds_db_username
+  rds_instance_class = var.rds_instance_class
 
   engine = "postgres"
 
@@ -225,20 +252,20 @@ module "postgres" {
 
   db_port = 5432
 
-  env_name = "${local.modified_name}"
-  vpc_id   = "${data.aws_vpc.vpc.id}"
-  tags     = "${local.modified_tags}"
+  env_name = local.modified_name
+  vpc_id   = data.aws_vpc.vpc.id
+  tags     = local.modified_tags
 
-  subnet_group_name = "${module.rds_subnet_group.subnet_group_name}"
+  subnet_group_name = module.rds_subnet_group.subnet_group_name
 
-  kms_key_id = "${data.terraform_remote_state.paperwork.kms_key_arn}"
+  kms_key_id = data.terraform_remote_state.paperwork.outputs.kms_key_arn
 }
 
 module "mysql" {
   source = "../../modules/rds/instance"
 
-  rds_db_username    = "${var.rds_db_username}"
-  rds_instance_class = "${var.rds_instance_class}"
+  rds_db_username    = var.rds_db_username
+  rds_instance_class = var.rds_instance_class
 
   engine = "mariadb"
 
@@ -250,64 +277,64 @@ module "mysql" {
   db_port = 3306
 
   env_name = "${local.modified_name} mysql"
-  vpc_id   = "${data.aws_vpc.vpc.id}"
-  tags     = "${local.modified_tags}"
+  vpc_id   = data.aws_vpc.vpc.id
+  tags     = local.modified_tags
 
-  subnet_group_name = "${module.rds_subnet_group.subnet_group_name}"
+  subnet_group_name = module.rds_subnet_group.subnet_group_name
 
-  kms_key_id = "${data.terraform_remote_state.paperwork.kms_key_arn}"
+  kms_key_id = data.terraform_remote_state.paperwork.outputs.kms_key_arn
 }
 
 module "rds_subnet_group" {
   source = "../../modules/rds/subnet_group"
 
-  env_name           = "${local.modified_name}"
-  availability_zones = "${slice(var.availability_zones, 0, 2)}"
-  vpc_id             = "${data.aws_vpc.vpc.id}"
-  cidr_block         = "${local.rds_cidr_block}"
-  tags               = "${local.modified_tags}"
+  env_name           = local.modified_name
+  availability_zones = slice(var.availability_zones, 0, 2)
+  vpc_id             = data.aws_vpc.vpc.id
+  cidr_block         = local.rds_cidr_block
+  tags               = local.modified_tags
 }
 
 module "web_elb" {
   source            = "../../modules/two_port_elb/create"
-  env_name          = "${local.env_name}"
-  internetless      = "${var.internetless}"
-  public_subnet_ids = "${module.public_subnets.subnet_ids}"
-  tags              = "${var.tags}"
-  vpc_id            = "${local.vpc_id}"
-  egress_cidrs      = "${module.private_subnets.subnet_cidr_blocks}"
+  env_name          = local.env_name
+  internetless      = var.internetless
+  public_subnet_ids = module.public_subnets.subnet_ids
+  tags              = var.tags
+  vpc_id            = local.vpc_id
+  egress_cidrs      = module.private_subnets.subnet_cidr_blocks
   short_name        = "web"
   port              = 443
   additional_port   = 2222
-  health_check      = "HTTP:8080/api/v1/info"                        # Concourse web healthcheck
+  health_check      = "HTTP:8080/api/v1/info" # Concourse web healthcheck
 }
 
 module "domains" {
   source = "../../modules/domains"
 
-  root_domain = "${local.root_domain}"
+  root_domain = local.root_domain
 }
 
 # Configure the DNS Provider
 provider "dns" {
   update {
-    server        = "${local.master_dns_ip}"
+    server        = local.master_dns_ip
     key_name      = "rndc-key."
     key_algorithm = "hmac-md5"
-    key_secret    = "${local.bind_rndc_secret}"
+    key_secret    = local.bind_rndc_secret
   }
 }
 
 resource "dns_a_record_set" "om_a_record" {
   zone      = "${local.root_domain}."
-  name      = "${module.domains.control_plane_om_subdomain}"
-  addresses = ["${module.ops_manager.ip}"]
+  name      = module.domains.control_plane_om_subdomain
+  addresses = [module.ops_manager.ip]
   ttl       = 300
 }
 
 resource "dns_cname_record" "atc_cname" {
   zone = "${local.root_domain}."
-  name = "${module.domains.control_plane_plane_subdomain}"
+  name = module.domains.control_plane_plane_subdomain
 
   cname = "${module.web_elb.dns_name}."
   ttl   = 300
@@ -319,37 +346,42 @@ resource "random_integer" "bucket" {
 }
 
 data "aws_vpc" "bastion_vpc" {
-  id = "${local.bastion_vpc_id}"
+  id = local.bastion_vpc_id
 }
 
 locals {
-  bastion_vpc_id   = "${data.terraform_remote_state.paperwork.bastion_vpc_id}"
-  vpc_id           = "${data.terraform_remote_state.paperwork.cp_vpc_id}"
-  bucket_suffix    = "${random_integer.bucket.result}"
+  bastion_vpc_id   = data.terraform_remote_state.paperwork.outputs.bastion_vpc_id
+  vpc_id           = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
+  bucket_suffix    = random_integer.bucket.result
   om_key_name      = "${local.env_name}-cp-om"
-  bind_rndc_secret = "${data.terraform_remote_state.bootstrap_bind.bind_rndc_secret}"
-  master_dns_ip    = "${data.terraform_remote_state.bind.master_public_ip}"
-  root_domain      = "${data.terraform_remote_state.paperwork.root_domain}"
-  env_name         = "${var.tags["Name"]}"
+  bind_rndc_secret = data.terraform_remote_state.bootstrap_bind.outputs.bind_rndc_secret
+  master_dns_ip    = data.terraform_remote_state.bind.outputs.master_public_ip
+  root_domain      = data.terraform_remote_state.paperwork.outputs.root_domain
+  env_name         = var.tags["Name"]
   modified_name    = "${local.env_name} control plane"
-  modified_tags    = "${merge(var.tags, map("Name", "${local.modified_name}"))}"
-  bucket_prefix    = "${replace(local.env_name, " ", "-")}"
+  modified_tags = merge(
+    var.tags,
+    {
+      "Name" = local.modified_name
+    },
+  )
+  bucket_prefix = replace(local.env_name, " ", "-")
 
-  public_cidr_block  = "${cidrsubnet(data.aws_vpc.vpc.cidr_block, 1, 0)}"
-  rds_cidr_block     = "${cidrsubnet(local.public_cidr_block, 2, 3)}"
-  private_cidr_block = "${cidrsubnet(data.aws_vpc.vpc.cidr_block, 1, 1)}"
-  sjb_cidr_block     = "${cidrsubnet(local.private_cidr_block, 2, 3)}"
+  public_cidr_block  = cidrsubnet(data.aws_vpc.vpc.cidr_block, 1, 0)
+  rds_cidr_block     = cidrsubnet(local.public_cidr_block, 2, 3)
+  private_cidr_block = cidrsubnet(data.aws_vpc.vpc.cidr_block, 1, 1)
+  sjb_cidr_block     = cidrsubnet(local.private_cidr_block, 2, 3)
 
   om_ingress_rules = [
     {
       port        = "22"
       protocol    = "tcp"
-      cidr_blocks = "${data.aws_vpc.bastion_vpc.cidr_block}"
+      cidr_blocks = data.aws_vpc.bastion_vpc.cidr_block
     },
     {
       port        = "22"
       protocol    = "tcp"
-      cidr_blocks = "${data.aws_vpc.vpc.cidr_block}"
+      cidr_blocks = data.aws_vpc.vpc.cidr_block
     },
     {
       port        = "443"
@@ -361,29 +393,35 @@ locals {
 
 module "sjb_subnet" {
   source             = "../../modules/subnet_per_az"
-  availability_zones = "${list(var.singleton_availability_zone)}"
-  vpc_id             = "${data.aws_vpc.vpc.id}"
-  cidr_block         = "${local.sjb_cidr_block}"
-  tags               = "${merge(local.modified_tags, map("Name", "${local.modified_name}-sjb"))}"
+  availability_zones = [var.singleton_availability_zone]
+  vpc_id             = data.aws_vpc.vpc.id
+  cidr_block         = local.sjb_cidr_block
+  tags = merge(
+    local.modified_tags,
+    {
+      "Name" = "${local.modified_name}-sjb"
+    },
+  )
 }
 
 resource "aws_route_table_association" "sjb_route_table_assoc" {
   count          = "1"
-  subnet_id      = "${module.sjb_subnet.subnet_ids[count.index]}"
-  route_table_id = "${data.terraform_remote_state.routes.cp_private_vpc_route_table_ids[count.index]}"
+  subnet_id      = module.sjb_subnet.subnet_ids[count.index]
+  route_table_id = data.terraform_remote_state.routes.outputs.cp_private_vpc_route_table_ids[count.index]
 }
 
 module "sjb_bootstrap" {
   source        = "../../modules/eni_per_subnet"
-  ingress_rules = "${var.sjb_ingress_rules}"
-  egress_rules  = "${var.sjb_egress_rules}"
-  subnet_ids    = ["${module.sjb_subnet.subnet_ids}"]
+  ingress_rules = var.sjb_ingress_rules
+  egress_rules  = var.sjb_egress_rules
+  subnet_ids    = module.sjb_subnet.subnet_ids
   eni_count     = "1"
   create_eip    = "false"
-  tags          = "${local.modified_tags}"
+  tags          = local.modified_tags
 }
 
 module "sjb_key_pair" {
   source   = "../../modules/key_pair"
-  key_name = "${var.control_plane_host_key_pair_name}"
+  key_name = var.control_plane_host_key_pair_name
 }
+

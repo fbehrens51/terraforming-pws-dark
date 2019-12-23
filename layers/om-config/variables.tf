@@ -1,35 +1,98 @@
-variable "remote_state_bucket" {}
-variable "remote_state_region" {}
-variable "singleton_availability_zone" {}
-variable "cloud_controller_encrypt_key_secret" {}
-variable "credhub_encryption_password" {}
-variable "smtp_from" {}
-variable "smtp_recipients" {}
-variable "smtp_domain" {}
-variable "smtp_enabled" {}
-variable "iaas_configuration_endpoints_ca_cert" {}
-variable "apps_manager_global_wrapper_footer_content" {}
-variable "apps_manager_global_wrapper_header_content" {}
-variable "apps_manager_footer_text" {}
-variable "apps_manager_accent_color" {}
-variable "apps_manager_global_wrapper_text_color" {}
-variable "apps_manager_company_name" {}
-variable "apps_manager_global_wrapper_bg_color" {}
-variable "apps_manager_favicon_file" {}
-variable "apps_manager_square_logo_file" {}
-variable "apps_manager_main_logo_file" {}
-variable "jwt_expiration" {}
-variable "env_name" {}
-variable "s3_endpoint" {}
-variable "ec2_endpoint" {}
-variable "elb_endpoint" {}
-variable "pivnet_api_token" {}
-variable "region" {}
-variable "portal_product_version" {}
-variable "runtime_config_product_version" {}
-variable "cf_tools_product_version" {}
-variable "ipsec_log_level" {}
-variable "ipsec_optional" {}
+variable "remote_state_bucket" {
+}
+
+variable "remote_state_region" {
+}
+
+variable "singleton_availability_zone" {
+}
+
+variable "cloud_controller_encrypt_key_secret" {
+}
+
+variable "credhub_encryption_password" {
+}
+
+variable "smtp_from" {
+}
+
+variable "smtp_recipients" {
+}
+
+variable "smtp_domain" {
+}
+
+variable "smtp_enabled" {
+}
+
+variable "iaas_configuration_endpoints_ca_cert" {
+}
+
+variable "apps_manager_global_wrapper_footer_content" {
+}
+
+variable "apps_manager_global_wrapper_header_content" {
+}
+
+variable "apps_manager_footer_text" {
+}
+
+variable "apps_manager_accent_color" {
+}
+
+variable "apps_manager_global_wrapper_text_color" {
+}
+
+variable "apps_manager_company_name" {
+}
+
+variable "apps_manager_global_wrapper_bg_color" {
+}
+
+variable "apps_manager_favicon_file" {
+}
+
+variable "apps_manager_square_logo_file" {
+}
+
+variable "apps_manager_main_logo_file" {
+}
+
+variable "jwt_expiration" {
+}
+
+variable "env_name" {
+}
+
+variable "s3_endpoint" {
+}
+
+variable "ec2_endpoint" {
+}
+
+variable "elb_endpoint" {
+}
+
+variable "pivnet_api_token" {
+}
+
+variable "region" {
+}
+
+variable "portal_product_version" {
+}
+
+variable "runtime_config_product_version" {
+}
+
+variable "cf_tools_product_version" {
+}
+
+variable "ipsec_log_level" {
+}
+
+variable "ipsec_optional" {
+}
 
 variable "apps_manager_tools_url" {
   description = "The CF CLI tools url.  Defaults to cli.<system_domain>"
@@ -49,7 +112,7 @@ variable "s3_auth_type" {
 }
 
 variable "ntp_servers" {
-  type = "list"
+  type = list(string)
 }
 
 variable "backup_restore_instance_type" {
@@ -154,7 +217,7 @@ variable "clamav_no_upstream_mirror" {
 
 variable "clamav_external_mirrors" {
   description = "This option is only relevant when `clamav_no_upstream_mirror` is set to false.  A list of external mirrors to use.  If empty, the official mirror will be used."
-  type        = "list"
+  type        = list(string)
 }
 
 variable "clamav_mirror_instance_type" {
@@ -179,3 +242,4 @@ variable "extra_user_sudo" {
   description = "Whether to grant sudo acces to the extra user"
   default     = false
 }
+

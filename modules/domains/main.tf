@@ -1,4 +1,5 @@
-variable "root_domain" {}
+variable "root_domain" {
+}
 
 locals {
   ldap_subdomain = "ldap"
@@ -33,81 +34,82 @@ locals {
 }
 
 output "ldap_subdomain" {
-  value = "${local.ldap_subdomain}"
+  value = local.ldap_subdomain
 }
 
 output "ldap_fqdn" {
-  value = "${local.ldap_fqdn}"
+  value = local.ldap_fqdn
 }
 
 output "smtp_subdomain" {
-  value = "${local.smtp_subdomain}"
+  value = local.smtp_subdomain
 }
 
 output "smtp_fqdn" {
-  value = "${local.smtp_fqdn}"
+  value = local.smtp_fqdn
 }
 
 output "splunk_subdomain" {
-  value = "${local.splunk_subdomain}"
+  value = local.splunk_subdomain
 }
 
 output "splunk_fqdn" {
-  value = "${local.splunk_fqdn}"
+  value = local.splunk_fqdn
 }
 
 output "control_plane_om_subdomain" {
-  value = "${local.control_plane_om_subdomain}"
+  value = local.control_plane_om_subdomain
 }
 
 output "control_plane_om_fqdn" {
-  value = "${local.control_plane_om_fqdn}"
+  value = local.control_plane_om_fqdn
 }
 
 output "control_plane_plane_subdomain" {
-  value = "${local.control_plane_plane_subdomain}"
+  value = local.control_plane_plane_subdomain
 }
 
 output "control_plane_plane_fqdn" {
-  value = "${local.control_plane_plane_fqdn}"
+  value = local.control_plane_plane_fqdn
 }
 
 output "om_subdomain" {
-  value = "${local.om_subdomain}"
+  value = local.om_subdomain
 }
 
 output "om_fqdn" {
-  value = "${local.om_fqdn}"
+  value = local.om_fqdn
 }
 
 output "splunk_logs_subdomain" {
-  value = "${local.splunk_logs_subdomain}"
+  value = local.splunk_logs_subdomain
 }
 
 output "splunk_logs_fqdn" {
-  value = "${local.splunk_logs_fqdn}"
+  value = local.splunk_logs_fqdn
 }
 
 output "splunk_monitor_subdomain" {
-  value = "${local.splunk_monitor_subdomain}"
+  value = local.splunk_monitor_subdomain
 }
 
 output "splunk_monitor_fqdn" {
-  value = "${local.splunk_monitor_fqdn}"
+  value = local.splunk_monitor_fqdn
 }
 
 output "system_fqdn" {
-  value = "${local.system_fqdn}"
+  value = local.system_fqdn
 }
 
 output "system_subdomain" {
-  value = "${local.system_subdomain}"
+  value = local.system_subdomain
 }
 
 output "apps_fqdn" {
-  value = "${local.apps_fqdn}"
+  value = local.apps_fqdn
 }
 
 output "apps_subdomain" {
-  value = "${local.apps_subdomain}"
+  value = local.apps_subdomain
 }
+

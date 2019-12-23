@@ -1,16 +1,26 @@
-variable "remote_state_bucket" {}
-variable "remote_state_region" {}
-variable "env_name" {}
-
-variable "tags" {
-  type = "map"
+variable "remote_state_bucket" {
 }
 
-variable "splunk_rpm_version" {}
-variable "region" {}
+variable "remote_state_region" {
+}
+
+variable "env_name" {
+}
+
+variable "tags" {
+  type = map(string)
+}
+
+variable "splunk_rpm_version" {
+}
+
+variable "region" {
+}
 
 variable "instance_type" {
   default = "t2.small"
 }
 
-variable "license_path" {}
+variable "license_path" {
+}
+

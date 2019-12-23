@@ -1,31 +1,36 @@
-variable "vpc_id" {}
-
-variable "tags" {
-  type = "map"
+variable "vpc_id" {
 }
 
-variable "env_name" {}
+variable "tags" {
+  type = map(string)
+}
 
-variable "short_name" {}
+variable "env_name" {
+}
 
-variable "internetless" {}
+variable "short_name" {
+}
+
+variable "internetless" {
+}
 
 variable "public_subnet_ids" {
-  type = "list"
+  type = list(string)
 }
 
 variable "egress_cidrs" {
-  type = "list"
+  type = list(string)
 }
 
 variable "port" {
-  type = "string"
+  type = string
 }
 
 variable "additional_port" {
-  type = "string"
+  type = string
 }
 
 variable "health_check" {
   default = ""
 }
+

@@ -21,3 +21,4 @@ output "splunk_web_port" {
 output "splunk_s3_archive_port" {
   value = "10514"
 }
+

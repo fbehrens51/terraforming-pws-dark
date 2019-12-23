@@ -1,47 +1,48 @@
 variable "basedn" {
-  type = "string"
+  type = string
 }
 
 variable "admin" {
-  type = "string"
+  type = string
 }
 
 variable "password" {
-  type = "string"
+  type = string
 }
 
 variable "users" {
-  type = "list"
+  type = list(object({ name = string, username = string, roles = string }))
 }
 
 variable "root_domain" {
-  type = "string"
+  type = string
 }
 
 variable "tls_server_cert" {
-  type = "string"
+  type = string
 }
 
 variable "tls_server_key" {
-  type = "string"
+  type = string
 }
 
 variable "tls_server_ca_cert" {
-  type = "string"
+  type = string
 }
 
 variable "ssh_private_key_pem" {
-  type = "string"
+  type = string
 }
 
 variable "ssh_host" {
-  type = "string"
+  type = string
 }
 
 variable "instance_id" {
-  type = "string"
+  type = string
 }
 
 variable "user_certs" {
-  type = "map"
+  type = map(string)
 }
+

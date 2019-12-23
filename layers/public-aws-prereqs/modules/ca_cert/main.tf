@@ -1,4 +1,5 @@
-variable "env_name" {}
+variable "env_name" {
+}
 
 resource "tls_private_key" "root_private_key" {
   count = 1
@@ -11,11 +12,11 @@ resource "tls_self_signed_cert" "root_cert" {
   count = 1
 
   key_algorithm   = "RSA"
-  private_key_pem = "${tls_private_key.root_private_key.private_key_pem}"
+  private_key_pem = tls_private_key.root_private_key[0].private_key_pem
 
   subject {
     common_name  = "${var.env_name} Root CA"
-    organization = "${var.env_name}"
+    organization = var.env_name
   }
 
   validity_period_hours = 8760 # 365 days
@@ -31,10 +32,14 @@ resource "tls_self_signed_cert" "root_cert" {
 }
 
 output "private_key_pem" {
-  value     = "${element(concat(tls_private_key.root_private_key.*.private_key_pem, list("")), 0)}"
+  value = element(
+    concat(tls_private_key.root_private_key.*.private_key_pem, [""]),
+    0,
+  )
   sensitive = true
 }
 
 output "cert_pem" {
-  value = "${element(concat(tls_self_signed_cert.root_cert.*.cert_pem, list("")), 0)}"
+  value = element(concat(tls_self_signed_cert.root_cert.*.cert_pem, [""]), 0)
 }
+

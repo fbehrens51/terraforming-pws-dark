@@ -1,10 +1,11 @@
 resource "aws_kms_alias" "kms_key_alias" {
-  target_key_id = "${aws_kms_key.kms_key.key_id}"
-  depends_on    = ["aws_kms_key.kms_key"]
+  target_key_id = aws_kms_key.kms_key[0].key_id
+  depends_on    = [aws_kms_key.kms_key]
   name_prefix   = "alias/${var.key_name}"
 }
 
-data "aws_caller_identity" "my_account" {}
+data "aws_caller_identity" "my_account" {
+}
 
 data "aws_iam_policy_document" "kms_key_policy_document" {
   # This statement from the EBS docs here: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html
@@ -17,7 +18,7 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
       type = "AWS"
 
       identifiers = [
-        "${var.director_role_arn}",
+        var.director_role_arn,
       ]
     }
 
@@ -39,9 +40,9 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
       type = "AWS"
 
       identifiers = [
-        "${var.director_role_arn}",
-        "${var.pas_bucket_role_arn}",
-        "${var.additional_bootstrap_principal_arn}",
+        var.director_role_arn,
+        var.pas_bucket_role_arn,
+        var.additional_bootstrap_principal_arn,
       ]
     }
 
@@ -64,9 +65,9 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
     principals {
       type = "AWS"
 
+      # This layer should be run with the credentials of the key manager.
       identifiers = [
-        # This layer should be run with the credentials of the key manager.
-        "${data.aws_caller_identity.my_account.arn}",
+        data.aws_caller_identity.my_account.arn,
       ]
     }
 
@@ -95,29 +96,36 @@ resource "aws_kms_key" "kms_key" {
   count = 1
 
   description             = "${var.key_name} KMS key"
-  deletion_window_in_days = "${var.deletion_window}"
-  policy                  = "${data.aws_iam_policy_document.kms_key_policy_document.json}"
+  deletion_window_in_days = var.deletion_window
+  policy                  = data.aws_iam_policy_document.kms_key_policy_document.json
 
-  tags = "${map("Name", "${var.key_name} KMS Key")}"
+  tags = {
+    "Name" = "${var.key_name} KMS Key"
+  }
 }
 
-variable "pas_bucket_role_arn" {}
-variable "director_role_arn" {}
+variable "pas_bucket_role_arn" {
+}
+
+variable "director_role_arn" {
+}
 
 variable "additional_bootstrap_principal_arn" {
   default = ""
 }
 
-variable "key_name" {}
+variable "key_name" {
+}
 
 variable "deletion_window" {
   default = 7
 }
 
 output "kms_key_arn" {
-  value = "${element(concat(aws_kms_key.kms_key.*.arn, list("")), 0)}"
+  value = element(concat(aws_kms_key.kms_key.*.arn, [""]), 0)
 }
 
 output "kms_key_id" {
-  value = "${element(concat(aws_kms_key.kms_key.*.id, list("")), 0)}"
+  value = element(concat(aws_kms_key.kms_key.*.id, [""]), 0)
 }
+

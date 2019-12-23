@@ -7,27 +7,31 @@ variable "rds_instance_class" {
 }
 
 variable "engine" {
-  type = "string"
+  type = string
 }
 
 variable "engine_version" {
-  type = "string"
+  type = string
 }
 
-variable "db_port" {}
+variable "db_port" {
+}
 
 variable "env_name" {
-  type = "string"
+  type = string
 }
 
 variable "vpc_id" {
-  type = "string"
+  type = string
 }
 
 variable "tags" {
-  type = "map"
+  type = map(string)
 }
 
-variable "subnet_group_name" {}
+variable "subnet_group_name" {
+}
 
-variable "kms_key_id" {}
+variable "kms_key_id" {
+}
+

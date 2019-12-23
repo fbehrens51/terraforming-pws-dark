@@ -83,7 +83,8 @@ data "aws_iam_policy_document" "role_policy" {
   }
 }
 
-data "aws_caller_identity" "myself" {}
+data "aws_caller_identity" "myself" {
+}
 
 data "aws_iam_policy_document" "user_assume_role_policy" {
   statement {
@@ -102,52 +103,52 @@ data "aws_iam_policy_document" "user_assume_role_policy" {
 }
 
 resource "aws_iam_policy" "director" {
-  name   = "${var.director_role_name}"
+  name   = var.director_role_name
   path   = "/"
-  policy = "${data.aws_iam_policy_document.director.json}"
+  policy = data.aws_iam_policy_document.director.json
 }
 
 resource "aws_iam_role" "director" {
-  name               = "${var.director_role_name}"
-  assume_role_policy = "${data.aws_iam_policy_document.role_policy.json}"
+  name               = var.director_role_name
+  assume_role_policy = data.aws_iam_policy_document.role_policy.json
 }
 
 resource "aws_iam_policy_attachment" "director" {
-  name       = "${var.director_role_name}"
-  roles      = ["${aws_iam_role.director.name}"]
-  policy_arn = "${aws_iam_policy.director.arn}"
+  name       = var.director_role_name
+  roles      = [aws_iam_role.director.name]
+  policy_arn = aws_iam_policy.director.arn
 }
 
 resource "aws_iam_instance_profile" "director" {
-  name = "${var.director_role_name}"
-  role = "${aws_iam_role.director.name}"
+  name = var.director_role_name
+  role = aws_iam_role.director.name
 }
 
 resource "aws_iam_instance_profile" "worker" {
-  name = "${var.worker_role_name}"
-  role = "${aws_iam_role.director.name}"
+  name = var.worker_role_name
+  role = aws_iam_role.director.name
 }
 
 resource "aws_iam_instance_profile" "bucket" {
-  name = "${var.bucket_role_name}"
-  role = "${aws_iam_role.bucket.name}"
+  name = var.bucket_role_name
+  role = aws_iam_role.bucket.name
 }
 
 resource "aws_iam_policy" "bucket" {
-  name   = "${var.bucket_role_name}"
+  name   = var.bucket_role_name
   path   = "/"
-  policy = "${data.aws_iam_policy_document.bucket.json}"
+  policy = data.aws_iam_policy_document.bucket.json
 }
 
 resource "aws_iam_role" "bucket" {
-  name               = "${var.bucket_role_name}"
-  assume_role_policy = "${data.aws_iam_policy_document.role_policy.json}"
+  name               = var.bucket_role_name
+  assume_role_policy = data.aws_iam_policy_document.role_policy.json
 }
 
 resource "aws_iam_policy_attachment" "bucket" {
-  name       = "${var.bucket_role_name}"
-  roles      = ["${aws_iam_role.bucket.name}"]
-  policy_arn = "${aws_iam_policy.bucket.arn}"
+  name       = var.bucket_role_name
+  roles      = [aws_iam_role.bucket.name]
+  policy_arn = aws_iam_policy.bucket.arn
 }
 
 data "aws_iam_policy_document" "kms_admin_user" {
@@ -170,25 +171,26 @@ resource "aws_iam_policy" "kms_admin_user" {
 
   # arn = "arn:aws:iam::aws:policy/AWSKeyManagementServicePowerUser"
 
-  name   = "${var.key_manager_role_name}"
-  policy = "${data.aws_iam_policy_document.kms_admin_user.json}"
+  name   = var.key_manager_role_name
+  policy = data.aws_iam_policy_document.kms_admin_user.json
 }
 
 resource "aws_iam_role" "key_manager" {
-  name               = "${var.key_manager_role_name}"
-  assume_role_policy = "${data.aws_iam_policy_document.user_assume_role_policy.json}"
+  name               = var.key_manager_role_name
+  assume_role_policy = data.aws_iam_policy_document.user_assume_role_policy.json
 }
 
 resource "aws_iam_role_policy_attachment" "key_manager_attach" {
-  policy_arn = "${aws_iam_policy.kms_admin_user.arn}"
-  role       = "${aws_iam_role.key_manager.name}"
+  policy_arn = aws_iam_policy.kms_admin_user.arn
+  role       = aws_iam_role.key_manager.name
 }
 
 data "aws_iam_policy_document" "s3_writer" {
   statement {
     effect = "Allow"
 
-    actions = ["s3:Get*",
+    actions = [
+      "s3:Get*",
       "s3:List*",
       "s3:PutObject",
       "s3:AbortMultipartUpload",
@@ -199,32 +201,33 @@ data "aws_iam_policy_document" "s3_writer" {
 }
 
 resource "aws_iam_policy_attachment" "archive" {
-  name       = "${var.archive_role_name}"
-  roles      = ["${aws_iam_role.archive_role.name}"]
-  policy_arn = "${aws_iam_policy.archive_writer.arn}"
+  name       = var.archive_role_name
+  roles      = [aws_iam_role.archive_role.name]
+  policy_arn = aws_iam_policy.archive_writer.arn
 }
 
 resource "aws_iam_policy" "archive_writer" {
-  name   = "${var.archive_role_name}"
+  name   = var.archive_role_name
   path   = "/"
-  policy = "${data.aws_iam_policy_document.s3_writer.json}"
+  policy = data.aws_iam_policy_document.s3_writer.json
 }
 
 resource "aws_iam_role" "archive_role" {
-  name               = "${var.archive_role_name}"
-  assume_role_policy = "${data.aws_iam_policy_document.role_policy.json}"
+  name               = var.archive_role_name
+  assume_role_policy = data.aws_iam_policy_document.role_policy.json
 }
 
 resource "aws_iam_instance_profile" "archive_instance_profile" {
-  name = "${aws_iam_role.archive_role.name}"
-  role = "${aws_iam_role.archive_role.name}"
+  name = aws_iam_role.archive_role.name
+  role = aws_iam_role.archive_role.name
 }
 
 data "aws_iam_policy_document" "s3_reader" {
   statement {
     effect = "Allow"
 
-    actions = ["s3:Get*",
+    actions = [
+      "s3:Get*",
       "s3:List*",
     ]
 
@@ -233,31 +236,32 @@ data "aws_iam_policy_document" "s3_reader" {
 }
 
 resource "aws_iam_policy_attachment" "splunk" {
-  name       = "${var.splunk_role_name}"
-  roles      = ["${aws_iam_role.splunk_role.name}"]
-  policy_arn = "${aws_iam_policy.splunk_reader.arn}"
+  name       = var.splunk_role_name
+  roles      = [aws_iam_role.splunk_role.name]
+  policy_arn = aws_iam_policy.splunk_reader.arn
 }
 
 resource "aws_iam_policy" "splunk_reader" {
-  name   = "${var.splunk_role_name}"
+  name   = var.splunk_role_name
   path   = "/"
-  policy = "${data.aws_iam_policy_document.s3_reader.json}"
+  policy = data.aws_iam_policy_document.s3_reader.json
 }
 
 resource "aws_iam_role" "splunk_role" {
-  name               = "${var.splunk_role_name}"
-  assume_role_policy = "${data.aws_iam_policy_document.role_policy.json}"
+  name               = var.splunk_role_name
+  assume_role_policy = data.aws_iam_policy_document.role_policy.json
 }
 
 resource "aws_iam_instance_profile" "splunk_instance_profile" {
-  name = "${aws_iam_role.splunk_role.name}"
-  role = "${aws_iam_role.splunk_role.name}"
+  name = aws_iam_role.splunk_role.name
+  role = aws_iam_role.splunk_role.name
 }
 
 output "director_role_arn" {
-  value = "${aws_iam_role.director.arn}"
+  value = aws_iam_role.director.arn
 }
 
 output "pas_bucket_role_arn" {
-  value = "${aws_iam_role.bucket.arn}"
+  value = aws_iam_role.bucket.arn
 }
+

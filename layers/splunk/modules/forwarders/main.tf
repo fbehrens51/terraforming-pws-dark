@@ -1,43 +1,76 @@
-variable "server_cert" {}
-variable "server_key" {}
-variable "ca_cert" {}
-variable "forwarders_pass4SymmKey" {}
-variable "user_accounts_user_data" {}
-variable "root_domain" {}
+variable "server_cert" {
+}
 
-variable "clamav_user_data" {}
+variable "server_key" {
+}
 
-variable "splunk_password" {}
-variable "splunk_rpm_version" {}
-variable "transfer_bucket_name" {}
-variable "region" {}
-variable "master_ip" {}
-variable "splunk_http_collector_token" {}
-variable "s3_archive_ip" {}
-variable "s3_archive_port" {}
-variable "public_bucket_name" {}
-variable "public_bucket_url" {}
-variable "banner_user_data" {}
+variable "ca_cert" {
+}
+
+variable "forwarders_pass4SymmKey" {
+}
+
+variable "user_accounts_user_data" {
+}
+
+variable "root_domain" {
+}
+
+variable "clamav_user_data" {
+}
+
+variable "splunk_password" {
+}
+
+variable "splunk_rpm_version" {
+}
+
+variable "transfer_bucket_name" {
+}
+
+variable "region" {
+}
+
+variable "master_ip" {
+}
+
+variable "splunk_http_collector_token" {
+}
+
+variable "s3_archive_ip" {
+}
+
+variable "s3_archive_port" {
+}
+
+variable "public_bucket_name" {
+}
+
+variable "public_bucket_url" {
+}
+
+variable "banner_user_data" {
+}
 
 module "base" {
   source      = "../base"
-  server_cert = "${var.server_cert}"
-  server_key  = "${var.server_key}"
-  ca_cert     = "${var.ca_cert}"
-  root_domain = "${var.root_domain}"
+  server_cert = var.server_cert
+  server_key  = var.server_key
+  ca_cert     = var.ca_cert
+  root_domain = var.root_domain
 
-  clamav_user_data = "${var.clamav_user_data}"
+  clamav_user_data = var.clamav_user_data
 
-  splunk_password         = "${var.splunk_password}"
-  splunk_rpm_version      = "${var.splunk_rpm_version}"
-  transfer_bucket_name    = "${var.transfer_bucket_name}"
-  region    = "${var.region}"
-  user_accounts_user_data = "${var.user_accounts_user_data}"
+  splunk_password         = var.splunk_password
+  splunk_rpm_version      = var.splunk_rpm_version
+  transfer_bucket_name    = var.transfer_bucket_name
+  region                  = var.region
+  user_accounts_user_data = var.user_accounts_user_data
   role_name               = "splunk-forwarder"
-  public_bucket_name      = "${var.public_bucket_name}"
-  public_bucket_url       = "${var.public_bucket_url}"
-  banner_user_data        = "${var.banner_user_data}"
-  instance_user_data      = "${data.template_file.cloud_config.rendered}"
+  public_bucket_name      = var.public_bucket_name
+  public_bucket_url       = var.public_bucket_url
+  banner_user_data        = var.banner_user_data
+  instance_user_data      = data.template_file.cloud_config.rendered
 }
 
 module "splunk_ports" {
@@ -53,6 +86,7 @@ allowInternetAccess = false
 serverCert = /opt/splunk/etc/auth/mycerts/mySplunkServerCertificate.pem
 sslRootCAPath = /opt/splunk/etc/auth/mycerts/mySplunkCACertificate.pem
 EOF
+
 }
 
 data "template_file" "inputs_conf" {
@@ -65,6 +99,7 @@ connection_host = dns
 [SSL]
 serverCert = /opt/splunk/etc/auth/mycerts/mySplunkServerCertificate.pem
 EOF
+
 }
 
 data "template_file" "forwarder_app_conf" {
@@ -72,6 +107,7 @@ data "template_file" "forwarder_app_conf" {
 [install]
 state = enabled
 EOF
+
 }
 
 data "template_file" "http_inputs_conf" {
@@ -87,6 +123,7 @@ disabled = 0
 enableSSL = 1
 port = ${module.splunk_ports.splunk_http_collector_port}
 EOF
+
 }
 
 data "template_file" "outputs_conf" {
@@ -108,6 +145,7 @@ useSSL = true
 [tcpout]
 defaultGroup = SplunkOutput, s3Archive
 EOF
+
 }
 
 data "template_file" "license_slave_server_conf" {
@@ -115,6 +153,7 @@ data "template_file" "license_slave_server_conf" {
 [license]
 master_uri = https://${var.master_ip}:${module.splunk_ports.splunk_mgmt_port}
 EOF
+
 }
 
 data "template_file" "cloud_config" {
@@ -164,8 +203,10 @@ runcmd:
     cp /run/splunk-ca.pem /opt/splunk/etc/auth/mycerts/mySplunkCACertificate.pem
     cp /run/splunk_forwarder.conf /opt/splunk/etc/apps/SplunkForwarder/local/app.conf
 EOF
+
 }
 
 output "user_data" {
-  value = "${module.base.user_data}"
+  value = module.base.user_data
 }
+

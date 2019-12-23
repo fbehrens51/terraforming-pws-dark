@@ -1,18 +1,47 @@
-variable "remote_state_bucket" {}
-variable "remote_state_region" {}
-variable "singleton_availability_zone" {}
-variable "smtp_from" {}
-variable "smtp_recipients" {}
-variable "smtp_domain" {}
-variable "smtp_enabled" {}
-variable "iaas_configuration_endpoints_ca_cert" {}
-variable "env_name" {}
-variable "internetless" {}
-variable "s3_endpoint" {}
-variable "ec2_endpoint" {}
-variable "elb_endpoint" {}
-variable "pivnet_api_token" {}
-variable "region" {}
+variable "remote_state_bucket" {
+}
+
+variable "remote_state_region" {
+}
+
+variable "singleton_availability_zone" {
+}
+
+variable "smtp_from" {
+}
+
+variable "smtp_recipients" {
+}
+
+variable "smtp_domain" {
+}
+
+variable "smtp_enabled" {
+}
+
+variable "iaas_configuration_endpoints_ca_cert" {
+}
+
+variable "env_name" {
+}
+
+variable "internetless" {
+}
+
+variable "s3_endpoint" {
+}
+
+variable "ec2_endpoint" {
+}
+
+variable "elb_endpoint" {
+}
+
+variable "pivnet_api_token" {
+}
+
+variable "region" {
+}
 
 variable "s3_access_key_id" {
   default = ""
@@ -27,15 +56,15 @@ variable "s3_auth_type" {
 }
 
 variable "ntp_servers" {
-  type = "list"
+  type = list(string)
 }
 
 variable "tags" {
-  type = "map"
+  type = map(string)
 }
 
 variable "availability_zones" {
-  type = "list"
+  type = list(string)
 }
 
 variable "clamav_cpu_limit" {
@@ -52,7 +81,7 @@ variable "clamav_no_upstream_mirror" {
 
 variable "clamav_external_mirrors" {
   description = "This option is only relevant when `clamav_no_upstream_mirror` is set to false.  A list of external mirrors to use.  If empty, the official mirror will be used."
-  type        = "list"
+  type        = list(string)
 }
 
 variable "clamav_mirror_instance_type" {
@@ -63,10 +92,14 @@ variable "clamav_release_public_bucket_key" {
   description = "The object key of the clamav release. This will be used to add clamav to the bosh director."
 }
 
-variable "ipsec_log_level" {}
-variable "ipsec_optional" {}
+variable "ipsec_log_level" {
+}
 
-variable "runtime_config_product_version" {}
+variable "ipsec_optional" {
+}
+
+variable "runtime_config_product_version" {
+}
 
 variable "extra_user_name" {
   description = "The username of the extra user that will be added to all bosh managed VMs"
@@ -83,9 +116,11 @@ variable "extra_user_sudo" {
   default     = false
 }
 
-variable "concourse_version" {}
+variable "concourse_version" {
+}
 
 variable "concourse_users" {
   description = "An array of usernames that will be given admin permissions in concourse.  The passwords of those users will be automatically generated."
-  type        = "list"
+  type        = list(string)
 }
+

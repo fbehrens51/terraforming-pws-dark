@@ -1,13 +1,13 @@
 variable "ingress_rules" {
-  type = "list"
+  type = list(object({ port = string, protocol = string, cidr_blocks = string }))
 }
 
 variable "egress_rules" {
-  type = "list"
+  type = list(object({ port = string, protocol = string, cidr_blocks = string }))
 }
 
 variable "subnet_ids" {
-  type = "list"
+  type = list(string)
 }
 
 variable "eni_count" {
@@ -15,53 +15,54 @@ variable "eni_count" {
 }
 
 variable "tags" {
-  type = "map"
+  type = map(string)
 }
 
-variable "create_eip" {}
+variable "create_eip" {
+}
 
 variable "source_dest_check" {
   default = "true"
 }
 
 data "aws_subnet" "first_subnet" {
-  id = "${var.subnet_ids[0]}"
+  id = var.subnet_ids[0]
 }
 
 module "security_group" {
   source        = "../single_use_subnet/security_group"
-  ingress_rules = "${var.ingress_rules}"
-  egress_rules  = "${var.egress_rules}"
-  tags          = "${var.tags}"
-  vpc_id        = "${data.aws_subnet.first_subnet.vpc_id}"
+  ingress_rules = var.ingress_rules
+  egress_rules  = var.egress_rules
+  tags          = var.tags
+  vpc_id        = data.aws_subnet.first_subnet.vpc_id
 }
 
 resource "aws_network_interface" "eni" {
-  count             = "${var.eni_count}"
-  subnet_id         = "${var.subnet_ids[count.index % length(var.subnet_ids)]}"
-  source_dest_check = "${var.source_dest_check}"
+  count             = var.eni_count
+  subnet_id         = var.subnet_ids[count.index % length(var.subnet_ids)]
+  source_dest_check = var.source_dest_check
 
   security_groups = [
-    "${module.security_group.security_group_id}",
+    module.security_group.security_group_id,
   ]
 
-  tags = "${var.tags}"
+  tags = var.tags
 }
 
 resource "aws_eip" "eip" {
-  count = "${var.create_eip ? var.eni_count : 0}"
+  count = var.create_eip ? var.eni_count : 0
   vpc   = true
-  tags  = "${var.tags}"
+  tags  = var.tags
 }
 
 resource "aws_eip_association" "eip_association" {
-  count                = "${var.create_eip ? var.eni_count : 0}"
-  network_interface_id = "${element(aws_network_interface.eni.*.id, count.index)}"
-  allocation_id        = "${element(aws_eip.eip.*.id, count.index)}"
+  count                = var.create_eip ? var.eni_count : 0
+  network_interface_id = element(aws_network_interface.eni.*.id, count.index)
+  allocation_id        = element(aws_eip.eip.*.id, count.index)
 }
 
 output "public_ips" {
-  value = "${aws_eip.eip.*.public_ip}"
+  value = aws_eip.eip.*.public_ip
 }
 
 # output "eip_ids" {
@@ -69,9 +70,10 @@ output "public_ips" {
 # }
 
 output "eni_ids" {
-  value = "${aws_network_interface.eni.*.id}"
+  value = aws_network_interface.eni.*.id
 }
 
 output "eni_ips" {
-  value = "${aws_network_interface.eni.*.private_ip}"
+  value = aws_network_interface.eni.*.private_ip
 }
+
