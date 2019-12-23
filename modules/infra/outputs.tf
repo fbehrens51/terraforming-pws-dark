@@ -15,7 +15,7 @@ output "name_servers" {
 }
 
 output "vms_security_group_id" {
-  value = element(concat(aws_security_group.vms_security_group.*.id, [""]), 0)
+  value = aws_security_group.vms_security_group[0].id
 }
 
 output "public_subnet_availability_zones" {

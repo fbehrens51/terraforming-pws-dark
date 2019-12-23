@@ -23,7 +23,7 @@ data "template_file" "keys" {
 }
 
 output "value" {
-  value     = element(concat(data.template_file.keys.*.rendered, [""]), 0)
+  value     = data.template_file.keys[0].rendered
   sensitive = true
 }
 

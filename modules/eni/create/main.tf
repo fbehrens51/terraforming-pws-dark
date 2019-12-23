@@ -21,10 +21,10 @@ resource "aws_network_interface" "eni" {
 }
 
 output "eni_id" {
-  value = element(concat(aws_network_interface.eni.*.id, [""]), 0)
+  value = aws_network_interface.eni[0].id
 }
 
 output "private_ip" {
-  value = element(concat(aws_network_interface.eni.*.private_ip, [""]), 0)
+  value = aws_network_interface.eni[0].private_ip
 }
 

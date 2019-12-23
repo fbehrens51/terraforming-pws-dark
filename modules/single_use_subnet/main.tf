@@ -82,7 +82,7 @@ resource "aws_route_table_association" "route_public_subnet" {
 }
 
 output "public_subnet_id" {
-  value = element(concat(aws_subnet.public_subnet.*.id, [""]), 0)
+  value = aws_subnet.public_subnet[0].id
 }
 
 output "eni_id" {
@@ -98,6 +98,6 @@ output "private_ip" {
 }
 
 output "cidr_block" {
-  value = element(concat(aws_subnet.public_subnet.*.cidr_block, [""]), 0)
+  value = aws_subnet.public_subnet[0].cidr_block
 }
 

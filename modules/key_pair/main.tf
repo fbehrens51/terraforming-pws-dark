@@ -27,7 +27,7 @@ output "private_key_pem" {
 }
 
 output "key_name" {
-  value = element(concat(aws_key_pair.key_pair.*.key_name, [""]), 0)
+  value = aws_key_pair.key_pair[0].key_name
 }
 
 output "public_key_openssh" {

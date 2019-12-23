@@ -93,7 +93,7 @@ resource "aws_vpc_endpoint_route_table_association" "private_s3_vpc_endpoint" {
 }
 
 output "public_route_table_id" {
-  value = element(concat(aws_route_table.public_route_table.*.id, [""]), 0)
+  value = aws_route_table.public_route_table[0].id
 }
 
 output "private_route_table_ids" {

@@ -207,6 +207,6 @@ variable "ldap_host_key_pair_name" {
 }
 
 output "ldap_private_ip" {
-  value = element(concat(module.bootstrap.eni_ips, [""]), 0)
+  value = module.bootstrap.eni_ips[0]
 }
 

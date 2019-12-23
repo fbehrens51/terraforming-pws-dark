@@ -1,21 +1,21 @@
 output "rds_address" {
-  value = element(concat(aws_db_instance.rds.*.address, [""]), 0)
+  value = aws_db_instance.rds.address
 }
 
 output "rds_port" {
-  value = element(concat(aws_db_instance.rds.*.port, [""]), 0)
+  value = aws_db_instance.rds.port
 }
 
 output "rds_username" {
-  value = element(concat(aws_db_instance.rds.*.username, [""]), 0)
+  value = aws_db_instance.rds.username
 }
 
 output "rds_password" {
   sensitive = true
-  value     = element(concat(aws_db_instance.rds.*.password, [""]), 0)
+  value     = aws_db_instance.rds.password
 }
 
 output "rds_db_name" {
-  value = element(concat(aws_db_instance.rds.*.name, [""]), 0)
+  value = aws_db_instance.rds.name
 }
 

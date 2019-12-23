@@ -40,6 +40,6 @@ output "private_key_pem" {
 }
 
 output "cert_pem" {
-  value = element(concat(tls_self_signed_cert.root_cert.*.cert_pem, [""]), 0)
+  value = tls_self_signed_cert.root_cert[0].cert_pem
 }
 

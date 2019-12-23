@@ -1,5 +1,5 @@
 output "bucket" {
-  value = element(concat(aws_s3_bucket.ops_manager_bucket.*.bucket, [""]), 0)
+  value = aws_s3_bucket.ops_manager_bucket.bucket
 }
 
 output "ip" {
@@ -21,7 +21,7 @@ output "om_eni_id" {
 }
 
 output "om_eip_allocation_id" {
-  value = element(concat(aws_eip.ops_manager_unattached.*.id, [""]), 0)
+  value = aws_eip.ops_manager_unattached[0].id
 }
 
 output "security_group_id" {

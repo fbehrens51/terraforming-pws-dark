@@ -35,19 +35,19 @@ output "services_subnet_gateways" {
 # ========= Buckets ============================================================
 
 output "pas_buildpacks_bucket" {
-  value = element(concat(aws_s3_bucket.buildpacks_bucket.*.bucket, [""]), 0)
+  value = aws_s3_bucket.buildpacks_bucket[0].bucket
 }
 
 output "pas_droplets_bucket" {
-  value = element(concat(aws_s3_bucket.droplets_bucket.*.bucket, [""]), 0)
+  value = aws_s3_bucket.droplets_bucket[0].bucket
 }
 
 output "pas_packages_bucket" {
-  value = element(concat(aws_s3_bucket.packages_bucket.*.bucket, [""]), 0)
+  value = aws_s3_bucket.packages_bucket[0].bucket
 }
 
 output "pas_resources_bucket" {
-  value = element(concat(aws_s3_bucket.resources_bucket.*.bucket, [""]), 0)
+  value = aws_s3_bucket.resources_bucket[0].bucket
 }
 
 output "pas_buildpacks_backup_bucket" {

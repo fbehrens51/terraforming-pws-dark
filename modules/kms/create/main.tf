@@ -122,10 +122,10 @@ variable "deletion_window" {
 }
 
 output "kms_key_arn" {
-  value = element(concat(aws_kms_key.kms_key.*.arn, [""]), 0)
+  value = aws_kms_key.kms_key[0].arn
 }
 
 output "kms_key_id" {
-  value = element(concat(aws_kms_key.kms_key.*.id, [""]), 0)
+  value = aws_kms_key.kms_key[0].id
 }
 

@@ -55,10 +55,10 @@ variable "health_check" {
 }
 
 output "elb_id" {
-  value = element(concat(aws_elb.elb.*.id, [""]), 0)
+  value = aws_elb.elb[0].id
 }
 
 output "dns_name" {
-  value = element(concat(aws_elb.elb.*.dns_name, [""]), 0)
+  value = aws_elb.elb[0].dns_name
 }
 

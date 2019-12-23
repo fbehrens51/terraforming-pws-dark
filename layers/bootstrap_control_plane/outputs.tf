@@ -1,5 +1,5 @@
 output "sjb_private_ip" {
-  value = element(concat(module.sjb_bootstrap.eni_ips, [""]), 0)
+  value = module.sjb_bootstrap.eni_ips[0]
 }
 
 output "sjb_private_key" {
