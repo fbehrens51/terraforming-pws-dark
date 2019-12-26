@@ -476,3 +476,11 @@ output "splunk_search_head_elb_id" {
   value = module.splunk_search_head_elb.my_elb_id
 }
 
+output "splunk_tcp_port" {
+  value = module.splunk_ports.splunk_tcp_port
+}
+
+output "splunk_logs_fqdn" {
+  value = module.domains.splunk_logs_fqdn
+}
+
