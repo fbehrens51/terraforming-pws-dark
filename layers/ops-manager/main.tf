@@ -33,9 +33,7 @@ data "terraform_remote_state" "pas" {
 }
 
 locals {
-  vpc_id                      = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
   director_role_name          = data.terraform_remote_state.paperwork.outputs.director_role_name
-  om_security_group_id        = data.terraform_remote_state.pas.outputs.om_security_group_id
   om_ssh_public_key_pair_name = data.terraform_remote_state.pas.outputs.om_ssh_public_key_pair_name
   om_eip_allocation_id        = data.terraform_remote_state.pas.outputs.om_eip_allocation_id
   om_eni_id                   = data.terraform_remote_state.pas.outputs.om_eni_id
