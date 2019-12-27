@@ -210,3 +210,7 @@ output "ldap_private_ip" {
   value = module.bootstrap.eni_ips[0]
 }
 
+output "private_key_pem" {
+  value     = module.ldap_host_key_pair.private_key_pem
+  sensitive = true
+}
