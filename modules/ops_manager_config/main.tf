@@ -174,6 +174,7 @@ data "template_file" "cf_template" {
     smtp_tls                                             = var.smtp_tls
     smtp_from                                            = var.smtp_from
     smtp_port                                            = var.smtp_port
+    smtp_enabled                                         = var.smtp_enabled
     uaa_service_provider_key_credentials_cert_pem        = var.uaa_service_provider_key_credentials_cert_pem
     uaa_service_provider_key_credentials_private_key_pem = var.uaa_service_provider_key_credentials_private_key_pem
     apps_manager_global_wrapper_footer_content           = var.apps_manager_global_wrapper_footer_content

@@ -260,14 +260,14 @@ product-properties:
     value: plain
   .properties.smtp_credentials:
     value:
-      identity: ${smtp_user}
-      password: %{ if smtp_user != "" }${smtp_password}%{ endif }
+      identity: %{ if smtp_enabled == "true" }${smtp_user}%{ endif }
+      password: %{ if smtp_enabled == "true" }${smtp_password}%{ endif }
   .properties.smtp_enable_starttls_auto:
-    value: ${smtp_tls}
+    value: %{ if smtp_enabled == "true" }${smtp_tls}%{ endif }
   .properties.smtp_from:
-    value: ${smtp_from}
+    value: %{ if smtp_enabled == "true" }${smtp_from}%{ endif }
   .properties.smtp_port:
-    value: ${smtp_port}
+    value: %{ if smtp_enabled == "true" }${smtp_port}%{ endif }
   .properties.syslog_drop_debug:
     value: true
   .properties.syslog_host:
