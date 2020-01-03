@@ -269,7 +269,7 @@ product-properties:
     value: ${smtp_from}
   .properties.smtp_port:
     value: ${smtp_port}
-  %{ endif ~}
+  %{~ endif }
   .properties.syslog_drop_debug:
     value: true
   .properties.syslog_host:
