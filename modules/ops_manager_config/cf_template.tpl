@@ -254,20 +254,22 @@ product-properties:
   .properties.smoke_tests:
     selected_option: on_demand
     value: on_demand
+  %{ if smtp_enabled == "true" ~}
   .properties.smtp_address:
     value: ${smtp_host}
   .properties.smtp_auth_mechanism:
     value: plain
   .properties.smtp_credentials:
     value:
-      identity: %{ if smtp_enabled == "true" }${smtp_user}%{ endif }
-      password: %{ if smtp_enabled == "true" }${smtp_password}%{ endif }
+      identity: ${smtp_user}
+      password: ${smtp_password}
   .properties.smtp_enable_starttls_auto:
-    value: %{ if smtp_enabled == "true" }${smtp_tls}%{ endif }
+    value: ${smtp_tls}
   .properties.smtp_from:
-    value: %{ if smtp_enabled == "true" }${smtp_from}%{ endif }
+    value: ${smtp_from}
   .properties.smtp_port:
-    value: %{ if smtp_enabled == "true" }${smtp_port}%{ endif }
+    value: ${smtp_port}
+  %{ endif ~}
   .properties.syslog_drop_debug:
     value: true
   .properties.syslog_host:
