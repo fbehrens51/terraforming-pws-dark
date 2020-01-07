@@ -3,6 +3,8 @@ product-properties:
   .properties.action:
     selected_option: notify
     value: notify
+  .properties.cpu_limit:
+    value: ${cpu_limit}
   .properties.daily_db_check_frequency:
     value: 12
   .properties.database_mirrors:
@@ -11,8 +13,6 @@ product-properties:
   .properties.enforce_cpu_limit:
     selected_option: enabled
     value: enabled
-  .properties.enforce_cpu_limit.enabled.cpu_limit:
-    value: ${cpu_limit}
   .properties.exclude_paths:
     value: /proc/,/sys/
   .properties.memory_limit:
