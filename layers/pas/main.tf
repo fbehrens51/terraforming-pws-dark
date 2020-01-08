@@ -125,16 +125,17 @@ module "infra" {
 }
 
 module "pas" {
-  source             = "../../modules/pas"
-  availability_zones = var.availability_zones
-  dns_suffix         = ""
-  env_name           = var.env_name
-  public_subnet_ids  = module.infra.public_subnet_ids
-  route_table_ids    = data.terraform_remote_state.routes.outputs.pas_private_vpc_route_table_ids
-  tags               = local.modified_tags
-  vpc_id             = local.vpc_id
-  zone_id            = module.infra.zone_id
-  bucket_suffix      = local.bucket_suffix
+  source                    = "../../modules/pas"
+  availability_zones        = var.availability_zones
+  dns_suffix                = ""
+  env_name                  = var.env_name
+  public_subnet_ids         = module.infra.public_subnet_ids
+  route_table_ids           = data.terraform_remote_state.routes.outputs.pas_private_vpc_route_table_ids
+  tags                      = local.modified_tags
+  vpc_id                    = local.vpc_id
+  zone_id                   = module.infra.zone_id
+  bucket_suffix             = local.bucket_suffix
+  create_backup_pas_buckets = true
 }
 
 module "om_key_pair" {
@@ -369,6 +370,22 @@ output "pas_packages_bucket" {
 
 output "pas_resources_bucket" {
   value = module.pas.pas_resources_bucket
+}
+
+output "pas_buildpacks_backup_bucket" {
+  value = module.pas.pas_buildpacks_backup_bucket
+}
+
+output "pas_droplets_backup_bucket" {
+  value = module.pas.pas_droplets_backup_bucket
+}
+
+output "pas_packages_backup_bucket" {
+  value = module.pas.pas_packages_backup_bucket
+}
+
+output "pas_resources_backup_bucket" {
+  value = module.pas.pas_resources_backup_bucket
 }
 
 output "infrastructure_subnet_cidrs" {
