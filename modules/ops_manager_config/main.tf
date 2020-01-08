@@ -193,6 +193,9 @@ data "template_file" "cf_template" {
     pas_droplets_bucket                                  = var.pas_droplets_bucket
     pas_packages_bucket                                  = var.pas_packages_bucket
     pas_resources_bucket                                 = var.pas_resources_bucket
+    pas_buildpacks_backup_bucket                         = var.pas_buildpacks_backup_bucket
+    pas_droplets_backup_bucket                           = var.pas_droplets_backup_bucket
+    pas_packages_backup_bucket                           = var.pas_packages_backup_bucket
     pas_vpc_azs                                          = indent(4, join("", data.template_file.pas_vpc_azs.*.rendered))
     singleton_availability_zone                          = var.singleton_availability_zone
     splunk_syslog_host                                   = var.splunk_syslog_host

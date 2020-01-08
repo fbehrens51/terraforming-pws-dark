@@ -175,6 +175,10 @@ module "om_config" {
   pas_droplets_bucket                      = data.terraform_remote_state.pas.outputs.pas_droplets_bucket
   pas_packages_bucket                      = data.terraform_remote_state.pas.outputs.pas_packages_bucket
   pas_resources_bucket                     = data.terraform_remote_state.pas.outputs.pas_resources_bucket
+  pas_buildpacks_backup_bucket             = data.terraform_remote_state.pas.outputs.pas_buildpacks_backup_bucket
+  pas_droplets_backup_bucket               = data.terraform_remote_state.pas.outputs.pas_droplets_backup_bucket
+  pas_packages_backup_bucket               = data.terraform_remote_state.pas.outputs.pas_packages_backup_bucket
+  pas_resources_backup_bucket              = data.terraform_remote_state.pas.outputs.pas_resources_backup_bucket
   pas_subnet_cidrs                         = local.pas_ert_subnet_cidrs
   pas_subnet_availability_zones            = data.terraform_remote_state.pas.outputs.pas_subnet_availability_zones
   pas_subnet_gateways                      = data.terraform_remote_state.pas.outputs.pas_subnet_gateways

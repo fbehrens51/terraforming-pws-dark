@@ -299,6 +299,16 @@ product-properties:
     value: ${pas_buildpacks_bucket}
   .properties.system_blobstore.external.droplets_bucket:
     value: ${pas_droplets_bucket}
+  .properties.system_blobstore.external.packages_bucket:
+    value: ${pas_packages_bucket}
+  .properties.system_blobstore.external.resources_bucket:
+    value: ${pas_resources_bucket}
+  .properties.system_blobstore.external.buildpacks_backup_bucket:
+    value: ${pas_buildpacks_backup_bucket}
+  .properties.system_blobstore.external.droplets_backup_bucket:
+    value: ${pas_droplets_backup_bucket}
+  .properties.system_blobstore.external.packages_backup_bucket:
+    value: ${pas_packages_backup_bucket}
   .properties.system_blobstore.external.encryption:
     value: true
   .properties.system_blobstore.external.encryption_kms_key_id:
@@ -307,12 +317,10 @@ product-properties:
     value: ${s3_endpoint}
   .properties.system_blobstore.external.iam_instance_profile_authentication:
     value: true
-  .properties.system_blobstore.external.packages_bucket:
-    value: ${pas_packages_bucket}
   .properties.system_blobstore.external.region:
     value: ${region}
-  .properties.system_blobstore.external.resources_bucket:
-    value: ${pas_resources_bucket}
+  .properties.system_blobstore.external.backup_region:
+    value: ${region}
   .properties.system_blobstore.external.signature_version:
     value: "4"
   .properties.system_blobstore.external.versioning:
@@ -497,6 +505,8 @@ resource-config:
     instance_type:
       id: ${backup_restore_instance_type}
     internet_connected: false
+    additional_vm_extensions:
+    - s3_instance_profile
   clock_global:
     swap_as_percent_of_memory_size: automatic
     additional_networks: []

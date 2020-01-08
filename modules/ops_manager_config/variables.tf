@@ -389,6 +389,18 @@ variable "volume_encryption_kms_key_arn" {
 variable "kms_key_id" {
 }
 
+variable "pas_buildpacks_backup_bucket" {
+}
+
+variable "pas_droplets_backup_bucket" {
+}
+
+variable "pas_packages_backup_bucket" {
+}
+
+variable "pas_resources_backup_bucket" {
+}
+
 variable "pas_buildpacks_bucket" {
 }
 
