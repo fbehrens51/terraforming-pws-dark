@@ -269,6 +269,21 @@ product-properties:
     value: ${smtp_from}
   .properties.smtp_port:
     value: ${smtp_port}
+  %{~ else}
+  .properties.smtp_address:
+    value: ''
+  .properties.smtp_auth_mechanism:
+    value: plain
+  .properties.smtp_credentials:
+    value:
+      identity: ''
+      password: ''
+  .properties.smtp_enable_starttls_auto:
+    value: false
+  .properties.smtp_from:
+    value: ''
+  .properties.smtp_port:
+    value: ''
   %{~ endif }
   .properties.syslog_drop_debug:
     value: true
