@@ -85,8 +85,8 @@ data "template_file" "setup_system_tools" {
   template = <<EOF
 runcmd:
   - echo "Installing up system tools and utilities"
-  - yum install jq git python-pip -y
-  - pip install yq --index-url=$${pypi_host_protocol}://$${pypi_host}/simple --trusted-host=$${pypi_host}
+  - yum install jq git python-pip python3 -y
+  - pip3 install yq --index-url=$${pypi_host_protocol}://$${pypi_host}/simple --trusted-host=$${pypi_host}
 EOF
 
 
