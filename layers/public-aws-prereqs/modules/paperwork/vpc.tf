@@ -13,6 +13,14 @@ resource "aws_vpc" "bastion_vpc" {
   }
 }
 
+resource "aws_vpn_gateway" "bastion_vgw" {
+  vpc_id = aws_vpc.bastion_vpc.id
+
+  tags = {
+    Name = "${var.env_name} | bastion vgw"
+  }
+}
+
 resource "aws_internet_gateway" "bastion_igw" {
   vpc_id = aws_vpc.bastion_vpc.id
 
@@ -26,6 +34,14 @@ resource "aws_vpc" "control_plane_vpc" {
 
   tags = {
     Name = "${var.env_name} | control plane vpc"
+  }
+}
+
+resource "aws_vpn_gateway" "control_plane_vgw" {
+  vpc_id = aws_vpc.control_plane_vpc.id
+
+  tags = {
+    Name = "${var.env_name} | control plane vgw"
   }
 }
 
@@ -45,6 +61,14 @@ resource "aws_vpc" "pas_vpc" {
   }
 }
 
+resource "aws_vpn_gateway" "pas_vgw" {
+  vpc_id = aws_vpc.pas_vpc.id
+
+  tags = {
+    Name = "${var.env_name} | pas vgw"
+  }
+}
+
 resource "aws_internet_gateway" "pas_igw" {
   vpc_id = aws_vpc.pas_vpc.id
 
@@ -58,6 +82,14 @@ resource "aws_vpc" "enterprise_services_vpc" {
 
   tags = {
     Name = "${var.env_name} | enterprise services vpc"
+  }
+}
+
+resource "aws_vpn_gateway" "enterprise_services_vgw" {
+  vpc_id = aws_vpc.enterprise_services_vpc.id
+
+  tags = {
+    Name = "${var.env_name} | enterprise services vgw"
   }
 }
 
