@@ -244,7 +244,6 @@ locals {
     [
       local.bosh_cidr,
       local.enterprise_services_vpc_cidr,
-      local.control_plane_vpc_cidr,
       local.bastion_vpc_cidr,
     ],
   )
