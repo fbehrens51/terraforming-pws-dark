@@ -54,6 +54,10 @@ resource "random_string" "ldap_password" {
   special = false
 }
 
+resource "aws_eip" "ldap_eip" {
+  vpc = true
+}
+
 module "domains" {
   source = "../../modules/domains"
 
@@ -68,6 +72,7 @@ module "paperwork" {
   key_manager_role_name = var.key_manager_role_name
   splunk_role_name      = var.splunk_role_name
   archive_role_name     = var.archive_role_name
+  ldap_eip              = aws_eip.ldap_eip.public_ip
 
   env_name    = var.env_name
   root_domain = var.root_domain
@@ -126,7 +131,7 @@ data "template_file" "paperwork_variables" {
     control_plane_vpc_dns                       = module.paperwork.control_plane_vpc_dns
     ldap_basedn                                 = local.basedn
     ldap_dn                                     = local.admin
-    ldap_host                                   = module.domains.ldap_fqdn
+    ldap_host                                   = aws_eip.ldap_eip.public_ip
     ldap_port                                   = "636"
     ldap_role_attr                              = "role"
     ldap_password_s3_path                       = local.ldap_password_s3_path

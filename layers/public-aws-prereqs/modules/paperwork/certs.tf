@@ -84,8 +84,8 @@ module "ldap_server_cert" {
   env_name           = var.env_name
   ca_cert_pem        = module.ca_cert.cert_pem
   ca_private_key_pem = module.ca_cert.private_key_pem
-  common_name        = module.domains.ldap_subdomain
-  domains            = [module.domains.ldap_fqdn]
+  common_name        = "LDAP Server"
+  ips                = [var.ldap_eip]
 }
 
 module "ldap_client_cert" {

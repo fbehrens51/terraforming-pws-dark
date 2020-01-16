@@ -23,6 +23,9 @@ variable "key_manager_role_name" {
 variable "root_domain" {
 }
 
+variable "ldap_eip" {
+}
+
 variable "users" {
   type = list(object({ name = string, username = string, roles = string }))
 }

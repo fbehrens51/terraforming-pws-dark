@@ -32,28 +32,6 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
-data "terraform_remote_state" "bootstrap_bind" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "bootstrap_bind"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
-data "terraform_remote_state" "bind" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "bind"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 data "terraform_remote_state" "routes" {
   backend = "s3"
 
@@ -86,9 +64,7 @@ locals {
     },
   )
 
-  bind_rndc_secret = data.terraform_remote_state.bootstrap_bind.outputs.bind_rndc_secret
-  master_dns_ip    = data.terraform_remote_state.bind.outputs.master_public_ip
-  root_domain      = data.terraform_remote_state.paperwork.outputs.root_domain
+  root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
 
   basedn        = "ou=users,dc=${join(",dc=", split(".", local.root_domain))}"
   admin         = "cn=admin,dc=${join(",dc=", split(".", local.root_domain))}"
@@ -170,23 +146,6 @@ module "domains" {
   source = "../../modules/domains"
 
   root_domain = local.root_domain
-}
-
-# Configure the DNS Provider
-provider "dns" {
-  update {
-    server        = local.master_dns_ip
-    key_name      = "rndc-key."
-    key_algorithm = "hmac-md5"
-    key_secret    = local.bind_rndc_secret
-  }
-}
-
-resource "dns_a_record_set" "ldap_a_record" {
-  zone      = "${local.root_domain}."
-  name      = module.domains.ldap_subdomain
-  addresses = module.bootstrap.public_ips
-  ttl       = 300
 }
 
 variable "remote_state_region" {

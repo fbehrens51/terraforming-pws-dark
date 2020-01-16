@@ -2,9 +2,6 @@ variable "root_domain" {
 }
 
 locals {
-  ldap_subdomain = "ldap"
-  ldap_fqdn      = "${local.ldap_subdomain}.${var.root_domain}"
-
   smtp_subdomain = "smtp"
   smtp_fqdn      = "${local.smtp_subdomain}.${var.root_domain}"
 
@@ -31,14 +28,6 @@ locals {
 
   apps_subdomain = "cfapps"
   apps_fqdn      = "${local.apps_subdomain}.${var.root_domain}"
-}
-
-output "ldap_subdomain" {
-  value = local.ldap_subdomain
-}
-
-output "ldap_fqdn" {
-  value = local.ldap_fqdn
 }
 
 output "smtp_subdomain" {
