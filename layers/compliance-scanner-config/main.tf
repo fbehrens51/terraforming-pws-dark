@@ -35,17 +35,6 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
-data "terraform_remote_state" "bootstrap_splunk" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "bootstrap_splunk"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 module "domains" {
   source = "../../modules/domains"
 
