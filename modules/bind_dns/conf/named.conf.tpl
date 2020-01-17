@@ -1,11 +1,8 @@
 include "/etc/named.rfc1912.zones";
 include "/etc/named.root.key";
-include "/etc/rndc.key";
 
-# Allow rndc management
-controls {
-	inet 127.0.0.1 port 953 allow { 127.0.0.1; } keys { "rndc-key"; };
-};
+# Disable rndc management
+controls { };
 
 # Limit access to local network and homelab LAN
 acl "clients" {
@@ -29,11 +26,8 @@ options {
 	hostname none;
 	server-id none;
 
-	recursion yes;
-	recursive-clients 50;
-	allow-recursion { clients; };
+	recursion no;
 	allow-query { clients; };
-	allow-transfer { localhost; ${allow_transfer_ips_string}; }; ## SLAVE
 
 	auth-nxdomain no;
 	notify no;
@@ -74,13 +68,4 @@ zone "." IN {
 zone "${zone_name}" {
 	type master;
 	file "data/db.${zone_name}";
-	allow-update { key rndc-key; };
-	notify yes;
-};
-
-zone "${reverse_cidr_prefix}.in-addr.arpa" {
-	type master;
-	file "data/db.${reverse_cidr_prefix}";
-	allow-update { key rndc-key; };
-	notify yes;
 };

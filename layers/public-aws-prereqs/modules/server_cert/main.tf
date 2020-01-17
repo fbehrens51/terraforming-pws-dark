@@ -15,6 +15,11 @@ variable "domains" {
   default = []
 }
 
+variable "ips" {
+  type    = list(string)
+  default = []
+}
+
 resource "tls_private_key" "server_private_key" {
   count = 1
 
@@ -31,7 +36,8 @@ resource "tls_cert_request" "server_cert_request" {
     organization = var.env_name
   }
 
-  dns_names = var.domains
+  dns_names    = var.domains
+  ip_addresses = var.ips
 }
 
 resource "tls_locally_signed_cert" "server_cert" {

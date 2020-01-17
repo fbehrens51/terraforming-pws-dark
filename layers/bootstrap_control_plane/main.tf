@@ -43,28 +43,6 @@ data "terraform_remote_state" "routes" {
   }
 }
 
-data "terraform_remote_state" "bootstrap_bind" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "bootstrap_bind"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
-data "terraform_remote_state" "bind" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "bind"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 data "terraform_remote_state" "encrypt_amis" {
   backend = "s3"
 
@@ -309,37 +287,6 @@ module "web_elb" {
   health_check      = "HTTP:8080/api/v1/info" # Concourse web healthcheck
 }
 
-module "domains" {
-  source = "../../modules/domains"
-
-  root_domain = local.root_domain
-}
-
-# Configure the DNS Provider
-provider "dns" {
-  update {
-    server        = local.master_dns_ip
-    key_name      = "rndc-key."
-    key_algorithm = "hmac-md5"
-    key_secret    = local.bind_rndc_secret
-  }
-}
-
-resource "dns_a_record_set" "om_a_record" {
-  zone      = "${local.root_domain}."
-  name      = module.domains.control_plane_om_subdomain
-  addresses = [module.ops_manager.ip]
-  ttl       = 300
-}
-
-resource "dns_cname_record" "atc_cname" {
-  zone = "${local.root_domain}."
-  name = module.domains.control_plane_plane_subdomain
-
-  cname = "${module.web_elb.dns_name}."
-  ttl   = 300
-}
-
 resource "random_integer" "bucket" {
   min = 1
   max = 100000
@@ -350,15 +297,12 @@ data "aws_vpc" "bastion_vpc" {
 }
 
 locals {
-  bastion_vpc_id   = data.terraform_remote_state.paperwork.outputs.bastion_vpc_id
-  vpc_id           = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
-  bucket_suffix    = random_integer.bucket.result
-  om_key_name      = "${local.env_name}-cp-om"
-  bind_rndc_secret = data.terraform_remote_state.bootstrap_bind.outputs.bind_rndc_secret
-  master_dns_ip    = data.terraform_remote_state.bind.outputs.master_public_ip
-  root_domain      = data.terraform_remote_state.paperwork.outputs.root_domain
-  env_name         = var.tags["Name"]
-  modified_name    = "${local.env_name} control plane"
+  bastion_vpc_id = data.terraform_remote_state.paperwork.outputs.bastion_vpc_id
+  vpc_id         = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
+  bucket_suffix  = random_integer.bucket.result
+  om_key_name    = "${local.env_name}-cp-om"
+  env_name       = var.tags["Name"]
+  modified_name  = "${local.env_name} control plane"
   modified_tags = merge(
     var.tags,
     {

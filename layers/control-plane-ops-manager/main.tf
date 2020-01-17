@@ -35,7 +35,7 @@ data "terraform_remote_state" "bootstrap_control_plane" {
 locals {
   director_role_name          = data.terraform_remote_state.paperwork.outputs.director_role_name
   om_ssh_public_key_pair_name = data.terraform_remote_state.bootstrap_control_plane.outputs.om_ssh_public_key_pair_name
-  om_eip_allocation_id        = data.terraform_remote_state.bootstrap_control_plane.outputs.om_eip_allocation_id
+  om_eip_allocation           = data.terraform_remote_state.bootstrap_control_plane.outputs.om_eip_allocation
   om_eni_id                   = data.terraform_remote_state.bootstrap_control_plane.outputs.om_eni_id
 
   tags = merge(
@@ -132,9 +132,9 @@ CLOUDINIT
 }
 
 resource "aws_eip_association" "om_eip_assoc" {
-  count         = length(local.om_eip_allocation_id) > 0 ? 1 : 0
+  count         = length(local.om_eip_allocation) > 0 ? 1 : 0
   instance_id   = module.ops_manager.instance_ids[0]
-  allocation_id = local.om_eip_allocation_id
+  allocation_id = local.om_eip_allocation[0].id
 }
 
 output "ops_manager_private_ip" {

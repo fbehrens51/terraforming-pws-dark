@@ -47,8 +47,8 @@ output "om_eni_id" {
   value = module.ops_manager.om_eni_id
 }
 
-output "om_eip_allocation_id" {
-  value = module.ops_manager.om_eip_allocation_id
+output "om_eip_allocation" {
+  value = module.ops_manager.om_eip_allocation
 }
 
 output "om_security_group_id" {
@@ -113,3 +113,10 @@ output "transfer_bucket_name" {
   value = aws_s3_bucket.transfer_bucket.bucket
 }
 
+output "ops_manager_ip" {
+  value = module.ops_manager.ip
+}
+
+output "plane_elb_dns" {
+  value = module.web_elb.dns_name
+}

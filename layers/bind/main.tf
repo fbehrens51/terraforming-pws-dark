@@ -21,6 +21,50 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
+data "terraform_remote_state" "bootstrap_control_plane" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bootstrap_control_plane"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
+data "terraform_remote_state" "pas" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "pas"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
+data "terraform_remote_state" "bootstrap_splunk" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bootstrap_splunk"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
+data "terraform_remote_state" "bootstrap_postfix" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bootstrap_postfix"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "bootstrap_bind" {
   backend = "s3"
 
@@ -52,29 +96,25 @@ locals {
       "Name" = local.modified_name
     },
   )
-  bind_rndc_secret           = data.terraform_remote_state.bootstrap_bind.outputs.bind_rndc_secret
-  master_private_ip          = data.terraform_remote_state.bootstrap_bind.outputs.bind_eni_ips[0]
-  bind_master_data_volume_id = data.terraform_remote_state.bootstrap_bind.outputs.bind_master_data_volume_id
 
   root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
 
   // If internetless = true in the bootstrap_bind layer,
   // eip_ips will be empty, and master_public_ip becomes the first eni_ip
-  master_public_ip = element(
-    concat(
-      data.terraform_remote_state.bootstrap_bind.outputs.bind_eip_ips,
-      data.terraform_remote_state.bootstrap_bind.outputs.bind_eni_ips,
-    ),
-    0,
-  )
-
-  slave_ips = concat(
-    data.terraform_remote_state.bootstrap_bind.outputs.bind_eip_ips,
-    data.terraform_remote_state.bootstrap_bind.outputs.bind_eni_ips,
-  )
-  slave_public_ips = [element(local.slave_ips, 1), element(local.slave_ips, 2)]
+  public_ips  = data.terraform_remote_state.bootstrap_bind.outputs.bind_eip_ips
+  private_ips = data.terraform_remote_state.bootstrap_bind.outputs.bind_eni_ips
+  master_ips  = length(local.public_ips) > 0 ? local.public_ips : local.private_ips
 
   encrypted_amazon2_ami_id = data.terraform_remote_state.encrypt_amis.outputs.encrypted_amazon2_ami_id
+
+  om_public_ip                = data.terraform_remote_state.pas.outputs.ops_manager_ip
+  control_plane_om_public_ip  = data.terraform_remote_state.bootstrap_control_plane.outputs.ops_manager_ip
+  control_plane_plane_elb_dns = data.terraform_remote_state.bootstrap_control_plane.outputs.plane_elb_dns
+  pas_elb_dns                 = data.terraform_remote_state.pas.outputs.pas_elb_dns_name
+  postfix_private_ip          = data.terraform_remote_state.bootstrap_postfix.outputs.postfix_eni_ips[0]
+  splunk_logs_private_ip      = data.terraform_remote_state.bootstrap_splunk.outputs.forwarders_private_ips[0]
+  splunk_search_head_elb_dns  = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_search_head_elb_dns_name
+  splunk_monitor_elb_dns      = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_monitor_elb_dns_name
 }
 
 module "bind_host_key_pair" {
@@ -119,29 +159,29 @@ data "template_cloudinit_config" "master_bind_conf_userdata" {
 }
 
 module "bind_master_user_data" {
-  source      = "../../modules/bind_dns/master/user_data"
+  source      = "../../modules/bind_dns/user_data"
   client_cidr = var.client_cidr
-  master_ip   = local.master_public_ip
-  secret      = local.bind_rndc_secret
-  slave_ips   = local.slave_public_ips
+  master_ips  = local.master_ips
   zone_name   = local.root_domain
+
+  om_public_ip                = local.om_public_ip
+  control_plane_om_public_ip  = local.control_plane_om_public_ip
+  control_plane_plane_elb_dns = local.control_plane_plane_elb_dns
+  pas_elb_dns                 = local.pas_elb_dns
+  postfix_private_ip          = local.postfix_private_ip
+  splunk_search_head_elb_dns  = local.splunk_search_head_elb_dns
+  splunk_logs_private_ip      = local.splunk_logs_private_ip
+  splunk_monitor_elb_dns      = local.splunk_monitor_elb_dns
 }
 
 module "bind_master_host" {
-  instance_count = 1
+  instance_count = 3
   source         = "../../modules/launch"
   ami_id         = local.encrypted_amazon2_ami_id
   user_data      = data.template_cloudinit_config.master_bind_conf_userdata.rendered
   eni_ids        = data.terraform_remote_state.bootstrap_bind.outputs.bind_eni_ids
   key_pair_name  = module.bind_host_key_pair.key_name
   tags           = local.modified_tags
-}
-
-resource "aws_volume_attachment" "bind_master_data_volume_attachment" {
-  skip_destroy = true
-  device_name  = "/dev/sdf"
-  instance_id  = module.bind_master_host.instance_ids[0]
-  volume_id    = local.bind_master_data_volume_id
 }
 
 module "syslog_config" {
@@ -154,71 +194,6 @@ module "syslog_config" {
   public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url
 }
 
-data "template_cloudinit_config" "slave_bind_conf_userdata" {
-  base64_encode = true
-  gzip          = true
-
-  part {
-    filename     = "syslog.cfg"
-    content      = module.syslog_config.user_data
-    content_type = "text/x-include-url"
-  }
-
-  part {
-    filename     = "slave_bind_conf.cfg"
-    content_type = "text/cloud-config"
-    content      = module.bind_slave_user_data.user_data
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
-  }
-
-  part {
-    filename     = "clamav.cfg"
-    content_type = "text/x-include-url"
-    content      = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
-  }
-
-  part {
-    filename     = "user_accounts_user_data.cfg"
-    content_type = "text/x-include-url"
-    content      = data.terraform_remote_state.paperwork.outputs.user_accounts_user_data
-  }
-
-  part {
-    filename     = "banner.cfg"
-    content_type = "text/x-include-url"
-    content      = data.terraform_remote_state.paperwork.outputs.custom_banner_user_data
-  }
-}
-
-module "bind_slave_user_data" {
-  source      = "../../modules/bind_dns/slave/user_data"
-  client_cidr = var.client_cidr
-  master_ip   = local.master_public_ip
-  zone_name   = local.root_domain
-}
-
-module "bind_slave_host" {
-  instance_count = length(
-    data.terraform_remote_state.bootstrap_bind.outputs.bind_eni_ids,
-  ) - 1
-  source        = "../../modules/launch"
-  ami_id        = local.encrypted_amazon2_ami_id
-  user_data     = data.template_cloudinit_config.slave_bind_conf_userdata.rendered
-  eni_ids       = [data.terraform_remote_state.bootstrap_bind.outputs.bind_eni_ids[1], data.terraform_remote_state.bootstrap_bind.outputs.bind_eni_ids[2]]
-  key_pair_name = module.bind_host_key_pair.key_name
-  tags          = local.modified_tags
-}
-
-resource "null_resource" "wait_for_master" {
-  triggers = {
-    instance_id = module.bind_master_host.instance_ids[0]
-  }
-
-  provisioner "local-exec" {
-    command = "while ! nslookup -timeout=1 -querytype=soa ${local.root_domain} ${local.master_public_ip} < /dev/null; do sleep 1; done"
-  }
-}
-
 variable "remote_state_region" {
 }
 
@@ -229,19 +204,14 @@ variable "tags" {
   type = map(string)
 }
 
+variable "client_cidr" {
+}
+
 output "bind_ssh_private_key" {
   value     = module.bind_host_key_pair.private_key_pem
   sensitive = true
 }
 
-output "master_private_ip" {
-  value = local.master_private_ip
+output "master_ips" {
+  value = local.master_ips
 }
-
-output "master_public_ip" {
-  value = local.master_public_ip
-}
-
-variable "client_cidr" {
-}
-

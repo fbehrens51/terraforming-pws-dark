@@ -32,28 +32,6 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
-data "terraform_remote_state" "bind" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "bind"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
-data "terraform_remote_state" "bootstrap_bind" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "bootstrap_bind"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 locals {
   indexers_count   = "3"
   forwarders_count = "1"
@@ -66,10 +44,8 @@ locals {
     },
   )
 
-  dns_zone_name    = data.terraform_remote_state.paperwork.outputs.root_domain
-  master_dns_ip    = data.terraform_remote_state.bind.outputs.master_public_ip
-  bind_rndc_secret = data.terraform_remote_state.bootstrap_bind.outputs.bind_rndc_secret
-  public_subnet    = data.terraform_remote_state.enterprise-services.outputs.public_subnet_ids[0]
+  dns_zone_name = data.terraform_remote_state.paperwork.outputs.root_domain
+  public_subnet = data.terraform_remote_state.enterprise-services.outputs.public_subnet_ids[0]
 
   private_subnets            = data.terraform_remote_state.enterprise-services.outputs.private_subnet_ids
   master_private_subnet      = local.private_subnets[0]
@@ -330,36 +306,6 @@ module "domains" {
   root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
 }
 
-provider "dns" {
-  update {
-    server        = local.master_dns_ip
-    key_name      = "rndc-key."
-    key_algorithm = "hmac-md5"
-    key_secret    = local.bind_rndc_secret
-  }
-}
-
-resource "dns_cname_record" "splunk_master_cname" {
-  zone  = "${local.dns_zone_name}."
-  name  = module.domains.splunk_monitor_subdomain
-  cname = "${module.splunk_monitor_elb.dns_name}."
-  ttl   = 300
-}
-
-resource "dns_cname_record" "splunk_cname" {
-  zone  = "${local.dns_zone_name}."
-  name  = module.domains.splunk_subdomain
-  cname = "${module.splunk_search_head_elb.dns_name}."
-  ttl   = 300
-}
-
-resource "dns_a_record_set" "splunk_logs_a_record" {
-  zone      = "${local.dns_zone_name}."
-  name      = module.domains.splunk_logs_subdomain
-  addresses = module.forwarders_bootstrap.eni_ips
-  ttl       = 300
-}
-
 output "s3_bucket_syslog_archive" {
   value = aws_s3_bucket.syslog_archive.id
 }
@@ -468,8 +414,16 @@ output "cf_splunk_password" {
   sensitive = true
 }
 
+output "splunk_monitor_elb_dns_name" {
+  value = module.splunk_monitor_elb.dns_name
+}
+
 output "splunk_monitor_elb_id" {
   value = module.splunk_monitor_elb.my_elb_id
+}
+
+output "splunk_search_head_elb_dns_name" {
+  value = module.splunk_search_head_elb.dns_name
 }
 
 output "splunk_search_head_elb_id" {
@@ -483,4 +437,3 @@ output "splunk_tcp_port" {
 output "splunk_logs_fqdn" {
   value = module.domains.splunk_logs_fqdn
 }
-

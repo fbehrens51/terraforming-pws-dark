@@ -21,17 +21,6 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
-data "terraform_remote_state" "bootstrap_bind" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "bootstrap_bind"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 data "terraform_remote_state" "routes" {
   backend = "s3"
 
@@ -49,17 +38,6 @@ data "terraform_remote_state" "bastion" {
   config = {
     bucket  = var.remote_state_bucket
     key     = "bastion"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
-data "terraform_remote_state" "bind" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "bind"
     region  = var.remote_state_region
     encrypt = true
   }
@@ -189,46 +167,6 @@ module "pas_elb" {
   health_check      = "HTTP:8080/health" # Gorouter healthcheck
 }
 
-module "domains" {
-  source = "../../modules/domains"
-
-  root_domain = local.root_domain
-}
-
-# Configure the DNS Provider
-//TODO support running from CI/Dev wks.  From MJB using the master private IP should work, but that won't work from external CI or our WKS.
-provider "dns" {
-  update {
-    server        = local.master_dns_ip
-    key_name      = "rndc-key."
-    key_algorithm = "hmac-md5"
-    key_secret    = local.bind_rndc_secret
-  }
-}
-
-//update add testing.pivotal-staging.com 600 CNAME dns1.pivotal-staging.com
-
-resource "dns_a_record_set" "om_a_record" {
-  zone      = "${local.root_domain}."
-  name      = module.domains.om_subdomain
-  addresses = [module.ops_manager.ip]
-  ttl       = 300
-}
-
-resource "dns_cname_record" "pas_system_cname" {
-  zone  = "${local.root_domain}."
-  name  = "*.${module.domains.system_subdomain}"
-  cname = "${module.pas_elb.dns_name}."
-  ttl   = 300
-}
-
-resource "dns_cname_record" "pas_apps_cname" {
-  zone  = "${local.root_domain}."
-  name  = "*.${module.domains.apps_subdomain}"
-  cname = "${module.pas_elb.dns_name}."
-  ttl   = 300
-}
-
 data "aws_vpc" "cp_vpc" {
   id = local.cp_vpc_id
 }
@@ -298,15 +236,13 @@ locals {
       "Name" = local.modified_name
     },
   )
-  cp_vpc_id        = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
-  bastion_vpc_id   = data.terraform_remote_state.paperwork.outputs.bastion_vpc_id
-  vpc_id           = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
-  route_table_id   = data.terraform_remote_state.routes.outputs.pas_public_vpc_route_table_id
-  bucket_suffix    = random_integer.bucket.result
-  om_key_name      = "${var.env_name}-om"
-  bind_rndc_secret = data.terraform_remote_state.bootstrap_bind.outputs.bind_rndc_secret
-  master_dns_ip    = data.terraform_remote_state.bind.outputs.master_public_ip
-  root_domain      = data.terraform_remote_state.paperwork.outputs.root_domain
+  cp_vpc_id      = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
+  bastion_vpc_id = data.terraform_remote_state.paperwork.outputs.bastion_vpc_id
+  vpc_id         = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
+  route_table_id = data.terraform_remote_state.routes.outputs.pas_public_vpc_route_table_id
+  bucket_suffix  = random_integer.bucket.result
+  om_key_name    = "${var.env_name}-om"
+  root_domain    = data.terraform_remote_state.paperwork.outputs.root_domain
 
   ingress_rules = [
     {
@@ -329,6 +265,10 @@ module "calculated_subnets" {
 
 output "public_subnet_ids" {
   value = module.infra.public_subnet_ids
+}
+
+output "pas_elb_dns_name" {
+  value = module.pas_elb.dns_name
 }
 
 output "pas_elb_id" {
@@ -428,8 +368,8 @@ output "om_eni_id" {
   value = module.ops_manager.om_eni_id
 }
 
-output "om_eip_allocation_id" {
-  value = module.ops_manager.om_eip_allocation_id
+output "om_eip_allocation" {
+  value = module.ops_manager.om_eip_allocation
 }
 
 output "om_private_key_pem" {
@@ -445,10 +385,6 @@ output "om_ssh_public_key_pair_name" {
   value = local.om_key_name
 }
 
-output "om_dns_name" {
-  value = module.domains.om_fqdn
-}
-
 output "rds_cidr_block" {
   value = module.calculated_subnets.rds_cidr
 }
@@ -461,3 +397,6 @@ output "public_cidr_block" {
   value = module.calculated_subnets.public_cidr
 }
 
+output "ops_manager_ip" {
+  value = module.ops_manager.ip
+}
