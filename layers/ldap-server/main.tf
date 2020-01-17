@@ -107,8 +107,17 @@ module "bootstrap" {
   egress_rules  = local.ldap_egress_rules
   subnet_ids    = [local.public_subnet]
   eni_count     = "1"
-  create_eip    = "true"
+  create_eip    = "false"
   tags          = local.modified_tags
+}
+
+data "aws_eip" "ldap_eip" {
+  public_ip = data.terraform_remote_state.paperwork.outputs.ldap_host
+}
+
+resource "aws_eip_association" "ldap_eip_association" {
+  allocation_id        = data.aws_eip.ldap_eip.id
+  network_interface_id = module.bootstrap.eni_ids[0]
 }
 
 module "ldap_host" {
@@ -132,7 +141,7 @@ module "ldap_configure" {
   )
   tls_server_ca_cert  = data.terraform_remote_state.paperwork.outputs.root_ca_cert
   ssh_private_key_pem = module.ldap_host_key_pair.private_key_pem
-  ssh_host            = module.bootstrap.public_ips[0]
+  ssh_host            = data.terraform_remote_state.paperwork.outputs.ldap_host
   instance_id         = module.ldap_host.instance_ids[0]
   users               = var.users
   root_domain         = local.root_domain
