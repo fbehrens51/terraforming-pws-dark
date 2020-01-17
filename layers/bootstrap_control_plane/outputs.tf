@@ -47,8 +47,8 @@ output "om_eni_id" {
   value = module.ops_manager.om_eni_id
 }
 
-output "om_eip_allocation_id" {
-  value = module.ops_manager.om_eip_allocation_id
+output "om_eip_allocation" {
+  value = module.ops_manager.om_eip_allocation
 }
 
 output "om_security_group_id" {

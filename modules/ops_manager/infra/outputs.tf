@@ -20,8 +20,8 @@ output "om_eni_id" {
   )
 }
 
-output "om_eip_allocation_id" {
-  value = aws_eip.ops_manager_unattached[0].id
+output "om_eip_allocation" {
+  value = aws_eip.ops_manager_unattached
 }
 
 output "security_group_id" {
