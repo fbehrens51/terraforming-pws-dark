@@ -43,7 +43,7 @@ data "terraform_remote_state" "routes" {
   }
 }
 
-data "terraform_remote_state" "enterprise_services" {
+data "terraform_remote_state" "enterprise-services" {
   backend = "s3"
 
   config = {
@@ -68,7 +68,7 @@ locals {
 
   basedn        = "ou=users,dc=${join(",dc=", split(".", local.root_domain))}"
   admin         = "cn=admin,dc=${join(",dc=", split(".", local.root_domain))}"
-  public_subnet = data.terraform_remote_state.enterprise_services.outputs.public_subnet_ids[0]
+  public_subnet = data.terraform_remote_state.enterprise-services.outputs.public_subnet_ids[0]
 
   ldap_ingress_rules = [
     {
