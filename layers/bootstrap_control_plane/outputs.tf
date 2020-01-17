@@ -113,3 +113,10 @@ output "transfer_bucket_name" {
   value = aws_s3_bucket.transfer_bucket.bucket
 }
 
+output "ops_manager_ip" {
+  value = module.ops_manager.ip
+}
+
+output "plane_elb_dns" {
+  value = module.web_elb.dns_name
+}

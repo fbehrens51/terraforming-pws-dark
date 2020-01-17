@@ -120,24 +120,8 @@ module "bootstrap" {
   tags          = local.modified_tags
 }
 
-module "rndc_generator" {
-  source   = "../../modules/bind_dns/rndc"
-  env_name = local.env_name
-}
-
 data "aws_network_interface" "master_eni" {
   id = module.bootstrap.eni_ids[0]
-}
-
-resource "aws_ebs_volume" "bind_master_data_volume" {
-  availability_zone = data.aws_network_interface.master_eni.availability_zone
-  encrypted         = true
-  kms_key_id        = data.terraform_remote_state.paperwork.outputs.kms_key_arn
-  size              = "8"
-
-  tags = {
-    Name = "Bind Master data volume"
-  }
 }
 
 variable "remote_state_region" {
@@ -153,11 +137,6 @@ variable "tags" {
   type = map(string)
 }
 
-output "bind_rndc_secret" {
-  value     = module.rndc_generator.value
-  sensitive = true
-}
-
 output "bind_eni_ids" {
   value = module.bootstrap.eni_ids
 }
@@ -168,9 +147,5 @@ output "bind_eni_ips" {
 
 output "bind_eip_ips" {
   value = module.bootstrap.public_ips
-}
-
-output "bind_master_data_volume_id" {
-  value = aws_ebs_volume.bind_master_data_volume.id
 }
 

@@ -77,7 +77,7 @@ locals {
 
 module "healthwatch_config" {
   source                         = "../../modules/healthwatch/config"
-  om_url                         = "https://${data.terraform_remote_state.pas.outputs.om_dns_name}"
+  om_url                         = "https://${module.domains.om_fqdn}"
   network_name                   = var.network_name
   availability_zones             = var.availability_zones
   singleton_availability_zone    = var.singleton_availability_zone
