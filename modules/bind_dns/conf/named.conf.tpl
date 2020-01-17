@@ -26,9 +26,7 @@ options {
 	hostname none;
 	server-id none;
 
-	recursion yes;
-	recursive-clients 50;
-	allow-recursion { clients; };
+	recursion no;
 	allow-query { clients; };
 
 	auth-nxdomain no;
