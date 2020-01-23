@@ -70,6 +70,17 @@ EOF
 
 }
 
+data "template_file" "telemetry_conf" {
+  template = <<EOF
+[general]
+sendLicenseUsage = false
+sendAnonymizedUsage = false
+sendAnonymizedWebAnalytics = false
+sendSupportUsage = false
+EOF
+
+}
+
 data "template_file" "cloud_config" {
   template = <<EOF
 #cloud-config
@@ -99,6 +110,10 @@ write_files:
   content: |
     ${indent(4, data.template_file.web_conf.rendered)}
 
+- path: /run/telemetry.conf
+  content: |
+    ${indent(4, data.template_file.telemetry_conf.rendered)}
+
 runcmd:
   - |
     set -ex
@@ -109,10 +124,12 @@ runcmd:
 
     mkdir -p /opt/splunk/etc/system/local/
     mkdir -p /opt/splunk/etc/auth/mycerts/
+    mkdir -p /opt/splunk/etc/apps/splunk_instrumentation/local/
 
     cp /run/web.conf /opt/splunk/etc/system/local/web.conf
     cp /run/server.crt /opt/splunk/etc/auth/mycerts/mySplunkWebCertificate.pem
     cp /run/server.key /opt/splunk/etc/auth/mycerts/mySplunkWebPrivateKey.key
+    cp /run/telemetry.conf /opt/splunk/etc/apps/splunk_instrumentation/local/telemetry.conf
 
     aws --region ${var.region} s3 cp --no-progress s3://${var.transfer_bucket_name}/ . --recursive --exclude='*' --include='splunk/splunk-${var.splunk_rpm_version}*'
     rpm -i splunk/splunk-${var.splunk_rpm_version}*.rpm
