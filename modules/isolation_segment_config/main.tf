@@ -1,6 +1,6 @@
 locals {
-  isolation_segment_product_version = "2.7.7"
-  isolation_segment_file_version    = "2.7.7-build.7"
+  isolation_segment_product_version = "2.7.8"
+  isolation_segment_file_version    = "2.7.8-build.6"
 }
 
 variable "pivnet_api_token" {
