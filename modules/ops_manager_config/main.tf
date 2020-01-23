@@ -20,7 +20,7 @@ locals {
 
   pcf_metrics_file_glob       = "apm*.pivotal"
   pcf_metrics_product_slug    = "apm"
-  pcf_metrics_product_version = "1.6.2"
+  pcf_metrics_product_version = "1.6.1"
 
   splunk_file_glob       = "splunk-nozzle*.pivotal"
   splunk_product_slug    = "splunk-nozzle"
