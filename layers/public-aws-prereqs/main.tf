@@ -98,6 +98,10 @@ resource "aws_s3_bucket" "certs" {
   bucket_prefix = local.cert_bucket
   acl           = "private"
 
+  versioning {
+    enabled = true
+  }
+
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
