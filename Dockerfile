@@ -6,7 +6,3 @@ RUN apk --no-cache add git unzip && \
     git checkout v0.12.17 && \
     cd /go && \
     go install ./src/github.com/hashicorp/terraform/tools/terraform-bundle
-
-COPY terraform-bundle.hcl .
-
-RUN terraform-bundle package -os=linux -arch=amd64 terraform-bundle.hcl
