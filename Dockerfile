@@ -9,5 +9,4 @@ RUN apk --no-cache add git unzip && \
 
 COPY terraform-bundle.hcl .
 
-RUN terraform-bundle package -os=linux -arch=amd64 terraform-bundle.hcl && \
-    cp *.zip terraform-bundle.zip
+RUN terraform-bundle package -os=linux -arch=amd64 terraform-bundle.hcl
