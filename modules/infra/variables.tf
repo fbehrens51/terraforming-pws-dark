@@ -90,6 +90,12 @@ variable "public_bucket_name" {
 variable "public_bucket_url" {
 }
 
+variable "elb_security_group_id" {
+}
+
+variable "ops_manager_security_group_id" {
+}
+
 locals {
   infrastructure_cidr = module.cidr_lookup.infrastructure_cidr
   public_cidr         = module.cidr_lookup.public_cidr

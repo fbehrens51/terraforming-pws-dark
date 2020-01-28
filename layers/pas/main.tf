@@ -82,19 +82,21 @@ module "infra" {
 
   nat_ami_id = data.terraform_remote_state.encrypt_amis.outputs.encrypted_amazon2_ami_id
 
-  env_name                = var.env_name
-  availability_zones      = var.availability_zones
-  internetless            = var.internetless
-  dns_suffix              = ""
-  tags                    = local.modified_tags
-  use_route53             = false
-  vpc_id                  = local.vpc_id
-  public_route_table_id   = local.route_table_id
-  bastion_private_ip      = data.terraform_remote_state.bastion.outputs.bastion_private_ip
-  private_route_table_ids = data.terraform_remote_state.routes.outputs.pas_private_vpc_route_table_ids
-  nat_instance_type       = var.nat_instance_type
-  root_domain             = data.terraform_remote_state.paperwork.outputs.root_domain
-  splunk_syslog_ca_cert   = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  env_name                      = var.env_name
+  availability_zones            = var.availability_zones
+  internetless                  = var.internetless
+  dns_suffix                    = ""
+  tags                          = local.modified_tags
+  use_route53                   = false
+  vpc_id                        = local.vpc_id
+  public_route_table_id         = local.route_table_id
+  bastion_private_ip            = data.terraform_remote_state.bastion.outputs.bastion_private_ip
+  private_route_table_ids       = data.terraform_remote_state.routes.outputs.pas_private_vpc_route_table_ids
+  nat_instance_type             = var.nat_instance_type
+  root_domain                   = data.terraform_remote_state.paperwork.outputs.root_domain
+  splunk_syslog_ca_cert         = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  ops_manager_security_group_id = module.ops_manager.security_group_id
+  elb_security_group_id         = module.pas_elb.security_group_id
 
   user_data = data.template_cloudinit_config.nat_user_data.rendered
 

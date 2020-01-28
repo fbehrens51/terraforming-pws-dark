@@ -88,47 +88,48 @@ EOF
   }
 }
 
-data "template_file" "director_template" {
-  template = file("${path.module}/director_template.tpl")
-
-  vars = {
-    ec2_endpoint                                = var.ec2_endpoint
-    elb_endpoint                                = var.elb_endpoint
-    custom_ssh_banner                           = var.custom_ssh_banner
-    rds_database                                = "director"
-    rds_address                                 = var.rds_address
-    rds_port                                    = var.rds_port
-    rds_username                                = var.rds_username
-    rds_password                                = var.rds_password
-    rds_ca_cert                                 = var.rds_ca_cert_pem
-    smtp_domain                                 = var.smtp_domain
-    smtp_enabled                                = var.smtp_enabled
-    smtp_from                                   = var.smtp_from
-    smtp_host                                   = var.smtp_host
-    smtp_port                                   = var.smtp_port
-    smtp_recipients                             = var.smtp_recipients
-    smtp_user                                   = var.smtp_user
-    smtp_password                               = var.smtp_password
-    smtp_tls                                    = var.smtp_tls
-    env_name                                    = var.env_name
-    ntp_servers                                 = join(",", var.ntp_servers)
-    iaas_configuration_endpoints_ca_cert        = var.iaas_configuration_endpoints_ca_cert
-    iaas_configuration_iam_instance_profile     = var.iaas_configuration_iam_instance_profile
-    iaas_configuration_ssh_key_pair_name        = var.ops_manager_ssh_public_key_name
-    iaas_configuration_region                   = var.region
-    iaas_configuration_security_group           = var.vms_security_group_id
-    iaas_configuration_ssh_private_key          = var.ops_manager_ssh_private_key
-    security_configuration_trusted_certificates = var.security_configuration_trusted_certificates
-    blobstore_instance_profile                  = var.blobstore_instance_profile
-    kms_key_arn                                 = var.volume_encryption_kms_key_arn
-    singleton_availability_zone                 = var.pas_subnet_availability_zones[0]
-    infrastructure_subnets                      = join("", data.template_file.infrastructure_subnets.*.rendered)
-    pas_subnets                                 = indent(4, join("", data.template_file.pas_subnets.*.rendered))
-    pas_vpc_azs                                 = indent(2, join("", data.template_file.pas_vpc_azs.*.rendered))
-    splunk_syslog_host                          = var.splunk_syslog_host
-    splunk_syslog_port                          = var.splunk_syslog_port
-    splunk_syslog_ca_cert                       = var.splunk_syslog_ca_cert
-  }
+locals {
+  director_template = templatefile("${path.module}/director_template.tpl", {
+    ec2_endpoint                                = var.ec2_endpoint,
+    elb_endpoint                                = var.elb_endpoint,
+    custom_ssh_banner                           = var.custom_ssh_banner,
+    rds_database                                = "director",
+    rds_address                                 = var.rds_address,
+    rds_port                                    = var.rds_port,
+    rds_username                                = var.rds_username,
+    rds_password                                = var.rds_password,
+    rds_ca_cert                                 = var.rds_ca_cert_pem,
+    smtp_domain                                 = var.smtp_domain,
+    smtp_enabled                                = var.smtp_enabled,
+    smtp_from                                   = var.smtp_from,
+    smtp_host                                   = var.smtp_host,
+    smtp_port                                   = var.smtp_port,
+    smtp_recipients                             = var.smtp_recipients,
+    smtp_user                                   = var.smtp_user,
+    smtp_password                               = var.smtp_password,
+    smtp_tls                                    = var.smtp_tls,
+    env_name                                    = var.env_name,
+    ntp_servers                                 = join(",", var.ntp_servers),
+    iaas_configuration_endpoints_ca_cert        = var.iaas_configuration_endpoints_ca_cert,
+    iaas_configuration_iam_instance_profile     = var.iaas_configuration_iam_instance_profile,
+    iaas_configuration_ssh_key_pair_name        = var.ops_manager_ssh_public_key_name,
+    iaas_configuration_region                   = var.region,
+    iaas_configuration_security_group           = var.vms_security_group_id,
+    iaas_configuration_ssh_private_key          = var.ops_manager_ssh_private_key,
+    security_configuration_trusted_certificates = var.security_configuration_trusted_certificates,
+    blobstore_instance_profile                  = var.blobstore_instance_profile,
+    kms_key_arn                                 = var.volume_encryption_kms_key_arn,
+    singleton_availability_zone                 = var.pas_subnet_availability_zones[0],
+    infrastructure_subnets                      = join("", data.template_file.infrastructure_subnets.*.rendered),
+    pas_subnets                                 = indent(4, join("", data.template_file.pas_subnets.*.rendered)),
+    pas_vpc_azs                                 = indent(2, join("", data.template_file.pas_vpc_azs.*.rendered)),
+    splunk_syslog_host                          = var.splunk_syslog_host,
+    splunk_syslog_port                          = var.splunk_syslog_port,
+    splunk_syslog_ca_cert                       = var.splunk_syslog_ca_cert,
+    isolation_segment_to_subnets                = var.isolation_segment_to_subnets,
+    isolation_segment_to_security_groups        = var.isolation_segment_to_security_groups,
+    pas_vpc_dns                                 = var.pas_vpc_dns,
+  })
 }
 
 data "template_file" "cf_template" {

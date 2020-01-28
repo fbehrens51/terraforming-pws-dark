@@ -15,6 +15,18 @@ ${infrastructure_subnets}
   - name: pas
     subnets:
     ${pas_subnets}
+  %{ for isolation_segment, subnets in isolation_segment_to_subnets }
+  - name: isolation-segment-${isolation_segment}
+    subnets:
+    %{ for subnet in subnets }
+    - iaas_identifier: ${subnet.id}
+      cidr: ${subnet.cidr_block}
+      dns: ${pas_vpc_dns}
+      gateway: ${cidrhost(subnet.cidr_block, 1)}
+      reserved_ip_ranges: ${cidrhost(subnet.cidr_block, 1)}-${cidrhost(subnet.cidr_block, 4)}
+      availability_zone_names: [${subnet.availability_zone}]
+    %{ endfor ~}
+  %{ endfor ~}
 
 iaas-configurations:
 - additional_cloud_properties:${iaas_configuration_endpoints_ca_cert != "" ? <<EOF
@@ -127,4 +139,9 @@ vmextensions-configuration:
 - name: s3_instance_profile
   cloud_properties:
     iam_instance_profile: ${blobstore_instance_profile}
-
+%{ for vpc_id, security_group in isolation_segment_to_security_groups }
+- name: isolation-segment-${vpc_id}
+  cloud_properties:
+    security_groups:
+    - ${security_group.name}
+%{ endfor ~}

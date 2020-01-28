@@ -14,7 +14,7 @@ output "cf_template" {
 }
 
 output "director_template" {
-  value     = data.template_file.director_template.rendered
+  value     = local.director_template
   sensitive = true
 }
 
