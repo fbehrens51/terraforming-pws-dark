@@ -120,3 +120,11 @@ output "ops_manager_ip" {
 output "plane_elb_dns" {
   value = module.web_elb.dns_name
 }
+
+output "terraform_bucket_name" {
+  value = var.terraform_bucket_name
+}
+
+output "terraform_region" {
+  value = var.terraform_region
+}

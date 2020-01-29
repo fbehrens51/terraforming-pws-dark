@@ -57,7 +57,9 @@ data "terraform_remote_state" "encrypt_amis" {
 }
 
 locals {
-  transfer_bucket_name = data.terraform_remote_state.bootstrap_control_plane.outputs.transfer_bucket_name
+  transfer_bucket_name  = data.terraform_remote_state.bootstrap_control_plane.outputs.transfer_bucket_name
+  terraform_bucket_name = data.terraform_remote_state.bootstrap_control_plane.outputs.terraform_bucket_name
+  terraform_region      = data.terraform_remote_state.bootstrap_control_plane.outputs.terraform_region
 }
 
 data "template_file" "setup_source_zip" {
@@ -105,10 +107,27 @@ runcmd:
     aws --region ${var.region} s3 cp s3://${local.transfer_bucket_name}/cli-tools/$latest .
     unzip $latest
     rm $latest
-    mkdir -p /home/ec2-user/.terraform.d/plugins/linux_amd64/
-    mv tools/terraform-provider* /home/ec2-user/.terraform.d/plugins/linux_amd64/.
-    sudo install tools/* /usr/local/bin/
+    install tools/* /usr/local/bin/
     rm -rf tools
+EOF
+
+}
+
+data "template_file" "setup_terraform_zip" {
+  template = <<EOF
+runcmd:
+  - |
+    echo "Downloading and extracting terraform.zip"
+    mkdir terraform
+    latest=$(aws --region ${local.terraform_region} s3 ls s3://${local.terraform_bucket_name}/terraform-bundle/ | awk '/ terraform-bundle.*\.zip$/ {print $4}' | sort -n | tail -1)
+    aws --region ${local.terraform_region} s3 cp s3://${local.terraform_bucket_name}/terraform-bundle/$latest .
+    unzip -d terraform $latest
+    rm $latest
+    mkdir -p /home/ec2-user/.terraform.d/plugins/linux_amd64/ /root/.terraform.d/plugins/linux_amd64/
+    install -o ec2-user -g ec2-user terraform/terraform-provider* /home/ec2-user/.terraform.d/plugins/linux_amd64/.
+    install terraform/terraform-provider* /root/.terraform.d/plugins/linux_amd64/.
+    install terraform/terraform /usr/local/bin/
+    rm -rf terraform
 EOF
 
 }
@@ -148,6 +167,13 @@ data "template_cloudinit_config" "user_data" {
     filename     = "source_code_zip.cfg"
     content_type = "text/cloud-config"
     content      = data.template_file.setup_source_zip.rendered
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+
+  part {
+    filename     = "terraform_zip.cfg"
+    content_type = "text/cloud-config"
+    content      = data.template_file.setup_terraform_zip.rendered
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 

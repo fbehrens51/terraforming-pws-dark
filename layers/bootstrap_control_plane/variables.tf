@@ -7,6 +7,12 @@ variable "remote_state_region" {
 variable "control_plane_host_key_pair_name" {
 }
 
+variable "terraform_bucket_name" {
+}
+
+variable "terraform_region" {
+}
+
 variable "rds_db_username" {
 }
 
