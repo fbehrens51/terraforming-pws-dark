@@ -33,11 +33,8 @@ variable "instance_count" {
 }
 
 locals {
-  created_timestamp = timestamp()
-
   computed_instance_tags = {
-    CreatedTimestamp = local.created_timestamp
-    SourceAmiId      = var.ami_id
+    SourceAmiId = var.ami_id
   }
 }
 
