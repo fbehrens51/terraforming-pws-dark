@@ -74,6 +74,10 @@ module "config" {
   s3_endpoint          = var.s3_endpoint
   region               = var.region
 
+  vanity_cert_enabled    = var.vanity_cert_enabled
+  vanity_cert_pem        = data.terraform_remote_state.paperwork.outputs.vanity_server_cert
+  vanity_private_key_pem = data.terraform_remote_state.paperwork.outputs.vanity_server_key
+
   router_cert_pem                = data.terraform_remote_state.paperwork.outputs.router_server_cert
   router_private_key_pem         = data.terraform_remote_state.paperwork.outputs.router_server_key
   router_trusted_ca_certificates = data.terraform_remote_state.paperwork.outputs.router_trusted_ca_certs

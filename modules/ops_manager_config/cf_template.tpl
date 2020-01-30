@@ -181,6 +181,14 @@ product-properties:
         private_key_pem: |
           ${indent(10, router_private_key_pem)}
       name: router
+  %{ if vanity_cert_enabled == "true" ~}
+    - certificate:
+        cert_pem: |
+          ${indent(10, vanity_cert_pem)}
+        private_key_pem: |
+          ${indent(10, vanity_private_key_pem)}
+      name: vanity
+  %{~ endif }
   .properties.networkpolicyserver_database_max_open_connections:
     value: 200
   .properties.networkpolicyserverinternal_database_max_open_connections:

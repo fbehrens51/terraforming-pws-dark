@@ -51,6 +51,14 @@ product-properties:
         private_key_pem: |
           ${indent(10, router_private_key_pem)}
       name: cert
+  %{ if vanity_cert_enabled == "true" ~}
+    - certificate:
+        cert_pem: |
+          ${indent(10, vanity_cert_pem)}
+        private_key_pem: |
+          ${indent(10, vanity_private_key_pem)}
+      name: vanity
+  %{~ endif }
   .properties.networking_point_of_entry:
     selected_option: terminate_at_router
     value: terminate_at_router

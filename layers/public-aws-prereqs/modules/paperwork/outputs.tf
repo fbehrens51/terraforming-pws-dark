@@ -150,6 +150,15 @@ output "user_private_keys" {
   sensitive = true
 }
 
+output "vanity_server_cert" {
+  value = module.vanity_server_cert.cert_pem
+}
+
+output "vanity_server_key" {
+  value     = module.vanity_server_cert.private_key_pem
+  sensitive = true
+}
+
 output "portal_end_to_end_test_user_cert_pem" {
   value = module.portal_end_to_end_test_user_cert.cert_pem
 }

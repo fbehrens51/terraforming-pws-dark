@@ -25,6 +25,9 @@ variable "smtp_domain" {
 variable "smtp_enabled" {
 }
 
+variable "vanity_cert_enabled" {
+}
+
 variable "iaas_configuration_endpoints_ca_cert" {
 }
 

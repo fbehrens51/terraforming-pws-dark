@@ -27,6 +27,12 @@ variable "region" {
 variable "mirror_bucket" {
 }
 
+variable "vanity_cert_pem" {
+}
+
+variable "vanity_private_key_pem" {
+}
+
 variable "router_cert_pem" {
 }
 
@@ -106,6 +112,9 @@ data "template_file" "tile_config" {
   vars = {
     iso_seg_tile_suffix            = var.iso_seg_tile_suffix
     iso_seg_tile_suffix_underscore = replace(var.iso_seg_tile_suffix, "-", "_")
+    vanity_cert_pem                = var.vanity_cert_pem
+    vanity_private_key_pem         = var.vanity_private_key_pem
+    vanity_cert_enabled            = var.vanity_cert_enabled
     router_cert_pem                = var.router_cert_pem
     router_private_key_pem         = var.router_private_key_pem
     router_trusted_ca_certificates = var.router_trusted_ca_certificates

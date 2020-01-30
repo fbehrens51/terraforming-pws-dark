@@ -105,3 +105,7 @@ smtp_server_key_s3_path = "${smtp_server_key_s3_path}"
 portal_smoke_test_cert_s3_path = "${portal_smoke_test_cert_s3_path}"
 
 portal_smoke_test_key_s3_path = "${portal_smoke_test_key_s3_path}"
+
+vanity_server_cert_s3_path = "${vanity_server_cert_s3_path}"
+
+vanity_server_key_s3_path = "${vanity_server_key_s3_path}"

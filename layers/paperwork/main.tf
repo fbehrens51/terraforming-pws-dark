@@ -322,6 +322,22 @@ data "aws_s3_bucket_object" "uaa_server_key" {
   key    = var.uaa_server_key_s3_path
 }
 
+variable "vanity_server_cert_s3_path" {
+}
+
+data "aws_s3_bucket_object" "vanity_server_cert" {
+  bucket = var.cert_bucket
+  key    = var.vanity_server_cert_s3_path
+}
+
+variable "vanity_server_key_s3_path" {
+}
+
+data "aws_s3_bucket_object" "vanity_server_key" {
+  bucket = var.cert_bucket
+  key    = var.vanity_server_key_s3_path
+}
+
 variable "ldap_client_cert_s3_path" {
 }
 
@@ -557,6 +573,15 @@ output "uaa_server_cert" {
 
 output "uaa_server_key" {
   value     = data.aws_s3_bucket_object.uaa_server_key.body
+  sensitive = true
+}
+
+output "vanity_server_cert" {
+  value = data.aws_s3_bucket_object.vanity_server_cert.body
+}
+
+output "vanity_server_key" {
+  value     = data.aws_s3_bucket_object.vanity_server_key.body
   sensitive = true
 }
 

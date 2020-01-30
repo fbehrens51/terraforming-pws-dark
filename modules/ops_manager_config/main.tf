@@ -165,6 +165,9 @@ data "template_file" "cf_template" {
     password_policies_min_uppercase                      = var.password_policies_min_uppercase
     cloud_controller_encrypt_key_secret                  = var.cloud_controller_encrypt_key_secret
     credhub_encryption_password                          = var.credhub_encryption_password
+    vanity_cert_pem                                      = var.vanity_cert_pem
+    vanity_private_key_pem                               = var.vanity_private_key_pem
+    vanity_cert_enabled                                  = var.vanity_cert_enabled
     router_cert_pem                                      = var.router_cert_pem
     router_private_key_pem                               = var.router_private_key_pem
     router_trusted_ca_certificates                       = var.router_trusted_ca_certificates

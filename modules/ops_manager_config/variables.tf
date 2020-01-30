@@ -194,6 +194,21 @@ variable "router_elb_names" {
   description = "List of elb names which GoRouter should be attached to."
 }
 
+variable "vanity_cert_enabled" {
+  type        = string
+  description = "String boolean to include the vanity certificate in the CF configuration"
+}
+
+variable "vanity_cert_pem" {
+  type        = string
+  description = "Server certificate used by the GoRouter. Must be valid for *.<VANITY_DOMAIN>"
+}
+
+variable "vanity_private_key_pem" {
+  type        = string
+  description = "Server key used by the GoRouter. Must be valid for *.<VANITY_DOMAIN>"
+}
+
 variable "router_cert_pem" {
   type        = string
   description = "Server certificate used by the GoRouter. Must be valid for *.<SYSTEM_DOMAIN> and *.<APPS_DOMAIN>"
