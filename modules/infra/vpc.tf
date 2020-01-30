@@ -44,7 +44,6 @@ resource "aws_security_group_rule" "ingress_from_om" {
   to_port                  = 0
 }
 
-// This rule is necessary to allow diego cells in separate isolation segment vpcs to communicate with the PAS control plane + BOSH
 resource "aws_security_group_rule" "ingress_from_self" {
   security_group_id = aws_security_group.vms_security_group[0].id
   type              = "ingress"
