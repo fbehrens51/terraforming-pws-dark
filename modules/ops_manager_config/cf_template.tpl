@@ -177,18 +177,18 @@ product-properties:
     value:
     - certificate:
         cert_pem: |
-          ${indent(10, router_cert_pem)}
+          ${indent(10, chomp(router_cert_pem))}
         private_key_pem: |
-          ${indent(10, router_private_key_pem)}
+          ${indent(10, chomp(router_private_key_pem))}
       name: router
-  %{ if vanity_cert_enabled == "true" ~}
+%{ if vanity_cert_enabled == "true" ~}
     - certificate:
         cert_pem: |
-          ${indent(10, vanity_cert_pem)}
+          ${indent(10, chomp(vanity_cert_pem))}
         private_key_pem: |
-          ${indent(10, vanity_private_key_pem)}
+          ${indent(10, chomp(vanity_private_key_pem))}
       name: vanity
-  %{~ endif }
+%{ endif ~}
   .properties.networkpolicyserver_database_max_open_connections:
     value: 200
   .properties.networkpolicyserverinternal_database_max_open_connections:
@@ -262,7 +262,7 @@ product-properties:
   .properties.smoke_tests:
     selected_option: on_demand
     value: on_demand
-  %{ if smtp_enabled == "true" ~}
+%{ if smtp_enabled == "true" ~}
   .properties.smtp_address:
     value: ${smtp_host}
   .properties.smtp_auth_mechanism:
@@ -277,7 +277,7 @@ product-properties:
     value: ${smtp_from}
   .properties.smtp_port:
     value: ${smtp_port}
-  %{~ else}
+%{ else ~}
   .properties.smtp_address:
     value: ''
   .properties.smtp_auth_mechanism:
@@ -292,7 +292,7 @@ product-properties:
     value: ''
   .properties.smtp_port:
     value: ''
-  %{~ endif }
+%{ endif ~}
   .properties.syslog_drop_debug:
     value: true
   .properties.syslog_host:
