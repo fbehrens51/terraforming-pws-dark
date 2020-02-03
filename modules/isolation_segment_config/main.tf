@@ -27,6 +27,9 @@ variable "region" {
 variable "mirror_bucket" {
 }
 
+variable "vanity_cert_enabled" {
+}
+
 variable "vanity_cert_pem" {
 }
 
