@@ -6,6 +6,9 @@ locals {
 variable "pivnet_api_token" {
 }
 
+variable "iso_seg_name" {
+}
+
 variable "iso_seg_tile_suffix" {
 }
 
@@ -81,7 +84,7 @@ data "aws_subnet" "isolation_segment_subnets" {
   availability_zone = var.pas_subnet_availability_zones[count.index]
 
   tags = {
-    isolation_segment = var.iso_seg_tile_suffix
+    isolation_segment = var.iso_seg_name
   }
 }
 

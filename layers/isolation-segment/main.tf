@@ -64,6 +64,7 @@ module "splunk_ports" {
 module "config" {
   source = "../../modules/isolation_segment_config"
 
+  iso_seg_name        = var.name
   iso_seg_tile_suffix = local.hyphenated_name
   mirror_bucket       = local.mirror_bucket
 
