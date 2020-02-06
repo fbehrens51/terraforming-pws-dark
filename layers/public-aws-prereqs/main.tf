@@ -180,6 +180,10 @@ variable "paperwork_variable_output_path" {
   type = string
 }
 
+variable "bootstrap_isolation_segment_vpc_variable_output_path" {
+  type = string
+}
+
 variable "platform_automation_engine_worker_role_name" {
   type = string
 }
@@ -451,6 +455,13 @@ resource "aws_s3_bucket_object" "ldap_password" {
 resource "local_file" "paperwork_variables" {
   filename = var.paperwork_variable_output_path
   content  = data.template_file.paperwork_variables.rendered
+}
+
+resource "local_file" "bootstrap_isolation_segment_vpc_variables" {
+  filename = var.bootstrap_isolation_segment_vpc_variable_output_path
+  content  = <<EOF
+vpc_id = "${module.paperwork.isolation_segment_vpc_1_id}"
+EOF
 }
 
 # The following outputs are used by the portal test suite and are not needed by the paperwork layer

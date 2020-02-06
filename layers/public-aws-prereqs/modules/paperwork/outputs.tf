@@ -173,3 +173,6 @@ data "template_file" "usernames" {
   template = var.users[count.index]["username"]
 }
 
+output "isolation_segment_vpc_1_id" {
+  value = aws_vpc.isolation_segment_vpc.id
+}
