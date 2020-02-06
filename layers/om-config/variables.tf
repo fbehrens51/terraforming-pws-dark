@@ -94,9 +94,6 @@ variable "cf_tools_product_version" {
 variable "ipsec_log_level" {
 }
 
-variable "ipsec_optional" {
-}
-
 variable "apps_manager_tools_url" {
   description = "The CF CLI tools url.  Defaults to cli.<system_domain>"
   default     = ""

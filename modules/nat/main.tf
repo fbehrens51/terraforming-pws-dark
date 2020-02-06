@@ -5,9 +5,6 @@ variable "tags" {
   type = map(string)
 }
 
-variable "vpc_id" {
-}
-
 variable "private_route_table_ids" {
   type = list(string)
 }
@@ -41,6 +38,10 @@ variable "public_bucket_url" {
 variable "ami_id" {
 }
 
+variable "ingress_cidr_blocks" {
+  type = list(string)
+}
+
 locals {
   env_name      = var.tags["Name"]
   modified_name = "${local.env_name} nat"
@@ -50,10 +51,6 @@ locals {
       "Name" = local.modified_name
     },
   )
-}
-
-data "aws_vpc" "vpc" {
-  id = var.vpc_id
 }
 
 module "eni" {
@@ -68,7 +65,7 @@ module "eni" {
     {
       port        = "0"
       protocol    = "-1"
-      cidr_blocks = data.aws_vpc.vpc.cidr_block
+      cidr_blocks = join(",", var.ingress_cidr_blocks)
     },
   ]
 

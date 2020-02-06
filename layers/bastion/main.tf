@@ -83,12 +83,13 @@ module "bastion_host_key_pair" {
 }
 
 module "bastion_host" {
-  instance_count = "1"
-  source         = "../../modules/launch"
-  ami_id         = var.ami_id == "" ? module.amazon_ami.id : var.ami_id
-  user_data      = data.template_cloudinit_config.user_data.rendered
-  eni_ids        = [module.bootstrap_bastion.eni_id]
-  key_pair_name  = module.bastion_host_key_pair.key_name
+  instance_count     = "1"
+  source             = "../../modules/launch"
+  ignore_tag_changes = true
+  ami_id             = var.ami_id == "" ? module.amazon_ami.id : var.ami_id
+  user_data          = data.template_cloudinit_config.user_data.rendered
+  eni_ids            = [module.bootstrap_bastion.eni_id]
+  key_pair_name      = module.bastion_host_key_pair.key_name
 
   tags = local.modified_tags
 }

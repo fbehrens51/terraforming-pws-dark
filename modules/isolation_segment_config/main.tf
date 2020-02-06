@@ -6,6 +6,9 @@ locals {
 variable "pivnet_api_token" {
 }
 
+variable "iso_seg_name" {
+}
+
 variable "iso_seg_tile_suffix" {
 }
 
@@ -75,6 +78,16 @@ EOF
   }
 }
 
+data "aws_subnet" "isolation_segment_subnets" {
+  count = length(var.pas_subnet_availability_zones)
+
+  availability_zone = var.pas_subnet_availability_zones[count.index]
+
+  tags = {
+    isolation_segment = var.iso_seg_name
+  }
+}
+
 data "template_file" "download_config" {
   template = file("${path.module}/download_product_config.tpl")
 
@@ -113,6 +126,7 @@ data "template_file" "tile_config" {
   template = file("${path.module}/isolation_segment_template.tpl")
 
   vars = {
+    vpc_id                         = data.aws_subnet.isolation_segment_subnets[0].vpc_id
     iso_seg_tile_suffix            = var.iso_seg_tile_suffix
     iso_seg_tile_suffix_underscore = replace(var.iso_seg_tile_suffix, "-", "_")
     vanity_cert_pem                = var.vanity_cert_pem

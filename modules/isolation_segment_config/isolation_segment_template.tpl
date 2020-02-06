@@ -126,7 +126,7 @@ product-properties:
     value: true
 network-properties:
   network:
-    name: pas
+    name: isolation-segment-${iso_seg_tile_suffix}
   other_availability_zones:
     ${pas_vpc_azs}
   singleton_availability_zone:
@@ -135,7 +135,7 @@ resource-config:
   isolated_diego_cell_${iso_seg_tile_suffix_underscore}:
     max_in_flight: 4%
     additional_networks: []
-    additional_vm_extensions: []
+    additional_vm_extensions: [isolation-segment-${vpc_id}]
     elb_names: []
     # 4 r5.large instances is our standard 'Isolation segment' capacity @ 16
     # GB per instance, this value should also be updated in the isolation segment config
@@ -164,4 +164,3 @@ resource-config:
     instances: 0
     internet_connected: false
     swap_as_percent_of_memory_size: automatic
-

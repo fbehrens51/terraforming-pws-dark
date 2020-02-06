@@ -2,7 +2,7 @@ module "nat" {
   source                  = "../nat"
   ami_id                  = var.nat_ami_id
   private_route_table_ids = var.private_route_table_ids
-  vpc_id                  = var.vpc_id
+  ingress_cidr_blocks     = [data.aws_vpc.vpc.cidr_block]
   tags                    = var.tags
   public_subnet_ids       = aws_subnet.public_subnets.*.id
   bastion_private_ip      = "${var.bastion_private_ip}/32"

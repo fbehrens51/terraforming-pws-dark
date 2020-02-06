@@ -428,6 +428,20 @@ variable "pas_packages_bucket" {
 variable "pas_resources_bucket" {
 }
 
+variable "isolation_segment_to_subnets" {
+  type = map(list(object({
+    id                = string,
+    cidr_block        = string,
+    availability_zone = string,
+  })))
+}
+
+variable "isolation_segment_to_security_groups" {
+  type = map(object({
+    name = string,
+  }))
+}
+
 variable "pas_subnet_cidrs" {
   type = list(string)
 }

@@ -87,6 +87,43 @@ module "splunk_ports" {
   source = "../../modules/splunk_ports"
 }
 
+data "aws_vpcs" "isolation_segment_vpcs" {
+  tags = {
+    Purpose = "isolation-segment"
+  }
+}
+
+data "aws_subnet_ids" "isolation_segment_subnet_ids" {
+  for_each = data.aws_vpcs.isolation_segment_vpcs.ids
+  vpc_id   = each.key
+}
+
+
+data "aws_security_group" "isolation_segment_security_groups" {
+  for_each = data.aws_vpcs.isolation_segment_vpcs.ids
+  vpc_id   = each.key
+  tags = {
+    purpose = "vms-security-group"
+  }
+}
+
+locals {
+  isolation_segment_subnet_ids = flatten([for vpc_id, value in data.aws_subnet_ids.isolation_segment_subnet_ids : value.ids])
+
+  isolation_segment_subnets = [for subnet in data.aws_subnet.isolation_segment_subnets : subnet if lookup(subnet.tags, "isolation_segment", "") != ""]
+
+  isolation_segments = distinct([for s in local.isolation_segment_subnets : s.tags["isolation_segment"]])
+
+  isolation_segments_subnet_cidrs = [for subnet in local.isolation_segment_subnets : subnet.cidr_block]
+
+  isolation_segment_to_subnets = { for iso_seg in local.isolation_segments : iso_seg => [for s in local.isolation_segment_subnets : s if s.tags["isolation_segment"] == iso_seg] }
+}
+
+data "aws_subnet" "isolation_segment_subnets" {
+  count = length(local.isolation_segment_subnet_ids)
+  id    = local.isolation_segment_subnet_ids[count.index]
+}
+
 module "om_config" {
   source = "../../modules/ops_manager_config"
 
@@ -98,6 +135,9 @@ module "om_config" {
   elb_endpoint = var.elb_endpoint
 
   volume_encryption_kms_key_arn = data.terraform_remote_state.paperwork.outputs.kms_key_arn
+
+  isolation_segment_to_subnets         = local.isolation_segment_to_subnets
+  isolation_segment_to_security_groups = data.aws_security_group.isolation_segment_security_groups
 
   errands_deploy_autoscaler           = "true"
   errands_deploy_notifications        = "true"
@@ -249,7 +289,6 @@ module "runtime_config_config" {
 
   runtime_config_product_version = var.runtime_config_product_version
   ipsec_log_level                = var.ipsec_log_level
-  ipsec_optional                 = var.ipsec_optional
 
   ipsec_subnet_cidrs    = local.ipsec_subnet_cidrs
   no_ipsec_subnet_cidrs = local.no_ipsec_subnet_cidrs
@@ -324,7 +363,7 @@ locals {
   control_plane_vpc_cidr          = data.aws_vpc.cp_vpc.cidr_block
   bastion_vpc_cidr                = data.aws_vpc.bastion_vpc.cidr_block
 
-  ipsec_subnet_cidrs = local.pas_ert_subnet_cidrs
+  ipsec_subnet_cidrs = concat(local.pas_ert_subnet_cidrs, local.isolation_segments_subnet_cidrs)
   no_ipsec_subnet_cidrs = concat(
     local.pas_infrastructure_subnet_cidrs,
     [

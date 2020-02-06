@@ -140,7 +140,7 @@ module "nat" {
   source                  = "../../modules/nat"
   ami_id                  = data.terraform_remote_state.encrypt_amis.outputs.encrypted_amazon2_ami_id
   private_route_table_ids = data.terraform_remote_state.routes.outputs.es_private_vpc_route_table_ids
-  vpc_id                  = data.terraform_remote_state.paperwork.outputs.es_vpc_id
+  ingress_cidr_blocks     = [data.aws_vpc.this_vpc.cidr_block]
   tags                    = local.modified_tags
   public_subnet_ids       = module.public_subnets.subnet_ids
   bastion_private_ip      = "${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"
