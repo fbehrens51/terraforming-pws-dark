@@ -10,7 +10,7 @@ echo 'PAS_VPC_CIDR: ' $PAS_VPC_CIDR
 
 terragrunt import module.infra.aws_security_group_rule.ingress_from_bastion ${VMS_SECURITY_GROUP_ID}_ingress_tcp_22_22_${BASTION_PRIVATE_IP}/32
 
-terragrunt import module.infra.aws_security_group_rule.ingress_from_pas_vpc ${VMS_SECURITY_GROUP_ID}_ingress_all_0_65536_${PAS_VPC_CIDR}
+terragrunt import module.infra.aws_security_group_rule.ingress_from_om ${VMS_SECURITY_GROUP_ID}_ingress_all_0_65536_${PAS_VPC_CIDR}
 
 terragrunt import module.infra.aws_security_group_rule.ingress_from_self ${VMS_SECURITY_GROUP_ID}_ingress_all_0_65536_self
 
