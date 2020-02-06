@@ -249,7 +249,6 @@ module "runtime_config_config" {
 
   runtime_config_product_version = var.runtime_config_product_version
   ipsec_log_level                = var.ipsec_log_level
-  ipsec_optional                 = var.ipsec_optional
 
   ipsec_subnet_cidrs    = local.ipsec_subnet_cidrs
   no_ipsec_subnet_cidrs = local.no_ipsec_subnet_cidrs

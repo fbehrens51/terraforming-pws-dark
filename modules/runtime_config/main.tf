@@ -4,9 +4,6 @@ variable "runtime_config_product_version" {
 variable "ipsec_log_level" {
 }
 
-variable "ipsec_optional" {
-}
-
 variable "ipsec_subnet_cidrs" {
   type = list(string)
 }
@@ -55,7 +52,6 @@ data "template_file" "runtime_config_template" {
 
   vars = {
     ipsec_log_level    = var.ipsec_log_level
-    ipsec_optional     = var.ipsec_optional
     ipsec_subnet_cidrs = join(",", var.ipsec_subnet_cidrs)
     no_ipsec_subnet_cidrs = join(
       ",",

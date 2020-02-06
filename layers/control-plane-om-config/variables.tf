@@ -95,9 +95,6 @@ variable "clamav_release_public_bucket_key" {
 variable "ipsec_log_level" {
 }
 
-variable "ipsec_optional" {
-}
-
 variable "runtime_config_product_version" {
 }
 

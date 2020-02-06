@@ -11,7 +11,7 @@ product-properties:
   .properties.instance_certificate_warn_period:
     value: 14
   .properties.ipsec_optional:
-    value: ${ipsec_optional}
+    value: true
   .properties.ipsec_subnets:
     value: ${ipsec_subnet_cidrs}
   .properties.no_ipsec_subnets:
