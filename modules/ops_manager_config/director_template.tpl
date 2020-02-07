@@ -16,7 +16,7 @@ ${infrastructure_subnets}
     subnets:
     ${pas_subnets}
   %{ for isolation_segment, subnets in isolation_segment_to_subnets }
-  - name: isolation-segment-${isolation_segment}
+  - name: isolation-segment-${replace(lower(isolation_segment), " ", "-")}
     subnets:
     %{ for subnet in subnets }
     - iaas_identifier: ${subnet.id}

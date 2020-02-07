@@ -115,11 +115,9 @@ locals {
 
   isolation_segments = distinct([for s in local.isolation_segment_subnets : s.tags["isolation_segment"]])
 
-  valid_isolation_segment_names = [for s in local.isolation_segments : replace(lower(s), " ", "-")]
-
   isolation_segments_subnet_cidrs = [for subnet in local.isolation_segment_subnets : subnet.cidr_block]
 
-  isolation_segment_to_subnets = { for iso_seg in local.valid_isolation_segment_names : iso_seg => [for s in local.isolation_segment_subnets : s if s.tags["isolation_segment"] == iso_seg] }
+  isolation_segment_to_subnets = { for iso_seg in local.isolation_segments : iso_seg => [for s in local.isolation_segment_subnets : s if s.tags["isolation_segment"] == iso_seg] }
 }
 
 data "aws_subnet" "isolation_segment_subnets" {
