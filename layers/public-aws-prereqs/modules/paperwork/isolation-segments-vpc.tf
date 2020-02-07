@@ -6,8 +6,9 @@ resource "aws_vpc" "isolation_segment_vpc" {
   cidr_block = local.isolation_segment_vpc_cidr
 
   tags = {
-    Name    = "${var.env_name} | isolation segment vpc"
-    Purpose = "isolation-segment"
+    Name     = "${var.env_name} | isolation segment vpc"
+    Purpose  = "isolation-segment"
+    env_name = var.env_name
   }
 }
 

@@ -5,6 +5,9 @@
 An isolation segment VPC is only able to host four isolation segments. The operator will have to carry out the steps in this section every fourth isolation segment.
 
 . Request a new VPC
+. Tag the VPC with the following tags:
+.. `purpose` = `isolation-segment`
+.. `env_name` = Must match the value of `env_name` variable in the environments repo, e.g.  "pwsd staging".
 . Create an internet gateway or a virtual private gateway in the new VPC
 . Create VPC peering between the new VPC and the following VPCs. Make sure the new VPC is the accepter, and the following VPCs are the requesters:
 .. The PAS VPC

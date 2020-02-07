@@ -89,7 +89,8 @@ module "splunk_ports" {
 
 data "aws_vpcs" "isolation_segment_vpcs" {
   tags = {
-    Purpose = "isolation-segment"
+    Purpose  = "isolation-segment"
+    env_name = var.env_name
   }
 }
 
