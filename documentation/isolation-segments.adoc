@@ -76,3 +76,12 @@ inputs = {
 ----
 +
 WARNING: The value of the `name` variable must match the value used in step 3:
+. Add the new isolation segment to the `isolation_segments` variable in the environment specific `pipeline-vars.yml`.
+
+== Deleting an Isolation Segment
+
+. Ensure the tile is removed from Ops Manager
+. Apply changes in Ops Manager to ensure all Bosh managed resources are removed properly.
+. Run `terragrunt destroy` in the isolation segment layer, e.g. `customer-a-isolation-segment`.
+. Delete the layer from the environment repo.
+. Deallocate the isolation segment in the bootstrap_isolation_segment layer, by seting the `isolation_segment_name_x` to the empty string.
