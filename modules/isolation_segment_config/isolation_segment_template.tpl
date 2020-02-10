@@ -1,6 +1,9 @@
 product-name: p-isolation-segment-${iso_seg_tile_suffix}
 product-properties:
-  .isolated_diego_cell_${iso_seg_tile_suffix_underscore}.placement_tag:
+  .properties.compute_isolation:
+    selected_option: enabled
+    value: enabled
+  .properties.compute_isolation.enabled.isolation_segment_name:
     value: ${iso_seg_tile_suffix}
   .isolated_router_${iso_seg_tile_suffix_underscore}.disable_insecure_cookies:
     value: false
@@ -122,8 +125,6 @@ product-properties:
     value: ${splunk_syslog_host}
   .properties.system_logging.enabled.use_tcp_for_file_forwarding_local_transport:
     value: false
-  .properties.system_metrics_enabled:
-    value: true
 network-properties:
   network:
     name: isolation-segment-${iso_seg_tile_suffix}
