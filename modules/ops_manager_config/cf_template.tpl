@@ -303,8 +303,6 @@ product-properties:
     value: tcp
   .properties.syslog_drop_debug:
     value: true
-  .properties.system_metrics_enabled:
-    value: true
   .properties.syslog_tls:
     selected_option: enabled
     value: enabled
