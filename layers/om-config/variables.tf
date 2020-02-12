@@ -76,9 +76,6 @@ variable "ec2_endpoint" {
 variable "elb_endpoint" {
 }
 
-variable "pivnet_api_token" {
-}
-
 variable "region" {
 }
 
@@ -97,18 +94,6 @@ variable "ipsec_log_level" {
 variable "apps_manager_tools_url" {
   description = "The CF CLI tools url.  Defaults to cli.<system_domain>"
   default     = ""
-}
-
-variable "s3_access_key_id" {
-  default = ""
-}
-
-variable "s3_secret_access_key" {
-  default = ""
-}
-
-variable "s3_auth_type" {
-  default = "iam"
 }
 
 variable "ntp_servers" {

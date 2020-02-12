@@ -170,16 +170,12 @@ data "template_file" "download_compliance_scanner_config" {
   template = file("${path.module}/download_product_config.tpl")
 
   vars = {
-    pivnet_file_glob     = local.compliance_scanner_file_glob
-    pivnet_product_slug  = local.compliance_scanner_product_slug
-    product_version      = local.compliance_scanner_product_version
-    pivnet_api_token     = var.pivnet_api_token
-    s3_bucket            = var.mirror_bucket_name
-    s3_endpoint          = var.s3_endpoint
-    s3_region_name       = var.region
-    s3_access_key_id     = var.s3_access_key_id
-    s3_secret_access_key = var.s3_secret_access_key
-    s3_auth_type         = var.s3_auth_type
+    pivnet_file_glob    = local.compliance_scanner_file_glob
+    pivnet_product_slug = local.compliance_scanner_product_slug
+    product_version     = local.compliance_scanner_product_version
+    s3_bucket           = var.mirror_bucket_name
+    s3_endpoint         = var.s3_endpoint
+    s3_region_name      = var.region
   }
 }
 
@@ -187,16 +183,12 @@ data "template_file" "download_concourse_config" {
   template = file("${path.module}/download_product_config.tpl")
 
   vars = {
-    pivnet_file_glob     = local.concourse_file_glob
-    pivnet_product_slug  = local.concourse_product_slug
-    product_version      = local.concourse_product_version
-    pivnet_api_token     = var.pivnet_api_token
-    s3_bucket            = var.mirror_bucket_name
-    s3_endpoint          = var.s3_endpoint
-    s3_region_name       = var.region
-    s3_access_key_id     = var.s3_access_key_id
-    s3_secret_access_key = var.s3_secret_access_key
-    s3_auth_type         = var.s3_auth_type
+    pivnet_file_glob    = local.concourse_file_glob
+    pivnet_product_slug = local.concourse_product_slug
+    product_version     = local.concourse_product_version
+    s3_bucket           = var.mirror_bucket_name
+    s3_endpoint         = var.s3_endpoint
+    s3_region_name      = var.region
   }
 }
 
