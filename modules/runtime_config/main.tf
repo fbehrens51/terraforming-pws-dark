@@ -17,9 +17,6 @@ variable "custom_ssh_banner" {
   description = "Custom SSH Banner to be used on launched VMs"
 }
 
-variable "pivnet_api_token" {
-}
-
 variable "mirror_bucket_name" {
 }
 
@@ -27,15 +24,6 @@ variable "s3_endpoint" {
 }
 
 variable "region" {
-}
-
-variable "s3_access_key_id" {
-}
-
-variable "s3_secret_access_key" {
-}
-
-variable "s3_auth_type" {
 }
 
 variable "vpc_dns" {
@@ -70,16 +58,12 @@ data "template_file" "download_runtime_config_config" {
   )
 
   vars = {
-    pivnet_file_glob     = local.runtime_config_file_glob
-    pivnet_product_slug  = local.runtime_config_product_slug
-    product_version      = var.runtime_config_product_version
-    pivnet_api_token     = var.pivnet_api_token
-    s3_bucket            = var.mirror_bucket_name
-    s3_endpoint          = var.s3_endpoint
-    s3_region_name       = var.region
-    s3_access_key_id     = var.s3_access_key_id
-    s3_secret_access_key = var.s3_secret_access_key
-    s3_auth_type         = var.s3_auth_type
+    pivnet_file_glob    = local.runtime_config_file_glob
+    pivnet_product_slug = local.runtime_config_product_slug
+    product_version     = var.runtime_config_product_version
+    s3_bucket           = var.mirror_bucket_name
+    s3_endpoint         = var.s3_endpoint
+    s3_region_name      = var.region
   }
 }
 

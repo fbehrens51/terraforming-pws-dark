@@ -68,12 +68,8 @@ module "config" {
   iso_seg_tile_suffix = local.hyphenated_name
   mirror_bucket       = local.mirror_bucket
 
-  pivnet_api_token     = var.pivnet_api_token
-  s3_access_key_id     = var.s3_access_key_id
-  s3_secret_access_key = var.s3_secret_access_key
-  s3_auth_type         = var.s3_auth_type
-  s3_endpoint          = var.s3_endpoint
-  region               = var.region
+  s3_endpoint = var.s3_endpoint
+  region      = var.region
 
   vanity_cert_enabled    = var.vanity_cert_enabled
   vanity_cert_pem        = data.terraform_remote_state.paperwork.outputs.vanity_server_cert

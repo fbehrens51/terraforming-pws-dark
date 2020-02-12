@@ -174,19 +174,7 @@ variable "ops_manager_ssh_public_key_name" {
 variable "ops_manager_ssh_private_key" {
 }
 
-variable "pivnet_api_token" {
-}
-
 variable "mirror_bucket_name" {
-}
-
-variable "s3_access_key_id" {
-}
-
-variable "s3_secret_access_key" {
-}
-
-variable "s3_auth_type" {
 }
 
 variable "concourse_version" {

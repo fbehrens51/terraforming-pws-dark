@@ -290,16 +290,12 @@ data "template_file" "download_pas_config" {
   template = file("${path.module}/download_product_config.tpl")
 
   vars = {
-    pivnet_file_glob     = local.pas_file_glob
-    pivnet_product_slug  = local.pas_product_slug
-    product_version      = local.pas_product_version
-    pivnet_api_token     = var.pivnet_api_token
-    s3_bucket            = var.mirror_bucket_name
-    s3_endpoint          = var.s3_endpoint
-    s3_region_name       = var.region
-    s3_access_key_id     = var.s3_access_key_id
-    s3_secret_access_key = var.s3_secret_access_key
-    s3_auth_type         = var.s3_auth_type
+    pivnet_file_glob    = local.pas_file_glob
+    pivnet_product_slug = local.pas_product_slug
+    product_version     = local.pas_product_version
+    s3_bucket           = var.mirror_bucket_name
+    s3_endpoint         = var.s3_endpoint
+    s3_region_name      = var.region
   }
 }
 
@@ -307,16 +303,12 @@ data "template_file" "download_splunk_config" {
   template = file("${path.module}/download_product_config.tpl")
 
   vars = {
-    pivnet_file_glob     = local.splunk_file_glob
-    pivnet_product_slug  = local.splunk_product_slug
-    product_version      = local.splunk_product_version
-    pivnet_api_token     = var.pivnet_api_token
-    s3_bucket            = var.mirror_bucket_name
-    s3_endpoint          = var.s3_endpoint
-    s3_region_name       = var.region
-    s3_access_key_id     = var.s3_access_key_id
-    s3_secret_access_key = var.s3_secret_access_key
-    s3_auth_type         = var.s3_auth_type
+    pivnet_file_glob    = local.splunk_file_glob
+    pivnet_product_slug = local.splunk_product_slug
+    product_version     = local.splunk_product_version
+    s3_bucket           = var.mirror_bucket_name
+    s3_endpoint         = var.s3_endpoint
+    s3_region_name      = var.region
   }
 }
 
@@ -324,16 +316,12 @@ data "template_file" "download_cf_tools_config" {
   template = file("${path.module}/download_product_config.tpl")
 
   vars = {
-    pivnet_file_glob     = local.cf_tools_file_glob
-    pivnet_product_slug  = local.cf_tools_product_slug
-    product_version      = var.cf_tools_product_version
-    pivnet_api_token     = var.pivnet_api_token
-    s3_bucket            = var.mirror_bucket_name
-    s3_endpoint          = var.s3_endpoint
-    s3_region_name       = var.region
-    s3_access_key_id     = var.s3_access_key_id
-    s3_secret_access_key = var.s3_secret_access_key
-    s3_auth_type         = var.s3_auth_type
+    pivnet_file_glob    = local.cf_tools_file_glob
+    pivnet_product_slug = local.cf_tools_product_slug
+    product_version     = var.cf_tools_product_version
+    s3_bucket           = var.mirror_bucket_name
+    s3_endpoint         = var.s3_endpoint
+    s3_region_name      = var.region
   }
 }
 
@@ -341,16 +329,12 @@ data "template_file" "download_portal_config" {
   template = file("${path.module}/download_product_config.tpl")
 
   vars = {
-    pivnet_file_glob     = local.portal_file_glob
-    pivnet_product_slug  = local.portal_product_slug
-    product_version      = var.portal_product_version
-    pivnet_api_token     = var.pivnet_api_token
-    s3_bucket            = var.mirror_bucket_name
-    s3_endpoint          = var.s3_endpoint
-    s3_region_name       = var.region
-    s3_access_key_id     = var.s3_access_key_id
-    s3_secret_access_key = var.s3_secret_access_key
-    s3_auth_type         = var.s3_auth_type
+    pivnet_file_glob    = local.portal_file_glob
+    pivnet_product_slug = local.portal_product_slug
+    product_version     = var.portal_product_version
+    s3_bucket           = var.mirror_bucket_name
+    s3_endpoint         = var.s3_endpoint
+    s3_region_name      = var.region
   }
 }
 
@@ -358,16 +342,12 @@ data "template_file" "download_healthwatch_config" {
   template = file("${path.module}/download_product_config.tpl")
 
   vars = {
-    pivnet_file_glob     = local.healthwatch_file_glob
-    pivnet_product_slug  = local.healthwatch_product_slug
-    product_version      = local.healthwatch_product_version
-    pivnet_api_token     = var.pivnet_api_token
-    s3_bucket            = var.mirror_bucket_name
-    s3_endpoint          = var.s3_endpoint
-    s3_region_name       = var.region
-    s3_access_key_id     = var.s3_access_key_id
-    s3_secret_access_key = var.s3_secret_access_key
-    s3_auth_type         = var.s3_auth_type
+    pivnet_file_glob    = local.healthwatch_file_glob
+    pivnet_product_slug = local.healthwatch_product_slug
+    product_version     = local.healthwatch_product_version
+    s3_bucket           = var.mirror_bucket_name
+    s3_endpoint         = var.s3_endpoint
+    s3_region_name      = var.region
   }
 }
 
@@ -375,16 +355,12 @@ data "template_file" "download_compliance_scanner_config" {
   template = file("${path.module}/download_product_config.tpl")
 
   vars = {
-    pivnet_file_glob     = local.compliance_scanner_file_glob
-    pivnet_product_slug  = local.compliance_scanner_product_slug
-    product_version      = local.compliance_scanner_product_version
-    pivnet_api_token     = var.pivnet_api_token
-    s3_bucket            = var.mirror_bucket_name
-    s3_endpoint          = var.s3_endpoint
-    s3_region_name       = var.region
-    s3_access_key_id     = var.s3_access_key_id
-    s3_secret_access_key = var.s3_secret_access_key
-    s3_auth_type         = var.s3_auth_type
+    pivnet_file_glob    = local.compliance_scanner_file_glob
+    pivnet_product_slug = local.compliance_scanner_product_slug
+    product_version     = local.compliance_scanner_product_version
+    s3_bucket           = var.mirror_bucket_name
+    s3_endpoint         = var.s3_endpoint
+    s3_region_name      = var.region
   }
 }
 
@@ -392,16 +368,12 @@ data "template_file" "download_pcf_metrics_config" {
   template = file("${path.module}/download_product_config.tpl")
 
   vars = {
-    pivnet_file_glob     = local.pcf_metrics_file_glob
-    pivnet_product_slug  = local.pcf_metrics_product_slug
-    product_version      = local.pcf_metrics_product_version
-    pivnet_api_token     = var.pivnet_api_token
-    s3_bucket            = var.mirror_bucket_name
-    s3_endpoint          = var.s3_endpoint
-    s3_region_name       = var.region
-    s3_access_key_id     = var.s3_access_key_id
-    s3_secret_access_key = var.s3_secret_access_key
-    s3_auth_type         = var.s3_auth_type
+    pivnet_file_glob    = local.pcf_metrics_file_glob
+    pivnet_product_slug = local.pcf_metrics_product_slug
+    product_version     = local.pcf_metrics_product_version
+    s3_bucket           = var.mirror_bucket_name
+    s3_endpoint         = var.s3_endpoint
+    s3_region_name      = var.region
   }
 }
 
