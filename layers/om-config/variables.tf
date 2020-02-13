@@ -209,9 +209,6 @@ variable "clamav_mirror_instance_type" {
   default = "automatic"
 }
 
-variable "clamav_release_public_bucket_key" {
-  description = "The object key of the clamav release. This will be used to add clamav to the bosh director."
-}
 
 variable "extra_user_name" {
   description = "The username of the extra user that will be added to all bosh managed VMs"
