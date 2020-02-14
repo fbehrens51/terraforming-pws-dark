@@ -177,9 +177,6 @@ variable "ops_manager_ssh_private_key" {
 variable "mirror_bucket_name" {
 }
 
-variable "concourse_version" {
-}
-
 variable "splunk_syslog_host" {
 }
 

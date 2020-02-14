@@ -38,59 +38,8 @@ output "clamav_mirror_template" {
   sensitive = true
 }
 
-
-output "download_pas_config" {
-  value     = module.om_config.download_pas_config
-  sensitive = true
-}
-
-output "download_cf_tools_config" {
-  value     = module.om_config.download_cf_tools_config
-  sensitive = true
-}
-
-output "download_runtime_config_config" {
-  value     = module.runtime_config_config.download_runtime_config_config
-  sensitive = true
-}
-
 output "runtime_config_template" {
   value     = module.runtime_config_config.runtime_config_template
-  sensitive = true
-}
-
-output "download_portal_config" {
-  value     = module.om_config.download_portal_config
-  sensitive = true
-}
-
-output "download_splunk_config" {
-  value     = module.om_config.download_splunk_config
-  sensitive = true
-}
-
-output "download_healthwatch_config" {
-  value     = module.om_config.download_healthwatch_config
-  sensitive = true
-}
-
-output "download_compliance_scanner_config" {
-  value     = module.om_config.download_compliance_scanner_config
-  sensitive = true
-}
-
-output "download_pcf_metrics_config" {
-  value     = module.om_config.download_pcf_metrics_config
-  sensitive = true
-}
-
-output "download_clamav_addon_config" {
-  value     = module.clamav_config.download_clamav_addon_config
-  sensitive = true
-}
-
-output "download_clamav_mirror_config" {
-  value     = module.clamav_config.download_clamav_mirror_config
   sensitive = true
 }
 

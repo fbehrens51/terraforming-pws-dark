@@ -273,8 +273,6 @@ module "om_config" {
   ldap_role_attr         = data.terraform_remote_state.paperwork.outputs.ldap_role_attr
 
   mirror_bucket_name       = local.mirror_bucket_name
-  portal_product_version   = var.portal_product_version
-  cf_tools_product_version = var.cf_tools_product_version
 
   splunk_syslog_host    = module.domains.splunk_logs_fqdn
   splunk_syslog_port    = module.splunk_ports.splunk_tcp_port
@@ -284,7 +282,6 @@ module "om_config" {
 module "runtime_config_config" {
   source = "../../modules/runtime_config"
 
-  runtime_config_product_version = var.runtime_config_product_version
   ipsec_log_level                = var.ipsec_log_level
 
   ipsec_subnet_cidrs    = local.ipsec_subnet_cidrs

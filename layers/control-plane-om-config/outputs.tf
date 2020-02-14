@@ -13,11 +13,6 @@ output "director_template" {
   sensitive = true
 }
 
-output "download_concourse_config" {
-  value     = module.om_config.download_concourse_config
-  sensitive = true
-}
-
 output "clamav_addon_template" {
   value     = module.clamav_config.clamav_addon_template
   sensitive = true
@@ -25,26 +20,6 @@ output "clamav_addon_template" {
 
 output "clamav_mirror_template" {
   value     = module.clamav_config.clamav_mirror_template
-  sensitive = true
-}
-
-output "download_clamav_addon_config" {
-  value     = module.clamav_config.download_clamav_addon_config
-  sensitive = true
-}
-
-output "download_clamav_mirror_config" {
-  value     = module.clamav_config.download_clamav_mirror_config
-  sensitive = true
-}
-
-output "download_compliance_scanner_config" {
-  value     = module.om_config.download_compliance_scanner_config
-  sensitive = true
-}
-
-output "download_runtime_config_config" {
-  value     = module.runtime_config_config.download_runtime_config_config
   sensitive = true
 }
 

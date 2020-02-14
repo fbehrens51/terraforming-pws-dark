@@ -43,14 +43,6 @@ variable "splunk_syslog_ca_cert" {
 variable "bosh_network_name" {
 }
 
-locals {
-  clamav_product_slug    = "p-clamav-addon"
-  clamav_product_version = "2.2.2"
-
-  clamav_addon_file_glob  = "p-antivirus-[0-9]*.pivotal"
-  clamav_mirror_file_glob = "p-antivirus-mirror-[0-9]*.pivotal"
-}
-
 data "template_file" "pas_vpc_azs" {
   count = length(var.availability_zones)
 
@@ -89,36 +81,6 @@ data "template_file" "clamav_addon_template" {
   }
 }
 
-data "template_file" "download_clamav_mirror_config" {
-  template = file(
-    "${path.module}/../ops_manager_config/download_product_config.tpl",
-  )
-
-  vars = {
-    pivnet_file_glob    = local.clamav_mirror_file_glob
-    pivnet_product_slug = local.clamav_product_slug
-    product_version     = local.clamav_product_version
-    s3_bucket           = var.mirror_bucket_name
-    s3_endpoint         = var.s3_endpoint
-    s3_region_name      = var.region
-  }
-}
-
-data "template_file" "download_clamav_addon_config" {
-  template = file(
-    "${path.module}/../ops_manager_config/download_product_config.tpl",
-  )
-
-  vars = {
-    pivnet_file_glob    = local.clamav_addon_file_glob
-    pivnet_product_slug = local.clamav_product_slug
-    product_version     = local.clamav_product_version
-    s3_bucket           = var.mirror_bucket_name
-    s3_endpoint         = var.s3_endpoint
-    s3_region_name      = var.region
-  }
-}
-
 output "clamav_addon_template" {
   value     = data.template_file.clamav_addon_template.rendered
   sensitive = true
@@ -128,14 +90,3 @@ output "clamav_mirror_template" {
   value     = data.template_file.clamav_mirror_template.rendered
   sensitive = true
 }
-
-output "download_clamav_mirror_config" {
-  value     = data.template_file.download_clamav_mirror_config.rendered
-  sensitive = true
-}
-
-output "download_clamav_addon_config" {
-  value     = data.template_file.download_clamav_addon_config.rendered
-  sensitive = true
-}
-

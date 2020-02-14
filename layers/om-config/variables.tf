@@ -79,15 +79,6 @@ variable "elb_endpoint" {
 variable "region" {
 }
 
-variable "portal_product_version" {
-}
-
-variable "runtime_config_product_version" {
-}
-
-variable "cf_tools_product_version" {
-}
-
 variable "ipsec_log_level" {
 }
 

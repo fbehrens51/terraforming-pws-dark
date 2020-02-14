@@ -153,7 +153,6 @@ module "om_config" {
   postgres_port     = data.terraform_remote_state.bootstrap_control_plane.outputs.postgres_rds_port
   postgres_username = data.terraform_remote_state.bootstrap_control_plane.outputs.postgres_rds_username
   postgres_password = data.terraform_remote_state.bootstrap_control_plane.outputs.postgres_rds_password
-  concourse_version = var.concourse_version
 
   # rds_ca_cert_pem = "${data.terraform_remote_state.paperwork.rds_ca_cert_pem}"
 
@@ -171,7 +170,6 @@ module "om_config" {
 module "runtime_config_config" {
   source = "../../modules/runtime_config"
 
-  runtime_config_product_version = var.runtime_config_product_version
   ipsec_log_level                = var.ipsec_log_level
 
   ipsec_subnet_cidrs    = local.ipsec_subnet_cidrs

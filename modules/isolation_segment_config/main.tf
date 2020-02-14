@@ -1,22 +1,9 @@
-locals {
-  isolation_segment_product_version = "2.8.3"
-  isolation_segment_file_version    = "2.8.3-build.12"
-}
-
 variable "iso_seg_name" {
 }
 
 variable "iso_seg_tile_suffix" {
 }
 
-variable "s3_endpoint" {
-}
-
-variable "region" {
-}
-
-variable "mirror_bucket" {
-}
 
 variable "vanity_cert_enabled" {
 }
@@ -76,31 +63,6 @@ data "aws_subnet" "isolation_segment_subnets" {
   }
 }
 
-data "template_file" "download_config" {
-  template = file("${path.module}/download_product_config.tpl")
-
-  vars = {
-    pivnet_file_glob    = "*.pivotal"
-    pivnet_product_slug = "p-isolation-segment-${var.iso_seg_tile_suffix}"
-    product_version     = local.isolation_segment_product_version
-    s3_endpoint         = var.s3_endpoint
-    s3_region_name      = var.region
-    s3_bucket           = var.mirror_bucket
-  }
-}
-
-data "template_file" "base_tile_download_config" {
-  template = file("${path.module}/download_product_config.tpl")
-
-  vars = {
-    pivnet_file_glob    = "*.pivotal"
-    pivnet_product_slug = "p-isolation-segment"
-    product_version     = local.isolation_segment_product_version
-    s3_endpoint         = var.s3_endpoint
-    s3_region_name      = var.region
-    s3_bucket           = var.mirror_bucket
-  }
-}
 
 data "template_file" "tile_config" {
   template = file("${path.module}/isolation_segment_template.tpl")
@@ -121,22 +83,6 @@ data "template_file" "tile_config" {
     pas_vpc_azs                    = indent(4, join("", data.template_file.pas_vpc_azs.*.rendered))
     singleton_availability_zone    = var.singleton_availability_zone
   }
-}
-
-output "product_version" {
-  value = local.isolation_segment_product_version
-}
-
-output "file_version" {
-  value = local.isolation_segment_file_version
-}
-
-output "base_tile_download_config" {
-  value = data.template_file.base_tile_download_config.rendered
-}
-
-output "download_config" {
-  value = data.template_file.download_config.rendered
 }
 
 output "tile_config" {

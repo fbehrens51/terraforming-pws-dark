@@ -1,6 +1,3 @@
-variable "runtime_config_product_version" {
-}
-
 variable "ipsec_log_level" {
 }
 
@@ -50,26 +47,6 @@ data "template_file" "runtime_config_template" {
     extra_user_public_key = var.extra_user_public_key
     extra_user_sudo       = var.extra_user_sudo
   }
-}
-
-data "template_file" "download_runtime_config_config" {
-  template = file(
-    "${path.module}/../ops_manager_config/download_product_config.tpl",
-  )
-
-  vars = {
-    pivnet_file_glob    = local.runtime_config_file_glob
-    pivnet_product_slug = local.runtime_config_product_slug
-    product_version     = var.runtime_config_product_version
-    s3_bucket           = var.mirror_bucket_name
-    s3_endpoint         = var.s3_endpoint
-    s3_region_name      = var.region
-  }
-}
-
-output "download_runtime_config_config" {
-  value     = data.template_file.download_runtime_config_config.rendered
-  sensitive = true
 }
 
 output "runtime_config_template" {

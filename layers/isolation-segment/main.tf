@@ -43,12 +43,6 @@ module "providers" {
 locals {
   mirror_bucket   = data.terraform_remote_state.bootstrap_control_plane.outputs.mirror_bucket_name
   hyphenated_name = lower(replace(var.name, " ", "-"))
-  base_tile_path  = "${data.aws_s3_bucket_object.base_tile.bucket}/${data.aws_s3_bucket_object.base_tile.key}"
-  copied_tile_path = replace(
-    basename(local.base_tile_path),
-    "p-isolation-segment",
-    "p-isolation-segment-${local.hyphenated_name}",
-  )
 }
 
 module "domains" {
@@ -66,10 +60,6 @@ module "config" {
 
   iso_seg_name        = var.name
   iso_seg_tile_suffix = local.hyphenated_name
-  mirror_bucket       = local.mirror_bucket
-
-  s3_endpoint = var.s3_endpoint
-  region      = var.region
 
   vanity_cert_enabled    = var.vanity_cert_enabled
   vanity_cert_pem        = data.terraform_remote_state.paperwork.outputs.vanity_server_cert
@@ -87,25 +77,4 @@ module "config" {
   splunk_syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
 }
 
-data "aws_s3_bucket_object" "base_tile" {
-  bucket = local.mirror_bucket
-  key    = "[p-isolation-segment,${module.config.product_version}]p-isolation-segment-${module.config.file_version}.pivotal"
-}
-
-resource "null_resource" "replicator" {
-  triggers = {
-    script_md5     = filemd5("${path.module}/replicate-iso-segment.sh")
-    base_tile_name = var.name
-    base_tile_etag = data.aws_s3_bucket_object.base_tile.etag
-  }
-
-  provisioner "local-exec" {
-    command = "bash ${path.module}/replicate-iso-segment.sh ${local.base_tile_path} \"${var.name}\" ${local.copied_tile_path}"
-  }
-
-  provisioner "local-exec" {
-    when    = destroy
-    command = "aws s3 rm s3://${local.mirror_bucket}/${local.copied_tile_path}"
-  }
-}
 
