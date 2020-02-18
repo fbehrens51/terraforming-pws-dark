@@ -86,13 +86,13 @@ module "ops_manager" {
   }
 }
 
-variable "clamav_deb_pkg_object_key" {
+variable "clamav_deb_pkg_object_url" {
 }
 
 module "clam_av_client_config" {
   source           = "../../modules/clamav/ubuntu_systemd_client"
   clamav_db_mirror = "database.clamav.net"
-  deb_tgz_location = "${data.terraform_remote_state.paperwork.outputs.public_bucket_url}/${var.clamav_deb_pkg_object_key}"
+  deb_tgz_location = "${var.clamav_deb_pkg_object_url}"
 }
 
 data "template_cloudinit_config" "config" {
