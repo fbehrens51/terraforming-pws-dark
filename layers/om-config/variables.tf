@@ -82,11 +82,6 @@ variable "region" {
 variable "ipsec_log_level" {
 }
 
-variable "apps_manager_tools_url" {
-  description = "The CF CLI tools url.  Defaults to cli.<system_domain>"
-  default     = ""
-}
-
 variable "ntp_servers" {
   type = list(string)
 }

@@ -203,7 +203,7 @@ module "om_config" {
   apps_manager_favicon_file                            = var.apps_manager_favicon_file
   apps_manager_square_logo_file                        = var.apps_manager_square_logo_file
   apps_manager_main_logo_file                          = var.apps_manager_main_logo_file
-  apps_manager_tools_url                               = var.apps_manager_tools_url == "" ? local.default_apps_manager_tools_url : var.apps_manager_tools_url
+  apps_manager_tools_url                               = local.default_apps_manager_tools_url
 
   ntp_servers                                 = var.ntp_servers
   custom_ssh_banner                           = data.terraform_remote_state.paperwork.outputs.custom_ssh_banner
