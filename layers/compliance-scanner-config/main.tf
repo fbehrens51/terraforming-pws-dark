@@ -12,9 +12,6 @@ variable "availability_zones" {
 variable "singleton_availability_zone" {
 }
 
-variable "network_name" {
-}
-
 variable "ntp_servers" {
   type = list(string)
 }
@@ -51,7 +48,7 @@ locals {
 
 module "compliance_scanner_config" {
   source                      = "../../modules/compliance-scanner/config"
-  network_name                = var.network_name
+  network_name                = data.terraform_remote_state.paperwork.outputs.pas_network_name
   availability_zones          = var.availability_zones
   singleton_availability_zone = var.singleton_availability_zone
   ntp_servers                 = var.ntp_servers

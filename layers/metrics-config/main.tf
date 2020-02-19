@@ -12,9 +12,6 @@ variable "availability_zones" {
 variable "singleton_availability_zone" {
 }
 
-variable "network_name" {
-}
-
 variable "env_name" {
 }
 
@@ -77,7 +74,7 @@ locals {
 
 module "metrics_config" {
   source                      = "../../modules/metrics/config"
-  bosh_network_name           = var.network_name
+  bosh_network_name           = data.terraform_remote_state.paperwork.outputs.pas_network_name
   availability_zones          = var.availability_zones
   singleton_availability_zone = var.singleton_availability_zone
 

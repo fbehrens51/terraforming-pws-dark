@@ -12,9 +12,6 @@ variable "availability_zones" {
 variable "singleton_availability_zone" {
 }
 
-variable "network_name" {
-}
-
 variable "env_name" {
 }
 
@@ -78,7 +75,7 @@ locals {
 module "healthwatch_config" {
   source                         = "../../modules/healthwatch/config"
   om_url                         = "https://${module.domains.om_fqdn}"
-  network_name                   = var.network_name
+  network_name                   = data.terraform_remote_state.paperwork.outputs.pas_network_name
   availability_zones             = var.availability_zones
   singleton_availability_zone    = var.singleton_availability_zone
   health_check_availability_zone = var.singleton_availability_zone

@@ -272,7 +272,7 @@ module "om_config" {
   ldap_port              = data.terraform_remote_state.paperwork.outputs.ldap_port
   ldap_role_attr         = data.terraform_remote_state.paperwork.outputs.ldap_role_attr
 
-  mirror_bucket_name       = local.mirror_bucket_name
+  mirror_bucket_name = local.mirror_bucket_name
 
   splunk_syslog_host    = module.domains.splunk_logs_fqdn
   splunk_syslog_port    = module.splunk_ports.splunk_tcp_port
@@ -282,7 +282,7 @@ module "om_config" {
 module "runtime_config_config" {
   source = "../../modules/runtime_config"
 
-  ipsec_log_level                = var.ipsec_log_level
+  ipsec_log_level = var.ipsec_log_level
 
   ipsec_subnet_cidrs    = local.ipsec_subnet_cidrs
   no_ipsec_subnet_cidrs = local.no_ipsec_subnet_cidrs
@@ -303,7 +303,7 @@ module "runtime_config_config" {
 module "clamav_config" {
   source = "../../modules/clamav"
 
-  bosh_network_name                = "pas"
+  bosh_network_name                = data.terraform_remote_state.paperwork.outputs.pas_network_name
   singleton_availability_zone      = var.singleton_availability_zone
   availability_zones               = data.terraform_remote_state.pas.outputs.pas_subnet_availability_zones
   clamav_no_upstream_mirror        = var.clamav_no_upstream_mirror

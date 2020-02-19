@@ -12,9 +12,6 @@ variable "availability_zones" {
 variable "singleton_availability_zone" {
 }
 
-variable "network_name" {
-}
-
 terraform {
   backend "s3" {
   }
@@ -54,7 +51,7 @@ module "firehose_config" {
   splunk_url                  = local.splunk_http_collector_url
   splunk_token                = local.splunk_http_collector_token
   client_secret               = data.terraform_remote_state.bootstrap_splunk.outputs.cf_splunk_password
-  network_name                = var.network_name
+  network_name                = data.terraform_remote_state.paperwork.outputs.infrastructure_network_name
   availability_zones          = var.availability_zones
   singleton_availability_zone = var.singleton_availability_zone
 }

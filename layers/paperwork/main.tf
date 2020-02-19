@@ -469,6 +469,18 @@ data "aws_s3_bucket_object" "portal_smoke_test_key" {
   key    = var.portal_smoke_test_key_s3_path
 }
 
+output "pas_network_name" {
+  value = "pas"
+}
+
+output "infrastructure_network_name" {
+  value = "infrastructure"
+}
+
+output "control_plane_subnet_network_name" {
+  value = "control-plane-subnet"
+}
+
 output "pas_vpc_dns" {
   value = var.pas_vpc_dns
 }

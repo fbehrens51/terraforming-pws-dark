@@ -170,7 +170,7 @@ module "om_config" {
 module "runtime_config_config" {
   source = "../../modules/runtime_config"
 
-  ipsec_log_level                = var.ipsec_log_level
+  ipsec_log_level = var.ipsec_log_level
 
   ipsec_subnet_cidrs    = local.ipsec_subnet_cidrs
   no_ipsec_subnet_cidrs = local.no_ipsec_subnet_cidrs
@@ -191,7 +191,7 @@ module "runtime_config_config" {
 module "clamav_config" {
   source = "../../modules/clamav"
 
-  bosh_network_name                = "control-plane-subnet"
+  bosh_network_name                = data.terraform_remote_state.paperwork.outputs.control_plane_subnet_network_name
   singleton_availability_zone      = var.singleton_availability_zone
   availability_zones               = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_availability_zones
   clamav_no_upstream_mirror        = var.clamav_no_upstream_mirror
