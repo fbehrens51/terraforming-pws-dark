@@ -116,6 +116,8 @@ module "router_server_cert" {
 
   domains = [
     "*.${module.domains.system_fqdn}",
+    "*.login.${module.domains.system_fqdn}",
+    "*.uaa.${module.domains.system_fqdn}",
     "*.${module.domains.apps_fqdn}",
   ]
 }
