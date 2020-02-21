@@ -26,6 +26,10 @@ provider "dns" {
   version = "2.1.1"
 }
 
+provider "local" {
+  version = "1.4.0"
+}
+
 terraform {
   required_version = "~> 0.12.18"
 }
