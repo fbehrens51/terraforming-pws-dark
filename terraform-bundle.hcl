@@ -1,14 +1,14 @@
 terraform {
   # Version of Terraform to include in the bundle. An exact version number
   # is required.
-  version = "0.12.18"
+  version = "0.12.20"
 }
 
 # Define which provider plugins are to be included
 providers {
 
   # Pin to a version that works on C2S
-  aws = ["2.43.0"]
+  aws = ["2.49.0"]
 
   tls = ["~> 2.1.1"]
 
