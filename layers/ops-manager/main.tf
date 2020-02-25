@@ -68,12 +68,19 @@ variable "tags" {
 variable "instance_type" {
 }
 
+variable "clamav_deb_pkg_object_url" {
+}
+
+variable "clamav_db_mirror" {
+}
+
 module "ops_manager_user_data" {
   source                    = "../../modules/ops_manager_user_data"
   customer_banner_user_data = data.terraform_remote_state.paperwork.outputs.custom_banner_user_data
-  clamav_client_user_data   = module.clam_av_client_config.client_user_data_config
   user_accounts_user_data   = local.user_accounts_user_data
   trusted_ca_certs          = local.trusted_ca_certs
+  clamav_db_mirror          = var.clamav_db_mirror
+  clamav_deb_pkg_object_url = var.clamav_deb_pkg_object_url
 }
 
 module "ops_manager" {
@@ -92,18 +99,6 @@ module "ops_manager" {
     volume_type = "gp2"
     volume_size = 150
   }
-}
-
-variable "clamav_deb_pkg_object_url" {
-}
-
-variable "clamav_db_mirror" {
-}
-
-module "clam_av_client_config" {
-  source           = "../../modules/clamav/ubuntu_systemd_client"
-  clamav_db_mirror = var.clamav_db_mirror
-  deb_tgz_location = "${var.clamav_deb_pkg_object_url}"
 }
 
 resource "aws_eip_association" "om_eip_assoc" {

@@ -1,13 +1,22 @@
 variable "customer_banner_user_data" {
 }
 
-variable "clamav_client_user_data" {
+variable "clamav_db_mirror" {
+}
+
+variable "clamav_deb_pkg_object_url" {
 }
 
 variable "user_accounts_user_data" {
 }
 
 variable "trusted_ca_certs" {
+}
+
+module "clamav_config" {
+  source           = "../clamav/ubuntu_systemd_client"
+  clamav_db_mirror = var.clamav_db_mirror
+  deb_tgz_location = var.clamav_deb_pkg_object_url
 }
 
 data "template_cloudinit_config" "config" {
@@ -52,7 +61,7 @@ CLOUDINIT
   part {
     filename     = "clamav.cfg"
     content_type = "text/cloud-config"
-    content      = var.clamav_client_user_data
+    content      = module.clamav_config.client_user_data_config
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
