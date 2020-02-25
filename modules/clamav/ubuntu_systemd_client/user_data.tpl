@@ -11,22 +11,22 @@ runcmd:
     mkdir pkg
     cd pkg
     wget --no-check-certificate -O - "${deb_tgz_location}" | tar xzf -
-    sudo dpkg -i *.deb
-    sudo rm -f *.deb
-    sudo augtool set /files/etc/clamav/freshclam.conf/LogSyslog yes
-    sudo augtool rm /files/etc/clamav/freshclam.conf/DatabaseMirror
-    sudo augtool set /files/etc/clamav/freshclam.conf/PrivateMirror ${clam_database_mirror}
-    sudo augtool set /files/etc/clamav/freshclam.conf/Checks 24
-    sudo augtool rm /files/etc/clamav/scan.conf/Example
-    sudo augtool set /files/etc/clamav/scan.conf/LogSyslog yes
-    sudo augtool set /files/etc/clamav/scan.conf/ExtendedDetectionInfo yes
-    sudo augtool set /files/etc/clamav/scan.conf/LocalSocket /var/run/clamd.scan/clamd.sock
-    sudo augtool load
-    sudo augtool set /files/lib/systemd/system/clamav-daemon.service/Service/RestartSec/value 30
-    sudo augtool set /files/lib/systemd/system/clamav-daemon.service/Unit/After/value[last+1] clamav-freshclam.service
-    sudo -u clamav freshclam
-    sudo systemctl daemon-reload
-    sudo systemctl enable clamav-daemon.service
-    sudo systemctl enable clamav-freshclam.service
-    sudo systemctl restart clamav-freshclam.service
-    sudo systemctl restart clamav-daemon.service
+    dpkg -i *.deb
+    rm -f *.deb
+    augtool set /files/etc/clamav/freshclam.conf/LogSyslog yes
+    augtool rm /files/etc/clamav/freshclam.conf/DatabaseMirror
+    augtool set /files/etc/clamav/freshclam.conf/PrivateMirror ${clam_database_mirror}
+    augtool set /files/etc/clamav/freshclam.conf/Checks 24
+    augtool rm /files/etc/clamav/scan.conf/Example
+    augtool set /files/etc/clamav/scan.conf/LogSyslog yes
+    augtool set /files/etc/clamav/scan.conf/ExtendedDetectionInfo yes
+    augtool set /files/etc/clamav/scan.conf/LocalSocket /var/run/clamd.scan/clamd.sock
+    augtool load
+    augtool set /files/lib/systemd/system/clamav-daemon.service/Service/RestartSec/value 30
+    augtool set /files/lib/systemd/system/clamav-daemon.service/Unit/After/value[last+1] clamav-freshclam.service
+    -u clamav freshclam
+    systemctl daemon-reload
+    systemctl enable clamav-daemon.service
+    systemctl enable clamav-freshclam.service
+    systemctl restart clamav-freshclam.service
+    systemctl restart clamav-daemon.service
