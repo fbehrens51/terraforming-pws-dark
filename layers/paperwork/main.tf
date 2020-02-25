@@ -100,7 +100,7 @@ resource "aws_s3_bucket_policy" "public_bucket_policy_attachement" {
   policy = data.aws_iam_policy_document.public_bucket_policy.json
 }
 
-module "clam_av_client_config" {
+module "amazon2_clam_av_client_config" {
   source             = "../../modules/clamav/amzn2_systemd_client"
   clamav_db_mirror   = var.clamav_db_mirror
   custom_repo_url    = var.custom_clamav_yum_repo_url
@@ -747,7 +747,7 @@ output "bastion_s3_vpc_endpoint_id" {
 }
 
 output "amazon2_clamav_user_data" {
-  value = module.clam_av_client_config.amazon2_clamav_user_data
+  value = module.amazon2_clam_av_client_config.amazon2_clamav_user_data
 }
 
 output "custom_banner_user_data" {
