@@ -14,7 +14,8 @@ runcmd:
     sudo dpkg -i *.deb
     sudo rm -f *.deb
     sudo augtool set /files/etc/clamav/freshclam.conf/LogSyslog yes
-    sudo augtool set /files/etc/clamav/freshclam.conf/DatabaseMirror[2] ${clam_database_mirror}
+    sudo augtool rm /files/etc/clamav/freshclam.conf/DatabaseMirror
+    sudo augtool set /files/etc/clamav/freshclam.conf/PrivateMirror ${clam_database_mirror}
     sudo augtool set /files/etc/clamav/freshclam.conf/Checks 24
     sudo augtool rm /files/etc/clamav/scan.conf/Example
     sudo augtool set /files/etc/clamav/scan.conf/LogSyslog yes

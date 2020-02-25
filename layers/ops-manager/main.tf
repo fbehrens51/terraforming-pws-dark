@@ -44,6 +44,9 @@ locals {
       "Name" = "${var.env_name}-ops-manager"
     },
   )
+
+  trusted_ca_certs        = data.terraform_remote_state.paperwork.outputs.trusted_with_additional_ca_certs
+  user_accounts_user_data = data.terraform_remote_state.paperwork.outputs.user_accounts_user_data
 }
 
 variable "remote_state_bucket" {
@@ -62,10 +65,15 @@ variable "tags" {
   type = map(string)
 }
 
-variable "om_user_data_path" {
+variable "instance_type" {
 }
 
-variable "instance_type" {
+module "ops_manager_user_data" {
+  source                    = "../../modules/ops_manager_user_data"
+  customer_banner_user_data = data.terraform_remote_state.paperwork.outputs.custom_banner_user_data
+  clamav_client_user_data   = module.clam_av_client_config.client_user_data_config
+  user_accounts_user_data   = local.user_accounts_user_data
+  trusted_ca_certs          = local.trusted_ca_certs
 }
 
 module "ops_manager" {
@@ -78,7 +86,7 @@ module "ops_manager" {
   key_pair_name        = local.om_ssh_public_key_pair_name
   tags                 = local.tags
   eni_ids              = [local.om_eni_id]
-  user_data            = data.template_cloudinit_config.config.rendered
+  user_data            = module.ops_manager_user_data.cloud_config
 
   root_block_device = {
     volume_type = "gp2"
@@ -89,46 +97,13 @@ module "ops_manager" {
 variable "clamav_deb_pkg_object_url" {
 }
 
-module "clam_av_client_config" {
-  source           = "../../modules/clamav/ubuntu_systemd_client"
-  clamav_db_mirror = "database.clamav.net"
-  deb_tgz_location = "${var.clamav_deb_pkg_object_url}"
+variable "clamav_db_mirror" {
 }
 
-data "template_cloudinit_config" "config" {
-  base64_encode = true
-  gzip          = true
-
-  part {
-    content_type = "text/cloud-config"
-    content      = file(var.om_user_data_path)
-  }
-
-  part {
-    content_type = "text/cloud-config"
-
-    content = <<CLOUDINIT
-bootcmd:
-  # Disable SSL in postgres.  Otherwise, postgres will fail to start since the
-  # snakeoil certificate is missing.  Note that OM connect to postgres over the
-  # unix socket.
-  - sudo sed -i 's/^ssl = true/#ssl = true/' /etc/postgresql/*/main/postgresql.conf
-CLOUDINIT
-
-  }
-
-  part {
-    filename     = "clamav.cfg"
-    content_type = "text/cloud-config"
-    content      = module.clam_av_client_config.client_user_data_config
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
-  }
-
-  part {
-    filename     = "banner.cfg"
-    content_type = "text/x-include-url"
-    content      = data.terraform_remote_state.paperwork.outputs.custom_banner_user_data
-  }
+module "clam_av_client_config" {
+  source           = "../../modules/clamav/ubuntu_systemd_client"
+  clamav_db_mirror = var.clamav_db_mirror
+  deb_tgz_location = "${var.clamav_deb_pkg_object_url}"
 }
 
 resource "aws_eip_association" "om_eip_assoc" {
