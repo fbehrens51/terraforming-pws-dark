@@ -24,7 +24,7 @@ runcmd:
     augtool load
     augtool set /files/lib/systemd/system/clamav-daemon.service/Service/RestartSec/value 30
     augtool set /files/lib/systemd/system/clamav-daemon.service/Unit/After/value[last+1] clamav-freshclam.service
-    -u clamav freshclam
+    sudo -u clamav freshclam
     systemctl daemon-reload
     systemctl enable clamav-daemon.service
     systemctl enable clamav-freshclam.service
