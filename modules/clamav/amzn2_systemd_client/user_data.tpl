@@ -24,7 +24,8 @@ runcmd:
   - |
     set -ex
     augtool set /files/etc/freshclam.conf/LogSyslog yes
-    augtool set /files/etc/freshclam.conf/DatabaseMirror ${clam_database_mirror}
+    augtool rm /files/etc/freshclam.conf/DatabaseMirror
+    augtool set /files/etc/freshclam.conf/PrivateMirror ${clam_database_mirror}
     augtool set /files/etc/freshclam.conf/Checks 24
     augtool rm /files/etc/clamd.d/scan.conf/Example
     augtool set /files/etc/clamd.d/scan.conf/LogSyslog yes
