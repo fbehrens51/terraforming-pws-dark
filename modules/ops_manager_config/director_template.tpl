@@ -100,7 +100,7 @@ properties-configuration:
     handlers: []
   security_configuration:
     generate_vm_passwords: true
-    opsmanager_root_ca_trusted_certs: false
+    opsmanager_root_ca_trusted_certs: true
     trusted_certificates: |
       ${indent(6, security_configuration_trusted_certificates)}
   syslog_configuration:
