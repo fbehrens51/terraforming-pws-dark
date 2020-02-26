@@ -259,7 +259,6 @@ module "om_config" {
   tcp_router_instance_type                    = var.tcp_router_instance_type
   uaa_instance_type                           = var.uaa_instance_type
 
-  jwt_expiration         = var.jwt_expiration
   ldap_tls_ca_cert       = data.terraform_remote_state.paperwork.outputs.root_ca_cert
   ldap_tls_client_cert   = data.terraform_remote_state.paperwork.outputs.ldap_client_cert
   ldap_tls_client_key    = data.terraform_remote_state.paperwork.outputs.ldap_client_key

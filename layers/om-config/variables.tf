@@ -61,9 +61,6 @@ variable "apps_manager_square_logo_file" {
 variable "apps_manager_main_logo_file" {
 }
 
-variable "jwt_expiration" {
-}
-
 variable "env_name" {
 }
 

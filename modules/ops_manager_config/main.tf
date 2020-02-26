@@ -218,7 +218,6 @@ data "template_file" "portal_template" {
   template = file("${path.module}/portal_template.tpl")
 
   vars = {
-    jwt_expiration              = var.jwt_expiration
     ldap_tls_ca_cert            = var.ldap_tls_ca_cert
     ldap_tls_client_cert        = var.ldap_tls_client_cert
     ldap_tls_client_key         = var.ldap_tls_client_key

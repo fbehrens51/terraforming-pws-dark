@@ -5,7 +5,7 @@ product-properties:
   .properties.apply_open_security_group:
     value: false
   .properties.jwt_expiration:
-    value: ${jwt_expiration}
+    value: 3600
   .properties.ldap_tls_ca_cert:
     value: |
       ${indent(6, ldap_tls_ca_cert)}

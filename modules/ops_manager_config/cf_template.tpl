@@ -471,9 +471,9 @@ product-properties:
   .uaa.apps_manager_access_token_lifetime:
     value: 3600
   .uaa.cf_cli_access_token_lifetime:
-    value: 7200
+    value: 3600
   .uaa.cf_cli_refresh_token_lifetime:
-    value: 1209600
+    value: 3600
   .uaa.customize_password_label:
     value: Password
   .uaa.customize_username_label:

@@ -55,11 +55,6 @@ variable "credhub_encryption_password" {
 # Portal Configuration
 # ========================
 
-variable "jwt_expiration" {
-  type        = string
-  description = "Expiration time of the JWT tokens issued by Portal (in seconds)"
-}
-
 variable "ldap_tls_ca_cert" {
   type = string
 }
