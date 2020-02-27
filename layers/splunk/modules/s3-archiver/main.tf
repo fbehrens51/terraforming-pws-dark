@@ -39,11 +39,11 @@ data "template_file" "cloud_config" {
 bootcmd:
   - |
     mkdir -p /opt/s3_archive
-    while [ ! -e /dev/xvdf ] ; do sleep 1 ; done
-    if [ "$(file -b -s /dev/xvdf)" == "data" ]; then mkfs -t ext4 /dev/xvdf; fi
+    while [ ! -e /dev/sdf ] ; do sleep 1 ; done
+    if [ "$(file -b -s /dev/sdf)" == "data" ]; then mkfs -t ext4 /dev/sdf; fi
 
 mounts:
-  - [ "/dev/xvdf", "/opt/s3_archive", "ext4", "defaults,nofail", "0", "2" ]
+  - [ "/dev/sdf", "/opt/s3_archive", "ext4", "defaults,nofail", "0", "2" ]
 
 runcmd:
   - |
