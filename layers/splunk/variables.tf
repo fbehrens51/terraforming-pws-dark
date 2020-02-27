@@ -18,7 +18,7 @@ variable "region" {
 }
 
 variable "instance_type" {
-  default = "t2.small"
+  default = "t3.medium"
 }
 
 variable "license_path" {
