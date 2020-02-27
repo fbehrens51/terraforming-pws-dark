@@ -296,6 +296,9 @@ data "aws_vpc" "bastion_vpc" {
   id = local.bastion_vpc_id
 }
 
+data "aws_region" "current" {
+}
+
 locals {
   bastion_vpc_id = data.terraform_remote_state.paperwork.outputs.bastion_vpc_id
   vpc_id         = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
@@ -333,6 +336,7 @@ locals {
       cidr_blocks = "0.0.0.0/0"
     },
   ]
+  ec2_service_name = "com.amazonaws.${data.aws_region.current.name}.ec2"
 }
 
 module "sjb_subnet" {
@@ -369,3 +373,12 @@ module "sjb_key_pair" {
   key_name = var.control_plane_host_key_pair_name
 }
 
+resource "aws_vpc_endpoint" "cp_ec2" {
+  vpc_id              = data.aws_vpc.vpc.id
+  service_name        = local.ec2_service_name
+  vpc_endpoint_type   = "Interface"
+  security_group_ids  = aws_security_group.vms_security_group.*.id
+  subnet_ids          = module.private_subnets.subnet_ids
+  private_dns_enabled = true
+  tags                = local.modified_tags
+}

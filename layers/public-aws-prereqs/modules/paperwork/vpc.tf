@@ -32,6 +32,9 @@ resource "aws_internet_gateway" "bastion_igw" {
 resource "aws_vpc" "control_plane_vpc" {
   cidr_block = local.control_plane_vpc_cidr
 
+  enable_dns_support   = true
+  enable_dns_hostnames = true
+
   tags = {
     Name = "${var.env_name} | control plane vpc"
   }
