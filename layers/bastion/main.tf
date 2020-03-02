@@ -77,11 +77,6 @@ module "amazon_ami" {
   source = "../../modules/amis/amazon_hvm_ami"
 }
 
-module "bastion_host_key_pair" {
-  source   = "../../modules/key_pair"
-  key_name = var.bastion_host_key_pair_name
-}
-
 module "bastion_host" {
   instance_count     = "1"
   source             = "../../modules/launch"
@@ -89,7 +84,6 @@ module "bastion_host" {
   ami_id             = var.ami_id == "" ? module.amazon_ami.id : var.ami_id
   user_data          = data.template_cloudinit_config.user_data.rendered
   eni_ids            = [module.bootstrap_bastion.eni_id]
-  key_pair_name      = module.bastion_host_key_pair.key_name
 
   tags = local.modified_tags
 }
@@ -124,8 +118,5 @@ variable "egress_rules" {
 
 variable "tags" {
   type = map(string)
-}
-
-variable "bastion_host_key_pair_name" {
 }
 

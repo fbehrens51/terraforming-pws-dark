@@ -166,7 +166,7 @@ resource "aws_s3_bucket" "transfer_bucket" {
 data "aws_iam_policy_document" "transfer_bucket_policy" {
   statement {
     effect  = "Allow"
-    actions = ["s3:GetObject", "s3:ListBucket","s3:PutObject","s3:PutObjectAcl"]
+    actions = ["s3:GetObject", "s3:ListBucket", "s3:PutObject", "s3:PutObjectAcl"]
 
     principals {
       type        = "AWS"
@@ -387,11 +387,6 @@ module "sjb_bootstrap" {
   eni_count     = "1"
   create_eip    = "false"
   tags          = local.modified_tags
-}
-
-module "sjb_key_pair" {
-  source   = "../../modules/key_pair"
-  key_name = var.control_plane_host_key_pair_name
 }
 
 resource "aws_vpc_endpoint" "cp_ec2" {

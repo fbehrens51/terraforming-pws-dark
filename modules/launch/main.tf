@@ -15,10 +15,6 @@ variable "eni_ids" {
   type = list(string)
 }
 
-variable "key_pair_name" {
-  default = ""
-}
-
 variable "iam_instance_profile" {
   default = ""
 }
@@ -59,7 +55,6 @@ resource "aws_instance" "instance" {
   ami                  = var.ami_id
   instance_type        = var.instance_type
   user_data            = var.user_data
-  key_name             = var.key_pair_name
   iam_instance_profile = var.iam_instance_profile
 
   tags = merge(var.tags, local.computed_instance_tags)
@@ -87,7 +82,6 @@ resource "aws_instance" "instance_ignoring_tags" {
   ami                  = var.ami_id
   instance_type        = var.instance_type
   user_data            = var.user_data
-  key_name             = var.key_pair_name
   iam_instance_profile = var.iam_instance_profile
 
   tags = merge(var.tags, local.computed_instance_tags)

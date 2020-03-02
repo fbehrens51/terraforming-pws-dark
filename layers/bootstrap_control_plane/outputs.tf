@@ -2,15 +2,6 @@ output "sjb_private_ip" {
   value = module.sjb_bootstrap.eni_ips[0]
 }
 
-output "sjb_private_key" {
-  value     = module.sjb_key_pair.private_key_pem
-  sensitive = true
-}
-
-output "sjb_ssh_key_pair_name" {
-  value = module.sjb_key_pair.key_name
-}
-
 output "control_plane_public_cidrs" {
   value = module.public_subnets.subnet_cidr_blocks
 }

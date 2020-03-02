@@ -223,7 +223,6 @@ module "sjb" {
   ami_id               = data.terraform_remote_state.encrypt_amis.outputs.encrypted_amazon2_ami_id
   user_data            = data.template_cloudinit_config.user_data.rendered
   eni_ids              = data.terraform_remote_state.bootstrap_control_plane.outputs.sjb_eni_ids
-  key_pair_name        = data.terraform_remote_state.bootstrap_control_plane.outputs.sjb_ssh_key_pair_name
   iam_instance_profile = data.terraform_remote_state.paperwork.outputs.sjb_role_name
   instance_type        = var.instance_type
 
@@ -239,4 +238,3 @@ module "sjb" {
     volume_size = 64
   }
 }
-
