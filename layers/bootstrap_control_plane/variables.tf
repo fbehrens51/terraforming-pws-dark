@@ -10,6 +10,8 @@ variable "control_plane_host_key_pair_name" {
 variable "terraform_bucket_name" {
 }
 
+variable "transfer_bucket_promotion_account_arn"{}
+
 variable "terraform_region" {
 }
 

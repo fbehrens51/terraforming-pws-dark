@@ -162,6 +162,27 @@ resource "aws_s3_bucket" "transfer_bucket" {
   )
 }
 
+
+data "aws_iam_policy_document" "transfer_bucket_policy" {
+  statement {
+    effect  = "Allow"
+    actions = ["s3:GetObject", "s3:ListBucket","s3:PutObject","s3:PutObjectAcl"]
+
+    principals {
+      type        = "AWS"
+      identifiers = [var.transfer_bucket_promotion_account_arn]
+    }
+
+    resources = [aws_s3_bucket.transfer_bucket.arn, "${aws_s3_bucket.transfer_bucket.arn}/*"]
+  }
+}
+
+resource "aws_s3_bucket_policy" "transfer_bucket_policy_attachement" {
+  bucket = aws_s3_bucket.transfer_bucket.bucket
+  policy = data.aws_iam_policy_document.transfer_bucket_policy.json
+}
+
+
 resource "aws_s3_bucket" "mirror_bucket" {
   bucket        = "${local.bucket_prefix}-mirror"
   force_destroy = true
