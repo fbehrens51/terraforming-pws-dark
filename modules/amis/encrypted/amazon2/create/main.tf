@@ -14,6 +14,7 @@ resource "aws_ami_copy" "encrypted_amazon2_ami" {
   source_ami_region = data.aws_region.current_region.name
   encrypted         = true
   kms_key_id        = var.kms_key_id
+  description       = "Copy of ${module.amazon2_linux_ami.id}"
 }
 
 output "encrypted_ami_id" {
