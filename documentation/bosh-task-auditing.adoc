@@ -1,0 +1,23 @@
+= Auditing Operator's actions
+
+== Ops Manager Auditing
+
+see https://docs.pivotal.io/platform/2-8/opsguide/auditing-ops-man.html
+Some of these logs should be available via splunk
+
+=== The following will be forwarded to Splunk via OpsManager syslog forwarding
+
+==== Ops manager API calls
+
+* /var/log/opsmanager/audit_log.txt (json)
+
+==== Ops Manager UAA Authentication (success/failed)
+
+* /home/tempest-web/uaa/tomcat/logs/uaa.log
+* /home/tempest-web/uaa/tomcat/logs/uaa_events.logs
+
+
+
+
+
+
