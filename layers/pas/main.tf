@@ -104,6 +104,11 @@ module "infra" {
   public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url
 }
 
+module "om_key_pair" {
+  source   = "../../modules/key_pair"
+  key_name = local.om_key_name
+}
+
 module "pas" {
   source                    = "../../modules/pas"
   availability_zones        = var.availability_zones
@@ -239,6 +244,7 @@ locals {
   route_table_id = data.terraform_remote_state.routes.outputs.pas_public_vpc_route_table_id
   bucket_suffix  = random_integer.bucket.result
   root_domain    = data.terraform_remote_state.paperwork.outputs.root_domain
+  om_key_name    = "${var.env_name}-om"
 
   ingress_rules = [
     {
@@ -257,6 +263,11 @@ locals {
 module "calculated_subnets" {
   source   = "../../modules/calculate_subnets"
   vpc_cidr = data.aws_vpc.pas_vpc.cidr_block
+}
+
+output "om_private_key_pem" {
+  value     = module.om_key_pair.private_key_pem
+  sensitive = true
 }
 
 output "public_subnet_ids" {
