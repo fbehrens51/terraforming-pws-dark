@@ -28,7 +28,7 @@ resource "null_resource" "ldap_configuration" {
 
   connection {
     type        = "ssh"
-    user        = "ubuntu"
+    user        = "bot"
     host        = var.ssh_host
     private_key = var.ssh_private_key_pem
   }

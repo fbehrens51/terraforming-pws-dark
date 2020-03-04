@@ -157,6 +157,13 @@ module "om_user_accounts_config" {
   public_bucket_url       = local.public_bucket_url
 }
 
+module "bot_user_accounts_config" {
+  source                  = "../../modules/cloud_init/user_accounts"
+  user_accounts_user_data = [file(var.user_accounts_user_data_path), local.bot_user_data]
+  public_bucket_name      = aws_s3_bucket.public_bucket.bucket
+  public_bucket_url       = local.public_bucket_url
+}
+
 variable "clamav_db_mirror" {
 }
 
@@ -792,6 +799,10 @@ output "user_accounts_user_data" {
 
 output "om_user_accounts_user_data" {
   value = module.om_user_accounts_config.user_accounts_user_data
+}
+
+output "bot_user_accounts_user_data" {
+  value = module.bot_user_accounts_config.user_accounts_user_data
 }
 
 output "bot_private_key" {

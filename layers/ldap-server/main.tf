@@ -124,8 +124,7 @@ module "ldap_host" {
   source        = "../../modules/launch"
   ami_id        = module.ubuntu_ami.id
   eni_ids       = module.bootstrap.eni_ids
-  user_data     = data.terraform_remote_state.paperwork.outputs.user_accounts_user_data
-  key_pair_name = module.ldap_host_key_pair.key_name
+  user_data     = data.terraform_remote_state.paperwork.outputs.bot_user_accounts_user_data
 
   tags = local.modified_tags
 }
@@ -140,7 +139,7 @@ module "ldap_configure" {
     data.terraform_remote_state.public-aws-prereqs.outputs.user_certs,
   )
   tls_server_ca_cert  = data.terraform_remote_state.paperwork.outputs.root_ca_cert
-  ssh_private_key_pem = module.ldap_host_key_pair.private_key_pem
+  ssh_private_key_pem = data.terraform_remote_state.paperwork.outputs.bot_private_key
   ssh_host            = data.terraform_remote_state.paperwork.outputs.ldap_host
   instance_id         = module.ldap_host.instance_ids[0]
   users               = var.users

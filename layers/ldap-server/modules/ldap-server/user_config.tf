@@ -43,7 +43,7 @@ resource "null_resource" "user_configuration" {
 
   connection {
     type        = "ssh"
-    user        = "ubuntu"
+    user        = "bot"
     host        = var.ssh_host
     private_key = var.ssh_private_key_pem
   }
