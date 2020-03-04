@@ -118,9 +118,19 @@ module "custom_banner_config" {
 variable "user_accounts_user_data_path" {
 }
 
+variable "om_user_accounts_user_data_path" {
+}
+
 module "user_accounts_config" {
   source                  = "../../modules/cloud_init/user_accounts"
   user_accounts_user_data = file(var.user_accounts_user_data_path)
+  public_bucket_name      = aws_s3_bucket.public_bucket.bucket
+  public_bucket_url       = local.public_bucket_url
+}
+
+module "om_user_accounts_config" {
+  source                  = "../../modules/cloud_init/user_accounts"
+  user_accounts_user_data = file(var.om_user_accounts_user_data_path)
   public_bucket_name      = aws_s3_bucket.public_bucket.bucket
   public_bucket_url       = local.public_bucket_url
 }
@@ -756,5 +766,9 @@ output "custom_banner_user_data" {
 
 output "user_accounts_user_data" {
   value = module.user_accounts_config.user_accounts_user_data
+}
+
+output "om_user_accounts_user_data" {
+  value = module.om_user_accounts_config.user_accounts_user_data
 }
 

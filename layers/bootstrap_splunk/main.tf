@@ -115,9 +115,6 @@ variable "internetless" {
 variable "env_name" {
 }
 
-variable "splunk_host_key_pair_name" {
-}
-
 variable "tags" {
   type = map(string)
 }
@@ -212,14 +209,6 @@ resource "random_string" "forwarders_pass4SymmKey" {
 resource "random_string" "search_heads_pass4SymmKey" {
   length  = "32"
   special = false
-}
-
-# TODO: Do not create key pairs or parameterize their creation, they should not
-# be used on location accounts should be created as part of user data.  Should
-# we create a module to generate?
-module "splunk_host_key_pair" {
-  source   = "../../modules/key_pair"
-  key_name = var.splunk_host_key_pair_name
 }
 
 data "aws_subnet" "private_subnets" {
@@ -372,16 +361,6 @@ output "search_head_eni_ids" {
 
 output "splunk_http_collector_url" {
   value = "https://${module.domains.splunk_logs_fqdn}:${module.splunk_ports.splunk_http_collector_port}"
-}
-
-output "splunk_ssh_key_pair_name" {
-  value     = module.splunk_host_key_pair.key_name
-  sensitive = true
-}
-
-output "splunk_ssh_key" {
-  value     = module.splunk_host_key_pair.private_key_pem
-  sensitive = true
 }
 
 output "splunk_http_collector_token" {

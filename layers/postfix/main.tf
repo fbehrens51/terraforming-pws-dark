@@ -62,11 +62,6 @@ locals {
   smtp_pass  = data.terraform_remote_state.bootstrap_postfix.outputs.smtp_client_password
 }
 
-module "postfix_host_key_pair" {
-  source   = "../../modules/key_pair"
-  key_name = local.modified_name
-}
-
 module "configuration" {
   source = "./modules/config"
 
@@ -141,7 +136,6 @@ module "postfix_master_host" {
   ami_id         = local.encrypted_amazon2_ami_id
   user_data      = data.template_cloudinit_config.user_data.rendered
   eni_ids        = data.terraform_remote_state.bootstrap_postfix.outputs.postfix_eni_ids
-  key_pair_name  = module.postfix_host_key_pair.key_name
   tags           = local.modified_tags
 }
 

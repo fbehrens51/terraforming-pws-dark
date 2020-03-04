@@ -98,8 +98,6 @@ locals {
 
   master_ip = data.terraform_remote_state.bootstrap_splunk.outputs.master_private_ips[0]
 
-  ssh_key_pair_name = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_ssh_key_pair_name
-
   root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
 
   s3_archive_ip     = data.terraform_remote_state.bootstrap_splunk.outputs.s3_private_ips[0]
@@ -137,7 +135,6 @@ module "splunk_s3" {
   instance_count = 1
   ami_id         = local.encrypted_amazon2_ami_id
   instance_type  = var.instance_type
-  key_pair_name  = local.ssh_key_pair_name
   tags = merge(
     local.tags,
     {
@@ -179,7 +176,6 @@ module "splunk_indexers" {
   instance_count = length(local.splunk_indexers_eni_ids)
   ami_id         = local.encrypted_amazon2_ami_id
   instance_type  = var.instance_type
-  key_pair_name  = local.ssh_key_pair_name
   tags = merge(
     local.tags,
     {
@@ -222,7 +218,6 @@ module "splunk_master" {
   instance_count = 1
   ami_id         = local.encrypted_amazon2_ami_id
   instance_type  = var.instance_type
-  key_pair_name  = local.ssh_key_pair_name
   tags = merge(
     local.tags,
     {
@@ -267,7 +262,6 @@ module "splunk_search_head" {
   instance_count = 1
   ami_id         = local.encrypted_amazon2_ami_id
   instance_type  = var.instance_type
-  key_pair_name  = local.ssh_key_pair_name
   tags = merge(
     local.tags,
     {
@@ -313,7 +307,6 @@ module "splunk_forwarders" {
   instance_count = length(local.splunk_forwarders_eni_ids)
   ami_id         = local.encrypted_amazon2_ami_id
   instance_type  = var.instance_type
-  key_pair_name  = local.ssh_key_pair_name
   tags = merge(
     local.tags,
     {

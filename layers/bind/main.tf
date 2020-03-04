@@ -117,11 +117,6 @@ locals {
   splunk_monitor_elb_dns      = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_monitor_elb_dns_name
 }
 
-module "bind_host_key_pair" {
-  source   = "../../modules/key_pair"
-  key_name = local.modified_name
-}
-
 data "template_cloudinit_config" "master_bind_conf_userdata" {
   base64_encode = true
   gzip          = true
@@ -180,7 +175,6 @@ module "bind_master_host" {
   ami_id         = local.encrypted_amazon2_ami_id
   user_data      = data.template_cloudinit_config.master_bind_conf_userdata.rendered
   eni_ids        = data.terraform_remote_state.bootstrap_bind.outputs.bind_eni_ids
-  key_pair_name  = module.bind_host_key_pair.key_name
   tags           = local.modified_tags
 }
 
@@ -205,11 +199,6 @@ variable "tags" {
 }
 
 variable "client_cidr" {
-}
-
-output "bind_ssh_private_key" {
-  value     = module.bind_host_key_pair.private_key_pem
-  sensitive = true
 }
 
 output "master_ips" {

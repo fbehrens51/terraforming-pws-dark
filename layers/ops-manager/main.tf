@@ -33,10 +33,9 @@ data "terraform_remote_state" "pas" {
 }
 
 locals {
-  director_role_name          = data.terraform_remote_state.paperwork.outputs.director_role_name
-  om_ssh_public_key_pair_name = data.terraform_remote_state.pas.outputs.om_ssh_public_key_pair_name
-  om_eip_allocation           = data.terraform_remote_state.pas.outputs.om_eip_allocation
-  om_eni_id                   = data.terraform_remote_state.pas.outputs.om_eni_id
+  director_role_name = data.terraform_remote_state.paperwork.outputs.director_role_name
+  om_eip_allocation  = data.terraform_remote_state.pas.outputs.om_eip_allocation
+  om_eni_id          = data.terraform_remote_state.pas.outputs.om_eni_id
 
   tags = merge(
     var.tags,
@@ -45,8 +44,8 @@ locals {
     },
   )
 
-  trusted_ca_certs        = data.terraform_remote_state.paperwork.outputs.trusted_with_additional_ca_certs
-  user_accounts_user_data = data.terraform_remote_state.paperwork.outputs.user_accounts_user_data
+  trusted_ca_certs           = data.terraform_remote_state.paperwork.outputs.trusted_with_additional_ca_certs
+  om_user_accounts_user_data = data.terraform_remote_state.paperwork.outputs.om_user_accounts_user_data
 }
 
 variable "remote_state_bucket" {
@@ -77,7 +76,7 @@ variable "clamav_db_mirror" {
 module "ops_manager_user_data" {
   source                    = "../../modules/ops_manager_user_data"
   customer_banner_user_data = data.terraform_remote_state.paperwork.outputs.custom_banner_user_data
-  user_accounts_user_data   = local.user_accounts_user_data
+  user_accounts_user_data   = local.om_user_accounts_user_data
   trusted_ca_certs          = local.trusted_ca_certs
   clamav_db_mirror          = var.clamav_db_mirror
   clamav_deb_pkg_object_url = var.clamav_deb_pkg_object_url
@@ -90,7 +89,6 @@ module "ops_manager" {
   ami_id               = var.om_ami_id
   iam_instance_profile = local.director_role_name
   instance_type        = var.instance_type
-  key_pair_name        = local.om_ssh_public_key_pair_name
   tags                 = local.tags
   eni_ids              = [local.om_eni_id]
   user_data            = module.ops_manager_user_data.cloud_config

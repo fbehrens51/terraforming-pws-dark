@@ -118,11 +118,6 @@ module "pas" {
   create_backup_pas_buckets = true
 }
 
-module "om_key_pair" {
-  source   = "../../modules/key_pair"
-  key_name = local.om_key_name
-}
-
 module "rds" {
   source = "../../modules/rds/instance"
 
@@ -243,7 +238,6 @@ locals {
   vpc_id         = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
   route_table_id = data.terraform_remote_state.routes.outputs.pas_public_vpc_route_table_id
   bucket_suffix  = random_integer.bucket.result
-  om_key_name    = "${var.env_name}-om"
   root_domain    = data.terraform_remote_state.paperwork.outputs.root_domain
 
   ingress_rules = [
@@ -374,17 +368,8 @@ output "om_eip_allocation" {
   value = module.ops_manager.om_eip_allocation
 }
 
-output "om_private_key_pem" {
-  value     = module.om_key_pair.private_key_pem
-  sensitive = true
-}
-
 output "om_security_group_id" {
   value = module.ops_manager.security_group_id
-}
-
-output "om_ssh_public_key_pair_name" {
-  value = local.om_key_name
 }
 
 output "rds_cidr_block" {
