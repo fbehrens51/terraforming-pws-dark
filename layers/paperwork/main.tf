@@ -15,6 +15,23 @@ data "aws_region" "current" {
 
 locals {
   s3_service_name = "com.amazonaws.${data.aws_region.current.name}.s3"
+  bot_user_data   = <<DOC
+#cloud-config
+merge_how:
+  - name: list
+    settings: [append]
+  - name: dict
+    settings: [no_replace, recurse_list]
+
+users:
+  - name: bot
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: bosh_sshers
+    shell: /bin/bash
+    lock_passwd: true
+    ssh_authorized_keys:
+      - ${module.bot_host_key_pair.public_key_openssh}
+DOC
 }
 
 resource "aws_vpc_endpoint" "pas_s3" {
@@ -100,6 +117,11 @@ resource "aws_s3_bucket_policy" "public_bucket_policy_attachement" {
   policy = data.aws_iam_policy_document.public_bucket_policy.json
 }
 
+module "bot_host_key_pair" {
+  source   = "../../modules/key_pair"
+  key_name = "${var.env_name}-bot"
+}
+
 module "amazon2_clam_av_client_config" {
   source             = "../../modules/clamav/amzn2_systemd_client"
   clamav_db_mirror   = var.clamav_db_mirror
@@ -123,14 +145,14 @@ variable "om_user_accounts_user_data_path" {
 
 module "user_accounts_config" {
   source                  = "../../modules/cloud_init/user_accounts"
-  user_accounts_user_data = file(var.user_accounts_user_data_path)
+  user_accounts_user_data = [file(var.user_accounts_user_data_path)]
   public_bucket_name      = aws_s3_bucket.public_bucket.bucket
   public_bucket_url       = local.public_bucket_url
 }
 
 module "om_user_accounts_config" {
   source                  = "../../modules/cloud_init/user_accounts"
-  user_accounts_user_data = file(var.om_user_accounts_user_data_path)
+  user_accounts_user_data = [file(var.om_user_accounts_user_data_path), local.bot_user_data]
   public_bucket_name      = aws_s3_bucket.public_bucket.bucket
   public_bucket_url       = local.public_bucket_url
 }
@@ -772,3 +794,7 @@ output "om_user_accounts_user_data" {
   value = module.om_user_accounts_config.user_accounts_user_data
 }
 
+output "bot_private_key" {
+  value     = module.bot_host_key_pair.private_key_pem
+  sensitive = true
+}
