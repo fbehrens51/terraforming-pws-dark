@@ -15,6 +15,10 @@ variable "eni_ids" {
   type = list(string)
 }
 
+variable "key_pair_name" {
+  default = ""
+}
+
 variable "iam_instance_profile" {
   default = ""
 }
@@ -56,6 +60,7 @@ resource "aws_instance" "instance" {
   instance_type        = var.instance_type
   user_data            = var.user_data
   iam_instance_profile = var.iam_instance_profile
+  key_name             = var.key_pair_name
 
   tags = merge(var.tags, local.computed_instance_tags)
   dynamic "root_block_device" {
