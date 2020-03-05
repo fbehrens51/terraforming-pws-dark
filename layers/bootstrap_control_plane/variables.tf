@@ -54,6 +54,8 @@ variable "tags" {
   type = map(string)
 }
 
+variable "vpce_interface_prefix" {}
+
 # variable "s3_endpoint" {}
 # variable "ec2_endpoint" {}
 # variable "elb_endpoint" {}
