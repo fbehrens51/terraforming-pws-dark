@@ -3,13 +3,15 @@
 set -ex
 
 #bucket="pwsd-staging-syslog-archive"
-if [[ $# != 2 ]]; then
-   echo "$0 <bucketname> <region_name> - both bucketname and region_name are required"
+if [[ $# != 4 ]]; then
+   echo "$0 <daily_files> <gziped_files> <bucketname> <region_name> - all arguments are required"
    exit 1
 fi
 
-bucket=$1
-export AWS_DEFAULT_REGION=$2
+daily=$1
+gziped=$2
+bucket=$3
+export AWS_DEFAULT_REGION=$4
 
 function logger() {
     message=$1
@@ -54,15 +56,14 @@ function send_to_s3(){
 
 dirname=$(dirname $0)
 pushd ${dirname}/.. > /dev/null
-daily="./daily_files"
 
 [[ ! -d cronlog      ]] && install -m 0700 -d cronlog
-[[ ! -d gziped_files ]] && install -m 0700 -d gziped_files
+[[ ! -d ${gziped} ]] && install -m 0700 -d ${gziped}
 
 for file in $( find ${daily} -type f ! -newermt "$(date '+%Y-%m-%d 00:30:00')" -printf '%f\n' ); do
     logger "INFO: processing ${file}"
     daily_file="${daily}/${file}"
-    dest_file="./gziped_files/${file}.Z"
+    dest_file="${gziped}/${file}.Z"
 
     if [[ ! -f ${dest_file} ]]; then
         gzip_file "${daily_file}" ${dest_file}
@@ -76,7 +77,7 @@ for file in $( find ${daily} -type f ! -newermt "$(date '+%Y-%m-%d 00:30:00')" -
     fi
 done
 
-for dest_file in $( find ./gziped_files -type f); do
+for dest_file in $( find ${gziped} -type f); do
         logger "INFO sending ${dest_file} to s3"
         send_to_s3 ${bucket} ${dest_file}
 done

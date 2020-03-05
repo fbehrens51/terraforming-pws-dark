@@ -37,6 +37,7 @@ locals {
   forwarders_count = "1"
 
   syslog_archive_bucket = "${replace(var.env_name, " ", "-")}-syslog-archive"
+  syslog_audit_archive_bucket = "${replace(var.env_name, " ", "-")}-syslog-audit-archive"
   tags = merge(
     var.tags,
     {
@@ -183,6 +184,20 @@ resource "aws_s3_bucket" "syslog_archive" {
   }
 }
 
+resource "aws_s3_bucket" "syslog_audit_archive" {
+  bucket = local.syslog_audit_archive_bucket
+  acl    = "private"
+  tags   = local.tags
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "aws:kms"
+      }
+    }
+  }
+}
+
 resource "random_uuid" "splunk_http_token" {
 }
 
@@ -297,6 +312,10 @@ module "domains" {
 
 output "s3_bucket_syslog_archive" {
   value = aws_s3_bucket.syslog_archive.id
+}
+
+output "s3_bucket_syslog_audit_archive" {
+  value = aws_s3_bucket.syslog_audit_archive.id
 }
 
 output "s3_data_volume" {

@@ -4,6 +4,9 @@
 variable "s3_syslog_archive" {
 }
 
+variable "s3_syslog_audit_archive" {
+}
+
 variable "ca_cert" {
 }
 
@@ -50,6 +53,7 @@ runcmd:
     set -ex
     [ ! -d /opt/s3_archive/bin ] && install -m 700 -d /opt/s3_archive/bin
     [ ! -d /opt/s3_archive/daily_files ] && install -m 700 -d /opt/s3_archive/daily_files
+    [ ! -d /opt/s3_archive/daily_audit_files ] && install -m 700 -d /opt/s3_archive/daily_audit_files
     install -m 750 /run/compress_logs_and_copy_to_s3 /opt/s3_archive/bin/compress_logs_and_copy_to_s3
     #yum install librelp -y
 
@@ -80,6 +84,7 @@ rsyslog:
         # timereported = time from message
         # timegenerated = time message was received
         $template RemoteStore, "/opt/s3_archive/daily_files/%timegenerated:1:10:date-rfc3339%"
+        $template RemoteAuditStore, "/opt/s3_archive/daily_audit_files/%timegenerated:1:10:date-rfc3339%"
 
         # now define our ruleset, which also includes threading and queue parameters.
 
@@ -91,6 +96,10 @@ rsyslog:
             queue.workerThreadMinimumMessages="60000"
            ) {
           action(type="omfile" DynaFile="RemoteStore" ioBufferSize="64k" flushOnTXEnd="off" asyncWriting="on")
+
+          if ($app-name == "audispd") then {
+            action(type="omfile" DynaFile="RemoteAuditStore" ioBufferSize="64k" flushOnTXEnd="off" asyncWriting="on")
+          }
         }
 
   service_reload_command: [systemctl, kill, --kill-who, main, -s, SIGHUP, rsyslog.service]
@@ -120,13 +129,22 @@ write_files:
   content: |
     SHELL=/bin/bash
     MAILTO=""
-    0 1 * * * root /opt/s3_archive/bin/compress_logs_and_copy_to_s3 $${s3_syslog_archive} $${region}
+    0 1 * * * root /opt/s3_archive/bin/compress_logs_and_copy_to_s3 ./daily_files ./gziped_files $${s3_syslog_archive} $${region}
+
+- path: /etc/cron.d/compress_audit_logs_and_copy_to_s3
+  owner: root:root
+  permisions: '0644'
+  content: |
+    SHELL=/bin/bash
+    MAILTO=""
+    0 1 * * * root /opt/s3_archive/bin/compress_logs_and_copy_to_s3 ./daily_audit_files ./gziped_audit_files $${s3_syslog_audit_archive} $${region}
 
 EOF
 
 
   vars = {
     s3_syslog_archive = var.s3_syslog_archive
+    s3_syslog_audit_archive = var.s3_syslog_audit_archive
     region            = var.region
     script            = indent(4, file("${path.module}/script.bash"))
   }

@@ -123,6 +123,7 @@ module "s3_archiver_user_data" {
   clamav_user_data = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
 
   s3_syslog_archive       = data.terraform_remote_state.bootstrap_splunk.outputs.s3_bucket_syslog_archive
+  s3_syslog_audit_archive       = data.terraform_remote_state.bootstrap_splunk.outputs.s3_bucket_syslog_audit_archive
   user_accounts_user_data = data.terraform_remote_state.paperwork.outputs.user_accounts_user_data
   public_bucket_name      = local.public_bucket_name
   public_bucket_url       = local.public_bucket_url
