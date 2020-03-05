@@ -119,3 +119,12 @@ output "terraform_bucket_name" {
 output "terraform_region" {
   value = var.terraform_region
 }
+
+output "ec2_vpce_subnet_ip_map" {
+  value = {
+    for eni in data.aws_network_interface.ec2_vpce_eni:
+    eni.subnet_id => eni.private_ip
+  }
+}
+
+

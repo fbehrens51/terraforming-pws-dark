@@ -225,3 +225,4 @@ variable "mysql_password" {
 variable "mysql_ca_cert" {
 }
 
+variable "control_plane_additional_reserved_ips" { type=map(string)}

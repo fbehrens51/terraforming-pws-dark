@@ -398,3 +398,11 @@ resource "aws_vpc_endpoint" "cp_ec2" {
   private_dns_enabled = true
   tags                = local.modified_tags
 }
+
+data "aws_network_interface" "ec2_vpce_eni" {
+  for_each=aws_vpc_endpoint.cp_ec2.network_interface_ids
+  filter {
+    name = "network-interface-id"
+    values = [each.value]
+  }
+}

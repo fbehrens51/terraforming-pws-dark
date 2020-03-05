@@ -34,7 +34,7 @@ EOF
     control_plane_subnet_id                = var.control_plane_subnet_ids[count.index]
     control_plane_subnet_availability_zone = var.control_plane_subnet_availability_zones[count.index]
     control_plane_subnet_cidr              = var.control_plane_subnet_cidrs[count.index]
-    control_plane_subnet_reserved_ips      = "${cidrhost(var.control_plane_subnet_cidrs[count.index], 1)}-${cidrhost(var.control_plane_subnet_cidrs[count.index], 4)}"
+    control_plane_subnet_reserved_ips      = "${cidrhost(var.control_plane_subnet_cidrs[count.index], 1)}-${cidrhost(var.control_plane_subnet_cidrs[count.index], 4)},${var.control_plane_additional_reserved_ips[var.control_plane_subnet_ids[count.index]]}"
     control_plane_subnet_gateway           = var.control_plane_subnet_gateways[count.index]
     control_plane_vpc_dns                  = var.control_plane_vpc_dns
   }

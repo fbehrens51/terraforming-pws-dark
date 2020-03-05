@@ -94,8 +94,9 @@ module "om_config" {
   control_plane_subnet_gateways           = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_gateways
   control_plane_subnet_cidrs              = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs
   control_plane_vpc_dns                   = data.terraform_remote_state.paperwork.outputs.control_plane_vpc_dns
+  control_plane_additional_reserved_ips   = data.terraform_remote_state.bootstrap_control_plane.outputs.ec2_vpce_subnet_ip_map
 
-  volume_encryption_kms_key_arn = data.terraform_remote_state.paperwork.outputs.kms_key_arn
+volume_encryption_kms_key_arn = data.terraform_remote_state.paperwork.outputs.kms_key_arn
 
   vpc_id       = local.vpc_id
   env_name     = var.env_name
