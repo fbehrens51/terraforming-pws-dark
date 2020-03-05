@@ -357,7 +357,7 @@ locals {
       cidr_blocks = "0.0.0.0/0"
     },
   ]
-  ec2_service_name = "${vpce_interface_prefix}${data.aws_region.current.name}.ec2"
+  ec2_service_name = "${var.vpce_interface_prefix}${data.aws_region.current.name}.ec2"
 }
 
 module "sjb_subnet" {
