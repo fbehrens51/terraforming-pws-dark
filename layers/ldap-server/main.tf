@@ -96,11 +96,6 @@ module "ubuntu_ami" {
   source = "../../modules/amis/ubuntu_hvm_ami"
 }
 
-module "ldap_host_key_pair" {
-  source   = "../../modules/key_pair"
-  key_name = "${local.env_name} ldap"
-}
-
 module "bootstrap" {
   source        = "../../modules/eni_per_subnet"
   ingress_rules = local.ldap_ingress_rules
@@ -172,9 +167,4 @@ variable "tags" {
 
 output "ldap_private_ip" {
   value = module.bootstrap.eni_ips[0]
-}
-
-output "private_key_pem" {
-  value     = module.ldap_host_key_pair.private_key_pem
-  sensitive = true
 }
