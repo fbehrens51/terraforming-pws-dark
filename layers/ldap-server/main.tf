@@ -98,7 +98,7 @@ module "ubuntu_ami" {
 
 module "ldap_host_key_pair" {
   source   = "../../modules/key_pair"
-  key_name = "${local.env_name}-ldap"
+  key_name = "${local.env_name} ldap"
 }
 
 module "bootstrap" {
