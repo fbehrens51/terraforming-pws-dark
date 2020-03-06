@@ -47,6 +47,25 @@ write_files:
     permissions: '0400'
     owner: root:root
 
+  - content: |
+      # This file controls the configuration of the syslog plugin.
+      # It simply takes events and writes them to syslog. The
+      # arguments provided can be the default priority that you
+      # want the events written with. And optionally, you can give
+      # a second argument indicating the facility that you want events
+      # logged to. Valid options are LOG_LOCAL0 through 7, LOG_AUTH,
+      # LOG_AUTHPRIV, LOG_DAEMON, LOG_SYSLOG, and LOG_USER.
+
+      active = yes
+      direction = out
+      path = builtin_syslog
+      type = builtin
+      args = LOG_INFO
+      format = string
+    path: /etc/audisp/plugins.d/syslog.conf
+    permissions: '0640'
+    owner: root:root
+
 rsyslog:
   remotes:
     splunk: "@@${module.domains.splunk_logs_fqdn}:${module.splunk_ports.splunk_tcp_port}"
@@ -58,6 +77,11 @@ rsyslog:
         $ActionSendStreamDriverMode 1
         $ActionSendStreamDriverAuthMode x509/name
         $ActionSendStreamDriverPermittedPeer ${module.domains.splunk_logs_fqdn}
+
+runcmd:
+  - |
+    set -ex
+    service auditd reload
 EOF
 
 }
