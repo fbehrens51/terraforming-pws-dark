@@ -98,7 +98,7 @@ module "ubuntu_ami" {
 
 module "ldap_host_key_pair" {
   source   = "../../modules/key_pair"
-  key_name = var.ldap_host_key_pair_name
+  key_name = "${local.env_name}-ldap"
 }
 
 module "bootstrap" {
@@ -168,9 +168,6 @@ variable "users" {
 
 variable "tags" {
   type = map(string)
-}
-
-variable "ldap_host_key_pair_name" {
 }
 
 output "ldap_private_ip" {
