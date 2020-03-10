@@ -10,14 +10,30 @@ Some of these logs should be available via splunk
 ==== Ops manager API calls
 
 * /var/log/opsmanager/audit_log.txt (json)
+** sent when log rolls over at midnight and all records wind up with 12:01 timestamp according to splunk, but the real timestamp is embedded within the body of the log message.
+
+** e.g. search in Splunk to see who did a deployment
+*** "fritz99" AND "deploy" host="10.2.229.12"
+** e.g. search in Splunk for a particular task
+*** "31575" host="10.2.229.12"
+
+==== Opsmanager ssh
+
+* /var/log/auth.log
+** e.g. search in Splunk
+*** "Accepted publickey for ubuntu from 10.1.0.228"
 
 ==== Ops Manager UAA Authentication (success/failed)
+
+Not seeing these exact records via Splunk, but the audit_log above represents the same information.
 
 * /home/tempest-web/uaa/tomcat/logs/uaa.log
 * /home/tempest-web/uaa/tomcat/logs/uaa_events.logs
 
+== Bosh Director Auditing
 
-
+** e.g. search in Splunk for a particular task
+*** "31575" host="10.2.128.5"
 
 
 
