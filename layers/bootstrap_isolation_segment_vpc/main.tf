@@ -90,6 +90,21 @@ locals {
   es_vpc_id      = data.terraform_remote_state.paperwork.outputs.es_vpc_id
 }
 
+resource "null_resource" "vpc_tags" {
+  triggers = {
+    vpc_id = var.vpc_id
+    name   = local.modified_name
+  }
+  provisioner "local-exec" {
+    command = "aws ec2 create-tags --resources ${self.triggers.vpc_id} --tags Key=Name,Value='${self.triggers.name}'"
+  }
+
+  provisioner "local-exec" {
+    when    = destroy
+    command = "aws ec2 delete-tags --resources ${self.triggers.vpc_id} --tags Key=Name,Value='${self.triggers.name}'"
+  }
+}
+
 // we can't use the subnet_per_az module because these subnets are not in a contiguous cidr block
 resource "aws_subnet" "public_subnets" {
   count      = length(var.availability_zones)
