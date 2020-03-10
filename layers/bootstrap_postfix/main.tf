@@ -75,6 +75,12 @@ locals {
       cidr_blocks = "0.0.0.0/0"
     },
     {
+      //splunk
+      port        = "8090"
+      protocol    = "tcp"
+      cidr_blocks = "0.0.0.0/0"
+    },
+    {
       // AWS SES smtp
       port        = var.smtp_relay_port
       protocol    = "tcp"
