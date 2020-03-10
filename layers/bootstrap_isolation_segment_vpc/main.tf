@@ -92,16 +92,18 @@ locals {
 
 resource "null_resource" "vpc_tags" {
   triggers = {
-    vpc_id = var.vpc_id
-    name   = local.modified_name
+    vpc_id   = var.vpc_id
+    name     = "${local.env_name} | isolation segment vpc"
+    env_name = local.env_name
   }
+
   provisioner "local-exec" {
-    command = "aws ec2 create-tags --resources ${self.triggers.vpc_id} --tags Key=Name,Value='${self.triggers.name}'"
+    command = "aws ec2 create-tags --resources ${self.triggers.vpc_id} --tags 'Key=Name,Value=${self.triggers.name}' 'Key=Purpose,Value=isolation-segment' 'Key=env_name,Value=${self.triggers.env_name}'"
   }
 
   provisioner "local-exec" {
     when    = destroy
-    command = "aws ec2 delete-tags --resources ${self.triggers.vpc_id} --tags Key=Name,Value='${self.triggers.name}'"
+    command = "aws ec2 delete-tags --resources ${self.triggers.vpc_id} --tags 'Key=Name,Value=${self.triggers.name}' 'Key=Purpose,Value=isolation-segment' 'Key=env_name,Value=${self.triggers.env_name}'"
   }
 }
 

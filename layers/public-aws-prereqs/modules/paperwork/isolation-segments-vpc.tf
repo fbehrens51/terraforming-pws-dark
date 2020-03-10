@@ -10,6 +10,13 @@ resource "aws_vpc" "isolation_segment_vpc" {
     Purpose  = "isolation-segment"
     env_name = var.env_name
   }
+
+  lifecycle {
+    ignore_changes = [
+      # tags are updated in the bootstrap_isolation_segments to work onsite.
+      tags,
+    ]
+  }
 }
 
 resource "aws_vpn_gateway" "isolation_segment_vgw" {
