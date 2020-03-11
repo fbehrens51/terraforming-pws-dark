@@ -82,6 +82,7 @@ runcmd:
   - |
     set -ex
     service auditd reload
+    systemctl reload-or-restart rsyslog
 EOF
 
 }

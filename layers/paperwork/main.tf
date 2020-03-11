@@ -34,6 +34,12 @@ users:
 DOC
 }
 
+resource "aws_vpc_endpoint" "iso_s3" {
+  vpc_id       = var.iso_vpc_ids[count.index]
+  count        = length(var.iso_vpc_ids)
+  service_name = local.s3_service_name
+}
+
 resource "aws_vpc_endpoint" "pas_s3" {
   vpc_id       = var.pas_vpc_id
   service_name = local.s3_service_name
@@ -77,12 +83,13 @@ data "aws_iam_policy_document" "public_bucket_policy" {
       test     = "StringEquals"
       variable = "aws:sourceVpce"
 
-      values = [
+      values = concat([
         aws_vpc_endpoint.pas_s3.id,
         aws_vpc_endpoint.es_s3.id,
         aws_vpc_endpoint.cp_s3.id,
         aws_vpc_endpoint.bastion_s3.id,
-      ]
+        ],
+      aws_vpc_endpoint.iso_s3.*.id)
     }
 
     resources = [aws_s3_bucket.public_bucket.arn, "${aws_s3_bucket.public_bucket.arn}/*"]
@@ -178,6 +185,10 @@ variable "root_domain" {
 }
 
 variable "cert_bucket" {
+}
+
+variable "iso_vpc_ids" {
+  type = list(string)
 }
 
 variable "pas_vpc_id" {
@@ -526,6 +537,13 @@ output "pas_vpc_dns" {
 
 output "control_plane_vpc_dns" {
   value = var.control_plane_vpc_dns
+}
+
+output "iso_s3_endpoint_ids" {
+  value = {
+    for endpoint in aws_vpc_endpoint.iso_s3 :
+    endpoint.vpc_id => endpoint.id
+  }
 }
 
 output "pas_vpc_id" {

@@ -12,6 +12,8 @@ es_vpc_id = "${es_vpc_id}"
 
 cp_vpc_id = "${cp_vpc_id}"
 
+iso_vpc_ids = ["${iso_vpc_id}"]
+
 director_role_name = "${director_role_name}"
 
 sjb_role_name = "${sjb_role_name}"

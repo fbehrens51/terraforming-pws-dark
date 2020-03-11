@@ -88,6 +88,8 @@ locals {
   bastion_vpc_id = data.terraform_remote_state.paperwork.outputs.bastion_vpc_id
   pas_vpc_id     = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
   es_vpc_id      = data.terraform_remote_state.paperwork.outputs.es_vpc_id
+
+  iso_s3_endpoint_ids = data.terraform_remote_state.paperwork.outputs.iso_s3_endpoint_ids
 }
 
 resource "null_resource" "vpc_tags" {
@@ -154,6 +156,12 @@ resource "aws_route" "default_route" {
     create = "5m"
   }
 }
+
+resource "aws_vpc_endpoint_route_table_association" "iso_seg" {
+  route_table_id  = aws_route_table.public_route_table.id
+  vpc_endpoint_id = lookup(local.iso_s3_endpoint_ids, var.vpc_id)
+}
+
 
 resource "aws_route_table_association" "public_route_table_associations" {
   count = length(var.availability_zones)
