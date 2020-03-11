@@ -22,7 +22,7 @@ variable "splunk_password" {
 variable "splunk_rpm_version" {
 }
 
-variable "transfer_bucket_name" {
+variable "mirror_bucket_name" {
 }
 
 variable "region" {
@@ -131,7 +131,7 @@ runcmd:
     cp /run/server.key /opt/splunk/etc/auth/mycerts/mySplunkWebPrivateKey.key
     cp /run/telemetry.conf /opt/splunk/etc/apps/splunk_instrumentation/local/telemetry.conf
 
-    aws --region ${var.region} s3 cp --no-progress s3://${var.transfer_bucket_name}/ . --recursive --exclude='*' --include='splunk/${var.splunk_rpm_version}'
+    aws --region ${var.region} s3 cp --no-progress s3://${var.mirror_bucket_name}/ . --recursive --exclude='*' --include='splunk/${var.splunk_rpm_version}'
     rpm -i splunk/${var.splunk_rpm_version}
 
     /opt/splunk/bin/splunk enable boot-start -systemd-managed 1 --no-prompt --accept-license --answer-yes

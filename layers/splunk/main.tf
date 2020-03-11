@@ -107,7 +107,7 @@ locals {
   public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url
 
-  transfer_bucket_name = data.terraform_remote_state.bootstrap_control_plane.outputs.transfer_bucket_name
+  mirror_bucket_name = data.terraform_remote_state.bootstrap_control_plane.outputs.mirror_bucket_name
 
   encrypted_amazon2_ami_id = data.terraform_remote_state.encrypt_amis.outputs.encrypted_amazon2_ami_id
 }
@@ -164,7 +164,7 @@ module "indexers_user_data" {
 
   splunk_password      = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_password
   splunk_rpm_version   = var.splunk_rpm_version
-  transfer_bucket_name = local.transfer_bucket_name
+  mirror_bucket_name   = local.mirror_bucket_name
   region               = var.region
   master_ip            = local.master_ip
   public_bucket_name   = local.public_bucket_name
@@ -207,7 +207,7 @@ module "master_user_data" {
 
   splunk_password      = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_password
   splunk_rpm_version   = var.splunk_rpm_version
-  transfer_bucket_name = local.transfer_bucket_name
+  mirror_bucket_name   = local.mirror_bucket_name
   region               = var.region
   public_bucket_name   = local.public_bucket_name
   public_bucket_url    = local.public_bucket_url
@@ -250,7 +250,7 @@ module "search_head_user_data" {
 
   splunk_password      = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_password
   splunk_rpm_version   = var.splunk_rpm_version
-  transfer_bucket_name = local.transfer_bucket_name
+  mirror_bucket_name   = local.mirror_bucket_name
   region               = var.region
   master_ip            = local.master_ip
   public_bucket_name   = local.public_bucket_name
@@ -292,7 +292,7 @@ module "forwarders_user_data" {
 
   splunk_password             = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_password
   splunk_rpm_version          = var.splunk_rpm_version
-  transfer_bucket_name        = local.transfer_bucket_name
+  mirror_bucket_name          = local.mirror_bucket_name
   region                      = var.region
   master_ip                   = local.master_ip
   splunk_http_collector_token = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_http_collector_token

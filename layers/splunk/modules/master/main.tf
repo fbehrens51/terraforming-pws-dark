@@ -34,7 +34,7 @@ variable "splunk_password" {
 variable "splunk_rpm_version" {
 }
 
-variable "transfer_bucket_name" {
+variable "mirror_bucket_name" {
 }
 
 variable "region" {
@@ -60,7 +60,7 @@ module "base" {
 
   splunk_password         = var.splunk_password
   splunk_rpm_version      = var.splunk_rpm_version
-  transfer_bucket_name    = var.transfer_bucket_name
+  mirror_bucket_name    = var.mirror_bucket_name
   region                  = var.region
   user_accounts_user_data = var.user_accounts_user_data
 
