@@ -7,7 +7,7 @@ variable "remote_state_region" {
 variable "terraform_bucket_name" {
 }
 
-variable "transfer_bucket_promotion_account_arn"{}
+variable "promoter_role_arn"{}
 
 variable "terraform_region" {
 }
