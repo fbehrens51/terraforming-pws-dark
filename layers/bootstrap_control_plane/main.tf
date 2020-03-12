@@ -411,11 +411,3 @@ resource "aws_vpc_endpoint" "cp_ec2" {
   tags                = local.modified_tags
 }
 
-//refactor, can we use count of subnets to avoid the dependency issue to resolve the count during the plan phase?
-data "aws_network_interface" "ec2_vpce_eni" {
-  for_each=aws_vpc_endpoint.cp_ec2.network_interface_ids
-  filter {
-    name = "network-interface-id"
-    values = [each.value]
-  }
-}
