@@ -224,8 +224,6 @@ variable "kms_key_id" {
 variable "kms_key_arn" {
 }
 
-variable "transfer_kms_key_arn" {}
-
 variable "archive_role_name" {
 }
 
@@ -830,7 +828,3 @@ output "bot_private_key" {
   sensitive = true
 }
 
-
-output "transfer_kms_key_arn" {
-  value = var.transfer_kms_key_arn
-}
