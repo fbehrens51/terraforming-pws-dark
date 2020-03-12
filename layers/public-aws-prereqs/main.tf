@@ -71,7 +71,6 @@ module "paperwork" {
   bucket_role_name      = var.pas_bucket_role_name
   worker_role_name      = var.platform_automation_engine_worker_role_name
   director_role_name    = var.director_role_name
-  key_manager_role_name = var.key_manager_role_name
   splunk_role_name      = var.splunk_role_name
   archive_role_name     = var.archive_role_name
   ldap_eip              = aws_eip.ldap_eip.public_ip
@@ -82,18 +81,6 @@ module "paperwork" {
 }
 
 data "aws_caller_identity" "current_user" {
-}
-
-# We invoke the keys layer here to simulate having a KEYMANAGER role invoke keys
-# "out of band" in the production environment
-module "keys" {
-  source = "../../modules/kms/create"
-
-  key_name                           = var.kms_key_name
-  director_role_arn                  = module.paperwork.director_role_arn
-  pas_bucket_role_arn                = module.paperwork.pas_bucket_role_arn
-  deletion_window                    = "7"
-  additional_bootstrap_principal_arn = data.aws_caller_identity.current_user.arn
 }
 
 resource "aws_s3_bucket" "certs" {
@@ -124,9 +111,6 @@ data "template_file" "paperwork_variables" {
     platform_automation_engine_worker_role_name = var.platform_automation_engine_worker_role_name
     splunk_role_name                            = var.splunk_role_name
     archive_role_name                           = var.archive_role_name
-    key_manager_role_name                       = var.key_manager_role_name
-    kms_key_id                                  = module.keys.kms_key_id
-    kms_key_arn                                 = module.keys.kms_key_arn
     director_role_name                          = var.director_role_name
     sjb_role_name                               = var.director_role_name
     cp_vpc_id                                   = module.paperwork.cp_vpc_id
@@ -177,7 +161,19 @@ data "template_file" "paperwork_variables" {
   }
 }
 
+data "template_file" "keymanager_variables" {
+  template = file("${path.module}/keymanager.tfvars.tpl")
+  vars = {
+    pas_bucket_role_arn                        = module.paperwork.pas_bucket_role_arn
+    director_role_arn                          = module.paperwork.director_role_arn
+  }
+}
+
 variable "paperwork_variable_output_path" {
+  type = string
+}
+
+variable "keymanager_variable_output_path" {
   type = string
 }
 
@@ -194,14 +190,6 @@ variable "pas_bucket_role_name" {
 }
 
 variable "director_role_name" {
-  type = string
-}
-
-variable "key_manager_role_name" {
-  type = string
-}
-
-variable "kms_key_name" {
   type = string
 }
 
@@ -456,6 +444,11 @@ resource "aws_s3_bucket_object" "ldap_password" {
 resource "local_file" "paperwork_variables" {
   filename = var.paperwork_variable_output_path
   content  = data.template_file.paperwork_variables.rendered
+}
+
+resource "local_file" "keymanager_variables" {
+  filename = var.keymanager_variable_output_path
+  content  = data.template_file.keymanager_variables.rendered
 }
 
 resource "local_file" "bootstrap_isolation_segment_vpc_variables" {

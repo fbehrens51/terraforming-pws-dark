@@ -157,7 +157,7 @@ resource "aws_s3_bucket" "transfer_bucket" {
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
-        kms_master_key_id = "${var.transfer_kms_key_arn}"
+        kms_master_key_id = "${local.transfer_kms_key_arn}"
         sse_algorithm     = "aws:kms"
       }
     }
@@ -369,6 +369,7 @@ locals {
   ec2_service_name = "${var.vpce_interface_prefix}${data.aws_region.current.name}.ec2"
 
   director_role_name = data.terraform_remote_state.paperwork.outputs.director_role_name
+  transfer_kms_key_arn = data.terraform_remote_state.paperwork.outputs.transfer_key_arn
 }
 
 module "sjb_subnet" {
@@ -410,6 +411,7 @@ resource "aws_vpc_endpoint" "cp_ec2" {
   tags                = local.modified_tags
 }
 
+//refactor, can we use count of subnets to avoid the dependency issue to resolve the count during the plan phase?
 data "aws_network_interface" "ec2_vpce_eni" {
   for_each=aws_vpc_endpoint.cp_ec2.network_interface_ids
   filter {

@@ -13,6 +13,31 @@ terraform {
 
 data "aws_caller_identity" "my_account"{}
 
+data "template_file" "keymanager_output_variables" {
+  template = file("${path.module}/keymanager_output.tfvars.tpl")
+  vars = {
+    kms_key_id                                  = module.keys.kms_key_id
+    kms_key_arn                                 = module.keys.kms_key_arn
+    transfer_key_arn                            = aws_kms_key.transfer_kms_key.arn
+    }
+}
+
+resource "local_file" "keymanager_output_variable_file" {
+  filename = var.keymanager_file_output_path
+  content  = data.template_file.keymanager_output_variables.rendered
+}
+
+# We invoke the keys layer here to simulate having a KEYMANAGER role invoke keys
+# "out of band" in the production environment
+module "keys" {
+  source = "../../modules/kms/create"
+
+  key_name                           = var.pas_kms_key_name
+  director_role_arn                  = var.director_role_arn
+  pas_bucket_role_arn                = var.pas_bucket_role_arn
+  deletion_window                    = "7"
+  additional_bootstrap_principal_arn = data.aws_caller_identity.my_account.arn
+}
 
 data "aws_iam_policy_document" "kms_key_policy_document" {
   # This statement from the EBS docs here: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html
@@ -105,7 +130,9 @@ resource "aws_kms_key" "transfer_kms_key" {
 
 variable "director_role_arn" {}
 variable "promoter_role_arn" {}
-
+variable "pas_bucket_role_arn" {}
+variable "pas_kms_key_name" {}
+variable "keymanager_file_output_path" {}
 
 output "transfer_key_arn" {
   value = aws_kms_key.transfer_kms_key.arn

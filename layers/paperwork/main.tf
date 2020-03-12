@@ -215,8 +215,7 @@ variable "director_role_name" {
 variable "sjb_role_name" {
 }
 
-variable "key_manager_role_name" {
-}
+variable "transfer_key_arn" {}
 
 variable "kms_key_id" {
 }
@@ -570,16 +569,16 @@ output "director_role_name" {
   value = var.director_role_name
 }
 
-output "key_manager_role_name" {
-  value = var.key_manager_role_name
-}
-
 output "kms_key_id" {
   value = var.kms_key_id
 }
 
 output "kms_key_arn" {
   value = var.kms_key_arn
+}
+
+output "transfer_key_arn" {
+  value = var.transfer_key_arn
 }
 
 output "archive_role_name" {

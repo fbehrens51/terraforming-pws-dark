@@ -166,25 +166,6 @@ data "aws_iam_policy_document" "kms_admin_user" {
   }
 }
 
-resource "aws_iam_policy" "kms_admin_user" {
-  # The following canned policy doesn't allow changing the key policy
-
-  # arn = "arn:aws:iam::aws:policy/AWSKeyManagementServicePowerUser"
-
-  name   = var.key_manager_role_name
-  policy = data.aws_iam_policy_document.kms_admin_user.json
-}
-
-resource "aws_iam_role" "key_manager" {
-  name               = var.key_manager_role_name
-  assume_role_policy = data.aws_iam_policy_document.user_assume_role_policy.json
-}
-
-resource "aws_iam_role_policy_attachment" "key_manager_attach" {
-  policy_arn = aws_iam_policy.kms_admin_user.arn
-  role       = aws_iam_role.key_manager.name
-}
-
 data "aws_iam_policy_document" "s3_writer" {
   statement {
     effect = "Allow"
