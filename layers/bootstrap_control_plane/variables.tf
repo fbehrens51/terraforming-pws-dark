@@ -53,6 +53,7 @@ variable "tags" {
 
 variable "vpce_interface_prefix" {}
 
+variable "transfer_kms_key_arn" {}
 # variable "s3_endpoint" {}
 # variable "ec2_endpoint" {}
 # variable "elb_endpoint" {}

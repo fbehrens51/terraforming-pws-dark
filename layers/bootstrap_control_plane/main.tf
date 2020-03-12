@@ -150,96 +150,6 @@ resource "aws_security_group" "vms_security_group" {
   )
 }
 
-data "aws_caller_identity" "my_account"{}
-
-data "aws_iam_policy_document" "kms_key_policy_document" {
-  # This statement from the EBS docs here: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html
-  # the statement is required in order to use a kms key for ebs volume encryption
-  statement {
-    effect  = "Allow"
-    actions = ["kms:CreateGrant"]
-
-    principals {
-      type = "AWS"
-
-      identifiers = [
-        data.aws_iam_role.director.arn,
-      ]
-    }
-
-    resources = ["*"]
-
-    condition {
-      test     = "Bool"
-      variable = "kms:GrantIsForAWSResource"
-      values   = ["true"]
-    }
-  }
-
-  # the following actions were inspired by https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default-allow-users
-  statement {
-    sid    = "Allow access for key users"
-    effect = "Allow"
-
-    principals {
-      type = "AWS"
-
-      identifiers = [
-        data.aws_iam_role.director.arn,
-        var.promoter_role_arn
-      ]
-    }
-
-    actions = [
-      "kms:Encrypt",
-      "kms:Decrypt",
-      "kms:ReEncrypt*",
-      "kms:GenerateDataKey*",
-      "kms:DescribeKey",
-    ]
-
-    resources = ["*"]
-  }
-
-  # the following actions were inspired by https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default-allow-administrators
-  statement {
-    sid    = "Allow access for key managers"
-    effect = "Allow"
-
-    principals {
-      type = "AWS"
-
-      # This layer should be run with the credentials of the key manager.
-      identifiers = [
-        data.aws_caller_identity.my_account.arn,
-      ]
-    }
-
-    actions = [
-      "kms:Create*",
-      "kms:Describe*",
-      "kms:Enable*",
-      "kms:List*",
-      "kms:Put*",
-      "kms:Update*",
-      "kms:Revoke*",
-      "kms:Disable*",
-      "kms:Get*",
-      "kms:Delete*",
-      "kms:TagResource",
-      "kms:UntagResource",
-      "kms:ScheduleKeyDeletion",
-      "kms:CancelKeyDeletion",
-    ]
-    resources = ["*"]
-  }
-}
-
-
-resource "aws_kms_key" "transfer_kms_key" {
-  policy = "${data.aws_iam_policy_document.kms_key_policy_document.json}"
-  description = "TRANSFER_KMS_KEY"
-}
 
 resource "aws_s3_bucket" "transfer_bucket" {
   bucket        = "${local.bucket_prefix}-transfer"
@@ -247,12 +157,11 @@ resource "aws_s3_bucket" "transfer_bucket" {
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
-        kms_master_key_id = "${aws_kms_key.transfer_kms_key.arn}"
+        kms_master_key_id = "${var.transfer_kms_key_arn}"
         sse_algorithm     = "aws:kms"
       }
     }
   }
-
 
   tags = merge(
     var.tags,
@@ -460,10 +369,6 @@ locals {
   ec2_service_name = "${var.vpce_interface_prefix}${data.aws_region.current.name}.ec2"
 
   director_role_name = data.terraform_remote_state.paperwork.outputs.director_role_name
-}
-
-data "aws_iam_role" "director" {
-  name = local.director_role_name
 }
 
 module "sjb_subnet" {

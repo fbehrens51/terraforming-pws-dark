@@ -224,6 +224,8 @@ variable "kms_key_id" {
 variable "kms_key_arn" {
 }
 
+variable "transfer_kms_key_arn" {}
+
 variable "archive_role_name" {
 }
 
@@ -826,4 +828,9 @@ output "bot_user_accounts_user_data" {
 output "bot_private_key" {
   value     = module.bot_host_key_pair.private_key_pem
   sensitive = true
+}
+
+
+output "transfer_kms_key_arn" {
+  value = var.transfer_kms_key_arn
 }
