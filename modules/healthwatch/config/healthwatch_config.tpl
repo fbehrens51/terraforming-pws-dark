@@ -61,30 +61,48 @@ network-properties:
     name: ${singleton_availability_zone}
 resource-config:
   healthwatch-forwarder:
-    instances: automatic
-    persistent_disk:
-      size_mb: automatic
+    max_in_flight: 1
+    additional_networks: []
+    additional_vm_extensions: []
+    elb_names: []
     instance_type:
       id: automatic
+    instances: automatic
     internet_connected: false
+    persistent_disk:
+      size_mb: automatic
+    swap_as_percent_of_memory_size: automatic
   mysql:
-    instances: automatic
-    persistent_disk:
-      size_mb: automatic
+    max_in_flight: 1
+    additional_networks: []
+    additional_vm_extensions: []
+    elb_names: []
     instance_type:
       id: automatic
+    instances: automatic
     internet_connected: false
+    persistent_disk:
+      size_mb: automatic
+    swap_as_percent_of_memory_size: automatic
   redis:
-    instances: automatic
-    persistent_disk:
-      size_mb: automatic
+    max_in_flight: 1
+    additional_networks: []
+    additional_vm_extensions: []
+    elb_names: []
     instance_type:
       id: automatic
+    instances: automatic
     internet_connected: false
+    persistent_disk:
+      size_mb: automatic
+    swap_as_percent_of_memory_size: automatic
 errand-config:
-  delete-space:
+  cleanup:
     pre-delete-state: true
   push-apps:
     post-deploy-state: true
   smoke-tests:
     post-deploy-state: true
+  validate-expected-metrics:
+    post-deploy-state: false
+
