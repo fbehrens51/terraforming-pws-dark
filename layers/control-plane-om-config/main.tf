@@ -86,9 +86,9 @@ module "splunk_ports" {
 }
 
 data "aws_network_interface" "ec2_vpce_eni" {
-  for_each=local.ec2_vpce_eni_ids
+  for_each = local.ec2_vpce_eni_ids
   filter {
-    name = "network-interface-id"
+    name   = "network-interface-id"
     values = [each.value]
   }
 }
@@ -104,7 +104,7 @@ module "om_config" {
   control_plane_vpc_dns                   = data.terraform_remote_state.paperwork.outputs.control_plane_vpc_dns
   control_plane_additional_reserved_ips   = local.ec2_vpce_subnet_ip_map
 
-volume_encryption_kms_key_arn = data.terraform_remote_state.paperwork.outputs.kms_key_arn
+  volume_encryption_kms_key_arn = data.terraform_remote_state.paperwork.outputs.kms_key_arn
 
   vpc_id       = local.vpc_id
   env_name     = var.env_name
@@ -245,8 +245,8 @@ locals {
   ec2_vpce_eni_ids = data.terraform_remote_state.bootstrap_control_plane.outputs.ec2_vpce_eni_ids
 
   ec2_vpce_subnet_ip_map = {
-      for eni in data.aws_network_interface.ec2_vpce_eni:
-      eni.subnet_id => eni.private_ip
+    for eni in data.aws_network_interface.ec2_vpce_eni :
+    eni.subnet_id => eni.private_ip
   }
 
 }

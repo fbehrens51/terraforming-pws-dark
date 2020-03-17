@@ -123,7 +123,7 @@ module "s3_archiver_user_data" {
   clamav_user_data = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
 
   s3_syslog_archive       = data.terraform_remote_state.bootstrap_splunk.outputs.s3_bucket_syslog_archive
-  s3_syslog_audit_archive       = data.terraform_remote_state.bootstrap_splunk.outputs.s3_bucket_syslog_audit_archive
+  s3_syslog_audit_archive = data.terraform_remote_state.bootstrap_splunk.outputs.s3_bucket_syslog_audit_archive
   user_accounts_user_data = data.terraform_remote_state.paperwork.outputs.user_accounts_user_data
   public_bucket_name      = local.public_bucket_name
   public_bucket_url       = local.public_bucket_url
@@ -162,14 +162,14 @@ module "indexers_user_data" {
 
   clamav_user_data = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
 
-  splunk_password      = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_password
-  splunk_rpm_version   = var.splunk_rpm_version
-  mirror_bucket_name   = local.mirror_bucket_name
-  region               = var.region
-  master_ip            = local.master_ip
-  public_bucket_name   = local.public_bucket_name
-  public_bucket_url    = local.public_bucket_url
-  banner_user_data     = data.terraform_remote_state.paperwork.outputs.custom_banner_user_data
+  splunk_password    = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_password
+  splunk_rpm_version = var.splunk_rpm_version
+  mirror_bucket_name = local.mirror_bucket_name
+  region             = var.region
+  master_ip          = local.master_ip
+  public_bucket_name = local.public_bucket_name
+  public_bucket_url  = local.public_bucket_url
+  banner_user_data   = data.terraform_remote_state.paperwork.outputs.custom_banner_user_data
 }
 
 module "splunk_indexers" {
@@ -205,13 +205,13 @@ module "master_user_data" {
 
   clamav_user_data = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
 
-  splunk_password      = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_password
-  splunk_rpm_version   = var.splunk_rpm_version
-  mirror_bucket_name   = local.mirror_bucket_name
-  region               = var.region
-  public_bucket_name   = local.public_bucket_name
-  public_bucket_url    = local.public_bucket_url
-  banner_user_data     = data.terraform_remote_state.paperwork.outputs.custom_banner_user_data
+  splunk_password    = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_password
+  splunk_rpm_version = var.splunk_rpm_version
+  mirror_bucket_name = local.mirror_bucket_name
+  region             = var.region
+  public_bucket_name = local.public_bucket_name
+  public_bucket_url  = local.public_bucket_url
+  banner_user_data   = data.terraform_remote_state.paperwork.outputs.custom_banner_user_data
 }
 
 module "splunk_master" {
@@ -248,14 +248,14 @@ module "search_head_user_data" {
 
   clamav_user_data = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
 
-  splunk_password      = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_password
-  splunk_rpm_version   = var.splunk_rpm_version
-  mirror_bucket_name   = local.mirror_bucket_name
-  region               = var.region
-  master_ip            = local.master_ip
-  public_bucket_name   = local.public_bucket_name
-  public_bucket_url    = local.public_bucket_url
-  banner_user_data     = data.terraform_remote_state.paperwork.outputs.custom_banner_user_data
+  splunk_password    = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_password
+  splunk_rpm_version = var.splunk_rpm_version
+  mirror_bucket_name = local.mirror_bucket_name
+  region             = var.region
+  master_ip          = local.master_ip
+  public_bucket_name = local.public_bucket_name
+  public_bucket_url  = local.public_bucket_url
+  banner_user_data   = data.terraform_remote_state.paperwork.outputs.custom_banner_user_data
 }
 
 module "splunk_search_head" {
