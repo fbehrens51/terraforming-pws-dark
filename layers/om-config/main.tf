@@ -195,14 +195,14 @@ module "om_config" {
   uaa_service_provider_key_credentials_private_key_pem = data.terraform_remote_state.paperwork.outputs.uaa_server_key
   apps_manager_global_wrapper_footer_content           = var.apps_manager_global_wrapper_footer_content
   apps_manager_global_wrapper_header_content           = var.apps_manager_global_wrapper_header_content
-  apps_manager_footer_text                             = var.apps_manager_footer_text
-  apps_manager_accent_color                            = var.apps_manager_accent_color
-  apps_manager_global_wrapper_text_color               = var.apps_manager_global_wrapper_text_color
-  apps_manager_company_name                            = var.apps_manager_company_name
-  apps_manager_global_wrapper_bg_color                 = var.apps_manager_global_wrapper_bg_color
-  apps_manager_favicon_file                            = var.apps_manager_favicon_file
-  apps_manager_square_logo_file                        = var.apps_manager_square_logo_file
-  apps_manager_main_logo_file                          = var.apps_manager_main_logo_file
+  apps_manager_footer_text                             = "VMWare, Inc. All rights reserved"
+  apps_manager_accent_color                            = "#172e3d"
+  apps_manager_global_wrapper_text_color               = "#172e3d"
+  apps_manager_company_name                            = "Tanzu Application Service"
+  apps_manager_global_wrapper_bg_color                 = "#172e3d"
+  apps_manager_favicon_file                            = "icons/apps_manager_favicon.png"
+  apps_manager_square_logo_file                        = "icons/apps_manager_square_logo.png"
+  apps_manager_main_logo_file                          = "icons/apps_manager_main_logo.png"
   apps_manager_tools_url                               = local.default_apps_manager_tools_url
 
   ntp_servers                                 = var.ntp_servers
@@ -281,7 +281,7 @@ module "om_config" {
 module "runtime_config_config" {
   source = "../../modules/runtime_config"
 
-  ipsec_log_level = var.ipsec_log_level
+  ipsec_log_level = "0"
 
   ipsec_subnet_cidrs    = local.ipsec_subnet_cidrs
   no_ipsec_subnet_cidrs = local.no_ipsec_subnet_cidrs
@@ -305,10 +305,10 @@ module "clamav_config" {
   bosh_network_name                = data.terraform_remote_state.paperwork.outputs.pas_network_name
   singleton_availability_zone      = var.singleton_availability_zone
   availability_zones               = data.terraform_remote_state.pas.outputs.pas_subnet_availability_zones
-  clamav_no_upstream_mirror        = var.clamav_no_upstream_mirror
+  clamav_no_upstream_mirror        = "false"
   clamav_external_mirrors          = var.clamav_external_mirrors
-  clamav_cpu_limit                 = var.clamav_cpu_limit
-  clamav_enable_on_access_scanning = var.clamav_enable_on_access_scanning
+  clamav_cpu_limit                 = "50"
+  clamav_enable_on_access_scanning = "false"
   clamav_mirror_instance_type      = var.clamav_mirror_instance_type
   mirror_bucket_name               = local.mirror_bucket_name
   s3_endpoint                      = var.s3_endpoint

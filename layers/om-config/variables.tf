@@ -37,30 +37,6 @@ variable "apps_manager_global_wrapper_footer_content" {
 variable "apps_manager_global_wrapper_header_content" {
 }
 
-variable "apps_manager_footer_text" {
-}
-
-variable "apps_manager_accent_color" {
-}
-
-variable "apps_manager_global_wrapper_text_color" {
-}
-
-variable "apps_manager_company_name" {
-}
-
-variable "apps_manager_global_wrapper_bg_color" {
-}
-
-variable "apps_manager_favicon_file" {
-}
-
-variable "apps_manager_square_logo_file" {
-}
-
-variable "apps_manager_main_logo_file" {
-}
-
 variable "env_name" {
 }
 
@@ -74,9 +50,6 @@ variable "elb_endpoint" {
 }
 
 variable "region" {
-}
-
-variable "ipsec_log_level" {
 }
 
 variable "ntp_servers" {
@@ -169,18 +142,6 @@ variable "tcp_router_instance_type" {
 
 variable "uaa_instance_type" {
   default = "automatic"
-}
-
-variable "clamav_cpu_limit" {
-  description = "The enforced CPU limit.  This value is in percentage, 0 up to 100."
-}
-
-variable "clamav_enable_on_access_scanning" {
-  description = "When set to true, the clamav add-on will scan files on access."
-}
-
-variable "clamav_no_upstream_mirror" {
-  description = "When set to true, the operator is required to initialize and update the virus definitions manually using SSH."
 }
 
 variable "clamav_external_mirrors" {

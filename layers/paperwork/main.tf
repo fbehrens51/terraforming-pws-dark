@@ -144,29 +144,23 @@ module "custom_banner_config" {
   public_bucket_url  = local.public_bucket_url
 }
 
-variable "user_accounts_user_data_path" {
-}
-
-variable "om_user_accounts_user_data_path" {
-}
-
 module "user_accounts_config" {
   source                  = "../../modules/cloud_init/user_accounts"
-  user_accounts_user_data = [file(var.user_accounts_user_data_path)]
+  user_accounts_user_data = [file("user_data.yml")]
   public_bucket_name      = aws_s3_bucket.public_bucket.bucket
   public_bucket_url       = local.public_bucket_url
 }
 
 module "om_user_accounts_config" {
   source                  = "../../modules/cloud_init/user_accounts"
-  user_accounts_user_data = [file(var.om_user_accounts_user_data_path), local.bot_user_data]
+  user_accounts_user_data = [file("om_user_data.yml"), local.bot_user_data]
   public_bucket_name      = aws_s3_bucket.public_bucket.bucket
   public_bucket_url       = local.public_bucket_url
 }
 
 module "bot_user_accounts_config" {
   source                  = "../../modules/cloud_init/user_accounts"
-  user_accounts_user_data = [file(var.user_accounts_user_data_path), local.bot_user_data]
+  user_accounts_user_data = [file("user_data.yml"), local.bot_user_data]
   public_bucket_name      = aws_s3_bucket.public_bucket.bucket
   public_bucket_url       = local.public_bucket_url
 }

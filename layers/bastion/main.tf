@@ -69,7 +69,7 @@ data "template_cloudinit_config" "user_data" {
   part {
     filename     = "other.cfg"
     content_type = "text/cloud-config"
-    content      = file(var.bastion_user_data_path)
+    content      = file("user_data.yml")
   }
 }
 
@@ -97,9 +97,6 @@ variable "remote_state_region" {
 }
 
 variable "remote_state_bucket" {
-}
-
-variable "bastion_user_data_path" {
 }
 
 variable "singleton_availability_zone" {

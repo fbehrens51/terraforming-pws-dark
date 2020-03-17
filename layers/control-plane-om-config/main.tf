@@ -179,7 +179,7 @@ volume_encryption_kms_key_arn = data.terraform_remote_state.paperwork.outputs.km
 module "runtime_config_config" {
   source = "../../modules/runtime_config"
 
-  ipsec_log_level = var.ipsec_log_level
+  ipsec_log_level = "0"
 
   ipsec_subnet_cidrs    = local.ipsec_subnet_cidrs
   no_ipsec_subnet_cidrs = local.no_ipsec_subnet_cidrs
@@ -203,10 +203,10 @@ module "clamav_config" {
   bosh_network_name                = data.terraform_remote_state.paperwork.outputs.control_plane_subnet_network_name
   singleton_availability_zone      = var.singleton_availability_zone
   availability_zones               = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_availability_zones
-  clamav_no_upstream_mirror        = var.clamav_no_upstream_mirror
+  clamav_no_upstream_mirror        = "false"
   clamav_external_mirrors          = var.clamav_external_mirrors
-  clamav_cpu_limit                 = var.clamav_cpu_limit
-  clamav_enable_on_access_scanning = var.clamav_enable_on_access_scanning
+  clamav_cpu_limit                 = "50"
+  clamav_enable_on_access_scanning = "false"
   clamav_mirror_instance_type      = var.clamav_mirror_instance_type
 
   mirror_bucket_name    = local.mirror_bucket_name

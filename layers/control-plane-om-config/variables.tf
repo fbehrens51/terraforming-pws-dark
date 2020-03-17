@@ -52,18 +52,6 @@ variable "availability_zones" {
   type = list(string)
 }
 
-variable "clamav_cpu_limit" {
-  description = "The enforced CPU limit.  This value is in percentage, 0 up to 100."
-}
-
-variable "clamav_enable_on_access_scanning" {
-  description = "When set to true, the clamav add-on will scan files on access."
-}
-
-variable "clamav_no_upstream_mirror" {
-  description = "When set to true, the operator is required to initialize and update the virus definitions manually using SSH."
-}
-
 variable "clamav_external_mirrors" {
   description = "This option is only relevant when `clamav_no_upstream_mirror` is set to false.  A list of external mirrors to use.  If empty, the official mirror will be used."
   type        = list(string)
@@ -71,10 +59,6 @@ variable "clamav_external_mirrors" {
 
 variable "clamav_mirror_instance_type" {
   default = "automatic"
-}
-
-
-variable "ipsec_log_level" {
 }
 
 variable "extra_user_name" {

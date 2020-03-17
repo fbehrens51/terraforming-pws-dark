@@ -199,7 +199,7 @@ module "master_user_data" {
   indexers_pass4SymmKey     = local.indexers_pass4SymmKey
   forwarders_pass4SymmKey   = local.forwarders_pass4SymmKey
   search_heads_pass4SymmKey = local.search_heads_pass4SymmKey
-  license_path              = var.license_path
+  license_path              = "splunk.license"
   user_accounts_user_data   = data.terraform_remote_state.paperwork.outputs.user_accounts_user_data
   root_domain               = local.root_domain
 
