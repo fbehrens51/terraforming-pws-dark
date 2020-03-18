@@ -299,6 +299,10 @@ output "rds_username" {
   value = module.rds.rds_username
 }
 
+output "rds_subnet_group_name" {
+  value = module.rds_subnet_group.subnet_group_name
+}
+
 output "ops_manager_bucket" {
   value = module.ops_manager.bucket
 }

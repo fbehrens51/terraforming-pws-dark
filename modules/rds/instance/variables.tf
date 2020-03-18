@@ -35,3 +35,10 @@ variable "subnet_group_name" {
 variable "kms_key_id" {
 }
 
+variable "parameter_group_name" {
+  default = null
+}
+
+variable "database_name" {
+  default = null
+}

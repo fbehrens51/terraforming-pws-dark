@@ -59,6 +59,10 @@ resource "aws_db_instance" "rds" {
   backup_retention_period = 7
   apply_immediately       = true
 
+  # Next to paramaters are optional, default to null in TF v0.12
+  parameter_group_name = var.parameter_group_name
+  name                 = var.database_name
+
   kms_key_id        = var.kms_key_id
   storage_encrypted = true
 
