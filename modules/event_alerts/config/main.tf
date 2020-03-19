@@ -74,13 +74,16 @@ variable "smtp_tls_skip_verify" {
   type = string
 }
 
+variable "smtp_enabled" {
+  type = string
+}
+
 data "template_file" "pas_vpc_azs" {
   count = length(var.availability_zones)
 
   template = <<EOF
 - name: $${availability_zone}
 EOF
-
 
   vars = {
     availability_zone = var.availability_zones[count.index]
@@ -102,6 +105,7 @@ data "template_file" "event_alerts_template" {
     mysql_ca_cert               = indent(6, var.mysql_ca_cert)
     mysql_use_tls               = var.mysql_use_tls
     mysql_tls_skip_verify       = var.mysql_tls_skip_verify
+    smtp_enabled                = var.smtp_enabled
     smtp_host                   = var.smtp_host
     smtp_username               = var.smtp_username
     smtp_password               = var.smtp_password

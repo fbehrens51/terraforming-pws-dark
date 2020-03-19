@@ -94,6 +94,7 @@ module "event_alerts_config" {
   mysql_use_tls         = "false"
   mysql_tls_skip_verify = "false"
 
+  smtp_enabled         = var.smtp_enabled
   smtp_host            = local.smtp_host
   smtp_username        = local.smtp_user
   smtp_password        = local.smtp_password
@@ -163,6 +164,9 @@ variable "rds_db_username" {
 }
 
 variable "rds_instance_class" {
+}
+
+variable "smtp_enabled" {
 }
 
 variable "smtp_from" {

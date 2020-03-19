@@ -28,6 +28,10 @@ product-properties:
   .properties.mysql.external.username:
     value: ${mysql_username}
   .properties.smtp_selector:
+%{ if smtp_enabled == "false" ~}
+    selected_option: disabled
+    value: Disabled
+%{ else ~}
     selected_option: enabled
     value: Enabled
   .properties.smtp_selector.enabled.smtp_address:
@@ -44,6 +48,7 @@ product-properties:
     value: ${smtp_port}
   .properties.smtp_selector.enabled.smtp_tls_enabled:
     value: ${smtp_tls_enabled}
+%{ endif ~}
 network-properties:
   network:
     name: ${bosh_network_name}
