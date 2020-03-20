@@ -380,7 +380,7 @@ locals {
   ]
   ec2_service_name = "${var.vpce_interface_prefix}${data.aws_region.current.name}.ec2"
 
-  director_role_name = data.terraform_remote_state.paperwork.outputs.director_role_name
+  director_role_name   = data.terraform_remote_state.paperwork.outputs.director_role_name
   transfer_kms_key_arn = data.terraform_remote_state.paperwork.outputs.transfer_key_arn
 }
 

@@ -124,8 +124,8 @@ output "terraform_region" {
   value = var.terraform_region
 }
 
-output "ec2_vpce_eni_ids"{
-  value=aws_vpc_endpoint.cp_ec2.network_interface_ids
+output "ec2_vpce_eni_ids" {
+  value = aws_vpc_endpoint.cp_ec2.network_interface_ids
 }
 
 
