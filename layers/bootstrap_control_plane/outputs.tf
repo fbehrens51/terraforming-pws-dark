@@ -104,6 +104,10 @@ output "transfer_bucket_name" {
   value = aws_s3_bucket.transfer_bucket.bucket
 }
 
+output "import_bucket_name" {
+  value = aws_s3_bucket.import_bucket.bucket
+}
+
 output "ops_manager_ip" {
   value = module.ops_manager.ip
 }

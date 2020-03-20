@@ -150,6 +150,18 @@ resource "aws_security_group" "vms_security_group" {
   )
 }
 
+resource "aws_s3_bucket" "import_bucket" {
+  bucket        = "${local.bucket_prefix}-import"
+  force_destroy = true
+
+  tags = merge(
+    var.tags,
+    {
+      "Name" = "${local.env_name} Import Bucket"
+    },
+  )
+}
+
 
 resource "aws_s3_bucket" "transfer_bucket" {
   bucket        = "${local.bucket_prefix}-transfer"
