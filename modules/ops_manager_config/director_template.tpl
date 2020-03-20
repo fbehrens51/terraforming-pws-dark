@@ -65,7 +65,7 @@ properties-configuration:
       connection_options: {}
       database: ${rds_database}
       host: ${rds_address}
-      port: ${rds_port}
+      port: "${rds_port}"
       tls_ca: |
         ${indent(8, rds_ca_cert)}
       tls_certificate: null
