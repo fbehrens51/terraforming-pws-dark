@@ -59,7 +59,7 @@ locals {
 
   smtp_host     = module.domains.smtp_fqdn
   smtp_port     = data.terraform_remote_state.bootstrap_postfix.outputs.smtp_client_port
-  smtp_user     = data.terraform_remote_state.bootstrap_postfix.outputs.smtp_client_user
+  smtp_user     = "${data.terraform_remote_state.bootstrap_postfix.outputs.smtp_client_user}@${local.root_domain}"
   smtp_password = data.terraform_remote_state.bootstrap_postfix.outputs.smtp_client_password
 
   env_name      = var.tags["Name"]
