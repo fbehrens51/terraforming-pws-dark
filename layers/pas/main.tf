@@ -193,6 +193,7 @@ module "ops_manager" {
   tags          = local.modified_tags
   vpc_id        = local.vpc_id
   ingress_rules = local.ingress_rules
+  s3_logs_bucket = local.s3_logs_bucket
 }
 
 resource "random_integer" "bucket" {
@@ -246,6 +247,7 @@ locals {
   bucket_suffix  = random_integer.bucket.result
   root_domain    = data.terraform_remote_state.paperwork.outputs.root_domain
   om_key_name    = "${var.env_name}-om"
+  s3_logs_bucket = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
 
   ingress_rules = [
     {

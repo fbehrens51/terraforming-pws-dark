@@ -69,6 +69,7 @@ module "ops_manager" {
   tags          = local.modified_tags
   vpc_id        = local.vpc_id
   ingress_rules = local.om_ingress_rules
+  s3_logs_bucket = local.s3_logs_bucket
 }
 
 module "public_subnets" {

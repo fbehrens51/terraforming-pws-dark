@@ -24,3 +24,5 @@ variable "ingress_rules" {
   type = list(object({ port = string, protocol = string, cidr_blocks = string }))
 }
 
+variable "s3_logs_bucket" {}
+
