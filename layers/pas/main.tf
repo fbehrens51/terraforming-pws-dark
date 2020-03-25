@@ -121,6 +121,7 @@ module "pas" {
   zone_id                   = module.infra.zone_id
   bucket_suffix             = local.bucket_suffix
   create_backup_pas_buckets = true
+  create_versioned_pas_buckets = true
   s3_logs_bucket            = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
 }
 

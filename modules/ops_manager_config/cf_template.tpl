@@ -345,7 +345,7 @@ product-properties:
   .properties.system_blobstore.external.signature_version:
     value: "4"
   .properties.system_blobstore.external.versioning:
-    value: false
+    value: true
   .properties.system_blobstore_ccdroplet_max_staged_droplets_stored:
     value: 2
   .properties.system_blobstore_ccpackage_max_valid_packages_stored:
