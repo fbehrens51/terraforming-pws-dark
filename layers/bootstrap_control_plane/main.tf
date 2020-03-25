@@ -154,6 +154,11 @@ resource "aws_s3_bucket" "import_bucket" {
   bucket        = "${local.bucket_prefix}-import"
   force_destroy = true
 
+  logging {
+    target_bucket = local.s3_logs_bucket
+    target_prefix = "log/"
+  }
+
   tags = merge(
     var.tags,
     {
@@ -173,6 +178,11 @@ resource "aws_s3_bucket" "transfer_bucket" {
         sse_algorithm     = "aws:kms"
       }
     }
+  }
+
+  logging {
+    target_bucket = local.s3_logs_bucket
+    target_prefix = "log/"
   }
 
   tags = merge(
@@ -207,6 +217,11 @@ resource "aws_s3_bucket_policy" "transfer_bucket_policy_attachement" {
 resource "aws_s3_bucket" "mirror_bucket" {
   bucket        = "${local.bucket_prefix}-mirror"
   force_destroy = true
+
+  logging {
+    target_bucket = local.s3_logs_bucket
+    target_prefix = "log/"
+  }
 
   tags = merge(
     var.tags,
@@ -344,6 +359,7 @@ data "aws_region" "current" {
 locals {
   bastion_vpc_id = data.terraform_remote_state.paperwork.outputs.bastion_vpc_id
   vpc_id         = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
+  s3_logs_bucket = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
   bucket_suffix  = random_integer.bucket.result
   om_key_name    = "${local.env_name}-cp-om"
   env_name       = var.tags["Name"]

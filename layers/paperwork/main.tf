@@ -14,6 +14,7 @@ data "aws_region" "current" {
 }
 
 locals {
+  bucket_prefix = "${replace(var.env_name, " ", "-")}"
   s3_service_name = "com.amazonaws.${data.aws_region.current.name}.s3"
   bot_user_data   = <<DOC
 #cloud-config
@@ -115,8 +116,22 @@ data "aws_iam_policy_document" "public_bucket_policy" {
   }
 }
 
+resource "aws_s3_bucket" "s3_logs_bucket" {
+  bucket        = "${local.bucket_prefix}-s3-logs"
+  acl    = "log-delivery-write"
+
+  tags = {
+    "Name" = "${var.env_name} S3 Logs Bucket"
+  }
+}
+
 resource "aws_s3_bucket" "public_bucket" {
-  bucket_prefix = "${replace(var.env_name, " ", "-")}-public-bucket"
+  bucket_prefix = "${local.bucket_prefix}-public-bucket"
+
+  logging {
+    target_bucket = aws_s3_bucket.s3_logs_bucket.bucket
+    target_prefix = "log/"
+  }
 }
 
 resource "aws_s3_bucket_policy" "public_bucket_policy_attachement" {
@@ -821,3 +836,6 @@ output "bot_private_key" {
   sensitive = true
 }
 
+output "s3_logs_bucket" {
+  value = aws_s3_bucket.s3_logs_bucket.bucket
+}

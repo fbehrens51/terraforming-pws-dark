@@ -46,6 +46,7 @@ locals {
   )
 
   dns_zone_name = data.terraform_remote_state.paperwork.outputs.root_domain
+  s3_logs_bucket = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
   public_subnet = data.terraform_remote_state.enterprise-services.outputs.public_subnet_ids[0]
 
   private_subnets            = data.terraform_remote_state.enterprise-services.outputs.private_subnet_ids
@@ -182,6 +183,11 @@ resource "aws_s3_bucket" "syslog_archive" {
       }
     }
   }
+
+  logging {
+    target_bucket = local.s3_logs_bucket
+    target_prefix = "log/"
+  }
 }
 
 resource "aws_s3_bucket" "syslog_audit_archive" {
@@ -195,6 +201,11 @@ resource "aws_s3_bucket" "syslog_audit_archive" {
         sse_algorithm = "aws:kms"
       }
     }
+  }
+
+  logging {
+    target_bucket = local.s3_logs_bucket
+    target_prefix = "log/"
   }
 }
 

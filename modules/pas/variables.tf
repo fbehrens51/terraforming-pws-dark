@@ -2,6 +2,9 @@ variable "env_name" {
   type = string
 }
 
+variable "s3_logs_bucket" {
+}
+
 variable "availability_zones" {
   type = list(string)
 }

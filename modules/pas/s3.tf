@@ -8,6 +8,11 @@ resource "aws_s3_bucket" "buildpacks_bucket" {
     enabled = var.create_versioned_pas_buckets
   }
 
+  logging {
+    target_bucket = var.s3_logs_bucket
+    target_prefix = "log/"
+  }
+
   tags = merge(
     var.tags,
     {
@@ -24,6 +29,11 @@ resource "aws_s3_bucket" "droplets_bucket" {
 
   versioning {
     enabled = var.create_versioned_pas_buckets
+  }
+
+  logging {
+    target_bucket = var.s3_logs_bucket
+    target_prefix = "log/"
   }
 
   tags = merge(
@@ -44,6 +54,11 @@ resource "aws_s3_bucket" "packages_bucket" {
     enabled = var.create_versioned_pas_buckets
   }
 
+  logging {
+    target_bucket = var.s3_logs_bucket
+    target_prefix = "log/"
+  }
+
   tags = merge(
     var.tags,
     {
@@ -62,12 +77,18 @@ resource "aws_s3_bucket" "resources_bucket" {
     enabled = var.create_versioned_pas_buckets
   }
 
+  logging {
+    target_bucket = var.s3_logs_bucket
+    target_prefix = "log/"
+  }
+
   tags = merge(
     var.tags,
     {
       "Name" = "Elastic Runtime S3 Resources Bucket"
     },
   )
+
 }
 
 # BBR Buckets
@@ -77,6 +98,11 @@ resource "aws_s3_bucket" "buildpacks_backup_bucket" {
   force_destroy = true
 
   count = var.create_backup_pas_buckets ? 1 : 0
+
+  logging {
+    target_bucket = var.s3_logs_bucket
+    target_prefix = "log/"
+  }
 
   tags = merge(
     var.tags,
@@ -92,6 +118,11 @@ resource "aws_s3_bucket" "droplets_backup_bucket" {
 
   count = var.create_backup_pas_buckets ? 1 : 0
 
+  logging {
+    target_bucket = var.s3_logs_bucket
+    target_prefix = "log/"
+  }
+
   tags = merge(
     var.tags,
     {
@@ -106,6 +137,11 @@ resource "aws_s3_bucket" "packages_backup_bucket" {
 
   count = var.create_backup_pas_buckets ? 1 : 0
 
+  logging {
+    target_bucket = var.s3_logs_bucket
+    target_prefix = "log/"
+  }
+
   tags = merge(
     var.tags,
     {
@@ -119,6 +155,11 @@ resource "aws_s3_bucket" "resources_backup_bucket" {
   force_destroy = true
 
   count = var.create_backup_pas_buckets ? 1 : 0
+
+  logging {
+    target_bucket = var.s3_logs_bucket
+    target_prefix = "log/"
+  }
 
   tags = merge(
     var.tags,
