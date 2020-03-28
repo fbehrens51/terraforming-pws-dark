@@ -232,10 +232,6 @@ variable "tags" {
   type = map(string)
 }
 
-variable "secrets_bucket_name" {
-  type = string
-}
-
 locals {
   env_name      = var.tags["Name"]
   modified_name = "${local.env_name} pas"
