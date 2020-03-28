@@ -43,6 +43,16 @@ variable "splunk_syslog_ca_cert" {
 variable "bosh_network_name" {
 }
 
+variable "secrets_bucket_name" {
+  type = string
+}
+
+variable "clamav_addon_config" {
+}
+
+variable "clamav_mirror_config" {
+}
+
 data "template_file" "pas_vpc_azs" {
   count = length(var.availability_zones)
 
@@ -81,12 +91,14 @@ data "template_file" "clamav_addon_template" {
   }
 }
 
-output "clamav_addon_template" {
-  value     = data.template_file.clamav_addon_template.rendered
-  sensitive = true
+resource "aws_s3_bucket_object" "clamav_addon_template" {
+  bucket  = var.secrets_bucket_name
+  key     = var.clamav_addon_config
+  content = data.template_file.clamav_addon_template.rendered
 }
 
-output "clamav_mirror_template" {
-  value     = data.template_file.clamav_mirror_template.rendered
-  sensitive = true
+resource "aws_s3_bucket_object" "clamav_mirror_template" {
+  bucket  = var.secrets_bucket_name
+  key     = var.clamav_mirror_config
+  content = data.template_file.clamav_mirror_template.rendered
 }

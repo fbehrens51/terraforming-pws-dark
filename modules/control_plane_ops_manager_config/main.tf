@@ -1,3 +1,25 @@
+locals {
+  om_syslog_conf = jsonencode({
+    "syslog" : {
+      "enabled" : true,
+      "address" : var.splunk_syslog_host,
+      "port" : var.splunk_syslog_port,
+      "transport_protocol" : "tcp",
+      "tls_enabled" : true,
+      "ssl_ca_certificate" : var.splunk_syslog_ca_cert,
+      "permitted_peer" : var.splunk_syslog_host,
+      "queue_size" : null,
+      "forward_debug_logs" : false
+    }
+  })
+  om_ssl_conf = jsonencode({
+    "ssl_certificate" : {
+      "certificate" : var.control_plane_om_server_cert,
+      "private_key" : var.control_plane_om_server_key
+    }
+  })
+  om_ssh_banner_conf = jsonencode({ "ssh_banner_contents" : var.custom_ssh_banner })
+}
 
 data "aws_vpc" "vpc" {
   id = var.vpc_id
@@ -155,4 +177,40 @@ data "template_file" "concourse_template" {
     postgres_ca_cert          = var.postgres_ca_cert
     users_to_add              = join("", data.template_file.users_to_add.*.rendered)
   }
+}
+
+resource "aws_s3_bucket_object" "om_create_db_config" {
+  bucket  = var.secrets_bucket_name
+  key     = var.om_create_db_config
+  content = data.template_file.create_db.rendered
+}
+
+resource "aws_s3_bucket_object" "om_ssh_banner_config" {
+  bucket  = var.secrets_bucket_name
+  key     = var.om_ssh_banner_config
+  content = local.om_ssh_banner_conf
+}
+
+resource "aws_s3_bucket_object" "om_ssl_config" {
+  bucket  = var.secrets_bucket_name
+  key     = var.om_ssl_config
+  content = local.om_ssl_conf
+}
+
+resource "aws_s3_bucket_object" "om_syslog_config" {
+  bucket  = var.secrets_bucket_name
+  key     = var.om_syslog_config
+  content = local.om_syslog_conf
+}
+
+resource "aws_s3_bucket_object" "director_template" {
+  bucket  = var.secrets_bucket_name
+  key     = var.director_config
+  content = data.template_file.director_template.rendered
+}
+
+resource "aws_s3_bucket_object" "concourse_template" {
+  bucket  = var.secrets_bucket_name
+  key     = var.concourse_config
+  content = data.template_file.concourse_template.rendered
 }

@@ -110,19 +110,19 @@ module "om_key_pair" {
 }
 
 module "pas" {
-  source                    = "../../modules/pas"
-  availability_zones        = var.availability_zones
-  dns_suffix                = ""
-  env_name                  = var.env_name
-  public_subnet_ids         = module.infra.public_subnet_ids
-  route_table_ids           = data.terraform_remote_state.routes.outputs.pas_private_vpc_route_table_ids
-  tags                      = local.modified_tags
-  vpc_id                    = local.vpc_id
-  zone_id                   = module.infra.zone_id
-  bucket_suffix             = local.bucket_suffix
-  create_backup_pas_buckets = false
+  source                       = "../../modules/pas"
+  availability_zones           = var.availability_zones
+  dns_suffix                   = ""
+  env_name                     = var.env_name
+  public_subnet_ids            = module.infra.public_subnet_ids
+  route_table_ids              = data.terraform_remote_state.routes.outputs.pas_private_vpc_route_table_ids
+  tags                         = local.modified_tags
+  vpc_id                       = local.vpc_id
+  zone_id                      = module.infra.zone_id
+  bucket_suffix                = local.bucket_suffix
+  create_backup_pas_buckets    = false
   create_versioned_pas_buckets = true
-  s3_logs_bucket            = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
+  s3_logs_bucket               = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
 }
 
 module "rds" {
@@ -186,14 +186,14 @@ data "aws_vpc" "bastion_vpc" {
 module "ops_manager" {
   source = "../../modules/ops_manager/infra"
 
-  bucket_suffix = local.bucket_suffix
-  env_name      = var.env_name
-  om_eip        = ! var.internetless
-  private       = false
-  subnet_id     = module.infra.public_subnet_ids[0]
-  tags          = local.modified_tags
-  vpc_id        = local.vpc_id
-  ingress_rules = local.ingress_rules
+  bucket_suffix  = local.bucket_suffix
+  env_name       = var.env_name
+  om_eip         = ! var.internetless
+  private        = false
+  subnet_id      = module.infra.public_subnet_ids[0]
+  tags           = local.modified_tags
+  vpc_id         = local.vpc_id
+  ingress_rules  = local.ingress_rules
   s3_logs_bucket = local.s3_logs_bucket
 }
 
@@ -232,6 +232,10 @@ variable "tags" {
   type = map(string)
 }
 
+variable "secrets_bucket_name" {
+  type = string
+}
+
 locals {
   env_name      = var.tags["Name"]
   modified_name = "${local.env_name} pas"
@@ -241,14 +245,15 @@ locals {
       "Name" = local.modified_name
     },
   )
-  cp_vpc_id      = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
-  bastion_vpc_id = data.terraform_remote_state.paperwork.outputs.bastion_vpc_id
-  vpc_id         = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
-  route_table_id = data.terraform_remote_state.routes.outputs.pas_public_vpc_route_table_id
-  bucket_suffix  = random_integer.bucket.result
-  root_domain    = data.terraform_remote_state.paperwork.outputs.root_domain
-  om_key_name    = "${var.env_name}-om"
-  s3_logs_bucket = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
+  secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
+  cp_vpc_id           = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
+  bastion_vpc_id      = data.terraform_remote_state.paperwork.outputs.bastion_vpc_id
+  vpc_id              = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
+  route_table_id      = data.terraform_remote_state.routes.outputs.pas_public_vpc_route_table_id
+  bucket_suffix       = random_integer.bucket.result
+  root_domain         = data.terraform_remote_state.paperwork.outputs.root_domain
+  om_key_name         = "${var.env_name}-om"
+  s3_logs_bucket      = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
 
   ingress_rules = [
     {

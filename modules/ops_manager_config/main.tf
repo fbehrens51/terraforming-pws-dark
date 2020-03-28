@@ -1,5 +1,25 @@
 locals {
-  pas_subnet_cidr     = var.pas_subnet_cidrs[0]
+  pas_subnet_cidr = var.pas_subnet_cidrs[0]
+  om_syslog_conf = jsonencode({
+    "syslog" : {
+      "enabled" : true,
+      "address" : var.splunk_syslog_host,
+      "port" : var.splunk_syslog_port,
+      "transport_protocol" : "tcp",
+      "tls_enabled" : true,
+      "ssl_ca_certificate" : var.splunk_syslog_ca_cert,
+      "permitted_peer" : var.splunk_syslog_host,
+      "queue_size" : null,
+      "forward_debug_logs" : false
+    }
+  })
+  om_ssl_conf = jsonencode({
+    "ssl_certificate" : {
+      "certificate" : var.om_server_cert,
+      "private_key" : var.om_server_key
+    }
+  })
+  om_ssh_banner_conf = jsonencode({ "ssh_banner_contents" : var.custom_ssh_banner })
 }
 
 data "template_file" "pas_vpc_azs" {
@@ -8,7 +28,6 @@ data "template_file" "pas_vpc_azs" {
   template = <<EOF
 - name: $${pas_subnet_availability_zone}
 EOF
-
 
   vars = {
     pas_subnet_availability_zone = var.pas_subnet_availability_zones[count.index]
@@ -258,4 +277,58 @@ data "template_file" "drop_db" {
     rds_password = var.rds_password
     rds_username = var.rds_username
   }
+}
+
+resource "aws_s3_bucket_object" "om_drop_db_config" {
+  bucket  = var.secrets_bucket_name
+  key     = var.om_drop_db_config
+  content = data.template_file.drop_db.rendered
+}
+
+resource "aws_s3_bucket_object" "om_create_db_config" {
+  bucket  = var.secrets_bucket_name
+  key     = var.om_create_db_config
+  content = data.template_file.create_db.rendered
+}
+
+resource "aws_s3_bucket_object" "om_ssh_banner_config" {
+  bucket  = var.secrets_bucket_name
+  key     = var.om_ssh_banner_config
+  content = local.om_ssh_banner_conf
+}
+
+resource "aws_s3_bucket_object" "om_ssl_config" {
+  bucket  = var.secrets_bucket_name
+  key     = var.om_ssl_config
+  content = local.om_ssl_conf
+}
+
+resource "aws_s3_bucket_object" "om_syslog_config" {
+  bucket  = var.secrets_bucket_name
+  key     = var.om_syslog_config
+  content = local.om_syslog_conf
+}
+
+resource "aws_s3_bucket_object" "portal_template" {
+  bucket  = var.secrets_bucket_name
+  key     = var.portal_config
+  content = data.template_file.portal_template.rendered
+}
+
+resource "aws_s3_bucket_object" "director_template" {
+  bucket  = var.secrets_bucket_name
+  key     = var.director_config
+  content = local.director_template
+}
+
+resource "aws_s3_bucket_object" "cf_tools_template" {
+  bucket  = var.secrets_bucket_name
+  key     = var.cf_tools_config
+  content = data.template_file.cf_tools_template.rendered
+}
+
+resource "aws_s3_bucket_object" "cf_template" {
+  bucket  = var.secrets_bucket_name
+  key     = var.cf_config
+  content = data.template_file.cf_template.rendered
 }

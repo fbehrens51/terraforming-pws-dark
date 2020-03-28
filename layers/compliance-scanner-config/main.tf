@@ -16,6 +16,10 @@ variable "ntp_servers" {
   type = list(string)
 }
 
+variable "compliance_scanner_config" {
+  default = "pas/compliance_scanner_config.yml"
+}
+
 terraform {
   backend "s3" {
   }
@@ -43,11 +47,14 @@ module "splunk_ports" {
 }
 
 locals {
-  root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
+  root_domain         = data.terraform_remote_state.paperwork.outputs.root_domain
+  secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
 }
 
 module "compliance_scanner_config" {
   source                      = "../../modules/compliance-scanner/config"
+  secrets_bucket_name         = local.secrets_bucket_name
+  compliance_scanner_config   = var.compliance_scanner_config
   network_name                = data.terraform_remote_state.paperwork.outputs.pas_network_name
   availability_zones          = var.availability_zones
   singleton_availability_zone = var.singleton_availability_zone
@@ -57,9 +64,3 @@ module "compliance_scanner_config" {
   splunk_syslog_ca_cert       = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
   custom_ssh_banner           = data.terraform_remote_state.paperwork.outputs.custom_ssh_banner
 }
-
-output "compliance_scanner_config" {
-  value     = module.compliance_scanner_config.compliance_scanner_config
-  sensitive = true
-}
-

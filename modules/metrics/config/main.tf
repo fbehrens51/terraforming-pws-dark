@@ -18,13 +18,18 @@ variable "splunk_syslog_ca_cert" {
 variable "bosh_network_name" {
 }
 
+variable "secrets_bucket_name" {
+}
+
+variable "metrics_config" {
+}
+
 data "template_file" "pas_vpc_azs" {
   count = length(var.availability_zones)
 
   template = <<EOF
 - name: $${availability_zone}
 EOF
-
 
   vars = {
     availability_zone = var.availability_zones[count.index]
@@ -44,8 +49,8 @@ data "template_file" "metrics_template" {
   }
 }
 
-output "metrics_config" {
-  value     = data.template_file.metrics_template.rendered
-  sensitive = true
+resource "aws_s3_bucket_object" "metrics_template" {
+  bucket  = var.secrets_bucket_name
+  key     = var.metrics_config
+  content = data.template_file.metrics_template.rendered
 }
-

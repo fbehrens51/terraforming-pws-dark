@@ -40,6 +40,12 @@ variable "singleton_availability_zone" {
   type = string
 }
 
+variable "secrets_bucket_name" {
+}
+
+variable "isolation_segment_config" {
+}
+
 data "template_file" "pas_vpc_azs" {
   count = length(var.pas_subnet_availability_zones)
 
@@ -85,7 +91,8 @@ data "template_file" "tile_config" {
   }
 }
 
-output "tile_config" {
-  value = data.template_file.tile_config.rendered
+resource "aws_s3_bucket_object" "isolation_segment_template" {
+  bucket  = var.secrets_bucket_name
+  key     = var.isolation_segment_config
+  content = data.template_file.tile_config.rendered
 }
-

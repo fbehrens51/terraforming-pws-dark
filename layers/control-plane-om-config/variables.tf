@@ -81,3 +81,43 @@ variable "concourse_users" {
   type        = list(string)
 }
 
+variable "om_create_db_config" {
+  description = "om create_db configuration file"
+  default     = "control_plane/om_create_db_config.bash"
+}
+
+variable "om_syslog_config" {
+  description = "om syslog configuration file"
+  default     = "control_plane/om_syslog_config.json"
+}
+
+variable "om_ssl_config" {
+  description = "om ssl configuration file"
+  default     = "control_plane/om_ssl_config.json"
+}
+
+variable "om_ssh_banner_config" {
+  description = "om ssh_banner configuration file"
+  default     = "control_plane/om_ssh_banner_config.json"
+}
+
+variable "director_config" {
+  default = "control_plane/director_config.yml"
+}
+
+variable "concourse_config" {
+  default = "control_plane/concourse_config.yml"
+}
+
+variable "runtime_config" {
+  default = "control_plane/runtime_config.yml"
+}
+
+variable "clamav_addon_config" {
+  default = "control_plane/clamav_addon_config.yml"
+}
+
+variable "clamav_mirror_config" {
+  default = "control_plane/clamav_mirror_config.yml"
+}
+

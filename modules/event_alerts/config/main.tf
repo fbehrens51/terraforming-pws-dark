@@ -78,6 +78,13 @@ variable "smtp_enabled" {
   type = string
 }
 
+variable "secrets_bucket_name" {
+  type = string
+}
+
+variable "event_alerts_config" {
+}
+
 data "template_file" "pas_vpc_azs" {
   count = length(var.availability_zones)
 
@@ -116,8 +123,8 @@ data "template_file" "event_alerts_template" {
   }
 }
 
-output "event_alerts_config" {
-  value     = data.template_file.event_alerts_template.rendered
-  sensitive = true
+resource "aws_s3_bucket_object" "event_alerts_template" {
+  bucket  = var.secrets_bucket_name
+  key     = var.event_alerts_config
+  content = data.template_file.event_alerts_template.rendered
 }
-

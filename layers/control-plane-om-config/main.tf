@@ -55,7 +55,8 @@ data "aws_region" "current" {
 }
 
 locals {
-  mirror_bucket_name = data.terraform_remote_state.bootstrap_control_plane.outputs.mirror_bucket_name
+  mirror_bucket_name  = data.terraform_remote_state.bootstrap_control_plane.outputs.mirror_bucket_name
+  secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
 
   smtp_host     = module.domains.smtp_fqdn
   smtp_port     = data.terraform_remote_state.bootstrap_postfix.outputs.smtp_client_port
@@ -96,6 +97,12 @@ data "aws_network_interface" "ec2_vpce_eni" {
 module "om_config" {
   source = "../../modules/control_plane_ops_manager_config"
 
+  secrets_bucket_name                     = local.secrets_bucket_name
+  director_config                         = var.director_config
+  concourse_config                        = var.concourse_config
+  om_syslog_config                        = var.om_syslog_config
+  om_ssl_config                           = var.om_ssl_config
+  om_ssh_banner_config                    = var.om_ssh_banner_config
   control_plane_subnet_ids                = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_ids
   vms_security_group_id                   = data.terraform_remote_state.bootstrap_control_plane.outputs.vms_security_group_id
   control_plane_subnet_availability_zones = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_availability_zones
@@ -105,6 +112,9 @@ module "om_config" {
   control_plane_additional_reserved_ips   = local.ec2_vpce_subnet_ip_map
 
   volume_encryption_kms_key_arn = data.terraform_remote_state.paperwork.outputs.kms_key_arn
+
+  control_plane_om_server_cert = data.terraform_remote_state.paperwork.outputs.control_plane_om_server_cert
+  control_plane_om_server_key  = data.terraform_remote_state.paperwork.outputs.control_plane_om_server_key
 
   vpc_id       = local.vpc_id
   env_name     = var.env_name
@@ -181,6 +191,8 @@ module "runtime_config_config" {
 
   ipsec_log_level = "0"
 
+  secrets_bucket_name   = local.secrets_bucket_name
+  runtime_config        = var.runtime_config
   ipsec_subnet_cidrs    = local.ipsec_subnet_cidrs
   no_ipsec_subnet_cidrs = local.no_ipsec_subnet_cidrs
 
@@ -200,6 +212,9 @@ module "runtime_config_config" {
 module "clamav_config" {
   source = "../../modules/clamav"
 
+  secrets_bucket_name              = local.secrets_bucket_name
+  clamav_addon_config              = var.clamav_addon_config
+  clamav_mirror_config             = var.clamav_mirror_config
   bosh_network_name                = data.terraform_remote_state.paperwork.outputs.control_plane_subnet_network_name
   singleton_availability_zone      = var.singleton_availability_zone
   availability_zones               = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_availability_zones

@@ -29,6 +29,12 @@ variable "splunk_syslog_port" {
 variable "splunk_syslog_ca_cert" {
 }
 
+variable "secrets_bucket_name" {
+}
+
+variable "healthwatch_config" {
+}
+
 data "template_file" "hw_vpc_azs" {
   count = length(var.availability_zones)
 
@@ -64,7 +70,8 @@ data "template_file" "healthwatch_config" {
   }
 }
 
-output "healthwatch_config" {
-  value = data.template_file.healthwatch_config.rendered
+resource "aws_s3_bucket_object" "healthwatch_template" {
+  bucket  = var.secrets_bucket_name
+  key     = var.healthwatch_config
+  content = data.template_file.healthwatch_config.rendered
 }
-

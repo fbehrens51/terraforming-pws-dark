@@ -20,6 +20,12 @@ variable "availability_zones" {
 variable "singleton_availability_zone" {
 }
 
+variable "secrets_bucket_name" {
+}
+
+variable "splunk_config" {
+}
+
 data "template_file" "firehose_config" {
   template = file("${path.module}/splunk_config.tpl")
 
@@ -36,8 +42,8 @@ data "template_file" "firehose_config" {
   }
 }
 
-output "firehose_config" {
-  value     = data.template_file.firehose_config.rendered
-  sensitive = true
+resource "aws_s3_bucket_object" "splunk_template" {
+  bucket  = var.secrets_bucket_name
+  key     = var.splunk_config
+  content = data.template_file.firehose_config.rendered
 }
-

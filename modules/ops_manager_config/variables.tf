@@ -367,6 +367,42 @@ variable "apps_manager_tools_url" {
 # Infrastructure Configuration
 # ========================
 
+variable "secrets_bucket_name" {
+}
+
+variable "om_create_db_config" {
+}
+
+variable "om_drop_db_config" {
+}
+
+variable "om_syslog_config" {
+}
+
+variable "om_ssl_config" {
+}
+
+variable "om_ssh_banner_config" {
+}
+
+variable "om_server_cert" {
+}
+
+variable "om_server_key" {
+}
+
+variable "cf_config" {
+}
+
+variable "cf_tools_config" {
+}
+
+variable "director_config" {
+}
+
+variable "portal_config" {
+}
+
 variable "singleton_availability_zone" {
   type = string
 }

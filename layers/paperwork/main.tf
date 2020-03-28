@@ -527,6 +527,10 @@ data "aws_s3_bucket_object" "portal_smoke_test_key" {
   key    = var.portal_smoke_test_key_s3_path
 }
 
+output "secrets_bucket_name" {
+  value = var.cert_bucket
+}
+
 output "pas_network_name" {
   value = "pas"
 }

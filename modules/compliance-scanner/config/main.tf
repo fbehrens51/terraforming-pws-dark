@@ -24,6 +24,13 @@ variable "splunk_syslog_ca_cert" {
 variable "custom_ssh_banner" {
 }
 
+variable "secrets_bucket_name" {
+  type = string
+}
+
+variable "compliance_scanner_config" {
+}
+
 data "template_file" "compliance_scanner_config" {
   template = file("${path.module}/compliance_scanner_config.tpl")
 
@@ -41,8 +48,8 @@ data "template_file" "compliance_scanner_config" {
   }
 }
 
-output "compliance_scanner_config" {
-  value     = data.template_file.compliance_scanner_config.rendered
-  sensitive = true
+resource "aws_s3_bucket_object" "compliance_scanner_template" {
+  bucket  = var.secrets_bucket_name
+  key     = var.compliance_scanner_config
+  content = data.template_file.compliance_scanner_config.rendered
 }
-

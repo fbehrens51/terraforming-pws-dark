@@ -41,8 +41,9 @@ module "providers" {
 }
 
 locals {
-  mirror_bucket   = data.terraform_remote_state.bootstrap_control_plane.outputs.mirror_bucket_name
-  hyphenated_name = lower(replace(var.name, " ", "-"))
+  mirror_bucket       = data.terraform_remote_state.bootstrap_control_plane.outputs.mirror_bucket_name
+  secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
+  hyphenated_name     = lower(replace(var.name, " ", "-"))
 }
 
 module "domains" {
@@ -58,8 +59,10 @@ module "splunk_ports" {
 module "config" {
   source = "../../modules/isolation_segment_config"
 
-  iso_seg_name        = var.name
-  iso_seg_tile_suffix = local.hyphenated_name
+  iso_seg_name             = var.name
+  iso_seg_tile_suffix      = local.hyphenated_name
+  secrets_bucket_name      = local.secrets_bucket_name
+  isolation_segment_config = "pas/${lower(replace(var.name, " ", "_"))}_isolation_segment_config.yml"
 
   vanity_cert_enabled    = var.vanity_cert_enabled
   vanity_cert_pem        = data.terraform_remote_state.paperwork.outputs.vanity_server_cert
@@ -76,5 +79,3 @@ module "config" {
   splunk_syslog_port    = module.splunk_ports.splunk_tcp_port
   splunk_syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
 }
-
-

@@ -15,6 +15,10 @@ variable "singleton_availability_zone" {
 variable "env_name" {
 }
 
+variable "healthwatch_config" {
+  default = "pas/healthwatch_config.yml"
+}
+
 terraform {
   backend "s3" {
   }
@@ -68,12 +72,15 @@ module "splunk_ports" {
 }
 
 locals {
-  root_domain  = data.terraform_remote_state.paperwork.outputs.root_domain
-  api_endpoint = "https://api.${module.domains.system_fqdn}"
+  root_domain         = data.terraform_remote_state.paperwork.outputs.root_domain
+  secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
+  api_endpoint        = "https://api.${module.domains.system_fqdn}"
 }
 
 module "healthwatch_config" {
   source                         = "../../modules/healthwatch/config"
+  secrets_bucket_name            = local.secrets_bucket_name
+  healthwatch_config             = var.healthwatch_config
   om_url                         = "https://${module.domains.om_fqdn}"
   network_name                   = data.terraform_remote_state.paperwork.outputs.pas_network_name
   availability_zones             = var.availability_zones
@@ -90,11 +97,6 @@ module "healthwatch_config" {
 resource "random_string" "healthwatch_client_credentials_secret" {
   length  = "32"
   special = false
-}
-
-output "healthwatch_config" {
-  value     = module.healthwatch_config.healthwatch_config
-  sensitive = true
 }
 
 output "healthwatch_client_credentials_secret" {

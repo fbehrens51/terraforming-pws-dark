@@ -142,6 +142,33 @@ variable "smtp_port" {
 # Infrastructure Configuration
 # ========================
 
+variable "secrets_bucket_name" {
+}
+
+variable "director_config" {
+}
+
+variable "concourse_config" {
+}
+
+variable "om_create_db_config" {
+}
+
+variable "om_syslog_config" {
+}
+
+variable "om_ssl_config" {
+}
+
+variable "om_ssh_banner_config" {
+}
+
+variable "control_plane_om_server_cert" {
+}
+
+variable "control_plane_om_server_key" {
+}
+
 variable "singleton_availability_zone" {
   type = string
 }
@@ -225,4 +252,4 @@ variable "mysql_password" {
 variable "mysql_ca_cert" {
 }
 
-variable "control_plane_additional_reserved_ips" { type=map(string)}
+variable "control_plane_additional_reserved_ips" { type = map(string) }

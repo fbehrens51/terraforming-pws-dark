@@ -169,3 +169,63 @@ variable "extra_user_sudo" {
   default     = false
 }
 
+variable "om_create_db_config" {
+  description = "om create_db configuration file"
+  default     = "pas/om_create_db_config.bash"
+}
+
+variable "om_drop_db_config" {
+  description = "om drop_db configuration file"
+  default     = "pas/om_drop_db_config.bash"
+}
+
+variable "om_syslog_config" {
+  description = "om syslog configuration file"
+  default     = "pas/om_syslog_config.json"
+}
+
+variable "om_ssl_config" {
+  description = "om ssl configuration file"
+  default     = "pas/om_ssl_config.json"
+}
+
+variable "om_ssh_banner_config" {
+  description = "om ssh_banner configuration file"
+  default     = "pas/om_ssh_banner_config.json"
+}
+
+variable "cf_config" {
+  description = "cf configuration file"
+  default     = "pas/cf_config.yml"
+}
+
+variable "cf_tools_config" {
+  description = "cf_tools tile configuration file"
+  default     = "pas/cf_tools_config.yml"
+}
+
+variable "director_config" {
+  description = "bosh director configuration file"
+  default     = "pas/director_config.yml"
+}
+
+variable "portal_config" {
+  description = "portal configuration file"
+  default     = "pas/portal_config.yml"
+}
+
+variable "runtime_config" {
+  description = "runtime configuration file"
+  default     = "pas/runtime_config.yml"
+}
+
+variable "clamav_addon_config" {
+  description = "clamav addon configuration file"
+  default     = "pas/clamav_addon_config.yml"
+}
+
+variable "clamav_mirror_config" {
+  description = "clamav mirror configuration file"
+  default     = "pas/clamav_mirror_config.yml"
+}
+

@@ -69,7 +69,8 @@ data "aws_region" "current" {
 }
 
 locals {
-  mirror_bucket_name = data.terraform_remote_state.bootstrap_control_plane.outputs.mirror_bucket_name
+  mirror_bucket_name  = data.terraform_remote_state.bootstrap_control_plane.outputs.mirror_bucket_name
+  secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
 
   smtp_host     = module.domains.smtp_fqdn
   smtp_port     = data.terraform_remote_state.bootstrap_postfix.outputs.smtp_client_port
@@ -128,12 +129,20 @@ data "aws_subnet" "isolation_segment_subnets" {
 module "om_config" {
   source = "../../modules/ops_manager_config"
 
-  pas_vpc_dns  = local.vpc_dns
-  env_name     = var.env_name
-  region       = data.aws_region.current.name
-  s3_endpoint  = var.s3_endpoint
-  ec2_endpoint = var.ec2_endpoint
-  elb_endpoint = var.elb_endpoint
+  secrets_bucket_name  = local.secrets_bucket_name
+  cf_config            = var.cf_config
+  cf_tools_config      = var.cf_tools_config
+  director_config      = var.director_config
+  portal_config        = var.portal_config
+  om_syslog_config     = var.om_syslog_config
+  om_ssl_config        = var.om_ssl_config
+  om_ssh_banner_config = var.om_ssh_banner_config
+  pas_vpc_dns          = local.vpc_dns
+  env_name             = var.env_name
+  region               = data.aws_region.current.name
+  s3_endpoint          = var.s3_endpoint
+  ec2_endpoint         = var.ec2_endpoint
+  elb_endpoint         = var.elb_endpoint
 
   volume_encryption_kms_key_arn = data.terraform_remote_state.paperwork.outputs.kms_key_arn
 
@@ -153,6 +162,9 @@ module "om_config" {
   singleton_availability_zone         = var.singleton_availability_zone
   system_domain                       = data.terraform_remote_state.paperwork.outputs.system_domain
   apps_domain                         = data.terraform_remote_state.paperwork.outputs.apps_domain
+
+  om_server_cert = data.terraform_remote_state.paperwork.outputs.om_server_cert
+  om_server_key  = data.terraform_remote_state.paperwork.outputs.om_server_key
 
   password_policies_max_retry            = 5
   password_policies_expires_after_months = 0
@@ -283,6 +295,8 @@ module "runtime_config_config" {
 
   ipsec_log_level = "0"
 
+  secrets_bucket_name   = local.secrets_bucket_name
+  runtime_config        = var.runtime_config
   ipsec_subnet_cidrs    = local.ipsec_subnet_cidrs
   no_ipsec_subnet_cidrs = local.no_ipsec_subnet_cidrs
 
@@ -302,6 +316,9 @@ module "runtime_config_config" {
 module "clamav_config" {
   source = "../../modules/clamav"
 
+  secrets_bucket_name              = local.secrets_bucket_name
+  clamav_addon_config              = var.clamav_addon_config
+  clamav_mirror_config             = var.clamav_mirror_config
   bosh_network_name                = data.terraform_remote_state.paperwork.outputs.pas_network_name
   singleton_availability_zone      = var.singleton_availability_zone
   availability_zones               = data.terraform_remote_state.pas.outputs.pas_subnet_availability_zones

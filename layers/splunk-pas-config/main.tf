@@ -12,6 +12,10 @@ variable "availability_zones" {
 variable "singleton_availability_zone" {
 }
 
+variable "splunk_config" {
+  default = "pas/splunk_config.yml"
+}
+
 terraform {
   backend "s3" {
   }
@@ -41,12 +45,15 @@ data "terraform_remote_state" "bootstrap_splunk" {
 
 locals {
   api_endpoint                = "https://api.${data.terraform_remote_state.paperwork.outputs.system_domain}"
+  secrets_bucket_name         = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
   splunk_http_collector_url   = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_http_collector_url
   splunk_http_collector_token = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_http_collector_token
 }
 
 module "firehose_config" {
   source                      = "../../modules/splunk/firehose-nozzle_config"
+  secrets_bucket_name         = local.secrets_bucket_name
+  splunk_config               = var.splunk_config
   api_endpoint                = local.api_endpoint
   splunk_url                  = local.splunk_http_collector_url
   splunk_token                = local.splunk_http_collector_token
@@ -55,9 +62,3 @@ module "firehose_config" {
   availability_zones          = var.availability_zones
   singleton_availability_zone = var.singleton_availability_zone
 }
-
-output "firehose_config" {
-  value     = module.firehose_config.firehose_config
-  sensitive = true
-}
-

@@ -48,7 +48,8 @@ locals {
   rds_engine_version = "10.3"
   database_name      = "alerts"
 
-  root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
+  root_domain         = data.terraform_remote_state.paperwork.outputs.root_domain
+  secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
 
   pas_network_name = data.terraform_remote_state.paperwork.outputs.pas_network_name
   rds_ca_cert_pem  = data.terraform_remote_state.paperwork.outputs.rds_ca_cert
@@ -80,6 +81,8 @@ module "domains" {
 module "event_alerts_config" {
   source = "../../modules/event_alerts/config"
 
+  secrets_bucket_name         = local.secrets_bucket_name
+  event_alerts_config         = var.event_alerts_config
   bosh_network_name           = local.pas_network_name
   availability_zones          = var.availability_zones
   singleton_availability_zone = var.singleton_availability_zone
@@ -172,6 +175,10 @@ variable "smtp_enabled" {
 variable "smtp_from" {
 }
 
+variable "event_alerts_config" {
+  default = "pas/event_alerts_config.yml"
+}
+
 output "rds_address" {
   value = module.rds.rds_address
 }
@@ -187,9 +194,4 @@ output "rds_port" {
 
 output "rds_username" {
   value = module.rds.rds_username
-}
-
-output "event_alerts_config" {
-  value     = module.event_alerts_config.event_alerts_config
-  sensitive = true
 }
