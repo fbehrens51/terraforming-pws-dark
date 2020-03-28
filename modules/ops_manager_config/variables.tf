@@ -374,6 +374,7 @@ variable "om_create_db_config" {
 }
 
 variable "om_drop_db_config" {
+  default = null
 }
 
 variable "om_syslog_config" {

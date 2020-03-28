@@ -134,6 +134,8 @@ module "om_config" {
   cf_tools_config      = var.cf_tools_config
   director_config      = var.director_config
   portal_config        = var.portal_config
+  om_create_db_config  = var.om_create_db_config
+  om_drop_db_config    = var.om_drop_db_config
   om_syslog_config     = var.om_syslog_config
   om_ssl_config        = var.om_ssl_config
   om_ssh_banner_config = var.om_ssh_banner_config

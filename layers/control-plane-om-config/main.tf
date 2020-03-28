@@ -100,6 +100,7 @@ module "om_config" {
   secrets_bucket_name                     = local.secrets_bucket_name
   director_config                         = var.director_config
   concourse_config                        = var.concourse_config
+  om_create_db_config                     = var.om_create_db_config
   om_syslog_config                        = var.om_syslog_config
   om_ssl_config                           = var.om_ssl_config
   om_ssh_banner_config                    = var.om_ssh_banner_config
