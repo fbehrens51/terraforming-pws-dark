@@ -1,0 +1,13 @@
+= Bootstrapping Concourse for a new Env
+
+=== Prerequisites
+
+* Stage all artifacts in the transfer bucket
+* Run terragrunt to provision infrastructure
+* Setup your SSH config according to the team conventions. e.g. ssh <env>_om should get you to the PAS ops manager.
+
+=== Steps
+
+1. Run `pcf-eagle-automation/scripts/utils/bootstrap-concourse.sh`. See the output of that script for usage instructions.
+2. At this point you should have a running concourse at https://plane.ci.<domain>.
+3. Set the pipeline from pcf-eagle-automation with appropriate variables, and the pipeline will begin importing artifacts from the transfer bucket.
