@@ -61,14 +61,14 @@ data "aws_vpc" "vpc" {
 module "ops_manager" {
   source = "../../modules/ops_manager/infra"
 
-  bucket_suffix = local.bucket_suffix
-  env_name      = local.env_name
-  om_eip        = ! var.internetless
-  private       = false
-  subnet_id     = module.public_subnets.subnet_ids[0]
-  tags          = local.modified_tags
-  vpc_id        = local.vpc_id
-  ingress_rules = local.om_ingress_rules
+  bucket_suffix  = local.bucket_suffix
+  env_name       = local.env_name
+  om_eip         = ! var.internetless
+  private        = false
+  subnet_id      = module.public_subnets.subnet_ids[0]
+  tags           = local.modified_tags
+  vpc_id         = local.vpc_id
+  ingress_rules  = local.om_ingress_rules
   s3_logs_bucket = local.s3_logs_bucket
 }
 

@@ -55,7 +55,6 @@ data "aws_region" "current" {
 }
 
 locals {
-  mirror_bucket_name  = data.terraform_remote_state.bootstrap_control_plane.outputs.mirror_bucket_name
   secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
 
   smtp_host     = module.domains.smtp_fqdn
@@ -223,7 +222,6 @@ module "clamav_config" {
   clamav_enable_on_access_scanning = "false"
   clamav_mirror_instance_type      = var.clamav_mirror_instance_type
 
-  mirror_bucket_name    = local.mirror_bucket_name
   s3_endpoint           = var.s3_endpoint
   region                = var.region
   splunk_syslog_host    = module.domains.splunk_logs_fqdn
