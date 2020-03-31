@@ -67,13 +67,13 @@ module "domains" {
 }
 
 module "paperwork" {
-  source                = "./modules/paperwork"
-  bucket_role_name      = var.pas_bucket_role_name
-  worker_role_name      = var.platform_automation_engine_worker_role_name
-  director_role_name    = var.director_role_name
-  splunk_role_name      = var.splunk_role_name
-  archive_role_name     = var.archive_role_name
-  ldap_eip              = aws_eip.ldap_eip.public_ip
+  source             = "./modules/paperwork"
+  bucket_role_name   = var.pas_bucket_role_name
+  worker_role_name   = var.platform_automation_engine_worker_role_name
+  director_role_name = var.director_role_name
+  splunk_role_name   = var.splunk_role_name
+  archive_role_name  = var.archive_role_name
+  ldap_eip           = aws_eip.ldap_eip.public_ip
 
   env_name    = var.env_name
   root_domain = var.root_domain
@@ -86,6 +86,7 @@ data "aws_caller_identity" "current_user" {
 resource "aws_s3_bucket" "certs" {
   bucket_prefix = local.cert_bucket
   acl           = "private"
+  force_destroy = var.force_destroy_buckets
 
   versioning {
     enabled = true
@@ -164,9 +165,14 @@ data "template_file" "paperwork_variables" {
 data "template_file" "keymanager_variables" {
   template = file("${path.module}/keymanager.tfvars.tpl")
   vars = {
-    pas_bucket_role_arn                        = module.paperwork.pas_bucket_role_arn
-    director_role_arn                          = module.paperwork.director_role_arn
+    pas_bucket_role_arn = module.paperwork.pas_bucket_role_arn
+    director_role_arn   = module.paperwork.director_role_arn
   }
+}
+
+variable "force_destroy_buckets" {
+  type    = bool
+  default = false
 }
 
 variable "paperwork_variable_output_path" {

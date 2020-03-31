@@ -59,3 +59,7 @@ locals {
   services_cidr = module.cidr_lookup.services_cidr
 }
 
+variable "force_destroy_buckets" {
+  type    = bool
+  default = false
+}

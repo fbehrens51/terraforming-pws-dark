@@ -143,10 +143,10 @@ EOF
 
 
   vars = {
-    s3_syslog_archive = var.s3_syslog_archive
+    s3_syslog_archive       = var.s3_syslog_archive
     s3_syslog_audit_archive = var.s3_syslog_audit_archive
-    region            = var.region
-    script            = indent(4, file("${path.module}/script.bash"))
+    region                  = var.region
+    script                  = indent(4, file("${path.module}/script.bash"))
   }
 }
 

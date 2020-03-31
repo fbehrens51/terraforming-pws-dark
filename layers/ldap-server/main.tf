@@ -116,10 +116,10 @@ resource "aws_eip_association" "ldap_eip_association" {
 }
 
 module "ldap_host" {
-  source        = "../../modules/launch"
-  ami_id        = module.ubuntu_ami.id
-  eni_ids       = module.bootstrap.eni_ids
-  user_data     = data.terraform_remote_state.paperwork.outputs.bot_user_accounts_user_data
+  source    = "../../modules/launch"
+  ami_id    = module.ubuntu_ami.id
+  eni_ids   = module.bootstrap.eni_ids
+  user_data = data.terraform_remote_state.paperwork.outputs.bot_user_accounts_user_data
 
   tags = local.modified_tags
 }

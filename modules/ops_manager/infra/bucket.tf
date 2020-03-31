@@ -4,7 +4,7 @@ locals {
 
 resource "aws_s3_bucket" "ops_manager_bucket" {
   bucket        = "${local.formatted_env_name}-ops-manager-bucket-${var.bucket_suffix}"
-  force_destroy = true
+  force_destroy = var.force_destroy_buckets
 
   logging {
     target_bucket = var.s3_logs_bucket

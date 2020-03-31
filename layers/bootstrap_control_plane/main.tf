@@ -61,15 +61,16 @@ data "aws_vpc" "vpc" {
 module "ops_manager" {
   source = "../../modules/ops_manager/infra"
 
-  bucket_suffix  = local.bucket_suffix
-  env_name       = local.env_name
-  om_eip         = ! var.internetless
-  private        = false
-  subnet_id      = module.public_subnets.subnet_ids[0]
-  tags           = local.modified_tags
-  vpc_id         = local.vpc_id
-  ingress_rules  = local.om_ingress_rules
-  s3_logs_bucket = local.s3_logs_bucket
+  bucket_suffix         = local.bucket_suffix
+  env_name              = local.env_name
+  om_eip                = ! var.internetless
+  private               = false
+  subnet_id             = module.public_subnets.subnet_ids[0]
+  tags                  = local.modified_tags
+  vpc_id                = local.vpc_id
+  ingress_rules         = local.om_ingress_rules
+  s3_logs_bucket        = local.s3_logs_bucket
+  force_destroy_buckets = var.force_destroy_buckets
 }
 
 module "public_subnets" {
@@ -153,7 +154,7 @@ resource "aws_security_group" "vms_security_group" {
 
 resource "aws_s3_bucket" "import_bucket" {
   bucket        = "${local.bucket_prefix}-import"
-  force_destroy = true
+  force_destroy = var.force_destroy_buckets
 
   logging {
     target_bucket = local.s3_logs_bucket
@@ -171,7 +172,7 @@ resource "aws_s3_bucket" "import_bucket" {
 
 resource "aws_s3_bucket" "transfer_bucket" {
   bucket        = "${local.bucket_prefix}-transfer"
-  force_destroy = true
+  force_destroy = var.force_destroy_buckets
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
@@ -217,7 +218,7 @@ resource "aws_s3_bucket_policy" "transfer_bucket_policy_attachement" {
 
 resource "aws_s3_bucket" "mirror_bucket" {
   bucket        = "${local.bucket_prefix}-mirror"
-  force_destroy = true
+  force_destroy = var.force_destroy_buckets
 
   logging {
     target_bucket = local.s3_logs_bucket

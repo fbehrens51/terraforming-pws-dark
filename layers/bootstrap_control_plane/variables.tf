@@ -7,7 +7,7 @@ variable "remote_state_region" {
 variable "terraform_bucket_name" {
 }
 
-variable "promoter_role_arn"{}
+variable "promoter_role_arn" {}
 
 variable "terraform_region" {
 }
@@ -57,3 +57,8 @@ variable "vpce_interface_prefix" {}
 # variable "ec2_endpoint" {}
 # variable "elb_endpoint" {}
 # variable "region" {}
+
+variable "force_destroy_buckets" {
+  type    = bool
+  default = false
+}

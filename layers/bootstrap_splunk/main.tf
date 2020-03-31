@@ -36,7 +36,7 @@ locals {
   indexers_count   = "3"
   forwarders_count = "1"
 
-  syslog_archive_bucket = "${replace(var.env_name, " ", "-")}-syslog-archive"
+  syslog_archive_bucket       = "${replace(var.env_name, " ", "-")}-syslog-archive"
   syslog_audit_archive_bucket = "${replace(var.env_name, " ", "-")}-syslog-audit-archive"
   tags = merge(
     var.tags,
@@ -45,9 +45,9 @@ locals {
     },
   )
 
-  dns_zone_name = data.terraform_remote_state.paperwork.outputs.root_domain
+  dns_zone_name  = data.terraform_remote_state.paperwork.outputs.root_domain
   s3_logs_bucket = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
-  public_subnet = data.terraform_remote_state.enterprise-services.outputs.public_subnet_ids[0]
+  public_subnet  = data.terraform_remote_state.enterprise-services.outputs.public_subnet_ids[0]
 
   private_subnets            = data.terraform_remote_state.enterprise-services.outputs.private_subnet_ids
   master_private_subnet      = local.private_subnets[0]
@@ -121,6 +121,11 @@ variable "tags" {
   type = map(string)
 }
 
+variable "force_destroy_buckets" {
+  type    = bool
+  default = false
+}
+
 module "s3_bootstrap" {
   source        = "../../modules/eni_per_subnet"
   ingress_rules = local.splunk_ingress_rules
@@ -172,9 +177,10 @@ module "search_head_bootstrap" {
 }
 
 resource "aws_s3_bucket" "syslog_archive" {
-  bucket = local.syslog_archive_bucket
-  acl    = "private"
-  tags   = local.tags
+  bucket        = local.syslog_archive_bucket
+  acl           = "private"
+  tags          = local.tags
+  force_destroy = var.force_destroy_buckets
 
   server_side_encryption_configuration {
     rule {
@@ -191,9 +197,10 @@ resource "aws_s3_bucket" "syslog_archive" {
 }
 
 resource "aws_s3_bucket" "syslog_audit_archive" {
-  bucket = local.syslog_audit_archive_bucket
-  acl    = "private"
-  tags   = local.tags
+  bucket        = local.syslog_audit_archive_bucket
+  acl           = "private"
+  tags          = local.tags
+  force_destroy = var.force_destroy_buckets
 
   server_side_encryption_configuration {
     rule {

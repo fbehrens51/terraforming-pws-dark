@@ -123,6 +123,7 @@ module "pas" {
   create_backup_pas_buckets    = false
   create_versioned_pas_buckets = true
   s3_logs_bucket               = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
+  force_destroy_buckets        = var.force_destroy_buckets
 }
 
 module "rds" {
@@ -186,15 +187,16 @@ data "aws_vpc" "bastion_vpc" {
 module "ops_manager" {
   source = "../../modules/ops_manager/infra"
 
-  bucket_suffix  = local.bucket_suffix
-  env_name       = var.env_name
-  om_eip         = ! var.internetless
-  private        = false
-  subnet_id      = module.infra.public_subnet_ids[0]
-  tags           = local.modified_tags
-  vpc_id         = local.vpc_id
-  ingress_rules  = local.ingress_rules
-  s3_logs_bucket = local.s3_logs_bucket
+  bucket_suffix         = local.bucket_suffix
+  env_name              = var.env_name
+  om_eip                = ! var.internetless
+  private               = false
+  subnet_id             = module.infra.public_subnet_ids[0]
+  tags                  = local.modified_tags
+  vpc_id                = local.vpc_id
+  ingress_rules         = local.ingress_rules
+  s3_logs_bucket        = local.s3_logs_bucket
+  force_destroy_buckets = var.force_destroy_buckets
 }
 
 resource "random_integer" "bucket" {
@@ -312,11 +314,11 @@ output "ops_manager_bucket" {
   value = module.ops_manager.bucket
 }
 
-output "director_blobstore_bucket"{
+output "director_blobstore_bucket" {
   value = module.pas.director_blobstore_bucket
 }
 
-output "director_backup_blobstore_bucket"{
+output "director_backup_blobstore_bucket" {
   value = module.pas.director_backup_blobstore_bucket
 }
 
@@ -414,4 +416,9 @@ output "public_cidr_block" {
 
 output "ops_manager_ip" {
   value = module.ops_manager.ip
+}
+
+variable "force_destroy_buckets" {
+  type    = bool
+  default = false
 }

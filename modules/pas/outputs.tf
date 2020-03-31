@@ -34,11 +34,11 @@ output "services_subnet_gateways" {
 
 # ========= Buckets ============================================================
 
-output "director_blobstore_bucket"{
+output "director_blobstore_bucket" {
   value = aws_s3_bucket.director_blobstore_bucket[0].bucket
 }
 
-output "director_backup_blobstore_bucket"{
+output "director_backup_blobstore_bucket" {
   value = aws_s3_bucket.director_backup_blobstore_bucket[0].bucket
 }
 

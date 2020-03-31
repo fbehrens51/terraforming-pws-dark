@@ -26,3 +26,7 @@ variable "ingress_rules" {
 
 variable "s3_logs_bucket" {}
 
+variable "force_destroy_buckets" {
+  type    = bool
+  default = false
+}

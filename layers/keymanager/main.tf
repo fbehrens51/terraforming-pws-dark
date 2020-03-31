@@ -11,15 +11,15 @@ terraform {
   }
 }
 
-data "aws_caller_identity" "my_account"{}
+data "aws_caller_identity" "my_account" {}
 
 data "template_file" "keymanager_output_variables" {
   template = file("${path.module}/keymanager_output.tfvars.tpl")
   vars = {
-    kms_key_id                                  = module.keys.kms_key_id
-    kms_key_arn                                 = module.keys.kms_key_arn
-    transfer_key_arn                            = aws_kms_key.transfer_kms_key.arn
-    }
+    kms_key_id       = module.keys.kms_key_id
+    kms_key_arn      = module.keys.kms_key_arn
+    transfer_key_arn = aws_kms_key.transfer_kms_key.arn
+  }
 }
 
 resource "local_file" "keymanager_output_variable_file" {
@@ -124,7 +124,7 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
 
 
 resource "aws_kms_key" "transfer_kms_key" {
-  policy = "${data.aws_iam_policy_document.kms_key_policy_document.json}"
+  policy      = "${data.aws_iam_policy_document.kms_key_policy_document.json}"
   description = "TRANSFER_KMS_KEY"
 }
 
