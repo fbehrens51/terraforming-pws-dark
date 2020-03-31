@@ -181,7 +181,6 @@ module "om_config" {
 
   # Used by the download config
 
-  mirror_bucket_name    = local.mirror_bucket_name
   splunk_syslog_host    = module.domains.splunk_logs_fqdn
   splunk_syslog_port    = module.splunk_ports.splunk_tcp_port
   splunk_syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
@@ -199,9 +198,8 @@ module "runtime_config_config" {
 
   custom_ssh_banner = data.terraform_remote_state.paperwork.outputs.custom_ssh_banner
 
-  mirror_bucket_name = local.mirror_bucket_name
-  s3_endpoint        = var.s3_endpoint
-  region             = var.region
+  s3_endpoint = var.s3_endpoint
+  region      = var.region
 
   extra_user_name       = var.extra_user_name
   extra_user_public_key = var.extra_user_public_key

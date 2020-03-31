@@ -515,9 +515,6 @@ variable "ops_manager_ssh_public_key_name" {
 variable "ops_manager_ssh_private_key" {
 }
 
-variable "mirror_bucket_name" {
-}
-
 variable "splunk_syslog_host" {
 }
 

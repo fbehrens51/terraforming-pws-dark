@@ -14,9 +14,6 @@ variable "custom_ssh_banner" {
   description = "Custom SSH Banner to be used on launched VMs"
 }
 
-variable "mirror_bucket_name" {
-}
-
 variable "s3_endpoint" {
 }
 

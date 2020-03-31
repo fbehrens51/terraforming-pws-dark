@@ -41,7 +41,6 @@ module "providers" {
 }
 
 locals {
-  mirror_bucket       = data.terraform_remote_state.bootstrap_control_plane.outputs.mirror_bucket_name
   secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
   hyphenated_name     = lower(replace(var.name, " ", "-"))
 }

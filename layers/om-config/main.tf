@@ -69,7 +69,6 @@ data "aws_region" "current" {
 }
 
 locals {
-  mirror_bucket_name  = data.terraform_remote_state.bootstrap_control_plane.outputs.mirror_bucket_name
   secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
 
   smtp_host     = module.domains.smtp_fqdn
@@ -285,8 +284,6 @@ module "om_config" {
   ldap_port              = data.terraform_remote_state.paperwork.outputs.ldap_port
   ldap_role_attr         = data.terraform_remote_state.paperwork.outputs.ldap_role_attr
 
-  mirror_bucket_name = local.mirror_bucket_name
-
   splunk_syslog_host    = module.domains.splunk_logs_fqdn
   splunk_syslog_port    = module.splunk_ports.splunk_tcp_port
   splunk_syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
@@ -304,9 +301,8 @@ module "runtime_config_config" {
 
   custom_ssh_banner = data.terraform_remote_state.paperwork.outputs.custom_ssh_banner
 
-  mirror_bucket_name = local.mirror_bucket_name
-  s3_endpoint        = var.s3_endpoint
-  region             = var.region
+  s3_endpoint = var.s3_endpoint
+  region      = var.region
 
   extra_user_name       = var.extra_user_name
   extra_user_public_key = var.extra_user_public_key
@@ -329,7 +325,6 @@ module "clamav_config" {
   clamav_cpu_limit                 = "50"
   clamav_enable_on_access_scanning = "false"
   clamav_mirror_instance_type      = var.clamav_mirror_instance_type
-  mirror_bucket_name               = local.mirror_bucket_name
   s3_endpoint                      = var.s3_endpoint
   region                           = var.region
   splunk_syslog_host               = module.domains.splunk_logs_fqdn

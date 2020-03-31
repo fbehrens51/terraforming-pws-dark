@@ -18,9 +18,6 @@ variable "availability_zones" {
 variable "clamav_mirror_instance_type" {
 }
 
-variable "mirror_bucket_name" {
-}
-
 variable "s3_endpoint" {
 }
 
