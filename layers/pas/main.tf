@@ -318,10 +318,6 @@ output "director_blobstore_bucket" {
   value = module.pas.director_blobstore_bucket
 }
 
-output "director_backup_blobstore_bucket" {
-  value = module.pas.director_backup_blobstore_bucket
-}
-
 output "pas_buildpacks_bucket" {
   value = module.pas.pas_buildpacks_bucket
 }

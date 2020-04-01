@@ -439,9 +439,6 @@ variable "kms_key_id" {
 variable "director_blobstore_bucket" {
 }
 
-variable "director_backup_blobstore_bucket" {
-}
-
 variable "pas_buildpacks_backup_bucket" {
 }
 
