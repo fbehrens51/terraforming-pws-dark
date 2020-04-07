@@ -28,6 +28,22 @@ variable "ignore_tag_changes" {
   type    = bool
 }
 
+variable "ssh_timeout" {
+  default = "10m"
+}
+
+variable "bot_user" {
+  default = "bot"
+}
+
+variable "bot_key_pem" {
+  default = null
+}
+
+variable "bastion_host" {
+  default = null
+}
+
 //allows calling module to set a fixed count since count cannot use a value calculated from something that may not exist yet (e.g. eni_ids)
 variable "instance_count" {
   default = 1
@@ -68,6 +84,21 @@ resource "aws_instance" "instance" {
       volume_size           = lookup(root_block_device.value, "volume_size", null)
       volume_type           = lookup(root_block_device.value, "volume_type", null)
     }
+  }
+
+  connection {
+    user         = "bot"
+    host         = self.private_ip
+    timeout      = var.ssh_timeout
+    private_key  = var.bot_key_pem
+    bastion_host = var.bastion_host
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo cloud-init status --wait",
+      "sudo cloud-init status --long"
+    ]
   }
 }
 

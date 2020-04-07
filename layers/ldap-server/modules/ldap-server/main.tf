@@ -27,10 +27,11 @@ resource "null_resource" "ldap_configuration" {
   }
 
   connection {
-    type        = "ssh"
-    user        = "bot"
-    host        = var.ssh_host
-    private_key = var.ssh_private_key_pem
+    type         = "ssh"
+    user         = "bot"
+    host         = var.private_ip
+    private_key  = var.bot_key_pem
+    bastion_host = var.bastion_host
   }
 
   provisioner "file" {

@@ -32,6 +32,17 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
+data "terraform_remote_state" "bastion" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bastion"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "routes" {
   backend = "s3"
 
@@ -65,6 +76,7 @@ locals {
   )
 
   root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
+  tld         = regex("[^\\.]+$", local.root_domain) # will match com in ci, dev, and staging environments.
 
   basedn        = "ou=users,dc=${join(",dc=", split(".", local.root_domain))}"
   admin         = "cn=admin,dc=${join(",dc=", split(".", local.root_domain))}"
@@ -121,7 +133,9 @@ module "ldap_host" {
   eni_ids   = module.bootstrap.eni_ids
   user_data = data.terraform_remote_state.paperwork.outputs.bot_user_accounts_user_data
 
-  tags = local.modified_tags
+  tags         = local.modified_tags
+  bot_key_pem  = data.terraform_remote_state.paperwork.outputs.bot_private_key
+  bastion_host = local.tld == "com" ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
 }
 
 module "ldap_configure" {
@@ -133,12 +147,13 @@ module "ldap_configure" {
     data.terraform_remote_state.public-aws-prereqs.outputs.usernames,
     data.terraform_remote_state.public-aws-prereqs.outputs.user_certs,
   )
-  tls_server_ca_cert  = data.terraform_remote_state.paperwork.outputs.root_ca_cert
-  ssh_private_key_pem = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  ssh_host            = data.terraform_remote_state.paperwork.outputs.ldap_host
-  instance_id         = module.ldap_host.instance_ids[0]
-  users               = var.users
-  root_domain         = local.root_domain
+  tls_server_ca_cert = data.terraform_remote_state.paperwork.outputs.root_ca_cert
+  bot_key_pem        = data.terraform_remote_state.paperwork.outputs.bot_private_key
+  bastion_host       = local.tld == "com" ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
+  instance_id        = module.ldap_host.instance_ids[0]
+  private_ip         = module.ldap_host.private_ips[0]
+  users              = var.users
+  root_domain        = local.root_domain
 
   basedn   = data.terraform_remote_state.paperwork.outputs.ldap_basedn
   admin    = data.terraform_remote_state.paperwork.outputs.ldap_dn
