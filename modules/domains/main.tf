@@ -11,6 +11,9 @@ locals {
   om_subdomain = "om"
   om_fqdn      = "${local.om_subdomain}.${var.root_domain}"
 
+  grafana_subdomain = "grafana"
+  grafana_fqdn      = "${local.grafana_subdomain}.${var.root_domain}"
+
   splunk_monitor_subdomain = "splunk-monitor"
   splunk_monitor_fqdn      = "${local.splunk_monitor_subdomain}.${var.root_domain}"
 
@@ -28,6 +31,9 @@ locals {
 
   apps_subdomain = "cfapps"
   apps_fqdn      = "${local.apps_subdomain}.${var.root_domain}"
+
+  apps_manager_subdomain = "apps"
+  apps_manager_fqdn      = "${local.apps_manager_subdomain}.${local.system_fqdn}"
 }
 
 output "smtp_subdomain" {
@@ -60,6 +66,14 @@ output "control_plane_plane_subdomain" {
 
 output "control_plane_plane_fqdn" {
   value = local.control_plane_plane_fqdn
+}
+
+output "grafana_subdomain" {
+  value = local.grafana_subdomain
+}
+
+output "grafana_fqdn" {
+  value = local.grafana_fqdn
 }
 
 output "om_subdomain" {
@@ -100,5 +114,13 @@ output "apps_fqdn" {
 
 output "apps_subdomain" {
   value = local.apps_subdomain
+}
+
+output "apps_manager_fqdn" {
+  value = local.apps_manager_fqdn
+}
+
+output "apps_manager_subdomain" {
+  value = local.apps_manager_subdomain
 }
 

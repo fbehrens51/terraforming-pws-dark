@@ -19,6 +19,8 @@ locals {
   rds_ca_cert_s3_path                              = "rds_ca_cert.pem"
   smtp_relay_password_s3_path                      = "smtp_relay_password.pem"
   smtp_relay_ca_cert_s3_path                       = "smtp_relay_ca_cert.pem"
+  grafana_server_cert_s3_path                      = "grafana_server_cert.pem"
+  grafana_server_key_s3_path                       = "grafana_server_key.pem"
   router_server_cert_s3_path                       = "router_server_cert.pem"
   router_server_key_s3_path                        = "router_server_key.pem"
   concourse_server_cert_s3_path                    = "concourse_server_cert.pem"
@@ -135,6 +137,8 @@ data "template_file" "paperwork_variables" {
     rds_ca_cert_s3_path                         = local.rds_ca_cert_s3_path
     smtp_relay_ca_cert_s3_path                  = local.smtp_relay_ca_cert_s3_path
     smtp_relay_password_s3_path                 = local.smtp_relay_password_s3_path
+    grafana_server_cert_s3_path                 = local.grafana_server_cert_s3_path
+    grafana_server_key_s3_path                  = local.grafana_server_key_s3_path
     router_server_cert_s3_path                  = local.router_server_cert_s3_path
     router_server_key_s3_path                   = local.router_server_key_s3_path
     concourse_server_cert_s3_path               = local.concourse_server_cert_s3_path
@@ -263,6 +267,20 @@ resource "aws_s3_bucket_object" "smtp_relay_password" {
   key          = local.smtp_relay_password_s3_path
   bucket       = aws_s3_bucket.certs.bucket
   content      = var.smtp_relay_password
+  content_type = "text/plain"
+}
+
+resource "aws_s3_bucket_object" "grafana_server_cert" {
+  key          = local.grafana_server_cert_s3_path
+  bucket       = aws_s3_bucket.certs.bucket
+  content_type = "text/plain"
+  content      = module.paperwork.grafana_server_cert
+}
+
+resource "aws_s3_bucket_object" "grafana_server_key" {
+  key          = local.grafana_server_key_s3_path
+  bucket       = aws_s3_bucket.certs.bucket
+  content      = module.paperwork.grafana_server_key
   content_type = "text/plain"
 }
 

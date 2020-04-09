@@ -101,6 +101,15 @@ output "ldap_server_key" {
   sensitive = true
 }
 
+output "grafana_server_cert" {
+  value = module.grafana_server_cert.cert_pem
+}
+
+output "grafana_server_key" {
+  value     = module.grafana_server_cert.private_key_pem
+  sensitive = true
+}
+
 output "router_server_cert" {
   value = module.router_server_cert.cert_pem
 }

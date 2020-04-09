@@ -115,6 +115,7 @@ locals {
   splunk_logs_private_ip      = data.terraform_remote_state.bootstrap_splunk.outputs.forwarders_private_ips[0]
   splunk_search_head_elb_dns  = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_search_head_elb_dns_name
   splunk_monitor_elb_dns      = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_monitor_elb_dns_name
+  grafana_elb_dns             = data.terraform_remote_state.pas.outputs.grafana_elb_dns_name
 }
 
 data "template_cloudinit_config" "master_bind_conf_userdata" {
@@ -167,6 +168,7 @@ module "bind_master_user_data" {
   splunk_search_head_elb_dns  = local.splunk_search_head_elb_dns
   splunk_logs_private_ip      = local.splunk_logs_private_ip
   splunk_monitor_elb_dns      = local.splunk_monitor_elb_dns
+  grafana_elb_dns             = local.grafana_elb_dns
 }
 
 module "bind_master_host" {

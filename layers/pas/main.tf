@@ -97,6 +97,7 @@ module "infra" {
   splunk_syslog_ca_cert         = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
   ops_manager_security_group_id = module.ops_manager.security_group_id
   elb_security_group_id         = module.pas_elb.security_group_id
+  grafana_elb_security_group_id = module.grafana_elb.security_group_id
 
   user_data = data.template_cloudinit_config.nat_user_data.rendered
 
@@ -158,6 +159,18 @@ module "rds_subnet_group" {
   vpc_id             = module.infra.vpc_id
   cidr_block         = module.calculated_subnets.rds_cidr
   tags               = local.modified_tags
+}
+
+module "grafana_elb" {
+  source            = "../../modules/elb/create"
+  env_name          = var.env_name
+  internetless      = var.internetless
+  public_subnet_ids = module.infra.public_subnet_ids
+  tags              = local.modified_tags
+  vpc_id            = local.vpc_id
+  egress_cidrs      = module.pas.pas_subnet_cidrs
+  short_name        = "grafana"
+  instance_port     = 3000
 }
 
 module "pas_elb" {
@@ -287,6 +300,14 @@ output "pas_elb_dns_name" {
 
 output "pas_elb_id" {
   value = module.pas_elb.my_elb_id
+}
+
+output "grafana_elb_dns_name" {
+  value = module.grafana_elb.dns_name
+}
+
+output "grafana_elb_id" {
+  value = module.grafana_elb.my_elb_id
 }
 
 output "rds_address" {

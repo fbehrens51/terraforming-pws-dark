@@ -339,6 +339,22 @@ data "aws_s3_bucket_object" "smtp_relay_ca_cert" {
   key    = var.smtp_relay_ca_cert_s3_path
 }
 
+variable "grafana_server_cert_s3_path" {
+}
+
+data "aws_s3_bucket_object" "grafana_server_cert" {
+  bucket = var.cert_bucket
+  key    = var.grafana_server_cert_s3_path
+}
+
+variable "grafana_server_key_s3_path" {
+}
+
+data "aws_s3_bucket_object" "grafana_server_key" {
+  bucket = var.cert_bucket
+  key    = var.grafana_server_key_s3_path
+}
+
 variable "router_server_cert_s3_path" {
 }
 
@@ -635,6 +651,15 @@ output "smtp_relay_ca_cert" {
 
 output "smtp_relay_password" {
   value = data.aws_s3_bucket_object.smtp_relay_password.body
+}
+
+output "grafana_server_cert" {
+  value = data.aws_s3_bucket_object.grafana_server_cert.body
+}
+
+output "grafana_server_key" {
+  value     = data.aws_s3_bucket_object.grafana_server_key.body
+  sensitive = true
 }
 
 output "router_server_cert" {

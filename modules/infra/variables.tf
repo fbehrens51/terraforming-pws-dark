@@ -93,6 +93,9 @@ variable "public_bucket_url" {
 variable "elb_security_group_id" {
 }
 
+variable "grafana_elb_security_group_id" {
+}
+
 variable "ops_manager_security_group_id" {
 }
 
