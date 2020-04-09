@@ -44,6 +44,23 @@ variable "bastion_host" {
   default = null
 }
 
+variable "skip_destroy" {
+  default = true
+}
+
+variable "volume_ids" {
+  type    = list(string)
+  default = null
+}
+
+variable "device_name" {
+  default = null
+}
+
+variable "volume_count" {
+  default = null
+}
+
 //allows calling module to set a fixed count since count cannot use a value calculated from something that may not exist yet (e.g. eni_ids)
 variable "instance_count" {
   default = 1
@@ -85,20 +102,37 @@ resource "aws_instance" "instance" {
       volume_type           = lookup(root_block_device.value, "volume_type", null)
     }
   }
+}
 
-  connection {
-    user         = "bot"
-    host         = self.private_ip
-    timeout      = var.ssh_timeout
-    private_key  = var.bot_key_pem
-    bastion_host = var.bastion_host
+resource "aws_volume_attachment" "volume_attachment" {
+  count        = var.volume_ids == null ? 0 : var.volume_count
+  skip_destroy = var.skip_destroy
+  instance_id  = element(aws_instance.instance.*.id, count.index)
+  volume_id    = element(var.volume_ids, count.index)
+  device_name  = var.device_name
+}
+
+resource "null_resource" "host" {
+  count = var.ignore_tag_changes ? 0 : var.instance_count
+
+  triggers = {
+    instance_id = element(aws_instance.instance.*.id, count.index)
   }
 
   provisioner "remote-exec" {
     inline = [
-      "sudo cloud-init status --wait",
+      "echo \"Running cloud-init status --wait > /dev/null\"",
+      "sudo cloud-init status --wait > /dev/null",
       "sudo cloud-init status --long"
     ]
+
+    connection {
+      user         = "bot"
+      host         = element(aws_instance.instance.*.private_ip, count.index)
+      timeout      = var.ssh_timeout
+      private_key  = var.bot_key_pem
+      bastion_host = var.bastion_host
+    }
   }
 }
 
