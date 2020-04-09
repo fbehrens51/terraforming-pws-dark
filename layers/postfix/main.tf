@@ -67,7 +67,6 @@ locals {
   encrypted_amazon2_ami_id = data.terraform_remote_state.encrypt_amis.outputs.encrypted_amazon2_ami_id
 
   root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
-  tld         = regex("[^\\.]+$", local.root_domain) # will match com in ci, dev, and staging environments.
 
   postfix_ip = data.terraform_remote_state.bootstrap_postfix.outputs.postfix_eni_ips[0]
   smtp_user  = data.terraform_remote_state.bootstrap_postfix.outputs.smtp_client_user
@@ -150,7 +149,7 @@ module "postfix_master_host" {
   eni_ids        = data.terraform_remote_state.bootstrap_postfix.outputs.postfix_eni_ids
   tags           = local.modified_tags
   bot_key_pem    = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  bastion_host   = local.tld == "com" ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
+  bastion_host   = var.internetless ? null : data.terraform_remote_state.bastion.outputs.bastion_ip
 }
 
 module "syslog_config" {

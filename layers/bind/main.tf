@@ -109,7 +109,6 @@ locals {
   )
 
   root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
-  tld         = regex("[^\\.]+$", local.root_domain) # will match com in ci, dev, and staging environments.
 
   // If internetless = true in the bootstrap_bind layer,
   // eip_ips will be empty, and master_public_ip becomes the first eni_ip
@@ -190,7 +189,7 @@ module "bind_master_host" {
   eni_ids        = data.terraform_remote_state.bootstrap_bind.outputs.bind_eni_ids
   tags           = local.modified_tags
   bot_key_pem    = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  bastion_host   = local.tld == "com" ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
+  bastion_host   = var.internetless ? null : data.terraform_remote_state.bastion.outputs.bastion_ip
 }
 
 module "syslog_config" {
@@ -214,6 +213,9 @@ variable "tags" {
 }
 
 variable "client_cidr" {
+}
+
+variable "internetless" {
 }
 
 output "master_ips" {

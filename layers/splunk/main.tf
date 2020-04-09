@@ -110,8 +110,7 @@ locals {
   master_ip = data.terraform_remote_state.bootstrap_splunk.outputs.master_private_ips[0]
 
   root_domain  = data.terraform_remote_state.paperwork.outputs.root_domain
-  tld          = regex("[^\\.]+$", local.root_domain) # will match com in ci, dev, and staging environments.
-  bastion_host = local.tld == "com" ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
+  bastion_host = var.internetless ? null : data.terraform_remote_state.bastion.outputs.bastion_ip
 
   s3_archive_ip     = data.terraform_remote_state.bootstrap_splunk.outputs.s3_private_ips[0]
   s3_archive_port   = module.splunk_ports.splunk_s3_archive_port
@@ -161,7 +160,6 @@ module "splunk_s3" {
 
   bot_key_pem  = data.terraform_remote_state.paperwork.outputs.bot_private_key
   bastion_host = local.bastion_host
-  volume_count = length(local.splunk_s3_eni_ids)
   volume_ids   = [data.terraform_remote_state.bootstrap_splunk.outputs.s3_data_volume]
   device_name  = "/dev/sdf"
 }
@@ -207,7 +205,6 @@ module "splunk_indexers" {
 
   bot_key_pem  = data.terraform_remote_state.paperwork.outputs.bot_private_key
   bastion_host = local.bastion_host
-  volume_count = length(local.splunk_indexers_eni_ids)
   volume_ids   = data.terraform_remote_state.bootstrap_splunk.outputs.indexers_data_volumes
   device_name  = "/dev/sdf"
 }
@@ -254,7 +251,6 @@ module "splunk_master" {
 
   bot_key_pem  = data.terraform_remote_state.paperwork.outputs.bot_private_key
   bastion_host = local.bastion_host
-  volume_count = length(local.splunk_master_eni_ids)
   volume_ids   = [data.terraform_remote_state.bootstrap_splunk.outputs.master_data_volume]
   device_name  = "/dev/sdf"
 }
@@ -301,7 +297,6 @@ module "splunk_search_head" {
 
   bot_key_pem  = data.terraform_remote_state.paperwork.outputs.bot_private_key
   bastion_host = local.bastion_host
-  volume_count = length(local.splunk_search_head_eni_ids)
   volume_ids   = [data.terraform_remote_state.bootstrap_splunk.outputs.search_head_data_volume]
   device_name  = "/dev/sdf"
 }
@@ -349,7 +344,6 @@ module "splunk_forwarders" {
 
   bot_key_pem  = data.terraform_remote_state.paperwork.outputs.bot_private_key
   bastion_host = local.bastion_host
-  volume_count = length(local.splunk_forwarders_eni_ids)
   volume_ids   = data.terraform_remote_state.bootstrap_splunk.outputs.forwarders_data_volumes
   device_name  = "/dev/sdf"
 }

@@ -44,20 +44,12 @@ variable "bastion_host" {
   default = null
 }
 
-variable "skip_destroy" {
-  default = true
-}
-
 variable "volume_ids" {
   type    = list(string)
   default = null
 }
 
 variable "device_name" {
-  default = null
-}
-
-variable "volume_count" {
   default = null
 }
 
@@ -105,8 +97,8 @@ resource "aws_instance" "instance" {
 }
 
 resource "aws_volume_attachment" "volume_attachment" {
-  count        = var.volume_ids == null ? 0 : var.volume_count
-  skip_destroy = var.skip_destroy
+  count        = var.volume_ids == null ? 0 : length(var.volume_ids)
+  skip_destroy = true
   instance_id  = element(aws_instance.instance.*.id, count.index)
   volume_id    = element(var.volume_ids, count.index)
   device_name  = var.device_name

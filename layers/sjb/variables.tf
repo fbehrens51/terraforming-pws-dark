@@ -21,3 +21,6 @@ variable "pypi_host_secure" {
   default = true
 }
 
+variable "internetless" {
+}
+

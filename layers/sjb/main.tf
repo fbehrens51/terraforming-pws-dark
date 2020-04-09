@@ -21,7 +21,6 @@ locals {
   )
 
   root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
-  tld         = regex("[^\\.]+$", local.root_domain) # will match com in ci, dev, and staging environments.
 }
 
 data "terraform_remote_state" "paperwork" {
@@ -251,5 +250,5 @@ module "sjb" {
   }
 
   bot_key_pem  = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  bastion_host = local.tld == "com" ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
+  bastion_host = var.internetless ? null : data.terraform_remote_state.bastion.outputs.bastion_ip
 }
