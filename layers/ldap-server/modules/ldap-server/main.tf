@@ -34,6 +34,13 @@ resource "null_resource" "ldap_configuration" {
     bastion_host = var.bastion_host
   }
 
+  provisioner "remote-exec" {
+    inline = [
+      "echo \"Running cloud-init status --wait > /dev/null\"",
+      "sudo cloud-init status --wait > /dev/null",
+    ]
+  }
+
   provisioner "file" {
     source      = "${path.module}/conf"
     destination = "/tmp"
