@@ -21,6 +21,17 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
+data "terraform_remote_state" "bastion" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bastion"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "bootstrap_control_plane" {
   backend = "s3"
 
@@ -66,6 +77,9 @@ variable "tags" {
 variable "instance_type" {
 }
 
+variable "internetless" {
+}
+
 variable "clamav_db_mirror" {
 }
 
@@ -82,6 +96,8 @@ module "ops_manager" {
   tags                 = local.tags
   eni_ids              = [local.om_eni_id]
   user_data            = module.ops_manager_user_data.cloud_config
+  bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
+  bastion_host         = var.internetless ? null : data.terraform_remote_state.bastion.outputs.bastion_ip
 
   root_block_device = {
     volume_type = "gp2"

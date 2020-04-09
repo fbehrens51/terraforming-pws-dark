@@ -21,6 +21,17 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
+data "terraform_remote_state" "bastion" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bastion"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "pas" {
   backend = "s3"
 
@@ -46,6 +57,9 @@ locals {
 
   trusted_ca_certs           = data.terraform_remote_state.paperwork.outputs.trusted_with_additional_ca_certs
   om_user_accounts_user_data = data.terraform_remote_state.paperwork.outputs.om_user_accounts_user_data
+}
+
+variable "internetless" {
 }
 
 variable "remote_state_bucket" {
@@ -92,6 +106,8 @@ module "ops_manager" {
   tags                 = local.tags
   eni_ids              = [local.om_eni_id]
   user_data            = module.ops_manager_user_data.cloud_config
+  bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
+  bastion_host         = var.internetless ? null : data.terraform_remote_state.bastion.outputs.bastion_ip
 
   root_block_device = {
     volume_type = "gp2"

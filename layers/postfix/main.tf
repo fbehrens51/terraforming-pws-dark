@@ -21,6 +21,17 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
+data "terraform_remote_state" "bastion" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bastion"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "bootstrap_postfix" {
   backend = "s3"
 
@@ -120,7 +131,7 @@ data "template_cloudinit_config" "user_data" {
   part {
     filename     = "user_accounts_user_data.cfg"
     content_type = "text/x-include-url"
-    content      = data.terraform_remote_state.paperwork.outputs.user_accounts_user_data
+    content      = data.terraform_remote_state.paperwork.outputs.bot_user_accounts_user_data
   }
 
   part {
@@ -137,6 +148,8 @@ module "postfix_master_host" {
   user_data      = data.template_cloudinit_config.user_data.rendered
   eni_ids        = data.terraform_remote_state.bootstrap_postfix.outputs.postfix_eni_ids
   tags           = local.modified_tags
+  bot_key_pem    = data.terraform_remote_state.paperwork.outputs.bot_private_key
+  bastion_host   = var.internetless ? null : data.terraform_remote_state.bastion.outputs.bastion_ip
 }
 
 module "syslog_config" {

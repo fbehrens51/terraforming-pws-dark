@@ -21,6 +21,17 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
+data "terraform_remote_state" "bastion" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bastion"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "bootstrap_control_plane" {
   backend = "s3"
 
@@ -143,7 +154,7 @@ data "template_cloudinit_config" "master_bind_conf_userdata" {
   part {
     filename     = "user_accounts_user_data.cfg"
     content_type = "text/x-include-url"
-    content      = data.terraform_remote_state.paperwork.outputs.user_accounts_user_data
+    content      = data.terraform_remote_state.paperwork.outputs.bot_user_accounts_user_data
   }
 
   part {
@@ -172,10 +183,13 @@ module "bind_master_user_data" {
 module "bind_master_host" {
   instance_count = 3
   source         = "../../modules/launch"
+  instance_type  = "t2.medium"
   ami_id         = local.encrypted_amazon2_ami_id
   user_data      = data.template_cloudinit_config.master_bind_conf_userdata.rendered
   eni_ids        = data.terraform_remote_state.bootstrap_bind.outputs.bind_eni_ids
   tags           = local.modified_tags
+  bot_key_pem    = data.terraform_remote_state.paperwork.outputs.bot_private_key
+  bastion_host   = var.internetless ? null : data.terraform_remote_state.bastion.outputs.bastion_ip
 }
 
 module "syslog_config" {
@@ -199,6 +213,9 @@ variable "tags" {
 }
 
 variable "client_cidr" {
+}
+
+variable "internetless" {
 }
 
 output "master_ips" {

@@ -22,7 +22,6 @@ variable "splunk_password" {
 variable "splunk_rpm_version" {
 }
 
-
 variable "region" {
 }
 

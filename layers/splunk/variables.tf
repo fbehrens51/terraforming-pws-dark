@@ -20,3 +20,6 @@ variable "region" {
 variable "instance_type" {
   default = "m5.large"
 }
+
+variable "internetless" {
+}
