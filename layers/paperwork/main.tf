@@ -146,6 +146,13 @@ module "bot_host_key_pair" {
   key_name = "${var.env_name}-bot"
 }
 
+module "node_exporter_client_config" {
+  source                 = "../../modules/node_exporter"
+  node_exporter_location = var.node_exporter_object_url
+  public_bucket_name     = aws_s3_bucket.public_bucket.bucket
+  public_bucket_url      = local.public_bucket_url
+}
+
 module "amazon2_clam_av_client_config" {
   source             = "../../modules/clamav/amzn2_systemd_client"
   clamav_db_mirror   = var.clamav_db_mirror
@@ -185,6 +192,9 @@ module "bot_user_accounts_config" {
 variable "force_destroy_buckets" {
   type    = bool
   default = false
+}
+
+variable "node_exporter_object_url" {
 }
 
 variable "clamav_db_mirror" {
@@ -845,6 +855,10 @@ output "es_s3_vpc_endpoint_id" {
 
 output "bastion_s3_vpc_endpoint_id" {
   value = aws_vpc_endpoint.bastion_s3.id
+}
+
+output "node_exporter_user_data" {
+  value = module.node_exporter_client_config.user_data
 }
 
 output "amazon2_clamav_user_data" {
