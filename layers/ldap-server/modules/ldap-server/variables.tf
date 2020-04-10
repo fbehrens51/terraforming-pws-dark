@@ -30,22 +30,16 @@ variable "tls_server_ca_cert" {
   type = string
 }
 
-variable "bot_key_pem" {
+variable "ssh_private_key_pem" {
   type = string
 }
 
-variable "bastion_host" {
-  type    = string
-  default = null
+variable "ssh_host" {
+  type = string
 }
 
 variable "instance_id" {
   type = string
-}
-
-variable "private_ip" {
-  default = null
-  type    = string
 }
 
 variable "user_certs" {
