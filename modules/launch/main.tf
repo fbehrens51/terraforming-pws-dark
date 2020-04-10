@@ -28,6 +28,23 @@ variable "ignore_tag_changes" {
   type    = bool
 }
 
+variable "bot_key_pem" {
+  default = null
+}
+
+variable "bastion_host" {
+  default = null
+}
+
+variable "volume_ids" {
+  type    = list(string)
+  default = null
+}
+
+variable "device_name" {
+  default = null
+}
+
 //allows calling module to set a fixed count since count cannot use a value calculated from something that may not exist yet (e.g. eni_ids)
 variable "instance_count" {
   default = 1
@@ -96,7 +113,7 @@ resource "null_resource" "cloud_init_status" {
     connection {
       user         = "bot"
       host         = element(aws_instance.instance.*.private_ip, count.index)
-      timeout      = var.ssh_timeout
+      timeout      = "10m"
       private_key  = var.bot_key_pem
       bastion_host = var.bastion_host
     }
