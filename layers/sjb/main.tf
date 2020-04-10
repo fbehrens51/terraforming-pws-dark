@@ -34,17 +34,6 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
-data "terraform_remote_state" "bastion" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "bastion"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 data "terraform_remote_state" "bootstrap_control_plane" {
   backend = "s3"
 
@@ -212,7 +201,7 @@ data "template_cloudinit_config" "user_data" {
   part {
     filename     = "user_accounts_user_data.cfg"
     content_type = "text/x-include-url"
-    content      = data.terraform_remote_state.paperwork.outputs.bot_user_accounts_user_data
+    content      = data.terraform_remote_state.paperwork.outputs.user_accounts_user_data
   }
 
   part {
@@ -248,7 +237,4 @@ module "sjb" {
     volume_type = "gp2"
     volume_size = 64
   }
-
-  bot_key_pem  = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  bastion_host = var.internetless ? null : data.terraform_remote_state.bastion.outputs.bastion_ip
 }

@@ -16,6 +16,7 @@ variable "postfix_private_ip" {}
 variable "splunk_search_head_elb_dns" {}
 variable "splunk_logs_private_ip" {}
 variable "splunk_monitor_elb_dns" {}
+variable "grafana_elb_dns" {}
 
 
 module "bind_conf_content" {
@@ -32,6 +33,7 @@ module "bind_conf_content" {
   splunk_search_head_elb_dns  = var.splunk_search_head_elb_dns
   splunk_logs_private_ip      = var.splunk_logs_private_ip
   splunk_monitor_elb_dns      = var.splunk_monitor_elb_dns
+  grafana_elb_dns             = var.grafana_elb_dns
 }
 
 data "template_file" "user_data" {

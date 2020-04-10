@@ -58,6 +58,10 @@ smtp_relay_ca_cert_s3_path = "${smtp_relay_ca_cert_s3_path}"
 
 smtp_relay_password_s3_path = "${smtp_relay_password_s3_path}"
 
+grafana_server_cert_s3_path = "${grafana_server_cert_s3_path}"
+
+grafana_server_key_s3_path = "${grafana_server_key_s3_path}"
+
 router_server_cert_s3_path = "${router_server_cert_s3_path}"
 
 router_server_key_s3_path = "${router_server_key_s3_path}"

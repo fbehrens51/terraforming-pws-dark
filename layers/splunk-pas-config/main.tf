@@ -12,8 +12,8 @@ variable "availability_zones" {
 variable "singleton_availability_zone" {
 }
 
-variable "splunk_config" {
-  default = "pas/splunk_config.yml"
+variable "splunk_nozzle_config" {
+  default = "pas/splunk_nozzle_config.yml"
 }
 
 terraform {
@@ -53,7 +53,7 @@ locals {
 module "firehose_config" {
   source                      = "../../modules/splunk/firehose-nozzle_config"
   secrets_bucket_name         = local.secrets_bucket_name
-  splunk_config               = var.splunk_config
+  splunk_config               = var.splunk_nozzle_config
   api_endpoint                = local.api_endpoint
   splunk_url                  = local.splunk_http_collector_url
   splunk_token                = local.splunk_http_collector_token

@@ -32,17 +32,6 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
-data "terraform_remote_state" "bastion" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "bastion"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 data "terraform_remote_state" "bootstrap_splunk" {
   backend = "s3"
 
@@ -81,11 +70,11 @@ module "splunk_ports" {
 }
 
 locals {
-  splunk_s3_eni_ids          = data.terraform_remote_state.bootstrap_splunk.outputs.s3_eni_ids
-  splunk_master_eni_ids      = data.terraform_remote_state.bootstrap_splunk.outputs.master_eni_ids //[0]
-  splunk_indexers_eni_ids    = data.terraform_remote_state.bootstrap_splunk.outputs.indexers_eni_ids
-  splunk_forwarders_eni_ids  = data.terraform_remote_state.bootstrap_splunk.outputs.forwarders_eni_ids
-  splunk_search_head_eni_ids = data.terraform_remote_state.bootstrap_splunk.outputs.search_head_eni_ids //[0]
+  splunk_s3_eni_ids         = data.terraform_remote_state.bootstrap_splunk.outputs.s3_eni_ids
+  splunk_master_eni_id      = data.terraform_remote_state.bootstrap_splunk.outputs.master_eni_ids[0]
+  splunk_indexers_eni_ids   = data.terraform_remote_state.bootstrap_splunk.outputs.indexers_eni_ids
+  splunk_forwarders_eni_ids = data.terraform_remote_state.bootstrap_splunk.outputs.forwarders_eni_ids
+  splunk_search_head_eni_id = data.terraform_remote_state.bootstrap_splunk.outputs.search_head_eni_ids[0]
 
   splunk_http_collector_port = module.splunk_ports.splunk_http_collector_port
   splunk_mgmt_port           = module.splunk_ports.splunk_mgmt_port
@@ -109,8 +98,7 @@ locals {
 
   master_ip = data.terraform_remote_state.bootstrap_splunk.outputs.master_private_ips[0]
 
-  root_domain  = data.terraform_remote_state.paperwork.outputs.root_domain
-  bastion_host = var.internetless ? null : data.terraform_remote_state.bastion.outputs.bastion_ip
+  root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
 
   s3_archive_ip     = data.terraform_remote_state.bootstrap_splunk.outputs.s3_private_ips[0]
   s3_archive_port   = module.splunk_ports.splunk_s3_archive_port
@@ -134,7 +122,7 @@ module "s3_archiver_user_data" {
 
   s3_syslog_archive       = data.terraform_remote_state.bootstrap_splunk.outputs.s3_bucket_syslog_archive
   s3_syslog_audit_archive = data.terraform_remote_state.bootstrap_splunk.outputs.s3_bucket_syslog_audit_archive
-  user_accounts_user_data = data.terraform_remote_state.paperwork.outputs.bot_user_accounts_user_data
+  user_accounts_user_data = data.terraform_remote_state.paperwork.outputs.user_accounts_user_data
   public_bucket_name      = local.public_bucket_name
   public_bucket_url       = local.public_bucket_url
   banner_user_data        = data.terraform_remote_state.paperwork.outputs.custom_banner_user_data
@@ -143,7 +131,7 @@ module "s3_archiver_user_data" {
 
 module "splunk_s3" {
   source         = "../../modules/launch"
-  instance_count = length(local.splunk_s3_eni_ids)
+  instance_count = 1
   ami_id         = local.encrypted_amazon2_ami_id
   instance_type  = var.instance_type
   tags = merge(
@@ -157,11 +145,6 @@ module "splunk_s3" {
   eni_ids = local.splunk_s3_eni_ids
 
   user_data = module.s3_archiver_user_data.user_data
-
-  bot_key_pem  = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  bastion_host = local.bastion_host
-  volume_ids   = [data.terraform_remote_state.bootstrap_splunk.outputs.s3_data_volume]
-  device_name  = "/dev/sdf"
 }
 
 module "indexers_user_data" {
@@ -172,7 +155,7 @@ module "indexers_user_data" {
   ca_cert                   = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
   indexers_pass4SymmKey     = local.indexers_pass4SymmKey
   search_heads_pass4SymmKey = local.search_heads_pass4SymmKey
-  user_accounts_user_data   = data.terraform_remote_state.paperwork.outputs.bot_user_accounts_user_data
+  user_accounts_user_data   = data.terraform_remote_state.paperwork.outputs.user_accounts_user_data
   root_domain               = local.root_domain
 
   clamav_user_data = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
@@ -202,11 +185,6 @@ module "splunk_indexers" {
   eni_ids = local.splunk_indexers_eni_ids
 
   user_data = module.indexers_user_data.user_data
-
-  bot_key_pem  = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  bastion_host = local.bastion_host
-  volume_ids   = data.terraform_remote_state.bootstrap_splunk.outputs.indexers_data_volumes
-  device_name  = "/dev/sdf"
 }
 
 module "master_user_data" {
@@ -219,7 +197,7 @@ module "master_user_data" {
   forwarders_pass4SymmKey   = local.forwarders_pass4SymmKey
   search_heads_pass4SymmKey = local.search_heads_pass4SymmKey
   license_path              = "splunk.license"
-  user_accounts_user_data   = data.terraform_remote_state.paperwork.outputs.bot_user_accounts_user_data
+  user_accounts_user_data   = data.terraform_remote_state.paperwork.outputs.user_accounts_user_data
   root_domain               = local.root_domain
 
   clamav_user_data = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
@@ -234,7 +212,7 @@ module "master_user_data" {
 
 module "splunk_master" {
   source         = "../../modules/launch"
-  instance_count = length(local.splunk_master_eni_ids)
+  instance_count = 1
   ami_id         = local.encrypted_amazon2_ami_id
   instance_type  = var.instance_type
   tags = merge(
@@ -245,14 +223,11 @@ module "splunk_master" {
   )
   iam_instance_profile = local.splunk_role_name
 
-  eni_ids = local.splunk_master_eni_ids
+  eni_ids = [
+    local.splunk_master_eni_id,
+  ]
 
   user_data = module.master_user_data.user_data
-
-  bot_key_pem  = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  bastion_host = local.bastion_host
-  volume_ids   = [data.terraform_remote_state.bootstrap_splunk.outputs.master_data_volume]
-  device_name  = "/dev/sdf"
 }
 
 module "search_head_user_data" {
@@ -264,7 +239,7 @@ module "search_head_user_data" {
   indexers_pass4SymmKey     = local.indexers_pass4SymmKey
   forwarders_pass4SymmKey   = local.forwarders_pass4SymmKey
   search_heads_pass4SymmKey = local.search_heads_pass4SymmKey
-  user_accounts_user_data   = data.terraform_remote_state.paperwork.outputs.bot_user_accounts_user_data
+  user_accounts_user_data   = data.terraform_remote_state.paperwork.outputs.user_accounts_user_data
   root_domain               = local.root_domain
 
   clamav_user_data = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
@@ -280,7 +255,7 @@ module "search_head_user_data" {
 
 module "splunk_search_head" {
   source         = "../../modules/launch"
-  instance_count = length(local.splunk_search_head_eni_ids)
+  instance_count = 1
   ami_id         = local.encrypted_amazon2_ami_id
   instance_type  = var.instance_type
   tags = merge(
@@ -291,14 +266,11 @@ module "splunk_search_head" {
   )
   iam_instance_profile = local.splunk_role_name
 
-  eni_ids = local.splunk_search_head_eni_ids
+  eni_ids = [
+    local.splunk_search_head_eni_id,
+  ]
 
   user_data = module.search_head_user_data.user_data
-
-  bot_key_pem  = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  bastion_host = local.bastion_host
-  volume_ids   = [data.terraform_remote_state.bootstrap_splunk.outputs.search_head_data_volume]
-  device_name  = "/dev/sdf"
 }
 
 module "forwarders_user_data" {
@@ -308,7 +280,7 @@ module "forwarders_user_data" {
   server_key              = data.terraform_remote_state.paperwork.outputs.splunk_logs_server_key
   ca_cert                 = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
   forwarders_pass4SymmKey = local.forwarders_pass4SymmKey
-  user_accounts_user_data = data.terraform_remote_state.paperwork.outputs.bot_user_accounts_user_data
+  user_accounts_user_data = data.terraform_remote_state.paperwork.outputs.user_accounts_user_data
   root_domain             = local.root_domain
 
   clamav_user_data = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
@@ -341,11 +313,54 @@ module "splunk_forwarders" {
   eni_ids = local.splunk_forwarders_eni_ids
 
   user_data = module.forwarders_user_data.user_data
+}
 
-  bot_key_pem  = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  bastion_host = local.bastion_host
-  volume_ids   = data.terraform_remote_state.bootstrap_splunk.outputs.forwarders_data_volumes
-  device_name  = "/dev/sdf"
+resource "aws_volume_attachment" "splunk_s3_volume_attachment" {
+  skip_destroy = true
+
+  instance_id = module.splunk_s3.instance_ids[0]
+  volume_id   = data.terraform_remote_state.bootstrap_splunk.outputs.s3_data_volume
+  device_name = "/dev/sdf"
+}
+
+resource "aws_volume_attachment" "splunk_master_volume_attachment" {
+  skip_destroy = true
+
+  instance_id = module.splunk_master.instance_ids[0]
+  volume_id   = data.terraform_remote_state.bootstrap_splunk.outputs.master_data_volume
+  device_name = "/dev/sdf"
+}
+
+resource "aws_volume_attachment" "splunk_search_head_volume_attachment" {
+  skip_destroy = true
+
+  instance_id = module.splunk_search_head.instance_ids[0]
+  volume_id   = data.terraform_remote_state.bootstrap_splunk.outputs.search_head_data_volume
+  device_name = "/dev/sdf"
+}
+
+resource "aws_volume_attachment" "splunk_indexers_volume_attachment" {
+  skip_destroy = true
+
+  count       = length(local.splunk_indexers_eni_ids)
+  instance_id = module.splunk_indexers.instance_ids[count.index]
+  volume_id = element(
+    data.terraform_remote_state.bootstrap_splunk.outputs.indexers_data_volumes,
+    count.index,
+  )
+  device_name = "/dev/sdf"
+}
+
+resource "aws_volume_attachment" "splunk_forwarders_volume_attachment" {
+  skip_destroy = true
+
+  count       = length(local.splunk_forwarders_eni_ids)
+  instance_id = module.splunk_forwarders.instance_ids[count.index]
+  volume_id = element(
+    data.terraform_remote_state.bootstrap_splunk.outputs.forwarders_data_volumes,
+    count.index,
+  )
+  device_name = "/dev/sdf"
 }
 
 resource "aws_elb_attachment" "splunk_master_attach" {

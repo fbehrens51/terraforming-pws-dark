@@ -28,31 +28,6 @@ variable "ignore_tag_changes" {
   type    = bool
 }
 
-variable "ssh_timeout" {
-  default = "10m"
-}
-
-variable "bot_user" {
-  default = "bot"
-}
-
-variable "bot_key_pem" {
-  default = null
-}
-
-variable "bastion_host" {
-  default = null
-}
-
-variable "volume_ids" {
-  type    = list(string)
-  default = null
-}
-
-variable "device_name" {
-  default = null
-}
-
 //allows calling module to set a fixed count since count cannot use a value calculated from something that may not exist yet (e.g. eni_ids)
 variable "instance_count" {
   default = 1

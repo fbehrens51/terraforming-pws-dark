@@ -16,6 +16,7 @@ variable "postfix_private_ip" {}
 variable "splunk_search_head_elb_dns" {}
 variable "splunk_logs_private_ip" {}
 variable "splunk_monitor_elb_dns" {}
+variable "grafana_elb_dns" {}
 
 module "domains" {
   source      = "../../domains"
@@ -46,6 +47,7 @@ output "zone_content" {
     splunk_search_head_elb_dns  = var.splunk_search_head_elb_dns,
     splunk_logs_private_ip      = var.splunk_logs_private_ip,
     splunk_monitor_elb_dns      = var.splunk_monitor_elb_dns,
+    grafana_elb_dns             = var.grafana_elb_dns,
     control_plane_om_public_ip  = var.control_plane_om_public_ip,
     control_plane_plane_elb_dns = var.control_plane_plane_elb_dns,
 
@@ -61,5 +63,6 @@ output "zone_content" {
     splunk_subdomain         = module.domains.splunk_subdomain,
     splunk_logs_subdomain    = module.domains.splunk_logs_subdomain,
     splunk_monitor_subdomain = module.domains.splunk_monitor_subdomain,
+    grafana_subdomain        = module.domains.grafana_subdomain,
   })
 }
