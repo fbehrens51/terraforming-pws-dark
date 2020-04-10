@@ -105,7 +105,7 @@ resource "aws_volume_attachment" "volume_attachment" {
 }
 
 resource "null_resource" "cloud_init_status" {
-  count = var.ignore_tag_changes && var.bot_key_pem == null ? 0 : var.instance_count
+  count = var.ignore_tag_changes == false && var.bot_key_pem != null ? var.instance_count : 0
 
   triggers = {
     instance_id = element(aws_instance.instance.*.id, count.index)
