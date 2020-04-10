@@ -27,14 +27,14 @@ product-properties:
         job_name: 'ec2'
         ec2_sd_configs:
         - region: ${region}
-        port: 9100
+          port: 9100
         relabel_configs:
         # Only monitor instances with a ScrapeMetrics tag = true
         - source_labels: [__meta_ec2_tag_ScrapeMetrics]
-        regex: true
-        action: keep
+          regex: true
+          action: keep
         - source_labels: [__meta_ec2_tag_Name,__meta_ec2_availability_zone]
-        target_label: instance
+          target_label: instance
       server_name: null
   .properties.canary_exporter_targets:
     value:
