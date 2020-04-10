@@ -84,21 +84,21 @@ locals {
 }
 
 module "healthwatch_config" {
-  source                           = "../../modules/healthwatch/config"
-  secrets_bucket_name              = local.secrets_bucket_name
+  source                          = "../../modules/healthwatch/config"
+  secrets_bucket_name             = local.secrets_bucket_name
   healthwatch_config              = var.healthwatch_config
   healthwatch_pas_exporter_config = var.healthwatch_pas_exporter_config
-  grafana_elb_id                   = data.terraform_remote_state.pas.outputs.grafana_elb_id
-  grafana_server_ca_cert           = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
-  grafana_server_cert              = data.terraform_remote_state.paperwork.outputs.grafana_server_cert
-  grafana_server_key               = data.terraform_remote_state.paperwork.outputs.grafana_server_key
-  root_domain                      = local.root_domain
-  network_name                     = data.terraform_remote_state.paperwork.outputs.pas_network_name
-  availability_zones               = var.availability_zones
-  singleton_availability_zone      = var.singleton_availability_zone
-  health_check_availability_zone   = var.singleton_availability_zone
-  bosh_task_uaa_client_secret      = random_string.healthwatch_client_credentials_secret.result
-  region = var.region
+  grafana_elb_id                  = data.terraform_remote_state.pas.outputs.grafana_elb_id
+  grafana_server_ca_cert          = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  grafana_server_cert             = data.terraform_remote_state.paperwork.outputs.grafana_server_cert
+  grafana_server_key              = data.terraform_remote_state.paperwork.outputs.grafana_server_key
+  root_domain                     = local.root_domain
+  network_name                    = data.terraform_remote_state.paperwork.outputs.pas_network_name
+  availability_zones              = var.availability_zones
+  singleton_availability_zone     = var.singleton_availability_zone
+  health_check_availability_zone  = var.singleton_availability_zone
+  bosh_task_uaa_client_secret     = random_string.healthwatch_client_credentials_secret.result
+  region                          = var.region
 
   splunk_syslog_host    = module.domains.splunk_logs_fqdn
   splunk_syslog_port    = module.splunk_ports.splunk_tcp_port

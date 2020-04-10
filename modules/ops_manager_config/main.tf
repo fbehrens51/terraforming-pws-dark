@@ -112,7 +112,7 @@ locals {
     iaas_configuration_ssh_private_key          = var.ops_manager_ssh_private_key,
     security_configuration_trusted_certificates = var.security_configuration_trusted_certificates,
     blobstore_instance_profile                  = var.blobstore_instance_profile,
-    tsdb_instance_profile                  = var.tsdb_instance_profile,
+    tsdb_instance_profile                       = var.tsdb_instance_profile,
     kms_key_arn                                 = var.volume_encryption_kms_key_arn,
     singleton_availability_zone                 = var.pas_subnet_availability_zones[0],
     infrastructure_subnets                      = join("", data.template_file.infrastructure_subnets.*.rendered),

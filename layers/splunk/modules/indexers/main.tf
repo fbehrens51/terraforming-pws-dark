@@ -47,12 +47,12 @@ variable "banner_user_data" {
 }
 
 module "base" {
-  source           = "../base"
-  server_cert      = var.server_cert
-  server_key       = var.server_key
-  ca_cert          = var.ca_cert
-  root_domain      = var.root_domain
-  clamav_user_data = var.clamav_user_data
+  source                  = "../base"
+  server_cert             = var.server_cert
+  server_key              = var.server_key
+  ca_cert                 = var.ca_cert
+  root_domain             = var.root_domain
+  clamav_user_data        = var.clamav_user_data
   node_exporter_user_data = var.node_exporter_user_data
 
   splunk_password = var.splunk_password

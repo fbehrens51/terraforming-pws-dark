@@ -96,7 +96,7 @@ locals {
   tags = merge(
     var.tags,
     {
-      "Name" = "${var.env_name}-splunk"
+      "Name"          = "${var.env_name}-splunk"
       "ScrapeMetrics" = "true"
     },
   )
@@ -131,7 +131,7 @@ module "s3_archiver_user_data" {
   ca_cert     = data.terraform_remote_state.paperwork.outputs.trusted_with_additional_ca_certs
   root_domain = local.root_domain
 
-  clamav_user_data = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
+  clamav_user_data        = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
   node_exporter_user_data = data.terraform_remote_state.paperwork.outputs.node_exporter_user_data
 
   s3_syslog_archive       = data.terraform_remote_state.bootstrap_splunk.outputs.s3_bucket_syslog_archive
@@ -177,7 +177,7 @@ module "indexers_user_data" {
   user_accounts_user_data   = data.terraform_remote_state.paperwork.outputs.bot_user_accounts_user_data
   root_domain               = local.root_domain
 
-  clamav_user_data = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
+  clamav_user_data        = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
   node_exporter_user_data = data.terraform_remote_state.paperwork.outputs.node_exporter_user_data
 
   splunk_password    = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_password
@@ -225,7 +225,7 @@ module "master_user_data" {
   user_accounts_user_data   = data.terraform_remote_state.paperwork.outputs.bot_user_accounts_user_data
   root_domain               = local.root_domain
 
-  clamav_user_data = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
+  clamav_user_data        = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
   node_exporter_user_data = data.terraform_remote_state.paperwork.outputs.node_exporter_user_data
 
   splunk_password    = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_password
@@ -271,7 +271,7 @@ module "search_head_user_data" {
   user_accounts_user_data   = data.terraform_remote_state.paperwork.outputs.bot_user_accounts_user_data
   root_domain               = local.root_domain
 
-  clamav_user_data = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
+  clamav_user_data        = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
   node_exporter_user_data = data.terraform_remote_state.paperwork.outputs.node_exporter_user_data
 
   splunk_password    = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_password
@@ -316,7 +316,7 @@ module "forwarders_user_data" {
   user_accounts_user_data = data.terraform_remote_state.paperwork.outputs.bot_user_accounts_user_data
   root_domain             = local.root_domain
 
-  clamav_user_data = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
+  clamav_user_data        = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
   node_exporter_user_data = data.terraform_remote_state.paperwork.outputs.node_exporter_user_data
 
   splunk_password             = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_password

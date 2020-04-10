@@ -405,14 +405,14 @@ locals {
   director_role_name   = data.terraform_remote_state.paperwork.outputs.director_role_name
   transfer_kms_key_arn = data.terraform_remote_state.paperwork.outputs.transfer_key_arn
 
-  sjb_ingress_rules = concat(var.sjb_ingress_rules, 
+  sjb_ingress_rules = concat(var.sjb_ingress_rules,
     [
-    {
-      // metrics endpoint for grafana
-      port        = "9100"
-      protocol    = "tcp"
-      cidr_blocks = data.aws_vpc.pas_vpc.cidr_block
-    }
+      {
+        // metrics endpoint for grafana
+        port        = "9100"
+        protocol    = "tcp"
+        cidr_blocks = data.aws_vpc.pas_vpc.cidr_block
+      }
     ]
   )
 }
