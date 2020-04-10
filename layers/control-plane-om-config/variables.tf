@@ -110,7 +110,7 @@ variable "concourse_config" {
 }
 
 variable "runtime_config" {
-  default = "control_plane/runtime_config.yml"
+  default = "control_plane/runtime_config_config.yml"
 }
 
 variable "clamav_addon_config" {

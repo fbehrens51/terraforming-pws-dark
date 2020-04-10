@@ -216,7 +216,7 @@ variable "portal_config" {
 
 variable "runtime_config" {
   description = "runtime configuration file"
-  default     = "pas/runtime_config.yml"
+  default     = "pas/runtime_config_config.yml"
 }
 
 variable "clamav_addon_config" {
