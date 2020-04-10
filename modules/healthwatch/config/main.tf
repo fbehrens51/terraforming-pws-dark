@@ -37,10 +37,10 @@ variable "splunk_syslog_ca_cert" {
 variable "secrets_bucket_name" {
 }
 
-variable "healthwatch2_config" {
+variable "healthwatch_config" {
 }
 
-variable "healthwatch2_pas_exporter_config" {
+variable "healthwatch_pas_exporter_config" {
 }
 
 data "template_file" "hw_vpc_azs" {
@@ -61,8 +61,8 @@ module "domains" {
   root_domain = var.root_domain
 }
 
-data "template_file" "healthwatch2_config" {
-  template = file("${path.module}/healthwatch2_config.tpl")
+data "template_file" "healthwatch_config" {
+  template = file("${path.module}/healthwatch_config.tpl")
 
   vars = {
     grafana_root_url            = "https://${module.domains.grafana_fqdn}"
@@ -77,14 +77,14 @@ data "template_file" "healthwatch2_config" {
   }
 }
 
-resource "aws_s3_bucket_object" "healthwatch2_template" {
+resource "aws_s3_bucket_object" "healthwatch_template" {
   bucket  = var.secrets_bucket_name
-  key     = var.healthwatch2_config
-  content = data.template_file.healthwatch2_config.rendered
+  key     = var.healthwatch_config
+  content = data.template_file.healthwatch_config.rendered
 }
 
-data "template_file" "healthwatch2_pas_exporter_config" {
-  template = file("${path.module}/healthwatch2_pas_exporter_config.tpl")
+data "template_file" "healthwatch_pas_exporter_config" {
+  template = file("${path.module}/healthwatch_pas_exporter_config.tpl")
 
   vars = {
     bosh_client_username           = "healthwatch_client"
@@ -96,8 +96,8 @@ data "template_file" "healthwatch2_pas_exporter_config" {
   }
 }
 
-resource "aws_s3_bucket_object" "healthwatch2_pas_exporter_template" {
+resource "aws_s3_bucket_object" "healthwatch_pas_exporter_template" {
   bucket  = var.secrets_bucket_name
-  key     = var.healthwatch2_pas_exporter_config
-  content = data.template_file.healthwatch2_pas_exporter_config.rendered
+  key     = var.healthwatch_pas_exporter_config
+  content = data.template_file.healthwatch_pas_exporter_config.rendered
 }

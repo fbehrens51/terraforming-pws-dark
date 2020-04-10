@@ -15,12 +15,12 @@ variable "singleton_availability_zone" {
 variable "env_name" {
 }
 
-variable "healthwatch2_config" {
-  default = "pas/healthwatch2_config.yml"
+variable "healthwatch_config" {
+  default = "pas/healthwatch_config.yml"
 }
 
-variable "healthwatch2_pas_exporter_config" {
-  default = "pas/healthwatch2_pas_exporter_config.yml"
+variable "healthwatch_pas_exporter_config" {
+  default = "pas/healthwatch_pas_exporter_config.yml"
 }
 
 terraform {
@@ -83,8 +83,8 @@ locals {
 module "healthwatch_config" {
   source                           = "../../modules/healthwatch/config"
   secrets_bucket_name              = local.secrets_bucket_name
-  healthwatch2_config              = var.healthwatch2_config
-  healthwatch2_pas_exporter_config = var.healthwatch2_pas_exporter_config
+  healthwatch_config              = var.healthwatch_config
+  healthwatch_pas_exporter_config = var.healthwatch_pas_exporter_config
   grafana_elb_id                   = data.terraform_remote_state.pas.outputs.grafana_elb_id
   grafana_server_ca_cert           = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
   grafana_server_cert              = data.terraform_remote_state.paperwork.outputs.grafana_server_cert
