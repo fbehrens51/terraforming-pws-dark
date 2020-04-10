@@ -71,38 +71,6 @@ resource "aws_instance" "instance" {
   }
 }
 
-resource "aws_volume_attachment" "volume_attachment" {
-  count        = var.volume_ids == null ? 0 : length(var.volume_ids)
-  skip_destroy = true
-  instance_id  = element(aws_instance.instance.*.id, count.index)
-  volume_id    = element(var.volume_ids, count.index)
-  device_name  = var.device_name
-}
-
-resource "null_resource" "cloud_init_status" {
-  count = var.ignore_tag_changes == false && var.bot_key_pem != null ? var.instance_count : 0
-
-  triggers = {
-    instance_id = element(aws_instance.instance.*.id, count.index)
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "echo \"Running cloud-init status --wait > /dev/null\"",
-      "sudo cloud-init status --wait > /dev/null",
-      "sudo cloud-init status --long"
-    ]
-
-    connection {
-      user         = "bot"
-      host         = element(aws_instance.instance.*.private_ip, count.index)
-      timeout      = var.ssh_timeout
-      private_key  = var.bot_key_pem
-      bastion_host = var.bastion_host
-    }
-  }
-}
-
 resource "aws_instance" "instance_ignoring_tags" {
   count = var.ignore_tag_changes ? var.instance_count : 0
 
