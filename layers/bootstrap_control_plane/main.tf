@@ -355,6 +355,10 @@ data "aws_vpc" "bastion_vpc" {
   id = local.bastion_vpc_id
 }
 
+data "aws_vpc" "pas_vpc" {
+  id = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
+}
+
 data "aws_region" "current" {
 }
 
@@ -400,6 +404,17 @@ locals {
 
   director_role_name   = data.terraform_remote_state.paperwork.outputs.director_role_name
   transfer_kms_key_arn = data.terraform_remote_state.paperwork.outputs.transfer_key_arn
+
+  sjb_ingress_rules = concat(var.sjb_ingress_rules, 
+    [
+    {
+      // metrics endpoint for grafana
+      port        = "9100"
+      protocol    = "tcp"
+      cidr_blocks = data.aws_vpc.pas_vpc.cidr_block
+    }
+    ]
+  )
 }
 
 module "sjb_subnet" {
@@ -423,7 +438,7 @@ resource "aws_route_table_association" "sjb_route_table_assoc" {
 
 module "sjb_bootstrap" {
   source        = "../../modules/eni_per_subnet"
-  ingress_rules = var.sjb_ingress_rules
+  ingress_rules = local.sjb_ingress_rules
   egress_rules  = var.sjb_egress_rules
   subnet_ids    = module.sjb_subnet.subnet_ids
   eni_count     = "1"

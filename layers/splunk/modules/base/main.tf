@@ -16,6 +16,9 @@ variable "root_domain" {
 variable "clamav_user_data" {
 }
 
+variable "node_exporter_user_data" {
+}
+
 variable "splunk_password" {
 }
 
@@ -171,6 +174,12 @@ data "template_cloudinit_config" "user_data" {
     filename     = "clamav.cfg"
     content_type = "text/x-include-url"
     content      = var.clamav_user_data
+  }
+
+  part {
+    filename     = "node_exporter.cfg"
+    content_type = "text/x-include-url"
+    content      = var.node_exporter_user_data
   }
 
   part {

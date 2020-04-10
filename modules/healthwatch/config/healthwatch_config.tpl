@@ -19,6 +19,23 @@ product-properties:
         ${indent(8, grafana_server_cert)}
       private_key_pem: |
         ${indent(8, grafana_server_key)}
+  .properties.scrape_configs:
+    value:
+    - ca: null
+      insecure_skip_verify: false
+      scrape_job: |
+        job_name: 'ec2'
+        ec2_sd_configs:
+        - region: ${region}
+        port: 9100
+        relabel_configs:
+        # Only monitor instances with a ScrapeMetrics tag = true
+        - source_labels: [__meta_ec2_tag_ScrapeMetrics]
+        regex: true
+        action: keep
+        - source_labels: [__meta_ec2_tag_Name,__meta_ec2_availability_zone]
+        target_label: instance
+      server_name: null
   .properties.canary_exporter_targets:
     value:
     - address: ${canary_url}
@@ -110,7 +127,7 @@ resource-config:
   tsdb:
     max_in_flight: 1
     additional_networks: []
-    additional_vm_extensions: []
+    additional_vm_extensions: [tsdb_instance_profile]
     elb_names: []
     instance_type:
       id: automatic

@@ -17,6 +17,7 @@ locals {
     var.tags,
     {
       "Name" = local.modified_name
+      "ScrapeMetrics" = "true"
     },
   )
 
@@ -219,6 +220,12 @@ data "template_cloudinit_config" "user_data" {
     filename     = "clamav.cfg"
     content_type = "text/x-include-url"
     content      = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
+  }
+
+  part {
+    filename     = "node_exporter.cfg"
+    content_type = "text/x-include-url"
+    content      = data.terraform_remote_state.paperwork.outputs.node_exporter_user_data
   }
 
   part {

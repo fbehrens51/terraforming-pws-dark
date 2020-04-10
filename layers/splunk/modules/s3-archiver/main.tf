@@ -25,6 +25,9 @@ variable "region" {
 variable "clamav_user_data" {
 }
 
+variable "node_exporter_user_data" {
+}
+
 variable "user_accounts_user_data" {
 }
 
@@ -186,6 +189,12 @@ data "template_cloudinit_config" "cloud_config" {
     filename     = "clamav.cfg"
     content_type = "text/x-include-url"
     content      = var.clamav_user_data
+  }
+
+  part {
+    filename     = "node_exporter.cfg"
+    content_type = "text/x-include-url"
+    content      = var.node_exporter_user_data
   }
 
   part {

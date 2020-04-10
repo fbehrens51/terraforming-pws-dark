@@ -17,6 +17,9 @@ variable "archive_role_name" {
 variable "splunk_role_name" {
 }
 
+variable "tsdb_role_name" {
+}
+
 variable "root_domain" {
 }
 

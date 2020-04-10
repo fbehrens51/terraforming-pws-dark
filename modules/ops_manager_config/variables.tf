@@ -430,6 +430,8 @@ variable "blobstore_instance_profile" {
   description = "An IAM Instance profile which permission to read and write to the buckets specified below"
 }
 
+variable "tsdb_instance_profile" {}
+
 variable "volume_encryption_kms_key_arn" {
 }
 
@@ -592,4 +594,3 @@ variable "tcp_router_instance_type" {
 
 variable "uaa_instance_type" {
 }
-

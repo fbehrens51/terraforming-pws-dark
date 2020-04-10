@@ -166,6 +166,41 @@ data "aws_iam_policy_document" "kms_admin_user" {
   }
 }
 
+data "aws_iam_policy_document" "ec2_reader" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "ec2:Get*",
+      "ec2:Describe*",
+    ]
+
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "tsdb_writer" {
+  name   = var.tsdb_role_name
+  path   = "/"
+  policy = data.aws_iam_policy_document.ec2_reader.json
+}
+
+resource "aws_iam_role" "tsdb_role" {
+  name               = var.tsdb_role_name
+  assume_role_policy = data.aws_iam_policy_document.role_policy.json
+}
+
+resource "aws_iam_policy_attachment" "tsdb" {
+  name       = var.tsdb_role_name
+  roles      = [aws_iam_role.tsdb_role.name]
+  policy_arn = aws_iam_policy.tsdb_writer.arn
+}
+
+resource "aws_iam_instance_profile" "tsdb_instance_profile" {
+  name = aws_iam_role.tsdb_role.name
+  role = aws_iam_role.tsdb_role.name
+}
+
 data "aws_iam_policy_document" "s3_writer" {
   statement {
     effect = "Allow"
@@ -181,12 +216,6 @@ data "aws_iam_policy_document" "s3_writer" {
   }
 }
 
-resource "aws_iam_policy_attachment" "archive" {
-  name       = var.archive_role_name
-  roles      = [aws_iam_role.archive_role.name]
-  policy_arn = aws_iam_policy.archive_writer.arn
-}
-
 resource "aws_iam_policy" "archive_writer" {
   name   = var.archive_role_name
   path   = "/"
@@ -196,6 +225,12 @@ resource "aws_iam_policy" "archive_writer" {
 resource "aws_iam_role" "archive_role" {
   name               = var.archive_role_name
   assume_role_policy = data.aws_iam_policy_document.role_policy.json
+}
+
+resource "aws_iam_policy_attachment" "archive" {
+  name       = var.archive_role_name
+  roles      = [aws_iam_role.archive_role.name]
+  policy_arn = aws_iam_policy.archive_writer.arn
 }
 
 resource "aws_iam_instance_profile" "archive_instance_profile" {

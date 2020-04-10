@@ -255,6 +255,9 @@ variable "archive_role_name" {
 variable "splunk_role_name" {
 }
 
+variable "tsdb_role_name" {
+}
+
 variable "bucket_role_name" {
 }
 
@@ -633,6 +636,10 @@ output "archive_role_name" {
 
 output "splunk_role_name" {
   value = var.splunk_role_name
+}
+
+output "tsdb_role_name" {
+  value = var.tsdb_role_name
 }
 
 output "root_ca_cert" {

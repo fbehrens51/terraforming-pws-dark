@@ -22,6 +22,8 @@ archive_role_name = "${archive_role_name}"
 
 splunk_role_name = "${splunk_role_name}"
 
+tsdb_role_name = "${tsdb_role_name}"
+
 bucket_role_name = "${bucket_role_name}"
 
 platform_automation_engine_worker_role_name = "${platform_automation_engine_worker_role_name}"

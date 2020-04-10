@@ -20,6 +20,10 @@ merge_how:
  - name: dict
    settings: [no_replace, recurse_list]
 
+users:
+- name: node_exporter
+  system: true
+
 write_files:
   - content: |
       OPTIONS="--collector.systemd"

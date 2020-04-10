@@ -43,6 +43,9 @@ variable "healthwatch_config" {
 variable "healthwatch_pas_exporter_config" {
 }
 
+variable "region" {
+}
+
 data "template_file" "hw_vpc_azs" {
   count = length(var.availability_zones)
 
@@ -73,6 +76,7 @@ data "template_file" "healthwatch_config" {
     network_name                = var.network_name
     hw_vpc_azs                  = indent(2, join("", data.template_file.hw_vpc_azs.*.rendered))
     singleton_availability_zone = var.singleton_availability_zone
+    region = var.region
     grafana_elb_id              = var.grafana_elb_id
   }
 }

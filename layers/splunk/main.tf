@@ -97,6 +97,7 @@ locals {
     var.tags,
     {
       "Name" = "${var.env_name}-splunk"
+      "ScrapeMetrics" = "true"
     },
   )
 
@@ -131,6 +132,7 @@ module "s3_archiver_user_data" {
   root_domain = local.root_domain
 
   clamav_user_data = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
+  node_exporter_user_data = data.terraform_remote_state.paperwork.outputs.node_exporter_user_data
 
   s3_syslog_archive       = data.terraform_remote_state.bootstrap_splunk.outputs.s3_bucket_syslog_archive
   s3_syslog_audit_archive = data.terraform_remote_state.bootstrap_splunk.outputs.s3_bucket_syslog_audit_archive
@@ -176,6 +178,7 @@ module "indexers_user_data" {
   root_domain               = local.root_domain
 
   clamav_user_data = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
+  node_exporter_user_data = data.terraform_remote_state.paperwork.outputs.node_exporter_user_data
 
   splunk_password    = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_password
   splunk_rpm_version = var.splunk_rpm_version
@@ -223,6 +226,7 @@ module "master_user_data" {
   root_domain               = local.root_domain
 
   clamav_user_data = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
+  node_exporter_user_data = data.terraform_remote_state.paperwork.outputs.node_exporter_user_data
 
   splunk_password    = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_password
   splunk_rpm_version = var.splunk_rpm_version
@@ -268,6 +272,7 @@ module "search_head_user_data" {
   root_domain               = local.root_domain
 
   clamav_user_data = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
+  node_exporter_user_data = data.terraform_remote_state.paperwork.outputs.node_exporter_user_data
 
   splunk_password    = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_password
   splunk_rpm_version = var.splunk_rpm_version
@@ -312,6 +317,7 @@ module "forwarders_user_data" {
   root_domain             = local.root_domain
 
   clamav_user_data = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
+  node_exporter_user_data = data.terraform_remote_state.paperwork.outputs.node_exporter_user_data
 
   splunk_password             = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_password
   splunk_rpm_version          = var.splunk_rpm_version

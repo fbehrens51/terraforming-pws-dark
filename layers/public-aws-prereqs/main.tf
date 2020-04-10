@@ -74,6 +74,7 @@ module "paperwork" {
   worker_role_name   = var.platform_automation_engine_worker_role_name
   director_role_name = var.director_role_name
   splunk_role_name   = var.splunk_role_name
+  tsdb_role_name   = var.tsdb_role_name
   archive_role_name  = var.archive_role_name
   ldap_eip           = aws_eip.ldap_eip.public_ip
 
@@ -113,6 +114,7 @@ data "template_file" "paperwork_variables" {
     bucket_role_name                            = var.pas_bucket_role_name
     platform_automation_engine_worker_role_name = var.platform_automation_engine_worker_role_name
     splunk_role_name                            = var.splunk_role_name
+    tsdb_role_name                            = var.tsdb_role_name
     archive_role_name                           = var.archive_role_name
     director_role_name                          = var.director_role_name
     sjb_role_name                               = var.director_role_name
@@ -207,6 +209,9 @@ variable "archive_role_name" {
 }
 
 variable "splunk_role_name" {
+}
+
+variable "tsdb_role_name" {
 }
 
 variable "env_name" {

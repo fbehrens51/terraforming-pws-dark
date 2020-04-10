@@ -25,6 +25,9 @@ variable "search_heads_pass4SymmKey" {
 variable "clamav_user_data" {
 }
 
+variable "node_exporter_user_data" {
+}
+
 variable "splunk_password" {
 }
 
@@ -54,6 +57,7 @@ module "base" {
   root_domain = var.root_domain
 
   clamav_user_data = var.clamav_user_data
+  node_exporter_user_data = var.node_exporter_user_data
 
   splunk_password         = var.splunk_password
   splunk_rpm_version      = var.splunk_rpm_version

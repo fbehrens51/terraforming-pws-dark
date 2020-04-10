@@ -32,6 +32,10 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
+data "aws_vpc" "pas_vpc" {
+  id = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
+}
+
 locals {
   indexers_count   = "3"
   forwarders_count = "1"
@@ -89,6 +93,12 @@ locals {
       port        = module.splunk_ports.splunk_s3_archive_port
       protocol    = "tcp"
       cidr_blocks = "0.0.0.0/0"
+    },
+    {
+      // metrics endpoint for grafana
+      port        = "9100"
+      protocol    = "tcp"
+      cidr_blocks = data.aws_vpc.pas_vpc.cidr_block
     },
   ]
 

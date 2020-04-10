@@ -139,6 +139,9 @@ vmextensions-configuration:
 - name: s3_instance_profile
   cloud_properties:
     iam_instance_profile: ${blobstore_instance_profile}
+- name: tsdb_instance_profile
+  cloud_properties:
+    iam_instance_profile: ${tsdb_instance_profile}
 %{ for vpc_id, security_group in isolation_segment_to_security_groups }
 - name: isolation-segment-${vpc_id}
   cloud_properties:

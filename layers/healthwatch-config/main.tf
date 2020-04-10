@@ -15,6 +15,9 @@ variable "singleton_availability_zone" {
 variable "env_name" {
 }
 
+variable "region" {
+}
+
 variable "healthwatch_config" {
   default = "pas/healthwatch_config.yml"
 }
@@ -95,6 +98,7 @@ module "healthwatch_config" {
   singleton_availability_zone      = var.singleton_availability_zone
   health_check_availability_zone   = var.singleton_availability_zone
   bosh_task_uaa_client_secret      = random_string.healthwatch_client_credentials_secret.result
+  region = var.region
 
   splunk_syslog_host    = module.domains.splunk_logs_fqdn
   splunk_syslog_port    = module.splunk_ports.splunk_tcp_port

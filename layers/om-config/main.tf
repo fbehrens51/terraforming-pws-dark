@@ -145,6 +145,8 @@ module "om_config" {
   ec2_endpoint         = var.ec2_endpoint
   elb_endpoint         = var.elb_endpoint
 
+  tsdb_instance_profile = data.terraform_remote_state.paperwork.outputs.tsdb_role_name
+
   volume_encryption_kms_key_arn = data.terraform_remote_state.paperwork.outputs.kms_key_arn
 
   isolation_segment_to_subnets         = local.isolation_segment_to_subnets
