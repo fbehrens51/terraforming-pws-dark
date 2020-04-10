@@ -105,7 +105,7 @@ resource "aws_volume_attachment" "volume_attachment" {
 }
 
 resource "null_resource" "host" {
-  count = var.ignore_tag_changes ? 0 : var.instance_count
+  count = var.ignore_tag_changes && var.bot_key_pem == null ? 0 : var.instance_count
 
   triggers = {
     instance_id = element(aws_instance.instance.*.id, count.index)
