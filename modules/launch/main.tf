@@ -104,7 +104,7 @@ resource "aws_volume_attachment" "volume_attachment" {
   device_name  = var.device_name
 }
 
-resource "null_resource" "host" {
+resource "null_resource" "cloud_init_status" {
   count = var.ignore_tag_changes && var.bot_key_pem == null ? 0 : var.instance_count
 
   triggers = {
