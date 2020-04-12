@@ -33,8 +33,10 @@ product-properties:
         - source_labels: [__meta_ec2_tag_ScrapeMetrics]
           regex: true
           action: keep
-        - source_labels: [__meta_ec2_tag_Name,__meta_ec2_availability_zone]
-          target_label: instance
+        - source_labels: [__meta_ec2_tag_Name]
+          target_label: name_tag
+        - source_labels: [__meta_ec2_availability_zone]
+          target_label: availability_zone
       server_name: null
   .properties.canary_exporter_targets:
     value:
