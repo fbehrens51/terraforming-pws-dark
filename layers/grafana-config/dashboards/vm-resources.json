@@ -9,6 +9,23 @@
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
         "type": "dashboard"
+      },
+      {
+        "datasource": "prometheus",
+        "enable": true,
+        "expr": "timestamp(idelta(node_boot_time_seconds{name_tag=~\"${name:regex}\",availability_zone=~\"${az:regex}\"}[5m]) > 0)",
+        "hide": false,
+        "iconColor": "#5794F2",
+        "limit": 100,
+        "name": "Boot",
+        "showIn": 0,
+        "step": "0s",
+        "tagKeys": "name_tag,availability_zone",
+        "tags": [],
+        "textFormat": "",
+        "titleFormat": "{{name_tag}} boot",
+        "type": "tags",
+        "useValueForTime": false
       }
     ]
   },
@@ -16,7 +33,7 @@
   "gnetId": null,
   "graphTooltip": 1,
   "id": 25,
-  "iteration": 1586791669862,
+  "iteration": 1586805131189,
   "links": [],
   "panels": [
     {
@@ -638,5 +655,5 @@
   "variables": {
     "list": []
   },
-  "version": 29
+  "version": 34
 }
