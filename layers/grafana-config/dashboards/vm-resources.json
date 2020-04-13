@@ -33,7 +33,7 @@
   "gnetId": null,
   "graphTooltip": 1,
   "id": 25,
-  "iteration": 1586806340766,
+  "iteration": 1586809615059,
   "links": [],
   "panels": [
     {
@@ -51,6 +51,102 @@
       "type": "row"
     },
     {
+      "dashboardFilter": "",
+      "dashboardTags": [],
+      "datasource": null,
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 0,
+        "y": 1
+      },
+      "id": 28,
+      "limit": 10,
+      "nameFilter": "",
+      "onlyAlertsOnDashboard": true,
+      "show": "current",
+      "sortOrder": 1,
+      "stateFilter": [],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Alert Status",
+      "type": "alertlist"
+    },
+    {
+      "cacheTimeout": null,
+      "columns": [
+        {
+          "text": "Avg",
+          "value": "avg"
+        }
+      ],
+      "datasource": null,
+      "description": "These services are reporting 'failed' in systemd.",
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 12,
+        "y": 1
+      },
+      "id": 18,
+      "links": [],
+      "pageSize": null,
+      "pluginVersion": "6.7.1",
+      "repeat": null,
+      "repeatDirection": "h",
+      "showHeader": true,
+      "sort": {
+        "col": 1,
+        "desc": false
+      },
+      "styles": [
+        {
+          "alias": "",
+          "align": "right",
+          "colorMode": "cell",
+          "colors": [
+            "rgba(50, 172, 45, 0.97)",
+            "#56A64B",
+            "rgba(245, 54, 54, 0.9)"
+          ],
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "Avg",
+          "thresholds": [
+            "0",
+            "1"
+          ],
+          "type": "string",
+          "unit": "short",
+          "valueMaps": [
+            {
+              "text": "Up",
+              "value": "0"
+            },
+            {
+              "text": "Down",
+              "value": "1"
+            }
+          ]
+        }
+      ],
+      "targets": [
+        {
+          "expr": "sum(node_systemd_unit_state{availability_zone=~\"${az:regex}\",name_tag=~\"${name:regex}\",state=\"failed\"}) by (name_tag, availability_zone, name) > 0",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{name_tag}} - {{availability_zone}} - {{name}}",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Failed Systemd Units",
+      "transform": "timeseries_aggregations",
+      "type": "table"
+    },
+    {
       "cacheTimeout": null,
       "columns": [
         {
@@ -65,7 +161,7 @@
         "h": 5,
         "w": 12,
         "x": 0,
-        "y": 1
+        "y": 6
       },
       "id": 20,
       "links": [],
@@ -139,7 +235,7 @@
         "h": 5,
         "w": 12,
         "x": 12,
-        "y": 1
+        "y": 6
       },
       "id": 16,
       "links": [],
@@ -159,7 +255,7 @@
           "colorMode": "cell",
           "colors": [
             "rgba(245, 54, 54, 0.9)",
-            "#E02F44",
+            "rgba(245, 54, 54, 0.9)",
             "rgba(50, 172, 45, 0.97)"
           ],
           "decimals": 2,
@@ -195,80 +291,6 @@
       "timeFrom": null,
       "timeShift": null,
       "title": "Down Instances",
-      "transform": "timeseries_aggregations",
-      "type": "table"
-    },
-    {
-      "cacheTimeout": null,
-      "columns": [
-        {
-          "text": "Avg",
-          "value": "avg"
-        }
-      ],
-      "datasource": null,
-      "description": "These services are reporting 'failed' in systemd.",
-      "fontSize": "100%",
-      "gridPos": {
-        "h": 5,
-        "w": 24,
-        "x": 0,
-        "y": 6
-      },
-      "id": 18,
-      "links": [],
-      "pageSize": null,
-      "pluginVersion": "6.7.1",
-      "repeat": null,
-      "repeatDirection": "h",
-      "showHeader": true,
-      "sort": {
-        "col": 1,
-        "desc": false
-      },
-      "styles": [
-        {
-          "alias": "",
-          "align": "right",
-          "colorMode": "cell",
-          "colors": [
-            "rgba(50, 172, 45, 0.97)",
-            "#56A64B",
-            "rgba(245, 54, 54, 0.9)"
-          ],
-          "decimals": 2,
-          "mappingType": 1,
-          "pattern": "Avg",
-          "thresholds": [
-            "0",
-            "1"
-          ],
-          "type": "string",
-          "unit": "short",
-          "valueMaps": [
-            {
-              "text": "Up",
-              "value": "0"
-            },
-            {
-              "text": "Down",
-              "value": "1"
-            }
-          ]
-        }
-      ],
-      "targets": [
-        {
-          "expr": "sum(node_systemd_unit_state{availability_zone=~\"${az:regex}\",name_tag=~\"${name:regex}\",state=\"failed\"}) by (name_tag, availability_zone, name) > 0",
-          "instant": true,
-          "interval": "",
-          "legendFormat": "{{name_tag}} - {{availability_zone}} - {{name}}",
-          "refId": "A"
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Failed Systemd Units",
       "transform": "timeseries_aggregations",
       "type": "table"
     },
@@ -565,6 +587,288 @@
         "align": false,
         "alignLevel": null
       }
+    },
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 32
+      },
+      "id": 22,
+      "panels": [],
+      "title": "Alert-Backing Metrics",
+      "type": "row"
+    },
+    {
+      "alert": {
+        "alertRuleTags": {},
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [
+                0.5
+              ],
+              "type": "gt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": [
+                "A",
+                "5m",
+                "now"
+              ]
+            },
+            "reducer": {
+              "params": [],
+              "type": "max"
+            },
+            "type": "query"
+          }
+        ],
+        "executionErrorState": "alerting",
+        "for": "5m",
+        "frequency": "1m",
+        "handler": 1,
+        "message": "One or more instances are not reporting metrics. This could be a firewall issue, or it could be an indication of something more serious.",
+        "name": "Missing Metrics",
+        "noDataState": "no_data",
+        "notifications": []
+      },
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "fill": 0,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 33
+      },
+      "hiddenSeries": false,
+      "id": 24,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": true,
+        "hideEmpty": true,
+        "hideZero": true,
+        "max": false,
+        "min": false,
+        "rightSide": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "(1 - up{name_tag!=\"\"}) > 0",
+          "interval": "",
+          "legendFormat": "{{name_tag}} | {{availability_zone}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [
+        {
+          "colorMode": "critical",
+          "fill": true,
+          "line": true,
+          "op": "gt",
+          "value": 0.5
+        }
+      ],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Missing Metrics",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": "2",
+          "min": "0",
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "alert": {
+        "alertRuleTags": {},
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [
+                0.5
+              ],
+              "type": "gt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": [
+                "A",
+                "5m",
+                "now"
+              ]
+            },
+            "reducer": {
+              "params": [],
+              "type": "max"
+            },
+            "type": "query"
+          }
+        ],
+        "executionErrorState": "alerting",
+        "for": "5m",
+        "frequency": "1m",
+        "handler": 1,
+        "message": "One or more systemd units are failing. This typically indicates that some important service is down.",
+        "name": "Failed Systemd Units alert",
+        "noDataState": "no_data",
+        "notifications": []
+      },
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 33
+      },
+      "hiddenSeries": false,
+      "id": 26,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "node_systemd_unit_state{state=\"failed\"} > 0",
+          "interval": "",
+          "legendFormat": "{{name_tag}} | {{availability_zone}} | {{name}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [
+        {
+          "colorMode": "critical",
+          "fill": true,
+          "line": true,
+          "op": "gt",
+          "value": 0.5
+        }
+      ],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Failed Systemd Units",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": "2",
+          "min": "0",
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     }
   ],
   "refresh": "1m",
@@ -655,5 +959,5 @@
   "variables": {
     "list": []
   },
-  "version": 39
+  "version": 45
 }
