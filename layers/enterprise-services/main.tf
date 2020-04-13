@@ -63,7 +63,8 @@ locals {
       "Name" = local.modified_name
     },
   )
-  es_vpc_id = data.terraform_remote_state.paperwork.outputs.es_vpc_id
+  es_vpc_id  = data.terraform_remote_state.paperwork.outputs.es_vpc_id
+  pas_vpc_id = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
 
   splunk_volume_tag = "${var.env_name}-SPLUNK_DATA"
 
@@ -73,6 +74,10 @@ locals {
 
 data "aws_vpc" "this_vpc" {
   id = local.es_vpc_id
+}
+
+data "aws_vpc" "pas_vpc" {
+  id = local.pas_vpc_id
 }
 
 module "public_subnets" {
@@ -143,18 +148,19 @@ data "template_cloudinit_config" "nat_user_data" {
 }
 
 module "nat" {
-  source                  = "../../modules/nat"
-  ami_id                  = data.terraform_remote_state.encrypt_amis.outputs.encrypted_amazon2_ami_id
-  private_route_table_ids = data.terraform_remote_state.routes.outputs.es_private_vpc_route_table_ids
-  ingress_cidr_blocks     = [data.aws_vpc.this_vpc.cidr_block]
-  tags                    = local.modified_tags
-  public_subnet_ids       = module.public_subnets.subnet_ids
-  bastion_private_ip      = "${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"
-  internetless            = var.internetless
-  instance_type           = var.nat_instance_type
-  user_data               = data.template_cloudinit_config.nat_user_data.rendered
-  root_domain             = data.terraform_remote_state.paperwork.outputs.root_domain
-  splunk_syslog_ca_cert   = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  source                     = "../../modules/nat"
+  ami_id                     = data.terraform_remote_state.encrypt_amis.outputs.encrypted_amazon2_ami_id
+  private_route_table_ids    = data.terraform_remote_state.routes.outputs.es_private_vpc_route_table_ids
+  ingress_cidr_blocks        = [data.aws_vpc.this_vpc.cidr_block]
+  metrics_ingress_cidr_block = data.aws_vpc.pas_vpc.cidr_block
+  tags                       = local.modified_tags
+  public_subnet_ids          = module.public_subnets.subnet_ids
+  bastion_private_ip         = "${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"
+  internetless               = var.internetless
+  instance_type              = var.nat_instance_type
+  user_data                  = data.template_cloudinit_config.nat_user_data.rendered
+  root_domain                = data.terraform_remote_state.paperwork.outputs.root_domain
+  splunk_syslog_ca_cert      = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
 
   public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url

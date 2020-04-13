@@ -92,6 +92,10 @@ locals {
   iso_s3_endpoint_ids = data.terraform_remote_state.paperwork.outputs.iso_s3_endpoint_ids
 }
 
+data "aws_vpc" "pas_vpc" {
+  id = local.pas_vpc_id
+}
+
 resource "null_resource" "vpc_tags" {
   triggers = {
     vpc_id   = var.vpc_id
@@ -257,8 +261,9 @@ resource "aws_security_group_rule" "pas_ingress_from_isolation_segment" {
 module "isolation_segment_0" {
   source = "./modules/bootstrap-isolation-segment"
 
-  name       = var.isolation_segment_name_0
-  cidr_block = local.isolation_segment_cidr_block_0
+  name               = var.isolation_segment_name_0
+  cidr_block         = local.isolation_segment_cidr_block_0
+  pas_vpc_cidr_block = data.aws_vpc.pas_vpc.cidr_block
 
   public_subnet_ids  = aws_subnet.public_subnets.*.id
   vpc_id             = var.vpc_id
@@ -280,8 +285,9 @@ module "isolation_segment_0" {
 module "isolation_segment_1" {
   source = "./modules/bootstrap-isolation-segment"
 
-  name       = var.isolation_segment_name_1
-  cidr_block = local.isolation_segment_cidr_block_1
+  name               = var.isolation_segment_name_1
+  cidr_block         = local.isolation_segment_cidr_block_1
+  pas_vpc_cidr_block = data.aws_vpc.pas_vpc.cidr_block
 
   public_subnet_ids  = aws_subnet.public_subnets.*.id
   vpc_id             = var.vpc_id
@@ -303,8 +309,9 @@ module "isolation_segment_1" {
 module "isolation_segment_2" {
   source = "./modules/bootstrap-isolation-segment"
 
-  name       = var.isolation_segment_name_2
-  cidr_block = local.isolation_segment_cidr_block_2
+  name               = var.isolation_segment_name_2
+  cidr_block         = local.isolation_segment_cidr_block_2
+  pas_vpc_cidr_block = data.aws_vpc.pas_vpc.cidr_block
 
   public_subnet_ids  = aws_subnet.public_subnets.*.id
   vpc_id             = var.vpc_id
@@ -326,8 +333,9 @@ module "isolation_segment_2" {
 module "isolation_segment_3" {
   source = "./modules/bootstrap-isolation-segment"
 
-  name       = var.isolation_segment_name_3
-  cidr_block = local.isolation_segment_cidr_block_3
+  name               = var.isolation_segment_name_3
+  cidr_block         = local.isolation_segment_cidr_block_3
+  pas_vpc_cidr_block = data.aws_vpc.pas_vpc.cidr_block
 
   public_subnet_ids  = aws_subnet.public_subnets.*.id
   vpc_id             = var.vpc_id

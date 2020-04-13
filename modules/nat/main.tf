@@ -42,13 +42,17 @@ variable "ingress_cidr_blocks" {
   type = list(string)
 }
 
+variable "metrics_ingress_cidr_block" {
+  type = string
+}
+
 locals {
   env_name      = var.tags["Name"]
   modified_name = "${local.env_name} nat"
   modified_tags = merge(
     var.tags,
     {
-      "Name" = local.modified_name
+      "Name"          = local.modified_name
       "ScrapeMetrics" = "true"
     },
   )
@@ -67,6 +71,11 @@ module "eni" {
       port        = "0"
       protocol    = "-1"
       cidr_blocks = join(",", var.ingress_cidr_blocks)
+    },
+    {
+      port        = "9100"
+      protocol    = "tcp"
+      cidr_blocks = var.metrics_ingress_cidr_block
     },
   ]
 

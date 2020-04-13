@@ -40,14 +40,14 @@ variable "slack_webhook" {
 }
 
 module "domains" {
-  source = "../../modules/domains"
+  source      = "../../modules/domains"
   root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
 }
 
 resource "grafana_alert_notification" "slack" {
-  count = var.slack_webhook == "" ? 0 : 1
-  name = "PWS Dark Notifications"
-  type = "slack"
+  count      = var.slack_webhook == "" ? 0 : 1
+  name       = "PWS Dark Notifications"
+  type       = "slack"
   is_default = true
 
   settings = {

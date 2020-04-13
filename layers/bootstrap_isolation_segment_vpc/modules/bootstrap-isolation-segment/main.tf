@@ -11,6 +11,7 @@ variable "tags" {
 
 variable "name" {}
 variable "cidr_block" {}
+variable "pas_vpc_cidr_block" {}
 variable "ami_id" {}
 variable "public_subnet_ids" {}
 variable "internetless" {}
@@ -58,18 +59,19 @@ module "nat" {
   source                  = "../../../../modules/nat"
   private_route_table_ids = aws_route_table.private_route_tables.*.id
 
-  ingress_cidr_blocks   = module.isolation_segment_subnets_0.subnet_cidr_blocks
-  public_subnet_ids     = var.public_subnet_ids
-  tags                  = local.modified_tags
-  ami_id                = var.ami_id
-  internetless          = var.internetless
-  bastion_private_ip    = var.bastion_private_ip
-  instance_type         = var.instance_type
-  user_data             = var.user_data
-  root_domain           = var.root_domain
-  splunk_syslog_ca_cert = var.splunk_syslog_ca_cert
-  public_bucket_name    = var.public_bucket_name
-  public_bucket_url     = var.public_bucket_url
+  ingress_cidr_blocks        = module.isolation_segment_subnets_0.subnet_cidr_blocks
+  metrics_ingress_cidr_block = var.pas_vpc_cidr_block
+  public_subnet_ids          = var.public_subnet_ids
+  tags                       = local.modified_tags
+  ami_id                     = var.ami_id
+  internetless               = var.internetless
+  bastion_private_ip         = var.bastion_private_ip
+  instance_type              = var.instance_type
+  user_data                  = var.user_data
+  root_domain                = var.root_domain
+  splunk_syslog_ca_cert      = var.splunk_syslog_ca_cert
+  public_bucket_name         = var.public_bucket_name
+  public_bucket_url          = var.public_bucket_url
 }
 
 output "private_route_table_ids" {

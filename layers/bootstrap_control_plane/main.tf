@@ -263,18 +263,19 @@ data "template_cloudinit_config" "nat_user_data" {
 }
 
 module "nat" {
-  source                  = "../../modules/nat"
-  ami_id                  = data.terraform_remote_state.encrypt_amis.outputs.encrypted_amazon2_ami_id
-  private_route_table_ids = data.terraform_remote_state.routes.outputs.cp_private_vpc_route_table_ids
-  ingress_cidr_blocks     = [data.aws_vpc.vpc.cidr_block]
-  tags                    = local.modified_tags
-  public_subnet_ids       = module.public_subnets.subnet_ids
-  internetless            = var.internetless
-  bastion_private_ip      = "${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"
-  instance_type           = var.nat_instance_type
-  user_data               = data.template_cloudinit_config.nat_user_data.rendered
-  root_domain             = data.terraform_remote_state.paperwork.outputs.root_domain
-  splunk_syslog_ca_cert   = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  source                     = "../../modules/nat"
+  ami_id                     = data.terraform_remote_state.encrypt_amis.outputs.encrypted_amazon2_ami_id
+  private_route_table_ids    = data.terraform_remote_state.routes.outputs.cp_private_vpc_route_table_ids
+  ingress_cidr_blocks        = [data.aws_vpc.vpc.cidr_block]
+  metrics_ingress_cidr_block = data.aws_vpc.pas_vpc.cidr_block
+  tags                       = local.modified_tags
+  public_subnet_ids          = module.public_subnets.subnet_ids
+  internetless               = var.internetless
+  bastion_private_ip         = "${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"
+  instance_type              = var.nat_instance_type
+  user_data                  = data.template_cloudinit_config.nat_user_data.rendered
+  root_domain                = data.terraform_remote_state.paperwork.outputs.root_domain
+  splunk_syslog_ca_cert      = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
 
   public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url
