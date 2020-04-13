@@ -10,6 +10,9 @@ variable "clamav_deb_pkg_object_url" {
 variable "user_accounts_user_data" {
 }
 
+variable "node_exporter_user_data" {
+}
+
 variable "trusted_ca_certs" {
 }
 
@@ -102,6 +105,13 @@ CLOUDINIT
     filename     = "clamav.cfg"
     content_type = "text/cloud-config"
     content      = module.clamav_config.client_user_data_config
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+
+  part {
+    filename     = "node_exporter.cfg"
+    content_type = "text/cloud-config"
+    content      = var.node_exporter_user_data
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
