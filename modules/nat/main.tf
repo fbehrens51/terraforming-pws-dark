@@ -49,6 +49,7 @@ locals {
     var.tags,
     {
       "Name" = local.modified_name
+      "ScrapeMetrics" = "true"
     },
   )
 }

@@ -181,6 +181,12 @@ data "template_cloudinit_config" "nat_user_data" {
   }
 
   part {
+    filename     = "node_exporter.cfg"
+    content_type = "text/x-include-url"
+    content      = data.terraform_remote_state.paperwork.outputs.node_exporter_user_data
+  }
+
+  part {
     filename     = "banner.cfg"
     content_type = "text/x-include-url"
     content      = data.terraform_remote_state.paperwork.outputs.custom_banner_user_data
