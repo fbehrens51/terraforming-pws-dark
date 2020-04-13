@@ -82,14 +82,14 @@ runcmd:
     mkdir /home/ec2-user/workspace
     cd /home/ec2-user/workspace
     latest=$(aws --region ${var.region} s3 ls s3://${local.transfer_bucket_name}/pcf-eagle-automation/ | awk '/ pcf-eagle-automation.*\.zip$/ {print $4}' | sort -n | tail -1)
-    aws --region ${var.region} s3 cp --no-progress s3://${local.transfer_bucket_name}/pcf-eagle-automation/$latest .
+    aws --region ${var.region} s3 cp --no-progress s3://${local.transfer_bucket_name}/pcf-eagle-automation/$latest . --no-progress
     mkdir -p pcf-eagle-automation
-    unzip -d ./pcf-eagle-automation $latest
+    unzip -q -d ./pcf-eagle-automation $latest
     rm $latest
     latest=$(aws --region ${var.region} s3 ls s3://${local.transfer_bucket_name}/terraforming-pws-dark/ | awk '/ terraforming-pws-dark.*\.zip$/ {print $4}' | sort -n | tail -1)
-    aws --region ${var.region} s3 cp --no-progress s3://${local.transfer_bucket_name}/terraforming-pws-dark/$latest .
+    aws --region ${var.region} s3 cp --no-progress s3://${local.transfer_bucket_name}/terraforming-pws-dark/$latest . --no-progress
     mkdir -p terraforming-pws-dark
-    unzip -d ./terraforming-pws-dark $latest
+    unzip -q -d ./terraforming-pws-dark $latest
     rm $latest
 EOF
 
@@ -116,8 +116,8 @@ runcmd:
   - |
     echo "Downloading and extracting tools.zip"
     latest=$(aws --region ${var.region} s3 ls s3://${local.transfer_bucket_name}/cli-tools/ | awk '/ tools.*\.zip$/ {print $4}' | sort -n | tail -1)
-    aws --region ${var.region} s3 cp s3://${local.transfer_bucket_name}/cli-tools/$latest .
-    unzip $latest
+    aws --region ${var.region} s3 cp s3://${local.transfer_bucket_name}/cli-tools/$latest . --no-progress
+    unzip -q $latest
     rm $latest
     install tools/* /usr/local/bin/
     rm -rf tools
@@ -132,8 +132,8 @@ runcmd:
     echo "Downloading and extracting terraform.zip"
     mkdir terraform
     latest=$(aws --region ${local.terraform_region} s3 ls s3://${local.terraform_bucket_name}/terraform-bundle/ | awk '/ terraform-bundle.*\.zip$/ {print $4}' | sort -n | tail -1)
-    aws --region ${local.terraform_region} s3 cp s3://${local.terraform_bucket_name}/terraform-bundle/$latest .
-    unzip -d terraform $latest
+    aws --region ${local.terraform_region} s3 cp s3://${local.terraform_bucket_name}/terraform-bundle/$latest . --no-progress
+    unzip -q -d terraform $latest
     rm $latest
     mkdir -p /home/ec2-user/.terraform.d/plugins/linux_amd64/ /root/.terraform.d/plugins/linux_amd64/
     install -o ec2-user -g ec2-user terraform/terraform-provider* /home/ec2-user/.terraform.d/plugins/linux_amd64/.

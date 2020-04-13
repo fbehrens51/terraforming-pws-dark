@@ -51,7 +51,7 @@ runcmd:
     set -ex
     mkdir node_exporter
     cd node_exporter
-    wget --no-check-certificate -O - "${var.node_exporter_location}" | tar xzf - --strip-components=1
+    wget --quiet --no-check-certificate -O - "${var.node_exporter_location}" | tar xzf - --strip-components=1
     mv node_exporter /usr/sbin/node_exporter
     systemctl daemon-reload
     systemctl start node_exporter
