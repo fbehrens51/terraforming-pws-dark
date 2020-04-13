@@ -17,7 +17,7 @@
         "hide": false,
         "iconColor": "#5794F2",
         "limit": 100,
-        "name": "Boot",
+        "name": "Instance Boot Events",
         "showIn": 0,
         "step": "0s",
         "tagKeys": "name_tag,availability_zone",
@@ -33,7 +33,7 @@
   "gnetId": null,
   "graphTooltip": 1,
   "id": 25,
-  "iteration": 1586805131189,
+  "iteration": 1586806340766,
   "links": [],
   "panels": [
     {
@@ -581,8 +581,8 @@
             "$__all"
           ]
         },
-        "datasource": null,
-        "definition": "label_values(node_uname_info, availability_zone)",
+        "datasource": "prometheus",
+        "definition": "label_values(up, availability_zone)",
         "hide": 0,
         "includeAll": true,
         "index": -1,
@@ -590,7 +590,7 @@
         "multi": true,
         "name": "az",
         "options": [],
-        "query": "label_values(node_uname_info, availability_zone)",
+        "query": "label_values(up, availability_zone)",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -609,8 +609,8 @@
             "$__all"
           ]
         },
-        "datasource": null,
-        "definition": "label_values(node_uname_info, name_tag)",
+        "datasource": "prometheus",
+        "definition": "label_values(up, name_tag)",
         "hide": 0,
         "includeAll": true,
         "index": -1,
@@ -618,7 +618,7 @@
         "multi": true,
         "name": "name",
         "options": [],
-        "query": "label_values(node_uname_info, name_tag)",
+        "query": "label_values(up, name_tag)",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -655,5 +655,5 @@
   "variables": {
     "list": []
   },
-  "version": 34
+  "version": 39
 }
