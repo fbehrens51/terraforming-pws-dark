@@ -40,4 +40,4 @@ runcmd:
     augtool set /files/lib/systemd/system/clamd@.service/Unit/After/value[last+1] clam-freshclam.service
     systemctl daemon-reload
     systemctl enable clamd@scan.service
-    sleep 60; systemctl start clamd@scan
+    sleep 90; systemctl start clamd@scan
