@@ -30,6 +30,10 @@ provider "local" {
   version = "1.4.0"
 }
 
+provider "grafana" {
+  version = "1.5.0"
+}
+
 terraform {
   required_version = "~> 0.12.20"
 }
