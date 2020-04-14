@@ -110,7 +110,7 @@ CLOUDINIT
 
   part {
     filename     = "node_exporter.cfg"
-    content_type = "text/cloud-config"
+    content_type = "text/x-include-url"
     content      = var.node_exporter_user_data
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
