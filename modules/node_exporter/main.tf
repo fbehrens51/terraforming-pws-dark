@@ -7,6 +7,12 @@ variable "public_bucket_url" {
 variable "node_exporter_location" {
 }
 
+variable "server_cert_pem" {
+}
+
+variable "server_key_pem" {
+}
+
 locals {
   bucket_key = "node_exporter-${md5(data.template_file.user_data.rendered)}-user-data.yml"
 }
@@ -26,7 +32,27 @@ users:
 
 write_files:
   - content: |
-      OPTIONS="--collector.systemd"
+      ${indent(6, var.server_key_pem)}
+    path: /etc/node_exporter/key.pem
+    permissions: '0644'
+    owner: root:root
+
+  - content: |
+      ${indent(6, var.server_cert_pem)}
+    path: /etc/node_exporter/cert.pem
+    permissions: '0644'
+    owner: root:root
+
+  - content: |
+      tlsConfig:
+        tlsCertPath: /etc/node_exporter/cert.pem
+        tlsKeyPath: /etc/node_exporter/key.pem
+    path: /etc/node_exporter/web-config.yml
+    permissions: '0644'
+    owner: root:root
+
+  - content: |
+      OPTIONS="--collector.systemd --web.config=\"/etc/node_exporter/web-config.yml\""
     path: /etc/sysconfig/node_exporter
     permissions: '0644'
     owner: root:root

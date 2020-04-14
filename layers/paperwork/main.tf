@@ -151,6 +151,8 @@ module "node_exporter_client_config" {
   node_exporter_location = var.node_exporter_object_url
   public_bucket_name     = aws_s3_bucket.public_bucket.bucket
   public_bucket_url      = local.public_bucket_url
+  server_cert_pem        = data.aws_s3_bucket_object.grafana_server_cert.body
+  server_key_pem         = data.aws_s3_bucket_object.grafana_server_key.body
 }
 
 module "amazon2_clam_av_client_config" {
