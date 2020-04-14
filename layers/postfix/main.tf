@@ -151,6 +151,7 @@ data "template_cloudinit_config" "user_data" {
 module "postfix_master_host" {
   instance_count = 1
   source         = "../../modules/launch"
+  instance_type  = "t2.medium"
   ami_id         = local.encrypted_amazon2_ami_id
   user_data      = data.template_cloudinit_config.user_data.rendered
   eni_ids        = data.terraform_remote_state.bootstrap_postfix.outputs.postfix_eni_ids
