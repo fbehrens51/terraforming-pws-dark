@@ -33,7 +33,7 @@
   "gnetId": null,
   "graphTooltip": 1,
   "id": 25,
-  "iteration": 1586809615059,
+  "iteration": 1586875920717,
   "links": [],
   "panels": [
     {
@@ -54,6 +54,7 @@
       "dashboardFilter": "",
       "dashboardTags": [],
       "datasource": null,
+      "folderId": null,
       "gridPos": {
         "h": 5,
         "w": 12,
@@ -407,7 +408,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": null,
-      "fill": 1,
+      "fill": 0,
       "fillGradient": 0,
       "gridPos": {
         "h": 11,
@@ -442,7 +443,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "node_memory_MemAvailable_bytes{name_tag=~\"${name:regex}\",availability_zone=~\"${az:regex}\"} / node_memory_MemTotal_bytes{name_tag=~\"${name:regex}\",availability_zone=~\"${az:regex}\"}",
+          "expr": "((node_memory_MemTotal_bytes - node_memory_MemFree_bytes - (node_memory_Buffers_bytes + node_memory_Cached_bytes)) / node_memory_MemTotal_bytes{name_tag=~\"${name:regex}\",availability_zone=~\"${az:regex}\"})",
           "interval": "",
           "legendFormat": "{{name_tag}} - {{availability_zone}}",
           "refId": "A"
@@ -636,7 +637,7 @@
         "handler": 1,
         "message": "One or more instances are not reporting metrics. This could be a firewall issue, or it could be an indication of something more serious.",
         "name": "Missing Metrics",
-        "noDataState": "no_data",
+        "noDataState": "ok",
         "notifications": []
       },
       "aliasColors": {},
@@ -772,7 +773,7 @@
         "handler": 1,
         "message": "One or more systemd units are failing. This typically indicates that some important service is down.",
         "name": "Failed Systemd Units alert",
-        "noDataState": "no_data",
+        "noDataState": "ok",
         "notifications": []
       },
       "aliasColors": {},
@@ -959,5 +960,5 @@
   "variables": {
     "list": []
   },
-  "version": 45
+  "version": 47
 }
