@@ -36,6 +36,11 @@ variable "bot_user" {
   default = "bot"
 }
 
+variable "check_cloud_init" {
+  description = "Wait for cloud-init to complete. Set to false for hosts that have volume_attachments, or do not have the bot user installed"
+  default     = true
+}
+
 variable "bot_key_pem" {
   default = null
 }
@@ -69,8 +74,55 @@ variable "root_block_device" {
   default = {}
 }
 
+// postfix, bind, sjb, ldap, ops-manager, control-plane-ops-manager
+
 resource "aws_instance" "instance" {
-  count = var.ignore_tag_changes ? 0 : var.instance_count
+  count = var.ignore_tag_changes == false && var.check_cloud_init == true ? var.instance_count : 0
+
+  network_interface {
+    device_index         = 0
+    network_interface_id = var.eni_ids[count.index]
+  }
+
+  ami                  = var.ami_id
+  instance_type        = var.instance_type
+  user_data            = var.user_data
+  iam_instance_profile = var.iam_instance_profile
+
+  tags = merge(var.tags, local.computed_instance_tags)
+  dynamic "root_block_device" {
+    for_each = [var.root_block_device]
+    content {
+      delete_on_termination = lookup(root_block_device.value, "delete_on_termination", null)
+      encrypted             = lookup(root_block_device.value, "encrypted", null)
+      iops                  = lookup(root_block_device.value, "iops", null)
+      kms_key_id            = lookup(root_block_device.value, "kms_key_id", null)
+      volume_size           = lookup(root_block_device.value, "volume_size", null)
+      volume_type           = lookup(root_block_device.value, "volume_type", null)
+    }
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "echo \"Running cloud-init status --wait > /dev/null\"",
+      "sudo cloud-init status --wait > /dev/null",
+      "sudo cloud-init status --long"
+    ]
+
+    connection {
+      user         = "bot"
+      host         = self.private_ip
+      timeout      = var.ssh_timeout
+      private_key  = var.bot_key_pem
+      bastion_host = var.bastion_host
+    }
+  }
+}
+
+// NAT and Splunk VMs
+
+resource "aws_instance" "unchecked_instance" {
+  count = var.ignore_tag_changes == false && var.check_cloud_init == false ? var.instance_count : 0
 
   network_interface {
     device_index         = 0
@@ -99,34 +151,36 @@ resource "aws_instance" "instance" {
 resource "aws_volume_attachment" "volume_attachment" {
   count        = var.volume_ids == null ? 0 : length(var.volume_ids)
   skip_destroy = true
-  instance_id  = element(aws_instance.instance.*.id, count.index)
+  instance_id  = element(aws_instance.unchecked_instance.*.id, count.index)
   volume_id    = element(var.volume_ids, count.index)
   device_name  = var.device_name
 }
 
-resource "null_resource" "cloud_init_status" {
-  count = var.ignore_tag_changes == false && var.bot_key_pem != null ? var.instance_count : 0
+//resource "null_resource" "cloud_init_status" {
+//  count = var.ignore_tag_changes == false && var.bot_key_pem != null ? var.instance_count : 0
+//
+//  triggers = {
+//    instance_id = element(aws_instance.instance.*.id, count.index)
+//  }
+//
+//  provisioner "remote-exec" {
+//    inline = [
+//      "echo \"Running cloud-init status --wait > /dev/null\"",
+//      "sudo cloud-init status --wait > /dev/null",
+//      "sudo cloud-init status --long"
+//    ]
+//
+//    connection {
+//      user         = "bot"
+//      host         = element(aws_instance.instance.*.private_ip, count.index)
+//      timeout      = var.ssh_timeout
+//      private_key  = var.bot_key_pem
+//      bastion_host = var.bastion_host
+//    }
+//  }
+//}
 
-  triggers = {
-    instance_id = element(aws_instance.instance.*.id, count.index)
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "echo \"Running cloud-init status --wait > /dev/null\"",
-      "sudo cloud-init status --wait > /dev/null",
-      "sudo cloud-init status --long"
-    ]
-
-    connection {
-      user         = "bot"
-      host         = element(aws_instance.instance.*.private_ip, count.index)
-      timeout      = var.ssh_timeout
-      private_key  = var.bot_key_pem
-      bastion_host = var.bastion_host
-    }
-  }
-}
+// Bastion instance
 
 resource "aws_instance" "instance_ignoring_tags" {
   count = var.ignore_tag_changes ? var.instance_count : 0
@@ -161,10 +215,10 @@ resource "aws_instance" "instance_ignoring_tags" {
 }
 
 output "instance_ids" {
-  value = concat(aws_instance.instance.*.id, aws_instance.instance_ignoring_tags.*.id)
+  value = concat(aws_instance.instance.*.id, aws_instance.unchecked_instance.*.id, aws_instance.instance_ignoring_tags.*.id)
 }
 
 output "private_ips" {
-  value = concat(aws_instance.instance.*.private_ip, aws_instance.instance_ignoring_tags.*.private_ip)
+  value = concat(aws_instance.instance.*.private_ip, aws_instance.unchecked_instance.*.private_ip, aws_instance.instance_ignoring_tags.*.private_ip)
 }
 

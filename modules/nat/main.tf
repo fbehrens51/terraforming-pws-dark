@@ -147,6 +147,8 @@ module "nat_host" {
 
   tags          = local.modified_tags
   instance_type = var.instance_type
+
+  check_cloud_init = false
 }
 
 resource "aws_route" "toggle_internet" {
