@@ -119,6 +119,11 @@ resource "aws_iam_policy_attachment" "director" {
   policy_arn = aws_iam_policy.director.arn
 }
 
+resource "aws_iam_role_policy_attachment" "director_ecr" {
+  role      = aws_iam_role.director.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
+}
+
 resource "aws_iam_instance_profile" "director" {
   name = var.director_role_name
   role = aws_iam_role.director.name
