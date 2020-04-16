@@ -43,6 +43,8 @@ product-properties:
           target_label: name_tag
         - source_labels: [__meta_ec2_availability_zone]
           target_label: availability_zone
+        - source_labels: [__meta_ec2_instance_id]
+          target_label: instance_id
       server_name: null
   .properties.canary_exporter_targets:
     value:
