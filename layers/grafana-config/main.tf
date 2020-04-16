@@ -58,3 +58,7 @@ resource "grafana_alert_notification" "slack" {
 resource "grafana_dashboard" "vm-resources" {
   config_json = file("dashboards/vm-resources.json")
 }
+
+resource "grafana_dashboard" "vm-health" {
+  config_json = file("dashboards/vm-health.json")
+}
