@@ -76,6 +76,11 @@ data "template_file" "server_conf" {
 [sslConfig]
 serverCert = /opt/splunk/etc/auth/mycerts/mySplunkServerCertificate.pem
 sslRootCAPath = /opt/splunk/etc/auth/mycerts/mySplunkCACertificate.pem
+sslVersions = tls1.2
+cipherSuite = ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-
+SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-
+AES128-SHA256:ECDHE-RSA-AES128-SHA256
+ecdhCurves = prime256v1, secp384r1, secp521r1
 
 [replication_port-ssl://${module.splunk_ports.splunk_replication_port}]
 serverCert = /opt/splunk/etc/auth/mycerts/mySplunkServerCertificate.pem
@@ -90,6 +95,9 @@ pass4SymmKey = ${var.search_heads_pass4SymmKey}
 mode = slave
 master_uri = https://${var.master_ip}:${module.splunk_ports.splunk_mgmt_port}
 pass4SymmKey = ${var.indexers_pass4SymmKey}
+
+[default]
+sendStrictTransportSecurityHeader = true
 EOF
 
 }

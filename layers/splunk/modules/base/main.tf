@@ -62,10 +62,16 @@ data "template_file" "web_conf" {
 updateCheckerBaseURL = 0
 httpport             = ${module.splunk_ports.splunk_web_port}
 mgmtHostPort         = 127.0.0.1:${module.splunk_ports.splunk_mgmt_port}
+sendStrictTransportSecurityHeader = true
 
 enableSplunkWebSSL = true
 serverCert         = /opt/splunk/etc/auth/mycerts/mySplunkWebCertificate.pem
 privKeyPath        = /opt/splunk/etc/auth/mycerts/mySplunkWebPrivateKey.key
+sslVersions = tls1.2
+cipherSuite = ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-
+SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-
+AES128-SHA256:ECDHE-RSA-AES128-SHA256
+ecdhCurves = prime256v1, secp384r1, secp521r1
 EOF
 
 }
