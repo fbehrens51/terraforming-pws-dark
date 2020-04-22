@@ -890,6 +890,10 @@ output "bot_user_accounts_user_data" {
   value = module.bot_user_accounts_config.user_accounts_user_data
 }
 
+output "bot_public_key" {
+  value = module.bot_host_key_pair.public_key_openssh
+}
+
 output "bot_private_key" {
   value     = module.bot_host_key_pair.private_key_pem
   sensitive = true
