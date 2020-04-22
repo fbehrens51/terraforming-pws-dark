@@ -87,6 +87,7 @@ EOF
 }
 
 resource "aws_s3_bucket_object" "user_data" {
+  count = var.node_exporter_location == "" ? 0 : 1
   bucket  = var.public_bucket_name
   key     = local.bucket_key
   content = data.template_file.user_data.rendered
@@ -94,7 +95,13 @@ resource "aws_s3_bucket_object" "user_data" {
 
 output "user_data" {
   value = <<EOF
+%{ if var.node_exporter_location != "" }
 #include
 ${var.public_bucket_url}/${local.bucket_key}
+%{ else }
+#!/bin/sh
+echo "node_exporter_object_url missing from the paperwork layer.."
+echo "skipping setup for metrics"
+%{ endif }
 EOF
 }
