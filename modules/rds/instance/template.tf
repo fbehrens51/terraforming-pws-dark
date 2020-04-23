@@ -60,6 +60,8 @@ resource "aws_db_instance" "rds" {
   apply_immediately           = true
   allow_major_version_upgrade = true
 
+  delete_automated_backups = false
+
   # Next to paramaters are optional, default to null in TF v0.12
   parameter_group_name = var.parameter_group_name
   name                 = var.database_name
