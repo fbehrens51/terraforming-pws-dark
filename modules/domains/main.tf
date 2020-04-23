@@ -20,6 +20,9 @@ locals {
   splunk_logs_subdomain = "splunk-logs"
   splunk_logs_fqdn      = "${local.splunk_logs_subdomain}.${var.root_domain}"
 
+  fluentd_subdomain = "fluentd"
+  fluentd_fqdn      = "${local.fluentd_subdomain}.${var.root_domain}"
+
   control_plane_om_subdomain = "om.ci"
   control_plane_om_fqdn      = "${local.control_plane_om_subdomain}.${var.root_domain}"
 
@@ -90,6 +93,14 @@ output "splunk_logs_subdomain" {
 
 output "splunk_logs_fqdn" {
   value = local.splunk_logs_fqdn
+}
+
+output "fluentd_subdomain" {
+  value = local.fluentd_subdomain
+}
+
+output "fluentd_fqdn" {
+  value = local.fluentd_fqdn
 }
 
 output "splunk_monitor_subdomain" {

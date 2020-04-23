@@ -239,6 +239,9 @@ variable "es_vpc_id" {
 variable "cp_vpc_id" {
 }
 
+variable "fluentd_role_name" {
+}
+
 variable "director_role_name" {
 }
 
@@ -500,6 +503,22 @@ data "aws_s3_bucket_object" "splunk_logs_server_key" {
   key    = var.splunk_logs_server_key_s3_path
 }
 
+variable "fluentd_server_cert_s3_path" {
+}
+
+data "aws_s3_bucket_object" "fluentd_server_cert" {
+  bucket = var.cert_bucket
+  key    = var.fluentd_server_cert_s3_path
+}
+
+variable "fluentd_server_key_s3_path" {
+}
+
+data "aws_s3_bucket_object" "fluentd_server_key" {
+  bucket = var.cert_bucket
+  key    = var.fluentd_server_key_s3_path
+}
+
 variable "smtp_server_cert_s3_path" {
 }
 
@@ -616,6 +635,10 @@ output "cp_vpc_id" {
 
 output "sjb_role_name" {
   value = var.sjb_role_name
+}
+
+output "fluentd_role_name" {
+  value = var.fluentd_role_name
 }
 
 output "director_role_name" {
@@ -752,6 +775,15 @@ output "splunk_logs_server_cert" {
 
 output "splunk_logs_server_key" {
   value     = data.aws_s3_bucket_object.splunk_logs_server_key.body
+  sensitive = true
+}
+
+output "fluentd_server_cert" {
+  value = data.aws_s3_bucket_object.fluentd_server_cert.body
+}
+
+output "fluentd_server_key" {
+  value     = data.aws_s3_bucket_object.fluentd_server_key.body
   sensitive = true
 }
 

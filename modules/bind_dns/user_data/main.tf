@@ -15,6 +15,7 @@ variable "pas_elb_dns" {}
 variable "postfix_private_ip" {}
 variable "splunk_search_head_elb_dns" {}
 variable "splunk_logs_private_ip" {}
+variable "fluentd_private_ip" {}
 variable "splunk_monitor_elb_dns" {}
 variable "grafana_elb_dns" {}
 
@@ -32,6 +33,7 @@ module "bind_conf_content" {
   postfix_private_ip          = var.postfix_private_ip
   splunk_search_head_elb_dns  = var.splunk_search_head_elb_dns
   splunk_logs_private_ip      = var.splunk_logs_private_ip
+  fluentd_private_ip          = var.fluentd_private_ip
   splunk_monitor_elb_dns      = var.splunk_monitor_elb_dns
   grafana_elb_dns             = var.grafana_elb_dns
 }

@@ -57,6 +57,27 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
     resources = ["*"]
   }
 
+  statement {
+    sid    = "Allow encrypting log groups with the KMS key"
+    effect = "Allow"
+
+    principals {
+      type = "Service"
+      # TODO: make the service configurable
+      identifiers = [var.logs_service_name]
+    }
+
+    actions = [
+      "kms:Encrypt*",
+      "kms:Decrypt*",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:Describe*",
+    ]
+
+    resources = ["*"]
+  }
+
   # the following actions were inspired by https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default-allow-administrators
   statement {
     sid    = "Allow access for key managers"
@@ -119,6 +140,9 @@ variable "key_name" {
 
 variable "deletion_window" {
   default = 7
+}
+
+variable "logs_service_name" {
 }
 
 output "kms_key_arn" {

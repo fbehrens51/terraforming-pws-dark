@@ -2,6 +2,9 @@ variable "env_name" {
   type = string
 }
 
+variable "fluentd_role_name" {
+}
+
 variable "director_role_name" {
 }
 

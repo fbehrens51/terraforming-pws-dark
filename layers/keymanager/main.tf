@@ -37,6 +37,7 @@ module "keys" {
   pas_bucket_role_arn                = var.pas_bucket_role_arn
   deletion_window                    = "7"
   additional_bootstrap_principal_arn = data.aws_caller_identity.my_account.arn
+  logs_service_name                  = var.logs_service_name
 }
 
 data "aws_iam_policy_document" "kms_key_policy_document" {
@@ -133,6 +134,8 @@ variable "promoter_role_arn" {}
 variable "pas_bucket_role_arn" {}
 variable "pas_kms_key_name" {}
 variable "keymanager_file_output_path" {}
+variable "logs_service_name" {
+}
 
 output "transfer_key_arn" {
   value = aws_kms_key.transfer_kms_key.arn
