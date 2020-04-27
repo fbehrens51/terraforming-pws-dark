@@ -8,16 +8,12 @@ variable "master_ips" {
   type = list(string)
 }
 
-variable "om_public_ip" {}
+variable "shared_alb" {}
 variable "pas_elb_dns" {}
-variable "control_plane_om_public_ip" {}
 variable "control_plane_plane_elb_dns" {}
 variable "postfix_private_ip" {}
-variable "splunk_search_head_elb_dns" {}
 variable "splunk_logs_private_ip" {}
 variable "fluentd_private_ip" {}
-variable "splunk_monitor_elb_dns" {}
-variable "grafana_elb_dns" {}
 
 module "domains" {
   source      = "../../domains"
@@ -42,15 +38,11 @@ output "zone_content" {
     zone_name  = var.zone_name,
     master_ips = var.master_ips,
 
-    om_public_ip                = var.om_public_ip,
+    shared_alb = var.shared_alb,
     pas_elb_dns                 = var.pas_elb_dns,
     postfix_private_ip          = var.postfix_private_ip,
-    splunk_search_head_elb_dns  = var.splunk_search_head_elb_dns,
     splunk_logs_private_ip      = var.splunk_logs_private_ip,
     fluentd_private_ip          = var.fluentd_private_ip,
-    splunk_monitor_elb_dns      = var.splunk_monitor_elb_dns,
-    grafana_elb_dns             = var.grafana_elb_dns,
-    control_plane_om_public_ip  = var.control_plane_om_public_ip,
     control_plane_plane_elb_dns = var.control_plane_plane_elb_dns,
 
     om_subdomain     = module.domains.om_subdomain,

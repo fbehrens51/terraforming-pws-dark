@@ -310,37 +310,3 @@ module "splunk_forwarders" {
   volume_ids       = data.terraform_remote_state.bootstrap_splunk.outputs.forwarders_data_volumes
 }
 
-module "search_head_target" {
-  source            = "../../modules/alb_target"
-  priority          = 90
-  service_name      = "splunk-search-head"
-  vpc_id            = data.terraform_remote_state.paperwork.outputs.es_vpc_id
-  env_name          = var.env_name
-  health_check_path = "/en-US/account/login"
-  server_cert_pem   = data.terraform_remote_state.paperwork.outputs.splunk_server_cert
-  server_key_pem    = data.terraform_remote_state.paperwork.outputs.splunk_server_key
-  alb_listener_arn  = data.terraform_remote_state.enterprise-services.outputs.shared_alb_listener_arn
-  domain            = module.domains.splunk_fqdn
-  ips               = module.splunk_search_head.private_ips
-  port              = module.splunk_ports.splunk_web_port
-}
-
-# TODO: For now splunk-monitor is pointing to the master instance.  This way
-# operators can check on the status of replication.  In the future we could add
-# another splunk instance setup for distributed monitoring.
-# https://docs.splunk.com/Documentation/Splunk/7.3.0/DMC/Configureindistributedmode
-module "monitor_target" {
-  source            = "../../modules/alb_target"
-  priority          = 91
-  service_name      = "splunk-monitor"
-  vpc_id            = data.terraform_remote_state.paperwork.outputs.es_vpc_id
-  env_name          = var.env_name
-  health_check_path = "/en-US/account/login"
-  server_cert_pem   = data.terraform_remote_state.paperwork.outputs.splunk_monitor_server_cert
-  server_key_pem    = data.terraform_remote_state.paperwork.outputs.splunk_monitor_server_key
-  alb_listener_arn  = data.terraform_remote_state.enterprise-services.outputs.shared_alb_listener_arn
-  domain            = module.domains.splunk_monitor_fqdn
-  ips               = module.splunk_master.private_ips
-  port              = module.splunk_ports.splunk_web_port
-}
-

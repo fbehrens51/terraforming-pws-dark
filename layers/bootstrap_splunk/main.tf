@@ -144,8 +144,29 @@ module "master_bootstrap" {
   eni_count                  = "1"
   create_eip                 = "false"
   tags                       = local.tags
-  additional_security_groups = [data.terraform_remote_state.enterprise-services.outputs.shared_alb_target_sg]
 }
+
+# TODO: For now splunk-monitor is pointing to the master instance.  This way
+# operators can check on the status of replication.  In the future we could add
+# another splunk instance setup for distributed monitoring.
+# https://docs.splunk.com/Documentation/Splunk/7.3.0/DMC/Configureindistributedmode
+module "monitor_target" {
+  source            = "../../modules/alb_target"
+  priority          = 91
+  service_name      = "splunk-monitor"
+  vpc_id            = data.terraform_remote_state.paperwork.outputs.es_vpc_id
+  env_name          = var.env_name
+  health_check_path = "/en-US/account/login"
+  server_cert_pem   = data.terraform_remote_state.paperwork.outputs.splunk_monitor_server_cert
+  server_key_pem    = data.terraform_remote_state.paperwork.outputs.splunk_monitor_server_key
+  alb_listener_arn  = data.terraform_remote_state.enterprise-services.outputs.shared_alb_listener_arn
+  alb_security_group_id = data.terraform_remote_state.enterprise-services.outputs.shared_alb_security_group_id
+  target_security_group_id = module.master_bootstrap.security_group_id
+  domain            = module.domains.splunk_monitor_fqdn
+  ips               = module.master_bootstrap.eni_ips
+  port              = module.splunk_ports.splunk_web_port
+}
+
 
 module "forwarders_bootstrap" {
   source        = "../../modules/eni_per_subnet"
@@ -175,8 +196,25 @@ module "search_head_bootstrap" {
   eni_count                  = "1"
   create_eip                 = "false"
   tags                       = local.tags
-  additional_security_groups = [data.terraform_remote_state.enterprise-services.outputs.shared_alb_target_sg]
 }
+
+module "search_head_target" {
+  source            = "../../modules/alb_target"
+  priority          = 90
+  service_name      = "splunk-search-head"
+  vpc_id            = data.terraform_remote_state.paperwork.outputs.es_vpc_id
+  env_name          = var.env_name
+  health_check_path = "/en-US/account/login"
+  server_cert_pem   = data.terraform_remote_state.paperwork.outputs.splunk_server_cert
+  server_key_pem    = data.terraform_remote_state.paperwork.outputs.splunk_server_key
+  alb_listener_arn  = data.terraform_remote_state.enterprise-services.outputs.shared_alb_listener_arn
+  alb_security_group_id = data.terraform_remote_state.enterprise-services.outputs.shared_alb_security_group_id
+  target_security_group_id = module.search_head_bootstrap.security_group_id
+  domain            = module.domains.splunk_fqdn
+  ips               = module.search_head_bootstrap.eni_ips
+  port              = module.splunk_ports.splunk_web_port
+}
+
 
 resource "aws_s3_bucket" "syslog_archive" {
   bucket        = local.syslog_archive_bucket

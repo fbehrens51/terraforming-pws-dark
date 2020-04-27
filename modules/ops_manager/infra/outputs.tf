@@ -13,6 +13,16 @@ output "ip" {
   )
 }
 
+output "private_ip" {
+  value = element(
+    concat(
+      flatten(aws_network_interface.ops_manager_unattached.*.private_ips),
+      [""],
+      ),
+    0,
+    )
+}
+
 output "om_eni_id" {
   value = element(
     concat(aws_network_interface.ops_manager_unattached.*.id, [""]),

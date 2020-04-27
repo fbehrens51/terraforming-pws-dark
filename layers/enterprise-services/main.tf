@@ -118,98 +118,6 @@ resource "aws_route_table_association" "private_route_table_assoc" {
   route_table_id = data.terraform_remote_state.routes.outputs.es_private_vpc_route_table_ids[count.index]
 }
 
-resource "aws_security_group" "alb" {
-  name   = "${var.env_name}-alb"
-  vpc_id = local.es_vpc_id
-  tags   = local.modified_tags
-}
-
-resource "aws_security_group_rule" "alb_ingress" {
-  security_group_id = aws_security_group.alb.id
-
-  protocol  = "tcp"
-  from_port = 443
-  to_port   = 443
-  type      = "ingress"
-
-  cidr_blocks = ["0.0.0.0/0"]
-}
-
-resource "aws_security_group_rule" "alb_ingress_80" {
-  security_group_id = aws_security_group.alb.id
-
-  protocol  = "tcp"
-  from_port = 80
-  to_port   = 80
-  type      = "ingress"
-
-  cidr_blocks = ["0.0.0.0/0"]
-}
-
-resource "aws_security_group_rule" "alb_egress" {
-  security_group_id = aws_security_group.alb.id
-
-  protocol                 = "tcp"
-  from_port                = 0
-  to_port                  = 65535
-  type                     = "egress"
-  source_security_group_id = aws_security_group.alb_targets.id
-}
-
-resource "aws_security_group" "alb_targets" {
-  name   = "${var.env_name}-alb-targets"
-  vpc_id = local.es_vpc_id
-  tags   = local.modified_tags
-}
-
-resource "aws_security_group_rule" "alb_to_targets" {
-  security_group_id = aws_security_group.alb_targets.id
-
-  protocol                 = "tcp"
-  from_port                = 0
-  to_port                  = 65535
-  type                     = "ingress"
-  source_security_group_id = aws_security_group.alb.id
-}
-
-resource "aws_lb" "shared_alb" {
-  name                             = "${replace(var.env_name, " ", "-")}-internal"
-  internal                         = var.internetless
-  load_balancer_type               = "application"
-  security_groups                  = [aws_security_group.alb.id]
-  subnets                          = module.public_subnets.subnet_ids
-  enable_cross_zone_load_balancing = true
-
-  tags = local.modified_tags
-}
-
-
-resource "aws_iam_server_certificate" "default" {
-  name             = "${replace(var.env_name, " ", "-")}-default"
-  private_key      = data.terraform_remote_state.paperwork.outputs.router_server_key
-  certificate_body = data.terraform_remote_state.paperwork.outputs.router_server_cert
-}
-
-resource "aws_lb_listener" "shared" {
-  load_balancer_arn = aws_lb.shared_alb.arn
-
-  port            = 443
-  protocol        = "HTTPS"
-  ssl_policy      = "ELBSecurityPolicy-TLS-1-2-2017-01"
-  certificate_arn = aws_iam_server_certificate.default.arn
-
-
-  default_action {
-    type = "fixed-response"
-
-    fixed_response {
-      content_type = "text/plain"
-      message_body = "Fixed response content"
-      status_code  = "200"
-    }
-  }
-}
-
 data "template_cloudinit_config" "nat_user_data" {
   base64_encode = false
   gzip          = false
@@ -256,6 +164,81 @@ module "nat" {
 
   public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url
+}
+
+resource "aws_security_group" "alb" {
+  name   = "${var.env_name}-alb"
+  vpc_id = local.es_vpc_id
+  tags   = local.modified_tags
+}
+
+resource "aws_security_group_rule" "alb_ingress" {
+  security_group_id = aws_security_group.alb.id
+
+  protocol  = "tcp"
+  from_port = 443
+  to_port   = 443
+  type      = "ingress"
+
+  cidr_blocks = ["0.0.0.0/0"]
+}
+
+resource "aws_security_group_rule" "alb_ingress_80" {
+  security_group_id = aws_security_group.alb.id
+
+  protocol  = "tcp"
+  from_port = 80
+  to_port   = 80
+  type      = "ingress"
+
+  cidr_blocks = ["0.0.0.0/0"]
+}
+
+resource "aws_security_group_rule" "alb_egress" {
+  security_group_id = aws_security_group.alb.id
+
+  protocol                 = "tcp"
+  from_port                = 0
+  to_port                  = 65535
+  type                     = "egress"
+  cidr_blocks              = ["0.0.0.0/0"]
+}
+
+resource "aws_lb" "shared_alb" {
+  name                             = "${replace(var.env_name, " ", "-")}-internal"
+  internal                         = var.internetless
+  load_balancer_type               = "application"
+  security_groups                  = [aws_security_group.alb.id]
+  subnets                          = module.public_subnets.subnet_ids
+  enable_cross_zone_load_balancing = true
+
+  tags = local.modified_tags
+}
+
+resource "aws_iam_server_certificate" "default" {
+  name             = "${replace(var.env_name, " ", "-")}-default"
+  private_key      = data.terraform_remote_state.paperwork.outputs.router_server_key
+  certificate_body = data.terraform_remote_state.paperwork.outputs.router_server_cert
+}
+
+resource "aws_lb_listener" "shared" {
+  load_balancer_arn = aws_lb.shared_alb.arn
+
+  port            = 443
+  protocol        = "HTTPS"
+  ssl_policy      = "ELBSecurityPolicy-TLS-1-2-2017-01"
+  certificate_arn = aws_iam_server_certificate.default.arn
+
+
+  default_action {
+    type = "fixed-response"
+
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "Fixed response content"
+      status_code  = "200"
+    }
+  }
 }
 
 variable "nat_instance_type" {
@@ -309,6 +292,6 @@ output "shared_alb_listener_arn" {
   value = aws_lb_listener.shared.arn
 }
 
-output "shared_alb_target_sg" {
-  value = aws_security_group.alb_targets.id
+output "shared_alb_security_group_id" {
+  value = aws_security_group.alb.id
 }

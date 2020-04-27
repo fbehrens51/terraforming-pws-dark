@@ -21,6 +21,17 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
+data "terraform_remote_state" "enterprise-services" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "enterprise-services"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "bastion" {
   backend = "s3"
 
@@ -102,20 +113,25 @@ module "ops_manager_user_data" {
 module "ops_manager" {
   instance_count = "1"
 
-  source               = "../../modules/launch"
-  ami_id               = var.om_ami_id
-  iam_instance_profile = local.director_role_name
-  instance_type        = var.instance_type
-  tags                 = local.tags
-  eni_ids              = [local.om_eni_id]
-  user_data            = module.ops_manager_user_data.cloud_config
-  bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  bastion_host         = var.internetless ? null : data.terraform_remote_state.bastion.outputs.bastion_ip
+  source                     = "../../modules/launch"
+  ami_id                     = var.om_ami_id
+  iam_instance_profile       = local.director_role_name
+  instance_type              = var.instance_type
+  tags                       = local.tags
+  eni_ids                    = [local.om_eni_id]
+  user_data                  = module.ops_manager_user_data.cloud_config
+  bot_key_pem                = data.terraform_remote_state.paperwork.outputs.bot_private_key
+  bastion_host               = var.internetless ? null : data.terraform_remote_state.bastion.outputs.bastion_ip
 
   root_block_device = {
     volume_type = "gp2"
     volume_size = 150
   }
+}
+
+module "domains" {
+  source      = "../../modules/domains"
+  root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
 }
 
 output "ops_manager_private_ip" {

@@ -158,7 +158,7 @@ module "om_config" {
 
   tsdb_instance_profile = data.terraform_remote_state.paperwork.outputs.tsdb_role_name
 
-  shared_alb_target_security_group_id = data.terraform_remote_state.enterprise-services.outputs.shared_alb_target_sg
+  shared_alb_target_security_group_id = data.terraform_remote_state.pas.outputs.alb_target_security_group
 
   volume_encryption_kms_key_arn = data.terraform_remote_state.paperwork.outputs.kms_key_arn
 
