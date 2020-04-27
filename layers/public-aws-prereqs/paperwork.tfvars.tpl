@@ -14,6 +14,8 @@ cp_vpc_id = "${cp_vpc_id}"
 
 iso_vpc_ids = ["${iso_vpc_id}"]
 
+fluentd_role_name = "${fluentd_role_name}"
+
 director_role_name = "${director_role_name}"
 
 sjb_role_name = "${sjb_role_name}"
@@ -99,6 +101,10 @@ splunk_server_key_s3_path = "${splunk_server_key_s3_path}"
 splunk_monitor_server_cert_s3_path = "${splunk_monitor_server_cert_s3_path}"
 
 splunk_monitor_server_key_s3_path = "${splunk_monitor_server_key_s3_path}"
+
+fluentd_server_cert_s3_path = "${fluentd_server_cert_s3_path}"
+
+fluentd_server_key_s3_path = "${fluentd_server_key_s3_path}"
 
 smtp_server_cert_s3_path = "${smtp_server_cert_s3_path}"
 

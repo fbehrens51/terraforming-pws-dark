@@ -1,3 +1,6 @@
+variable "client_cidr" {
+}
+
 variable "smtp_relay_host" {
 }
 

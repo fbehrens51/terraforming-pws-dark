@@ -76,6 +76,17 @@ data "terraform_remote_state" "bootstrap_postfix" {
   }
 }
 
+data "terraform_remote_state" "bootstrap_fluentd" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bootstrap_fluentd"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "bootstrap_bind" {
   backend = "s3"
 
@@ -125,6 +136,7 @@ locals {
   pas_elb_dns                 = data.terraform_remote_state.pas.outputs.pas_elb_dns_name
   postfix_private_ip          = data.terraform_remote_state.bootstrap_postfix.outputs.postfix_eni_ips[0]
   splunk_logs_private_ip      = data.terraform_remote_state.bootstrap_splunk.outputs.forwarders_private_ips[0]
+  fluentd_private_ip          = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_eni_ips[0]
   splunk_search_head_elb_dns  = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_search_head_elb_dns_name
   splunk_monitor_elb_dns      = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_monitor_elb_dns_name
   grafana_elb_dns             = data.terraform_remote_state.pas.outputs.grafana_elb_dns_name
@@ -185,6 +197,7 @@ module "bind_master_user_data" {
   postfix_private_ip          = local.postfix_private_ip
   splunk_search_head_elb_dns  = local.splunk_search_head_elb_dns
   splunk_logs_private_ip      = local.splunk_logs_private_ip
+  fluentd_private_ip          = local.fluentd_private_ip
   splunk_monitor_elb_dns      = local.splunk_monitor_elb_dns
   grafana_elb_dns             = local.grafana_elb_dns
 }

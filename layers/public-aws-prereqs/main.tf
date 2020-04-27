@@ -41,6 +41,8 @@ locals {
   splunk_monitor_server_key_s3_path                = "splunk_monitor_server_key.pem"
   smtp_server_cert_s3_path                         = "smtp_server_cert.pem"
   smtp_server_key_s3_path                          = "smtp_server_key.pem"
+  fluentd_server_cert_s3_path                      = "fluentd_server_cert.pem"
+  fluentd_server_key_s3_path                       = "fluentd_server_key.pem"
   portal_smoke_test_cert_s3_path                   = "portal_smoke_test_cert.pem"
   portal_smoke_test_key_s3_path                    = "portal_smoke_test_key.pem"
   ldap_password_s3_path                            = "ldap_password.txt"
@@ -73,6 +75,7 @@ module "paperwork" {
   bucket_role_name   = var.pas_bucket_role_name
   worker_role_name   = var.platform_automation_engine_worker_role_name
   director_role_name = var.director_role_name
+  fluentd_role_name  = var.fluentd_role_name
   splunk_role_name   = var.splunk_role_name
   tsdb_role_name     = var.tsdb_role_name
   archive_role_name  = var.archive_role_name
@@ -116,6 +119,7 @@ data "template_file" "paperwork_variables" {
     splunk_role_name                            = var.splunk_role_name
     tsdb_role_name                              = var.tsdb_role_name
     archive_role_name                           = var.archive_role_name
+    fluentd_role_name                           = var.fluentd_role_name
     director_role_name                          = var.director_role_name
     sjb_role_name                               = var.director_role_name
     cp_vpc_id                                   = module.paperwork.cp_vpc_id
@@ -161,6 +165,8 @@ data "template_file" "paperwork_variables" {
     splunk_monitor_server_key_s3_path           = local.splunk_monitor_server_key_s3_path
     smtp_server_cert_s3_path                    = local.smtp_server_cert_s3_path
     smtp_server_key_s3_path                     = local.smtp_server_key_s3_path
+    fluentd_server_cert_s3_path                 = local.fluentd_server_cert_s3_path
+    fluentd_server_key_s3_path                  = local.fluentd_server_key_s3_path
     portal_smoke_test_cert_s3_path              = local.portal_smoke_test_cert_s3_path
     portal_smoke_test_key_s3_path               = local.portal_smoke_test_key_s3_path
     vanity_server_cert_s3_path                  = local.vanity_server_cert_s3_path
@@ -198,6 +204,10 @@ variable "platform_automation_engine_worker_role_name" {
 }
 
 variable "pas_bucket_role_name" {
+  type = string
+}
+
+variable "fluentd_role_name" {
   type = string
 }
 
@@ -371,6 +381,20 @@ resource "aws_s3_bucket_object" "splunk_logs_server_key" {
   bucket       = aws_s3_bucket.certs.bucket
   content_type = "text/plain"
   content      = module.paperwork.splunk_logs_server_key
+}
+
+resource "aws_s3_bucket_object" "fluentd_server_cert" {
+  key          = local.fluentd_server_cert_s3_path
+  bucket       = aws_s3_bucket.certs.bucket
+  content      = module.paperwork.fluentd_server_cert
+  content_type = "text/plain"
+}
+
+resource "aws_s3_bucket_object" "fluentd_server_key" {
+  key          = local.fluentd_server_key_s3_path
+  bucket       = aws_s3_bucket.certs.bucket
+  content_type = "text/plain"
+  content      = module.paperwork.fluentd_server_key
 }
 
 resource "aws_s3_bucket_object" "smtp_server_cert" {

@@ -139,6 +139,41 @@ resource "aws_iam_instance_profile" "bucket" {
   role = aws_iam_role.bucket.name
 }
 
+data "aws_iam_policy_document" "fluentd" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "logs:*",
+      "s3:*",
+    ]
+
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "fluentd" {
+  name   = var.fluentd_role_name
+  path   = "/"
+  policy = data.aws_iam_policy_document.fluentd.json
+}
+
+resource "aws_iam_role" "fluentd" {
+  name               = var.fluentd_role_name
+  assume_role_policy = data.aws_iam_policy_document.role_policy.json
+}
+
+resource "aws_iam_policy_attachment" "fluentd" {
+  name       = var.fluentd_role_name
+  roles      = [aws_iam_role.fluentd.name]
+  policy_arn = aws_iam_policy.fluentd.arn
+}
+
+resource "aws_iam_instance_profile" "fluentd" {
+  name = var.fluentd_role_name
+  role = aws_iam_role.fluentd.name
+}
+
 resource "aws_iam_policy" "bucket" {
   name   = var.bucket_role_name
   path   = "/"
