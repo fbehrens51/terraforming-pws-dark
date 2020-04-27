@@ -80,11 +80,6 @@ locals {
       cidr_blocks = "0.0.0.0/0"
     },
     {
-      port        = module.splunk_ports.splunk_tcp_port
-      protocol    = "tcp"
-      cidr_blocks = "0.0.0.0/0"
-    },
-    {
       port        = module.splunk_ports.splunk_http_collector_port
       protocol    = "tcp"
       cidr_blocks = "0.0.0.0/0"

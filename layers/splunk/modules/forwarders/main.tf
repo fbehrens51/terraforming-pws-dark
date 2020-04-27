@@ -91,24 +91,6 @@ EOF
 
 }
 
-data "template_file" "inputs_conf" {
-  template = <<EOF
-[tcp-ssl://${module.splunk_ports.splunk_tcp_port}]
-index = main
-sourcetype = pcf
-connection_host = dns
-
-[SSL]
-serverCert = /opt/splunk/etc/auth/mycerts/mySplunkServerCertificate.pem
-sslVersions = tls1.2
-cipherSuite = ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-
-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-
-AES128-SHA256:ECDHE-RSA-AES128-SHA256
-ecdhCurves = prime256v1, secp384r1, secp521r1
-EOF
-
-}
-
 data "template_file" "forwarder_app_conf" {
   template = <<EOF
 [install]
@@ -177,10 +159,6 @@ write_files:
   content: |
     ${indent(4, data.template_file.forwarder_app_conf.rendered)}
 
-- path: /run/inputs.conf
-  content: |
-    ${indent(4, data.template_file.inputs_conf.rendered)}
-
 - path: /run/license.conf
   content: |
     ${indent(4, data.template_file.license_slave_server_conf.rendered)}
@@ -196,7 +174,6 @@ runcmd:
     mkdir -p /opt/splunk/etc/system/local/
 
     cp /run/http_inputs.conf /opt/splunk/etc/apps/splunk_httpinput/local/inputs.conf
-    cp /run/inputs.conf /opt/splunk/etc/system/local/inputs.conf
     cp /run/license.conf /opt/splunk/etc/apps/SplunkLicenseSettings/local/server.conf
     cp /run/outputs.conf /opt/splunk/etc/system/local/outputs.conf
     cp /run/server.conf /opt/splunk/etc/system/local/server.conf
