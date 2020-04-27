@@ -118,57 +118,10 @@ locals {
   root_domain  = data.terraform_remote_state.paperwork.outputs.root_domain
   bastion_host = var.internetless ? null : data.terraform_remote_state.bastion.outputs.bastion_ip
 
-  s3_archive_ip     = data.terraform_remote_state.bootstrap_splunk.outputs.s3_private_ips[0]
-  s3_archive_port   = module.splunk_ports.splunk_s3_archive_port
-  s3_syslog_archive = data.terraform_remote_state.bootstrap_splunk.outputs.s3_bucket_syslog_archive
-
   public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url
 
   encrypted_amazon2_ami_id = data.terraform_remote_state.encrypt_amis.outputs.encrypted_amazon2_ami_id
-}
-
-module "s3_archiver_user_data" {
-  source = "./modules/s3-archiver"
-
-  server_cert = data.terraform_remote_state.paperwork.outputs.splunk_logs_server_cert
-  server_key  = data.terraform_remote_state.paperwork.outputs.splunk_logs_server_key
-  ca_cert     = data.terraform_remote_state.paperwork.outputs.trusted_with_additional_ca_certs
-  root_domain = local.root_domain
-
-  clamav_user_data        = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
-  node_exporter_user_data = data.terraform_remote_state.paperwork.outputs.node_exporter_user_data
-
-  s3_syslog_archive       = data.terraform_remote_state.bootstrap_splunk.outputs.s3_bucket_syslog_archive
-  s3_syslog_audit_archive = data.terraform_remote_state.bootstrap_splunk.outputs.s3_bucket_syslog_audit_archive
-  user_accounts_user_data = data.terraform_remote_state.paperwork.outputs.bot_user_accounts_user_data
-  public_bucket_name      = local.public_bucket_name
-  public_bucket_url       = local.public_bucket_url
-  banner_user_data        = data.terraform_remote_state.paperwork.outputs.custom_banner_user_data
-  region                  = var.region
-}
-
-module "splunk_s3" {
-  source         = "../../modules/launch"
-  instance_count = length(local.splunk_s3_eni_ids)
-  ami_id         = local.encrypted_amazon2_ami_id
-  instance_type  = var.instance_type
-  tags = merge(
-    local.tags,
-    {
-      "Name" = "${var.env_name}-splunk-s3"
-    },
-  )
-  iam_instance_profile = local.archive_role_name
-
-  eni_ids = local.splunk_s3_eni_ids
-
-  user_data = module.s3_archiver_user_data.user_data
-
-  check_cloud_init = false
-  bot_key_pem      = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  bastion_host     = local.bastion_host
-  volume_ids       = [data.terraform_remote_state.bootstrap_splunk.outputs.s3_data_volume]
 }
 
 module "indexers_user_data" {
@@ -329,8 +282,6 @@ module "forwarders_user_data" {
   region                      = var.region
   master_ip                   = local.master_ip
   splunk_http_collector_token = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_http_collector_token
-  s3_archive_ip               = local.s3_archive_ip
-  s3_archive_port             = local.s3_archive_port
   public_bucket_name          = local.public_bucket_name
   public_bucket_url           = local.public_bucket_url
   banner_user_data            = data.terraform_remote_state.paperwork.outputs.custom_banner_user_data

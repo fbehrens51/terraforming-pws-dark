@@ -37,12 +37,6 @@ variable "master_ip" {
 variable "splunk_http_collector_token" {
 }
 
-variable "s3_archive_ip" {
-}
-
-variable "s3_archive_port" {
-}
-
 variable "public_bucket_name" {
 }
 
@@ -145,18 +139,12 @@ data "template_file" "outputs_conf" {
 pass4SymmKey = ${var.forwarders_pass4SymmKey}
 master_uri = https://${var.master_ip}:${module.splunk_ports.splunk_mgmt_port}
 
-[tcpout:s3Archive]
-server = ${var.s3_archive_ip}:${var.s3_archive_port}
-sendCookedData = false
-maxQueueSeize = 25GB
-useSSL = true
-
 [tcpout:SplunkOutput]
 indexerDiscovery = SplunkDiscovery
 useSSL = true
 
 [tcpout]
-defaultGroup = SplunkOutput, s3Archive
+defaultGroup = SplunkOutput
 EOF
 
 }
