@@ -88,7 +88,7 @@ module "healthwatch_config" {
   secrets_bucket_name             = local.secrets_bucket_name
   healthwatch_config              = var.healthwatch_config
   healthwatch_pas_exporter_config = var.healthwatch_pas_exporter_config
-  grafana_elb_id                  = data.terraform_remote_state.pas.outputs.grafana_elb_id
+  grafana_alb_id                  = data.terraform_remote_state.pas.outputs.grafana_alb_id
   grafana_server_ca_cert          = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
   grafana_server_cert             = data.terraform_remote_state.paperwork.outputs.grafana_server_cert
   grafana_server_key              = data.terraform_remote_state.paperwork.outputs.grafana_server_key

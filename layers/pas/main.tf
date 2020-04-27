@@ -54,6 +54,17 @@ data "terraform_remote_state" "encrypt_amis" {
   }
 }
 
+data "terraform_remote_state" "enterprise-services" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "enterprise-services"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 data "template_cloudinit_config" "nat_user_data" {
   base64_encode = false
   gzip          = false
@@ -103,7 +114,6 @@ module "infra" {
   splunk_syslog_ca_cert         = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
   ops_manager_security_group_id = module.ops_manager.security_group_id
   elb_security_group_id         = module.pas_elb.security_group_id
-  grafana_elb_security_group_id = module.grafana_elb.security_group_id
 
   user_data = data.template_cloudinit_config.nat_user_data.rendered
 
@@ -167,16 +177,24 @@ module "rds_subnet_group" {
   tags               = local.modified_tags
 }
 
-module "grafana_elb" {
-  source            = "../../modules/elb/create"
+module "domains" {
+  source      = "../../modules/domains"
+  root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
+}
+
+module "grafana_target" {
+  source            = "../../modules/alb_target"
+  priority          = 80
+  service_name      = "grafana"
+  vpc_id            = data.terraform_remote_state.paperwork.outputs.es_vpc_id
   env_name          = var.env_name
-  internetless      = var.internetless
-  public_subnet_ids = module.infra.public_subnet_ids
-  tags              = local.modified_tags
-  vpc_id            = local.vpc_id
-  egress_cidrs      = module.pas.pas_subnet_cidrs
-  short_name        = "grafana"
-  instance_port     = 3000
+  health_check_path = "/"
+  server_cert_pem   = data.terraform_remote_state.paperwork.outputs.grafana_server_cert
+  server_key_pem    = data.terraform_remote_state.paperwork.outputs.grafana_server_key
+  alb_listener_arn  = data.terraform_remote_state.enterprise-services.outputs.shared_alb_listener_arn
+  domain            = module.domains.grafana_fqdn
+  ips               = []
+  port              = 3000
 }
 
 module "pas_elb" {
@@ -314,11 +332,11 @@ output "pas_elb_id" {
 }
 
 output "grafana_elb_dns_name" {
-  value = module.grafana_elb.dns_name
+  value = data.terraform_remote_state.enterprise-services.outputs.shared_alb_dns_name
 }
 
-output "grafana_elb_id" {
-  value = module.grafana_elb.my_elb_id
+output "grafana_alb_id" {
+  value = module.grafana_target.target_group_id
 }
 
 output "rds_address" {
