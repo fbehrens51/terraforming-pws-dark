@@ -80,6 +80,11 @@ module "splunk_ports" {
   source = "../../modules/splunk_ports"
 }
 
+module "domains" {
+  source      = "../../modules/domains"
+  root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
+}
+
 locals {
   splunk_s3_eni_ids          = data.terraform_remote_state.bootstrap_splunk.outputs.s3_eni_ids
   splunk_master_eni_ids      = data.terraform_remote_state.bootstrap_splunk.outputs.master_eni_ids //[0]
@@ -359,13 +364,37 @@ module "splunk_forwarders" {
   device_name      = "/dev/sdf"
 }
 
-resource "aws_elb_attachment" "splunk_master_attach" {
-  elb      = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_monitor_elb_id
-  instance = module.splunk_master.instance_ids[0]
+module "search_head_target" {
+  source            = "../../modules/alb_target"
+  priority          = 90
+  service_name      = "splunk-search-head"
+  vpc_id            = data.terraform_remote_state.paperwork.outputs.es_vpc_id
+  env_name          = var.env_name
+  health_check_path = "/en-US/account/login"
+  server_cert_pem   = data.terraform_remote_state.paperwork.outputs.splunk_server_cert
+  server_key_pem    = data.terraform_remote_state.paperwork.outputs.splunk_server_key
+  alb_listener_arn  = data.terraform_remote_state.enterprise-services.outputs.shared_alb_listener_arn
+  domain            = module.domains.splunk_fqdn
+  ips               = module.splunk_search_head.private_ips
+  port              = module.splunk_ports.splunk_web_port
 }
 
-resource "aws_elb_attachment" "splunk_search_head_attach" {
-  elb      = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_search_head_elb_id
-  instance = module.splunk_search_head.instance_ids[0]
+# TODO: For now splunk-monitor is pointing to the master instance.  This way
+# operators can check on the status of replication.  In the future we could add
+# another splunk instance setup for distributed monitoring.
+# https://docs.splunk.com/Documentation/Splunk/7.3.0/DMC/Configureindistributedmode
+module "monitor_target" {
+  source            = "../../modules/alb_target"
+  priority          = 91
+  service_name      = "splunk-monitor"
+  vpc_id            = data.terraform_remote_state.paperwork.outputs.es_vpc_id
+  env_name          = var.env_name
+  health_check_path = "/en-US/account/login"
+  server_cert_pem   = data.terraform_remote_state.paperwork.outputs.splunk_monitor_server_cert
+  server_key_pem    = data.terraform_remote_state.paperwork.outputs.splunk_monitor_server_key
+  alb_listener_arn  = data.terraform_remote_state.enterprise-services.outputs.shared_alb_listener_arn
+  domain            = module.domains.splunk_monitor_fqdn
+  ips               = module.splunk_master.private_ips
+  port              = module.splunk_ports.splunk_web_port
 }
 

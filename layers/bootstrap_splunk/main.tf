@@ -147,13 +147,14 @@ module "s3_bootstrap" {
 }
 
 module "master_bootstrap" {
-  source        = "../../modules/eni_per_subnet"
-  ingress_rules = local.splunk_ingress_rules
-  egress_rules  = local.splunk_egress_rules
-  subnet_ids    = [local.master_private_subnet]
-  eni_count     = "1"
-  create_eip    = "false"
-  tags          = local.tags
+  source                     = "../../modules/eni_per_subnet"
+  ingress_rules              = local.splunk_ingress_rules
+  egress_rules               = local.splunk_egress_rules
+  subnet_ids                 = [local.master_private_subnet]
+  eni_count                  = "1"
+  create_eip                 = "false"
+  tags                       = local.tags
+  additional_security_groups = [data.terraform_remote_state.enterprise-services.outputs.shared_alb_target_sg]
 }
 
 module "forwarders_bootstrap" {
@@ -177,13 +178,14 @@ module "indexers_bootstrap" {
 }
 
 module "search_head_bootstrap" {
-  source        = "../../modules/eni_per_subnet"
-  ingress_rules = local.splunk_ingress_rules
-  egress_rules  = local.splunk_egress_rules
-  subnet_ids    = [local.search_head_private_subnet]
-  eni_count     = "1"
-  create_eip    = "false"
-  tags          = local.tags
+  source                     = "../../modules/eni_per_subnet"
+  ingress_rules              = local.splunk_ingress_rules
+  egress_rules               = local.splunk_egress_rules
+  subnet_ids                 = [local.search_head_private_subnet]
+  eni_count                  = "1"
+  create_eip                 = "false"
+  tags                       = local.tags
+  additional_security_groups = [data.terraform_remote_state.enterprise-services.outputs.shared_alb_target_sg]
 }
 
 resource "aws_s3_bucket" "syslog_archive" {
@@ -302,36 +304,6 @@ resource "aws_ebs_volume" "splunk_forwarders_data" {
   kms_key_id = data.terraform_remote_state.paperwork.outputs.kms_key_arn
 }
 
-module "splunk_search_head_elb" {
-  source            = "../../modules/elb/create"
-  env_name          = var.env_name
-  internetless      = var.internetless
-  public_subnet_ids = [local.public_subnet]
-  tags              = var.tags
-  vpc_id            = data.terraform_remote_state.paperwork.outputs.es_vpc_id
-  egress_cidrs      = local.private_subnet_cidrs
-  short_name        = "splunk-sh"
-  port              = "443"
-  instance_port     = "8000"
-}
-
-# TODO: For now splunk-monitor is pointing to the master instance.  This way
-# operators can check on the status of replication.  In the future we could add
-# another splunk instance setup for distributed monitoring.
-# https://docs.splunk.com/Documentation/Splunk/7.3.0/DMC/Configureindistributedmode
-module "splunk_monitor_elb" {
-  source            = "../../modules/elb/create"
-  env_name          = var.env_name
-  internetless      = var.internetless
-  public_subnet_ids = [local.public_subnet]
-  tags              = var.tags
-  vpc_id            = data.terraform_remote_state.paperwork.outputs.es_vpc_id
-  egress_cidrs      = local.private_subnet_cidrs
-  short_name        = "splunk-monitor"
-  port              = "443"
-  instance_port     = "8000"
-}
-
 module "domains" {
   source = "../../modules/domains"
 
@@ -441,19 +413,11 @@ output "cf_splunk_password" {
 }
 
 output "splunk_monitor_elb_dns_name" {
-  value = module.splunk_monitor_elb.dns_name
-}
-
-output "splunk_monitor_elb_id" {
-  value = module.splunk_monitor_elb.my_elb_id
+  value = data.terraform_remote_state.enterprise-services.outputs.shared_alb_dns_name
 }
 
 output "splunk_search_head_elb_dns_name" {
-  value = module.splunk_search_head_elb.dns_name
-}
-
-output "splunk_search_head_elb_id" {
-  value = module.splunk_search_head_elb.my_elb_id
+  value = data.terraform_remote_state.enterprise-services.outputs.shared_alb_dns_name
 }
 
 output "splunk_tcp_port" {

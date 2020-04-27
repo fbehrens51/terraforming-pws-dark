@@ -6,6 +6,11 @@ variable "egress_rules" {
   type = list(object({ port = string, protocol = string, cidr_blocks = string }))
 }
 
+variable "additional_security_groups" {
+  type    = list(string)
+  default = []
+}
+
 variable "subnet_ids" {
   type = list(string)
 }
@@ -42,9 +47,7 @@ resource "aws_network_interface" "eni" {
   subnet_id         = var.subnet_ids[count.index % length(var.subnet_ids)]
   source_dest_check = var.source_dest_check
 
-  security_groups = [
-    module.security_group.security_group_id,
-  ]
+  security_groups = concat([module.security_group.security_group_id, ], var.additional_security_groups)
 
   tags = var.tags
 }
