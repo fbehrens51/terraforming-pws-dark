@@ -169,7 +169,6 @@ module "splunk_s3" {
   bot_key_pem      = data.terraform_remote_state.paperwork.outputs.bot_private_key
   bastion_host     = local.bastion_host
   volume_ids       = [data.terraform_remote_state.bootstrap_splunk.outputs.s3_data_volume]
-  device_name      = "/dev/sdf"
 }
 
 module "indexers_user_data" {
@@ -216,7 +215,6 @@ module "splunk_indexers" {
   bot_key_pem      = data.terraform_remote_state.paperwork.outputs.bot_private_key
   bastion_host     = local.bastion_host
   volume_ids       = data.terraform_remote_state.bootstrap_splunk.outputs.indexers_data_volumes
-  device_name      = "/dev/sdf"
 }
 
 module "master_user_data" {
@@ -264,7 +262,6 @@ module "splunk_master" {
   bot_key_pem      = data.terraform_remote_state.paperwork.outputs.bot_private_key
   bastion_host     = local.bastion_host
   volume_ids       = [data.terraform_remote_state.bootstrap_splunk.outputs.master_data_volume]
-  device_name      = "/dev/sdf"
 }
 
 module "search_head_user_data" {
@@ -312,7 +309,6 @@ module "splunk_search_head" {
   bot_key_pem      = data.terraform_remote_state.paperwork.outputs.bot_private_key
   bastion_host     = local.bastion_host
   volume_ids       = [data.terraform_remote_state.bootstrap_splunk.outputs.search_head_data_volume]
-  device_name      = "/dev/sdf"
 }
 
 module "forwarders_user_data" {
@@ -361,7 +357,6 @@ module "splunk_forwarders" {
   bot_key_pem      = data.terraform_remote_state.paperwork.outputs.bot_private_key
   bastion_host     = local.bastion_host
   volume_ids       = data.terraform_remote_state.bootstrap_splunk.outputs.forwarders_data_volumes
-  device_name      = "/dev/sdf"
 }
 
 module "search_head_target" {

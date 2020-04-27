@@ -55,7 +55,7 @@ variable "volume_ids" {
 }
 
 variable "device_name" {
-  default = null
+  default = "/dev/sdf"
 }
 
 //allows calling module to set a fixed count since count cannot use a value calculated from something that may not exist yet (e.g. eni_ids)

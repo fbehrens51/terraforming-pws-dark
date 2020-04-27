@@ -195,7 +195,6 @@ module "fluentd_instance" {
   bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
   bastion_host         = var.internetless ? null : data.terraform_remote_state.bastion.outputs.bastion_ip
   iam_instance_profile = data.terraform_remote_state.paperwork.outputs.fluentd_role_name
-  device_name          = "/dev/sdf"
   volume_ids           = [data.terraform_remote_state.bootstrap_fluentd.outputs.volume_id]
 }
 
