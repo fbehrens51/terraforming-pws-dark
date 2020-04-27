@@ -19,6 +19,10 @@ variable "tags" {
 variable "internetless" {
 }
 
+variable "instance_type" {
+  default = "t2.medium"
+}
+
 variable "region" {
 }
 
@@ -182,7 +186,7 @@ data "template_cloudinit_config" "user_data" {
 module "fluentd_instance" {
   instance_count       = 1
   source               = "../../modules/launch"
-  instance_type        = "t2.medium"
+  instance_type        = var.instance_type
   ami_id               = local.encrypted_amazon2_ami_id
   user_data            = data.template_cloudinit_config.user_data.rendered
   eni_ids              = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_eni_ids
