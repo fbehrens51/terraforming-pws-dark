@@ -23,6 +23,10 @@ variable "instance_type" {
   default = "t2.medium"
 }
 
+variable "fluentd_bundle_key" {
+  description = "Fluentd bundle S3 object key, aka filename."
+}
+
 variable "region" {
 }
 
@@ -125,6 +129,8 @@ module "configuration" {
   ca_cert     = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
   server_cert = data.terraform_remote_state.paperwork.outputs.fluentd_server_cert
   server_key  = data.terraform_remote_state.paperwork.outputs.fluentd_server_key
+
+  fluentd_bundle_key = var.fluentd_bundle_key
 
   splunk_http_event_collector_token = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_http_collector_token
   cloudwatch_log_group_name         = local.log_group_name

@@ -10,6 +10,10 @@ variable "public_bucket_url" {
 variable "ca_cert" {
 }
 
+variable "fluentd_bundle_key" {
+  description = "Fluentd bundle S3 object key, aka filename."
+}
+
 variable "server_key" {
 }
 
@@ -52,6 +56,10 @@ data "template_file" "config_user_data" {
 
   vars = {
     td_agent_configuration = data.template_file.td_agent_configuration.rendered
+
+    region             = var.region
+    public_bucket_name = var.public_bucket_name
+    fluentd_bundle_key = var.fluentd_bundle_key
   }
 }
 
