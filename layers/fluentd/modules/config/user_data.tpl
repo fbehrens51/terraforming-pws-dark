@@ -8,14 +8,15 @@ merge_how:
 users:
   - default
 
-# bootcmdt:
-#   - |
-#     mkdir -p /opt
-#     while [ ! -e /dev/sdf ] ; do echo "Waiting for device /dev/sdf"; sleep 1 ; done
-#     if [ "$(file -b -s /dev/sdf)" == "data" ]; then mkfs -t ext4 /dev/sdf; fi
+bootcmd:
+  - |
+    set -ex
+    mkdir -p /opt
+    while [ ! -e /dev/sdf ] ; do echo "Waiting for device /dev/sdf"; sleep 1 ; done
+    if [ "$(file -b -s -L /dev/sdf)" == "data" ]; then mkfs -t ext4 /dev/sdf; fi
 
-# mounts:
-#   - [ "/dev/sdf", "/opt", "ext4", "defaults,nofail", "0", "2" ]
+mounts:
+  - [ "/dev/sdf", "/opt", "ext4", "defaults,nofail", "0", "2" ]
 
 runcmd:
   - |

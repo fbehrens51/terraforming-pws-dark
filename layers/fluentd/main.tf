@@ -187,9 +187,11 @@ module "fluentd_instance" {
   user_data            = data.template_cloudinit_config.user_data.rendered
   eni_ids              = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_eni_ids
   tags                 = local.modified_tags
+  check_cloud_init     = false
   bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
   bastion_host         = var.internetless ? null : data.terraform_remote_state.bastion.outputs.bastion_ip
   iam_instance_profile = data.terraform_remote_state.paperwork.outputs.fluentd_role_name
+  device_name          = "/dev/sdf"
   volume_ids           = [data.terraform_remote_state.bootstrap_fluentd.outputs.volume_id]
 }
 
