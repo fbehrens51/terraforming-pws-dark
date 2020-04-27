@@ -423,7 +423,3 @@ output "splunk_search_head_elb_dns_name" {
 output "splunk_tcp_port" {
   value = module.splunk_ports.splunk_tcp_port
 }
-
-output "splunk_logs_fqdn" {
-  value = module.domains.splunk_logs_fqdn
-}

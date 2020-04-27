@@ -68,7 +68,7 @@ write_files:
 
 rsyslog:
   remotes:
-    splunk: "@@${module.domains.splunk_logs_fqdn}:${module.splunk_ports.splunk_tcp_port}"
+    splunk: "@@${module.domains.fluentd_fqdn}:${module.splunk_ports.splunk_tcp_port}"
   configs:
     - filename: 10-tls.conf
       content: |
@@ -76,7 +76,7 @@ rsyslog:
         $ActionSendStreamDriver gtls
         $ActionSendStreamDriverMode 1
         $ActionSendStreamDriverAuthMode x509/name
-        $ActionSendStreamDriverPermittedPeer ${module.domains.splunk_logs_fqdn}
+        $ActionSendStreamDriverPermittedPeer ${module.domains.fluentd_fqdn}
 
 runcmd:
   - |
