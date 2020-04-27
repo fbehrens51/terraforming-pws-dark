@@ -197,7 +197,7 @@ variable "force_destroy_buckets" {
 }
 
 variable "node_exporter_object_url" {
-  default = ""
+  default     = ""
   description = "Location of the node_exporter release. If not specified, the node_exporter agent will not be installed."
 }
 
