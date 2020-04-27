@@ -22,9 +22,15 @@ runcmd:
     set -ex
 
     wget http://packages.treasuredata.com.s3.amazonaws.com/3/redhat/7/x86_64/td-agent-3.6.0-0.el7.x86_64.rpm
+    wget https://rubygems.org/downloads/fluent-plugin-splunk-enterprise-0.10.2.gem
+    wget https://rubygems.org/downloads/aws-sdk-cloudwatchlogs-1.29.0.gem
+    wget https://rubygems.org/downloads/fluent-plugin-cloudwatch-logs-0.5.0.gem
+
     rpm -iv td-agent-3.6.0-0.el7.x86_64.rpm
-    td-agent-gem install fluent-plugin-splunk-enterprise
-    td-agent-gem install fluent-plugin-cloudwatch-logs
+
+    td-agent-gem install -l fluent-plugin-splunk-enterprise-0.10.2.gem
+    td-agent-gem install -l aws-sdk-cloudwatchlogs-1.29.0.gem
+    td-agent-gem install -l fluent-plugin-cloudwatch-logs-0.5.0.gem
 
     mkdir -p /opt/td-agent/s3
     chown td-agent:root -R /opt/td-agent
