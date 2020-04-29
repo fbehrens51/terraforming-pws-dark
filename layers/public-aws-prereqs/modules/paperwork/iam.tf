@@ -25,6 +25,7 @@ data "aws_iam_policy_document" "director" {
       "rds:DescribeAccountAttributes",
       "kms:*",
       "elasticache:*",
+      "logs:*",
     ]
 
     resources = ["*"]
