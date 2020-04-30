@@ -30,4 +30,3 @@ variable "force_destroy_buckets" {
   type    = bool
   default = false
 }
-

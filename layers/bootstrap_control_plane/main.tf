@@ -43,17 +43,6 @@ data "terraform_remote_state" "routes" {
   }
 }
 
-data "terraform_remote_state" "enterprise-services" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "enterprise-services"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 data "terraform_remote_state" "encrypt_amis" {
   backend = "s3"
 
@@ -83,24 +72,6 @@ module "ops_manager" {
   s3_logs_bucket        = local.s3_logs_bucket
   force_destroy_buckets = var.force_destroy_buckets
 }
-
-module "om_target" {
-  source            = "../../modules/alb_target"
-  priority          = 71
-  service_name      = "cp-ops-manager"
-  vpc_id            = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
-  env_name          = local.env_name
-  health_check_path = "/"
-  server_cert_pem   = data.terraform_remote_state.paperwork.outputs.control_plane_om_server_cert
-  server_key_pem    = data.terraform_remote_state.paperwork.outputs.control_plane_om_server_key
-  alb_listener_arn  = data.terraform_remote_state.enterprise-services.outputs.shared_alb_listener_arn
-  alb_security_group_id = data.terraform_remote_state.enterprise-services.outputs.shared_alb_security_group_id
-  target_security_group_id = module.ops_manager.security_group_id
-  domain            = module.domains.control_plane_om_fqdn
-  ips               = [module.ops_manager.private_ip]
-  port              = 443
-}
-
 
 module "public_subnets" {
   source             = "../../modules/subnet_per_az"
@@ -308,11 +279,6 @@ module "nat" {
 
   public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url
-}
-
-module "domains" {
-  source      = "../../modules/domains"
-  root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
 }
 
 module "postgres" {

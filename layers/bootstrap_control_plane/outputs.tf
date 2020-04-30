@@ -112,8 +112,8 @@ output "import_bucket_name" {
   value = aws_s3_bucket.import_bucket.bucket
 }
 
-output "ops_manager_alb" {
-  value = data.terraform_remote_state.enterprise-services.outputs.shared_alb_dns_name
+output "ops_manager_ip" {
+  value = module.ops_manager.ip
 }
 
 output "uaa_elb_dns" {

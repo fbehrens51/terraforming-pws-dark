@@ -130,14 +130,17 @@ locals {
 
   encrypted_amazon2_ami_id = data.terraform_remote_state.encrypt_amis.outputs.encrypted_amazon2_ami_id
 
-  shared_alb                      = data.terraform_remote_state.pas.outputs.ops_manager_alb
+  om_public_ip                    = data.terraform_remote_state.pas.outputs.ops_manager_ip
+  control_plane_om_public_ip      = data.terraform_remote_state.bootstrap_control_plane.outputs.ops_manager_ip
   control_plane_plane_elb_dns     = data.terraform_remote_state.bootstrap_control_plane.outputs.plane_elb_dns
   pas_elb_dns                     = data.terraform_remote_state.pas.outputs.pas_elb_dns_name
   postfix_private_ip              = data.terraform_remote_state.bootstrap_postfix.outputs.postfix_eni_ips[0]
   splunk_logs_private_ip          = data.terraform_remote_state.bootstrap_splunk.outputs.forwarders_private_ips[0]
   fluentd_private_ip              = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_eni_ips[0]
+  splunk_search_head_elb_dns      = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_search_head_elb_dns_name
+  splunk_monitor_elb_dns          = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_monitor_elb_dns_name
+  grafana_elb_dns                 = data.terraform_remote_state.pas.outputs.grafana_elb_dns_name
   control_plane_plane_uaa_elb_dns = data.terraform_remote_state.bootstrap_control_plane.outputs.uaa_elb_dns
-
 }
 
 data "template_cloudinit_config" "master_bind_conf_userdata" {
@@ -188,12 +191,16 @@ module "bind_master_user_data" {
   master_ips  = local.master_ips
   zone_name   = local.root_domain
 
-  shared_alb                      = local.shared_alb
+  om_public_ip                    = local.om_public_ip
+  control_plane_om_public_ip      = local.control_plane_om_public_ip
   control_plane_plane_elb_dns     = local.control_plane_plane_elb_dns
   pas_elb_dns                     = local.pas_elb_dns
   postfix_private_ip              = local.postfix_private_ip
+  splunk_search_head_elb_dns      = local.splunk_search_head_elb_dns
   splunk_logs_private_ip          = local.splunk_logs_private_ip
   fluentd_private_ip              = local.fluentd_private_ip
+  splunk_monitor_elb_dns          = local.splunk_monitor_elb_dns
+  grafana_elb_dns                 = local.grafana_elb_dns
   control_plane_plane_uaa_elb_dns = local.control_plane_plane_uaa_elb_dns
 }
 

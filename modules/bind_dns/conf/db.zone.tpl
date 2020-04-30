@@ -13,20 +13,20 @@ dns${index + 1}		A 	${master_ips[index]}
 %{endfor}
 
 $TTL 300        ; 5 minutes
-${om_subdomain}             CNAME   ${shared_alb}.
+${om_subdomain}             A       ${om_public_ip}
 *.${system_subdomain}       CNAME   ${pas_elb_dns}.
 *.${apps_subdomain}         CNAME   ${pas_elb_dns}.
 
-${control_plane_om_subdomain}    CNAME   ${shared_alb}.
+${control_plane_om_subdomain}    A       ${control_plane_om_public_ip}
 ${control_plane_plane_subdomain} CNAME   ${control_plane_plane_elb_dns}.
 ${control_plane_plane_uaa_subdomain} CNAME   ${control_plane_plane_uaa_elb_dns}.
 
 ${smtp_subdomain}           A       ${postfix_private_ip}
 
-${splunk_subdomain}         CNAME   ${shared_alb}.
+${splunk_subdomain}         CNAME   ${splunk_search_head_elb_dns}.
 ${splunk_logs_subdomain}    A       ${splunk_logs_private_ip}
-${splunk_monitor_subdomain} CNAME   ${shared_alb}.
+${splunk_monitor_subdomain} CNAME   ${splunk_monitor_elb_dns}.
 
 ${fluentd_subdomain}         A       ${fluentd_private_ip}
 
-${grafana_subdomain} CNAME   ${shared_alb}.
+${grafana_subdomain} CNAME   ${grafana_elb_dns}.

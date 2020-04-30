@@ -182,23 +182,16 @@ module "domains" {
   root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
 }
 
-resource "aws_security_group" "ingress_from_alb" {
-  vpc_id = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
-  name_prefix = "${var.env_name} alb"
-}
-
 module "grafana_target" {
   source            = "../../modules/alb_target"
   priority          = 80
   service_name      = "grafana"
-  vpc_id            = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
+  vpc_id            = data.terraform_remote_state.paperwork.outputs.es_vpc_id
   env_name          = var.env_name
   health_check_path = "/"
   server_cert_pem   = data.terraform_remote_state.paperwork.outputs.grafana_server_cert
   server_key_pem    = data.terraform_remote_state.paperwork.outputs.grafana_server_key
   alb_listener_arn  = data.terraform_remote_state.enterprise-services.outputs.shared_alb_listener_arn
-  alb_security_group_id = data.terraform_remote_state.enterprise-services.outputs.shared_alb_security_group_id
-  target_security_group_id = aws_security_group.ingress_from_alb.id
   domain            = module.domains.grafana_fqdn
   ips               = []
   port              = 3000
@@ -242,24 +235,6 @@ module "ops_manager" {
   s3_logs_bucket        = local.s3_logs_bucket
   force_destroy_buckets = var.force_destroy_buckets
 }
-
-module "om_target" {
-  source            = "../../modules/alb_target"
-  priority          = 70
-  service_name      = "pas-ops-manager"
-  vpc_id            = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
-  env_name          = var.env_name
-  health_check_path = "/"
-  server_cert_pem   = data.terraform_remote_state.paperwork.outputs.om_server_cert
-  server_key_pem    = data.terraform_remote_state.paperwork.outputs.om_server_key
-  alb_listener_arn  = data.terraform_remote_state.enterprise-services.outputs.shared_alb_listener_arn
-  alb_security_group_id = data.terraform_remote_state.enterprise-services.outputs.shared_alb_security_group_id
-  target_security_group_id = module.ops_manager.security_group_id
-  domain            = module.domains.om_fqdn
-  ips               = [module.ops_manager.private_ip]
-  port              = 443
-}
-
 
 resource "random_integer" "bucket" {
   min = 1
@@ -485,15 +460,11 @@ output "public_cidr_block" {
   value = module.calculated_subnets.public_cidr
 }
 
-output "ops_manager_alb" {
-  value = data.terraform_remote_state.enterprise-services.outputs.shared_alb_dns_name
+output "ops_manager_ip" {
+  value = module.ops_manager.ip
 }
 
 variable "force_destroy_buckets" {
   type    = bool
   default = false
-}
-
-output "alb_target_security_group" {
-  value = aws_security_group.ingress_from_alb.id
 }
