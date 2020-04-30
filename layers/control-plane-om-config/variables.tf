@@ -76,8 +76,8 @@ variable "extra_user_sudo" {
   default     = false
 }
 
-variable "concourse_users" {
-  description = "An array of usernames that will be given admin permissions in concourse.  The passwords of those users will be automatically generated."
+variable "admin_users" {
+  description = "List of usernames that will be given admin privileges."
   type        = list(string)
 }
 

@@ -144,6 +144,19 @@ module "router_server_cert" {
   ]
 }
 
+module "concourse_uaa_server_cert" {
+  source = "../server_cert"
+
+  env_name           = var.env_name
+  ca_cert_pem        = module.ca_cert.cert_pem
+  ca_private_key_pem = module.ca_cert.private_key_pem
+  common_name        = "${var.env_name} Concourse_uaa"
+
+  domains = [
+    module.domains.control_plane_uaa_fqdn,
+  ]
+}
+
 module "concourse_server_cert" {
   source = "../server_cert"
 

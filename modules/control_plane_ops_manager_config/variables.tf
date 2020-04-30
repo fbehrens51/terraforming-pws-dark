@@ -11,9 +11,8 @@ variable "env_name" {
   description = "Identifier for the deployment. This will be used to add an `env` tag to BOSH-deployed VMs"
 }
 
-variable "concourse_users" {
-  description = "An array of usernames that will be given admin permissions in concourse.  The passwords of those users will be automatically generated."
-  type        = list(string)
+variable "admin_users" {
+  type = list(string)
 }
 
 variable "concourse_worker_role_name" {
@@ -80,9 +79,29 @@ variable "root_domain" {
   description = "The root domain for this environment"
 }
 
+variable "uaa_elb_names" {
+  type        = list(string)
+  description = "List of elb names which UAA should be attached to."
+}
+
 variable "web_elb_names" {
   type        = list(string)
   description = "List of elb names which ATC / TSA should be attached to."
+}
+
+variable "uaa_cert_pem" {
+  type        = string
+  description = "Server certificate used by the Control Plane's UAA. Must be valid for uaa.ci.<ROOT_DOMAIN>"
+}
+
+variable "ca_certificate" {
+  type        = string
+  description = "CA certificate used to sign the concourse_cert_pem."
+}
+
+variable "uaa_private_key_pem" {
+  type        = string
+  description = "Server key used by the Control Plane's UAA. Must be valid for uaa.ci.<ROOT_DOMAIN>"
 }
 
 variable "concourse_cert_pem" {
@@ -217,6 +236,15 @@ variable "postgres_host" {
 }
 
 variable "postgres_port" {
+}
+
+variable "postgres_uaa_db_name" {
+}
+
+variable "postgres_uaa_username" {
+}
+
+variable "postgres_uaa_password" {
 }
 
 variable "postgres_db_name" {

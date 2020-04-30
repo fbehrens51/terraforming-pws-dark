@@ -15,8 +15,19 @@ product-properties:
         ${indent(8, concourse_cert_pem)}
       private_key_pem: |
         ${indent(8, concourse_private_key_pem)}
-  .properties.external_url:
-    value: "https://${plane_endpoint}"
+  .properties.uaa_tls_cert:
+    value:
+      cert_pem: |
+        ${indent(8, uaa_cert_pem)}
+      private_key_pem: |
+        ${indent(8, uaa_private_key_pem)}
+  .properties.concourse_external_url:
+    value: ${plane_endpoint}
+  .properties.ca_certificate:
+    value: |
+      ${indent(6, ca_certificate)}
+  .properties.uaa_external_url:
+    value: ${uaa_endpoint}
   .properties.postgres_host:
     value: ${postgres_host}
   .properties.postgres_port:
@@ -28,12 +39,19 @@ product-properties:
   .properties.postgres_password:
     value:
       secret: ${postgres_password}
+  .properties.postgres_uaa_db_name:
+    value: ${postgres_uaa_db_name}
+  .properties.postgres_uaa_username:
+    value: ${postgres_uaa_username}
+  .properties.postgres_uaa_password:
+    value:
+      secret: ${postgres_uaa_password}
   .properties.postgres_ca_cert:
     value: |
       ${indent(6, postgres_ca_cert)}
-  .properties.users_to_add:
+  .properties.admin_users:
     value:
-    ${indent(4, users_to_add)}
+    ${indent(4, admin_users)}
 network-properties:
   network:
     name: control-plane-subnet
@@ -42,6 +60,12 @@ network-properties:
   singleton_availability_zone:
     name: ${singleton_availability_zone}
 resource-config:
+  uaa:
+    instances: automatic
+    instance_type:
+      id: automatic
+    internet_connected: false
+    elb_names: ${uaa_elb_names}
   web:
     instances: automatic
     instance_type:

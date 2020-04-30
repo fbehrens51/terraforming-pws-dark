@@ -19,6 +19,7 @@ ${om_subdomain}             CNAME   ${shared_alb}.
 
 ${control_plane_om_subdomain}    CNAME   ${shared_alb}.
 ${control_plane_plane_subdomain} CNAME   ${control_plane_plane_elb_dns}.
+${control_plane_plane_uaa_subdomain} CNAME   ${control_plane_plane_uaa_elb_dns}.
 
 ${smtp_subdomain}           A       ${postfix_private_ip}
 

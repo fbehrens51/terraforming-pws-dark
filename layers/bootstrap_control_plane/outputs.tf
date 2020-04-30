@@ -54,6 +54,10 @@ output "om_private_key_pem" {
   value = module.om_key_pair.private_key_pem
 }
 
+output "uaa_elb_id" {
+  value = module.uaa_elb.my_elb_id
+}
+
 output "web_elb_id" {
   value = module.web_elb.my_elb_id
 }
@@ -110,6 +114,10 @@ output "import_bucket_name" {
 
 output "ops_manager_alb" {
   value = data.terraform_remote_state.enterprise-services.outputs.shared_alb_dns_name
+}
+
+output "uaa_elb_dns" {
+  value = module.uaa_elb.dns_name
 }
 
 output "plane_elb_dns" {

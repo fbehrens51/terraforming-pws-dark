@@ -373,6 +373,18 @@ module "rds_subnet_group" {
   tags               = local.modified_tags
 }
 
+module "uaa_elb" {
+  source            = "../../modules/elb/create"
+  env_name          = local.env_name
+  internetless      = var.internetless
+  public_subnet_ids = module.public_subnets.subnet_ids
+  tags              = var.tags
+  vpc_id            = local.vpc_id
+  egress_cidrs      = module.private_subnets.subnet_cidr_blocks
+  short_name        = "uaa"
+  port              = 8443
+}
+
 module "web_elb" {
   source            = "../../modules/two_port_elb/create"
   env_name          = local.env_name

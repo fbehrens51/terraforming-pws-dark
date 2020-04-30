@@ -120,37 +120,28 @@ data "template_file" "create_db" {
   template = file("${path.module}/create_db.tpl")
 
   vars = {
-    postgres_host     = var.postgres_host
-    postgres_port     = var.postgres_port
-    postgres_username = var.postgres_username
-    postgres_password = var.postgres_password
-    postgres_db_name  = var.postgres_db_name
-    mysql_host        = var.mysql_host
-    mysql_port        = var.mysql_port
-    mysql_username    = var.mysql_username
-    mysql_password    = var.mysql_password
-    mysql_db_name     = var.mysql_db_name
+    postgres_host         = var.postgres_host
+    postgres_port         = var.postgres_port
+    postgres_username     = var.postgres_username
+    postgres_password     = var.postgres_password
+    postgres_db_name      = var.postgres_db_name
+    postgres_uaa_db_name  = var.postgres_uaa_db_name
+    postgres_uaa_username = var.postgres_uaa_username
+    postgres_uaa_password = var.postgres_uaa_password
+    mysql_host            = var.mysql_host
+    mysql_port            = var.mysql_port
+    mysql_username        = var.mysql_username
+    mysql_password        = var.mysql_password
+    mysql_db_name         = var.mysql_db_name
   }
 }
 
-resource "random_string" "user_passwords" {
-  count = length(var.concourse_users)
-
-  length = "16"
-}
-
-data "template_file" "users_to_add" {
-  count = length(var.concourse_users)
+data "template_file" "admin_users" {
+  count = length(var.admin_users)
 
   template = <<EOF
-- username: ${var.concourse_users[count.index]}
-  password:
-    secret: ${bcrypt(
-  element(random_string.user_passwords.*.result, count.index),
-  15,
-)}
+- username: ${var.admin_users[count.index]}
 EOF
-
 }
 
 data "template_file" "concourse_template" {
@@ -163,19 +154,27 @@ data "template_file" "concourse_template" {
       join("", data.template_file.control_plane_vpc_azs.*.rendered),
     )
     web_elb_names             = "[${join(",", var.web_elb_names)}]"
+    uaa_elb_names             = "[${join(",", var.uaa_elb_names)}]"
     plane_endpoint            = module.domains.control_plane_plane_fqdn
+    uaa_endpoint              = "${module.domains.control_plane_uaa_fqdn}:8443"
     concourse_cert_pem        = var.concourse_cert_pem
     concourse_private_key_pem = var.concourse_private_key_pem
+    ca_certificate            = var.ca_certificate
+    uaa_cert_pem              = var.uaa_cert_pem
+    uaa_private_key_pem       = var.uaa_private_key_pem
     splunk_syslog_host        = var.splunk_syslog_host
     splunk_syslog_port        = var.splunk_syslog_port
     splunk_syslog_ca_cert     = var.splunk_syslog_ca_cert
     postgres_host             = var.postgres_host
     postgres_port             = var.postgres_port
+    postgres_uaa_db_name      = var.postgres_uaa_db_name
+    postgres_uaa_username     = var.postgres_uaa_username
+    postgres_uaa_password     = var.postgres_uaa_password
     postgres_db_name          = var.postgres_db_name
     postgres_username         = var.postgres_username
     postgres_password         = var.postgres_password
     postgres_ca_cert          = var.postgres_ca_cert
-    users_to_add              = join("", data.template_file.users_to_add.*.rendered)
+    admin_users               = join("", data.template_file.admin_users.*.rendered)
   }
 }
 

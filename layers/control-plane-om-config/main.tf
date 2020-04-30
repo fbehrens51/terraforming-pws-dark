@@ -125,13 +125,17 @@ module "om_config" {
 
   singleton_availability_zone = var.singleton_availability_zone
 
+  ca_certificate            = data.terraform_remote_state.paperwork.outputs.root_ca_cert
   concourse_cert_pem        = data.terraform_remote_state.paperwork.outputs.concourse_server_cert
   concourse_private_key_pem = data.terraform_remote_state.paperwork.outputs.concourse_server_key
-  concourse_users           = var.concourse_users
+  admin_users               = var.admin_users
+  uaa_cert_pem              = data.terraform_remote_state.paperwork.outputs.concourse_uaa_server_cert
+  uaa_private_key_pem       = data.terraform_remote_state.paperwork.outputs.concourse_uaa_server_key
 
   root_domain = local.root_domain
 
   web_elb_names = [data.terraform_remote_state.bootstrap_control_plane.outputs.web_elb_id]
+  uaa_elb_names = [data.terraform_remote_state.bootstrap_control_plane.outputs.uaa_elb_id]
 
   smtp_host       = local.smtp_host
   smtp_user       = local.smtp_user
@@ -166,12 +170,15 @@ module "om_config" {
   mysql_password = data.terraform_remote_state.bootstrap_control_plane.outputs.mysql_rds_password
 
   # Concourse database variables
-  postgres_db_name  = "concourse"
-  postgres_ca_cert  = data.terraform_remote_state.paperwork.outputs.rds_ca_cert
-  postgres_host     = data.terraform_remote_state.bootstrap_control_plane.outputs.postgres_rds_address
-  postgres_port     = data.terraform_remote_state.bootstrap_control_plane.outputs.postgres_rds_port
-  postgres_username = data.terraform_remote_state.bootstrap_control_plane.outputs.postgres_rds_username
-  postgres_password = data.terraform_remote_state.bootstrap_control_plane.outputs.postgres_rds_password
+  postgres_db_name      = "concourse"
+  postgres_uaa_db_name  = "uaa"
+  postgres_uaa_username = data.terraform_remote_state.bootstrap_control_plane.outputs.postgres_rds_username
+  postgres_uaa_password = data.terraform_remote_state.bootstrap_control_plane.outputs.postgres_rds_password
+  postgres_ca_cert      = data.terraform_remote_state.paperwork.outputs.rds_ca_cert
+  postgres_host         = data.terraform_remote_state.bootstrap_control_plane.outputs.postgres_rds_address
+  postgres_port         = data.terraform_remote_state.bootstrap_control_plane.outputs.postgres_rds_port
+  postgres_username     = data.terraform_remote_state.bootstrap_control_plane.outputs.postgres_rds_username
+  postgres_password     = data.terraform_remote_state.bootstrap_control_plane.outputs.postgres_rds_password
 
   # rds_ca_cert_pem = "${data.terraform_remote_state.paperwork.rds_ca_cert_pem}"
 

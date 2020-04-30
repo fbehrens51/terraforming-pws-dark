@@ -11,6 +11,7 @@ variable "master_ips" {
 variable "shared_alb" {}
 variable "pas_elb_dns" {}
 variable "control_plane_plane_elb_dns" {}
+variable "control_plane_plane_uaa_elb_dns" {}
 variable "postfix_private_ip" {}
 variable "splunk_logs_private_ip" {}
 variable "fluentd_private_ip" {}
@@ -38,19 +39,21 @@ output "zone_content" {
     zone_name  = var.zone_name,
     master_ips = var.master_ips,
 
-    shared_alb = var.shared_alb,
-    pas_elb_dns                 = var.pas_elb_dns,
-    postfix_private_ip          = var.postfix_private_ip,
-    splunk_logs_private_ip      = var.splunk_logs_private_ip,
-    fluentd_private_ip          = var.fluentd_private_ip,
-    control_plane_plane_elb_dns = var.control_plane_plane_elb_dns,
+    shared_alb                      = var.shared_alb,
+    pas_elb_dns                     = var.pas_elb_dns,
+    postfix_private_ip              = var.postfix_private_ip,
+    splunk_logs_private_ip          = var.splunk_logs_private_ip,
+    fluentd_private_ip              = var.fluentd_private_ip,
+    control_plane_plane_elb_dns     = var.control_plane_plane_elb_dns,
+    control_plane_plane_uaa_elb_dns = var.control_plane_plane_uaa_elb_dns,
 
     om_subdomain     = module.domains.om_subdomain,
     system_subdomain = module.domains.system_subdomain,
     apps_subdomain   = module.domains.apps_subdomain,
 
-    control_plane_om_subdomain    = module.domains.control_plane_om_subdomain,
-    control_plane_plane_subdomain = module.domains.control_plane_plane_subdomain,
+    control_plane_om_subdomain        = module.domains.control_plane_om_subdomain,
+    control_plane_plane_subdomain     = module.domains.control_plane_plane_subdomain,
+    control_plane_plane_uaa_subdomain = module.domains.control_plane_plane_uaa_subdomain,
 
     smtp_subdomain = module.domains.smtp_subdomain,
 
