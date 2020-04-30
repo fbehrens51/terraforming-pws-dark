@@ -448,6 +448,11 @@ locals {
       cidr_blocks = data.aws_vpc.vpc.cidr_block
     },
     {
+      port        = "443"
+      protocol    = "tcp"
+      cidr_blocks = "0.0.0.0/0"
+    },
+    {
       port        = "9100"
       protocol    = "tcp"
       cidr_blocks = data.aws_vpc.pas_vpc.cidr_block
