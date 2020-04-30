@@ -61,7 +61,7 @@ output "zone_content" {
 
     control_plane_om_subdomain        = module.domains.control_plane_om_subdomain,
     control_plane_plane_subdomain     = module.domains.control_plane_plane_subdomain,
-    control_plane_plane_uaa_subdomain = module.domains.control_plane_plane_uaa_subdomain,
+    control_plane_plane_uaa_subdomain = module.domains.control_plane_uaa_subdomain,
 
     smtp_subdomain = module.domains.smtp_subdomain,
 
