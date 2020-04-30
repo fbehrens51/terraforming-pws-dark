@@ -124,7 +124,6 @@ locals {
     isolation_segment_to_subnets                = var.isolation_segment_to_subnets,
     isolation_segment_to_security_groups        = var.isolation_segment_to_security_groups,
     pas_vpc_dns                                 = var.pas_vpc_dns,
-    shared_alb_target_security_group_id         = var.shared_alb_target_security_group_id
     //    director_blobstore_bucket                   = var.director_blobstore_bucket,
   })
 }

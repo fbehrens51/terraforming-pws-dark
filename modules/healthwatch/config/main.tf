@@ -1,7 +1,7 @@
 variable "root_domain" {
 }
 
-variable "grafana_alb_id" {
+variable "grafana_elb_id" {
 }
 
 variable "grafana_server_ca_cert" {}
@@ -77,7 +77,7 @@ data "template_file" "healthwatch_config" {
     hw_vpc_azs                  = indent(2, join("", data.template_file.hw_vpc_azs.*.rendered))
     singleton_availability_zone = var.singleton_availability_zone
     region                      = var.region
-    grafana_alb_id              = var.grafana_alb_id
+    grafana_elb_id              = var.grafana_elb_id
   }
 }
 

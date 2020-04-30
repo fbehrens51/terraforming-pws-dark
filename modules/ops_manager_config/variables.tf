@@ -594,6 +594,3 @@ variable "tcp_router_instance_type" {
 
 variable "uaa_instance_type" {
 }
-
-variable "shared_alb_target_security_group_id" {
-}

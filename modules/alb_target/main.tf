@@ -66,5 +66,5 @@ resource "aws_alb_target_group_attachment" "service" {
 }
 
 output "target_group_id" {
-  value = aws_lb_target_group.service.name
+  value = aws_lb_target_group.service.id
 }

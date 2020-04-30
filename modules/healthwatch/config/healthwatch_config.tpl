@@ -100,10 +100,9 @@ resource-config:
   grafana:
     max_in_flight: 5
     additional_networks: []
-    additional_vm_extensions:
-    - shared_alb_target
+    additional_vm_extensions: []
     elb_names:
-    - alb:${grafana_alb_id}
+    - ${grafana_elb_id}
     instance_type:
       id: automatic
     instances: automatic

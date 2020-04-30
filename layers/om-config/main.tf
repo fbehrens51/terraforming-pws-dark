@@ -21,17 +21,6 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
-data "terraform_remote_state" "enterprise-services" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "enterprise-services"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 data "terraform_remote_state" "bootstrap_splunk" {
   backend = "s3"
 
@@ -157,8 +146,6 @@ module "om_config" {
   elb_endpoint         = var.elb_endpoint
 
   tsdb_instance_profile = data.terraform_remote_state.paperwork.outputs.tsdb_role_name
-
-  shared_alb_target_security_group_id = data.terraform_remote_state.enterprise-services.outputs.shared_alb_target_sg
 
   volume_encryption_kms_key_arn = data.terraform_remote_state.paperwork.outputs.kms_key_arn
 
