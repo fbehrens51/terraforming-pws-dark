@@ -70,8 +70,14 @@ locals {
       cidr_blocks = "0.0.0.0/0"
     },
     {
-      // metrics endpoint for grafana
+      // node_exporter metrics endpoint for grafana
       port        = "9100"
+      protocol    = "tcp"
+      cidr_blocks = data.aws_vpc.pas_vpc.cidr_block
+    },
+    {
+      // fluentd metrics endpoint for grafana
+      port        = "9200"
       protocol    = "tcp"
       cidr_blocks = data.aws_vpc.pas_vpc.cidr_block
     },

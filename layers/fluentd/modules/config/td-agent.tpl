@@ -14,6 +14,15 @@
   </parse>
 </source>
 
+<filter syslog.**>
+  @type prometheus
+  <metric>
+    name fluentd_input_status_num_records_total
+    type counter
+    desc The total number of incoming records
+  </metric>
+</filter>
+
 <match syslog.**>
   @type copy
   <store>
@@ -52,6 +61,15 @@
     log_stream_name ${cloudwatch_log_stream_name}
     auto_create_stream true
   </store>
+
+  <store>
+    @type prometheus
+    <metric>
+      name fluentd_output_status_num_records_total
+      type counter
+      desc The total number of outgoing records
+    </metric>
+  </store>
 </match>
 
 <label @audispd>
@@ -78,3 +96,15 @@
     </buffer>
   </match>
 </label>
+
+<source>
+  @type prometheus
+  port 9200
+  metrics_path /metrics
+</source>
+<source>
+  @type prometheus_monitor
+</source>
+<source>
+  @type prometheus_output_monitor
+</source>

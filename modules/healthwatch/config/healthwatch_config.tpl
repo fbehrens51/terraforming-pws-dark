@@ -46,6 +46,13 @@ product-properties:
         - source_labels: [__meta_ec2_instance_id]
           target_label: instance_id
       server_name: null
+    - scrape_job: |
+        job_name: 'fluentd'
+        metrics_path: /aggregated_metrics
+        static_configs:
+        - targets:
+          - ${fluentd_root_url}
+      server_name: null
   .properties.canary_exporter_targets:
     value:
     - address: ${canary_url}

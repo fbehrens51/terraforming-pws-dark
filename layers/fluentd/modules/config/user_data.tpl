@@ -36,6 +36,7 @@ runcmd:
       td-agent-gem install -l fluent-plugin-splunk-enterprise-*.gem
       td-agent-gem install -l aws-sdk-cloudwatchlogs-*.gem
       td-agent-gem install -l fluent-plugin-cloudwatch-logs-*.gem
+      td-agent-gem install -l fluent-plugin-prometheus-*.gem
     popd
 
     mkdir -p /opt/td-agent/s3
@@ -54,3 +55,6 @@ write_files:
     path: /etc/td-agent/td-agent.conf
     permissions: '0644'
     owner: root:root
+  - content: |
+      TD_AGENT_LOG_FILE=/opt/td-agent/var/log/td-agent.log
+    path: /etc/sysconfig/td-agent
