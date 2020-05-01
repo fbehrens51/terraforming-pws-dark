@@ -85,6 +85,11 @@ locals {
       cidr_blocks = "0.0.0.0/0"
     },
     {
+      port        = module.splunk_ports.splunk_tcp_port
+      protocol    = "tcp"
+      cidr_blocks = "0.0.0.0/0"
+    },
+    {
       // metrics endpoint for grafana
       port        = "9100"
       protocol    = "tcp"
