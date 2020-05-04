@@ -602,6 +602,16 @@ data "aws_s3_bucket_object" "portal_smoke_test_key" {
   key    = var.portal_smoke_test_key_s3_path
 }
 
+# This key is used to distinguish between metrics domains in grafana.
+resource "random_string" "metrics_key" {
+  length  = "10"
+  special = false
+}
+
+output "metrics_key" {
+  value = "${var.env_name} ${random_string.metrics_key.result}"
+}
+
 output "secrets_bucket_name" {
   value = var.cert_bucket
 }

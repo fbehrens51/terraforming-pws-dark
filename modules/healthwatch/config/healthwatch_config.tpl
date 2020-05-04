@@ -35,9 +35,9 @@ product-properties:
         - region: ${region}
           port: 9100
         relabel_configs:
-        # Only monitor instances with a ScrapeMetrics tag = true
-        - source_labels: [__meta_ec2_tag_ScrapeMetrics]
-          regex: true
+        # Only monitor instances with a MetricsKey tag matchine mine
+        - source_labels: [__meta_ec2_tag_MetricsKey]
+          regex: ${metrics_key}
           action: keep
         - source_labels: [__meta_ec2_tag_Name]
           target_label: name_tag

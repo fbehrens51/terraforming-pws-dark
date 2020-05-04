@@ -115,6 +115,7 @@ module "healthwatch_config" {
   health_check_availability_zone  = var.singleton_availability_zone
   bosh_task_uaa_client_secret     = random_string.healthwatch_client_credentials_secret.result
   region                          = var.region
+  metrics_key                     = data.terraform_remote_state.paperwork.outputs.metrics_key
 
   splunk_syslog_host    = module.domains.fluentd_fqdn
   splunk_syslog_port    = module.splunk_ports.splunk_tcp_port

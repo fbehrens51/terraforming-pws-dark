@@ -96,8 +96,8 @@ locals {
   tags = merge(
     var.tags,
     {
-      "Name"          = "${var.env_name}-splunk"
-      "ScrapeMetrics" = "true"
+      "Name"       = "${var.env_name}-splunk",
+      "MetricsKey" = data.terraform_remote_state.paperwork.outputs.metrics_key,
     },
   )
 

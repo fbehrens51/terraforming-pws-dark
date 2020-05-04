@@ -50,8 +50,8 @@ locals {
   tags = merge(
     var.tags,
     {
-      "Name"          = "${var.env_name}-ops-manager"
-      "ScrapeMetrics" = "true"
+      "Name"       = "${var.env_name}-ops-manager"
+      "MetricsKey" = data.terraform_remote_state.paperwork.outputs.metrics_key,
     },
   )
   trusted_ca_certs           = data.terraform_remote_state.paperwork.outputs.trusted_with_additional_ca_certs

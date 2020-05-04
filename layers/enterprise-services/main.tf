@@ -60,7 +60,8 @@ locals {
   modified_tags = merge(
     var.tags,
     {
-      "Name" = local.modified_name
+      "Name"       = local.modified_name
+      "MetricsKey" = data.terraform_remote_state.paperwork.outputs.metrics_key,
     },
   )
   es_vpc_id  = data.terraform_remote_state.paperwork.outputs.es_vpc_id
