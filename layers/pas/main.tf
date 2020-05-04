@@ -176,7 +176,6 @@ module "grafana_elb" {
   vpc_id            = local.vpc_id
   egress_cidrs      = module.pas.pas_subnet_cidrs
   short_name        = "grafana"
-  instance_port     = 3000
 }
 
 module "pas_elb" {
