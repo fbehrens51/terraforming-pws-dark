@@ -196,7 +196,7 @@
       "datasource": null,
       "gridPos": {
         "h": 7,
-        "w": 24,
+        "w": 17,
         "x": 0,
         "y": 7
       },
@@ -271,6 +271,87 @@
       "timeFrom": null,
       "timeShift": null,
       "title": "Named Status",
+      "type": "stat"
+    },
+    {
+      "datasource": null,
+      "gridPos": {
+        "h": 7,
+        "w": 7,
+        "x": 17,
+        "y": 7
+      },
+      "id": 13,
+      "options": {
+        "colorMode": "value",
+        "fieldOptions": {
+          "calcs": [
+            "last"
+          ],
+          "defaults": {
+            "mappings": [
+              {
+                "from": "",
+                "id": 1,
+                "operator": "",
+                "text": "VM is down",
+                "to": "",
+                "type": 1,
+                "value": "0"
+              },
+              {
+                "from": "",
+                "id": 2,
+                "operator": "",
+                "text": "Fluentd is Down",
+                "to": "",
+                "type": 1,
+                "value": "1"
+              },
+              {
+                "from": "",
+                "id": 3,
+                "operator": "",
+                "text": "Up",
+                "to": "",
+                "type": 1,
+                "value": "2"
+              }
+            ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "green",
+                  "value": 2
+                }
+              ]
+            }
+          },
+          "overrides": [],
+          "values": false
+        },
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto"
+      },
+      "pluginVersion": "6.7.3",
+      "targets": [
+        {
+          "expr": "sum(up{job=\"fluentd\"}) + sum(node_systemd_unit_state{name=\"td-agent.service\",state=\"active\"})",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "{{name_tag}}",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Fluentd Status",
       "type": "stat"
     },
     {
@@ -434,7 +515,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "(sum by (instance, name) (node_systemd_unit_state{name=~\"(Splunkd|named|rsyslog|clamd@scan|clamav-daemon|clam-freshclam|clamav-freshclam|cloud-init).service\", state=\"active\"})) / (sum by (instance, name) (node_systemd_unit_state))",
+          "expr": "(sum by (instance, name) (node_systemd_unit_state{name=~\"(td-agent|Splunkd|named|rsyslog|clamd@scan|clamav-daemon|clam-freshclam|clamav-freshclam|cloud-init).service\", state=\"active\"})) / (sum by (instance, name) (node_systemd_unit_state))",
           "interval": "",
           "legendFormat": "{{instance}} {{name}}",
           "refId": "A"
@@ -518,9 +599,9 @@
   },
   "timezone": "",
   "title": "VM Health",
-  "uid": "_qa7qM3Zz",
+  "uid": "WaLx-n3Zz",
   "variables": {
     "list": []
   },
-  "version": 5
+  "version": 1
 }
