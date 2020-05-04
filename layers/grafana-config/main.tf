@@ -81,3 +81,7 @@ resource "grafana_dashboard" "vm-resources" {
 resource "grafana_dashboard" "vm-health" {
   config_json = file("dashboards/vm-health.json")
 }
+
+resource "grafana_dashboard" "fluentd" {
+  config_json = file("dashboards/fluentd.json")
+}
