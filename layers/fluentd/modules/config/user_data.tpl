@@ -57,4 +57,5 @@ write_files:
     owner: root:root
   - content: |
       TD_AGENT_LOG_FILE=/opt/td-agent/var/log/td-agent.log
+      TD_AGENT_OPTIONS="--log-rotate-size 104857600 --log-rotate-age 10"
     path: /etc/sysconfig/td-agent
