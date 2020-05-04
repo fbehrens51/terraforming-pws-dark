@@ -4,6 +4,10 @@ variable "remote_state_bucket" {
 variable "remote_state_region" {
 }
 
+variable "smtp_from" {
+  default = ""
+}
+
 //from global vars
 variable "availability_zones" {
   type = list(string)
@@ -46,6 +50,17 @@ data "terraform_remote_state" "bootstrap_splunk" {
   }
 }
 
+data "terraform_remote_state" "bootstrap_postfix" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bootstrap_postfix"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "paperwork" {
   backend = "s3"
 
@@ -81,6 +96,7 @@ module "splunk_ports" {
 locals {
   root_domain         = data.terraform_remote_state.paperwork.outputs.root_domain
   secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
+  smtp_client_user    = data.terraform_remote_state.bootstrap_postfix.outputs.smtp_client_user
 }
 
 module "healthwatch_config" {
@@ -103,6 +119,12 @@ module "healthwatch_config" {
   splunk_syslog_host    = module.domains.fluentd_fqdn
   splunk_syslog_port    = module.splunk_ports.splunk_tcp_port
   splunk_syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+
+  smtp_from            = var.smtp_from
+  smtp_host            = "smtp.${local.root_domain}"
+  smtp_client_password = data.terraform_remote_state.bootstrap_postfix.outputs.smtp_client_password
+  smtp_client_port     = data.terraform_remote_state.bootstrap_postfix.outputs.smtp_client_port
+  smtp_client_user     = "${local.smtp_client_user}@${local.root_domain}"
 }
 
 resource "random_string" "healthwatch_client_credentials_secret" {
@@ -114,4 +136,3 @@ output "healthwatch_client_credentials_secret" {
   value     = random_string.healthwatch_client_credentials_secret.result
   sensitive = true
 }
-

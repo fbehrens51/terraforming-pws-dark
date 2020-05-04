@@ -24,6 +24,22 @@ variable "health_check_availability_zone" {
 variable "bosh_task_uaa_client_secret" {
 }
 
+# the smtp_* variables configure healthwatch2 to postfix relay.
+variable "smtp_from" {
+}
+
+variable "smtp_host" {
+}
+
+variable "smtp_client_password" {
+}
+
+variable "smtp_client_port" {
+}
+
+variable "smtp_client_user" {
+}
+
 # These syslog vars are unused, but will become used once the healthwatch team adds syslog forwarding to the tile
 variable "splunk_syslog_host" {
 }
@@ -79,6 +95,12 @@ data "template_file" "healthwatch_config" {
     singleton_availability_zone = var.singleton_availability_zone
     region                      = var.region
     grafana_elb_id              = var.grafana_elb_id
+    smtp_enabled                = var.smtp_from == "" ? false : true
+    smtp_from                   = var.smtp_from
+    smtp_host                   = var.smtp_host
+    smtp_password               = var.smtp_client_password
+    smtp_port                   = var.smtp_client_port
+    smtp_user                   = var.smtp_client_user
   }
 }
 

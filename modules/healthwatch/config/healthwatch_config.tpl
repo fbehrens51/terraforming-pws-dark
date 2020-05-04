@@ -12,18 +12,18 @@ product-properties:
     value: ${grafana_root_url}
   .grafana.ssl_ca_certificate:
     value: |-
-      ${indent(6, root_ca_cert)}
+      ${indent(6, chomp(root_ca_cert))}
   .grafana.ssl_certificates:
     value:
       cert_pem: |
-        ${indent(8, grafana_server_cert)}
+        ${indent(8, chomp(grafana_server_cert))}
       private_key_pem: |
-        ${indent(8, grafana_server_key)}
+        ${indent(8, chomp(grafana_server_key))}
   .properties.scrape_configs:
     value:
     # We use the grafana_server_cert/key for the node_exporters on each VM
     - ca: |
-        ${indent(8, root_ca_cert)}
+        ${indent(8, chomp(root_ca_cert))}
       # We are only enabling TLS for the encryption. Each host has a different name,
       # and the cert will not match them. The list is also dynamic, so we can't
       # pre-allocate a cert with all the names.
@@ -66,8 +66,32 @@ product-properties:
     selected_option: disabled
     value: disabled
   .properties.smtp:
+%{ if smtp_enabled != "true" ~}
     selected_option: disabled
     value: disabled
+%{ else ~}
+    selected_option: enabled
+    value: enabled
+  .properties.smtp.enabled.from_address:
+    value: ${smtp_from}
+  .properties.smtp.enabled.host:
+    value: ${smtp_host}
+  .properties.smtp.enabled.password:
+    value:
+      secret: ${smtp_password}
+  .properties.smtp.enabled.port:
+    value: ${smtp_port}
+  .properties.smtp.enabled.skip_verify:
+    value: false
+  .properties.smtp.enabled.tls_credentials:
+    value:
+      cert_pem: |
+        ${indent(8, chomp(grafana_server_cert))}
+      private_key_pem: |
+        ${indent(8, chomp(grafana_server_key))}
+  .properties.smtp.enabled.user:
+    value: ${smtp_user}
+%{ endif ~}
   .tsdb.canary_exporter_port:
     value: 9115
   .tsdb.disk_chunk_size:

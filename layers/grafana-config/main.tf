@@ -39,6 +39,14 @@ variable "slack_webhook" {
   default = ""
 }
 
+variable "email_addresses" {
+  default = ""
+}
+
+locals {
+  slack_default = var.slack_webhook != "" ? true : false
+}
+
 module "domains" {
   source      = "../../modules/domains"
   root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
@@ -48,10 +56,21 @@ resource "grafana_alert_notification" "slack" {
   count      = var.slack_webhook == "" ? 0 : 1
   name       = "PWS Dark Notifications"
   type       = "slack"
-  is_default = true
+  is_default = local.slack_default
 
   settings = {
     url = var.slack_webhook
+  }
+}
+
+resource "grafana_alert_notification" "email" {
+  count      = var.email_addresses == "" ? 0 : 1
+  name       = "PWS Dark Email Notifications"
+  type       = "email"
+  is_default = ! local.slack_default
+
+  settings = {
+    addresses = var.email_addresses
   }
 }
 
