@@ -13,7 +13,7 @@
       {
         "datasource": "prometheus",
         "enable": true,
-        "expr": "timestamp(idelta(node_boot_time_seconds{name_tag=~\"${name:regex}\",availability_zone=~\"${az:regex}\"}[5m]) > 0)",
+        "expr": "timestamp(rate(node_boot_time_seconds[5m]) > 0 or ( (node_boot_time_seconds != 0 unless node_boot_time_seconds offset 15s) ))",
         "hide": false,
         "iconColor": "#5794F2",
         "limit": 100,
