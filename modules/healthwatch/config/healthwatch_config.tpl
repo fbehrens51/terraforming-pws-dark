@@ -131,7 +131,7 @@ resource-config:
   grafana:
     max_in_flight: 5
     additional_networks: []
-    additional_vm_extensions: []
+    additional_vm_extensions: [tsdb_instance_profile]
     elb_names:
     - ${grafana_elb_id}
     instance_type:
