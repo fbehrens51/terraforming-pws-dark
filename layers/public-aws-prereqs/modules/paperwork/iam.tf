@@ -214,6 +214,12 @@ data "aws_iam_policy_document" "ec2_reader" {
     actions = [
       "ec2:Get*",
       "ec2:Describe*",
+      "cloudwatch:DescribeAlarmsForMetric",
+      "cloudwatch:DescribeAlarmHistory",
+      "cloudwatch:DescribeAlarms",
+      "cloudwatch:ListMetrics",
+      "cloudwatch:GetMetricStatistics",
+      "cloudwatch:GetMetricData",
     ]
 
     resources = ["*"]
