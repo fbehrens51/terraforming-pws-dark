@@ -79,6 +79,14 @@ resource "aws_s3_bucket_object" "certs_user_data" {
   content = data.template_file.certs_user_data.rendered
 }
 
+output "cloudwatch_log_group_name" {
+  value = var.cloudwatch_log_group_name
+}
+
+output "cloudwatch_log_stream_name" {
+  value = var.cloudwatch_log_stream_name
+}
+
 output "config_user_data" {
   value     = data.template_file.config_user_data.rendered
   sensitive = true
