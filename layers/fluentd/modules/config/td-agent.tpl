@@ -4,6 +4,7 @@
   bind 0.0.0.0
   tag syslog
   emit_unmatched_lines true
+  source_address_key source_address
   <transport tls>
     ca_path /etc/td-agent/ca.pem
     cert_path /etc/td-agent/cert.pem
