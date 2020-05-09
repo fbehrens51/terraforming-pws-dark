@@ -21,6 +21,21 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
+data "terraform_remote_state" "bootstrap_fluentd" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bootstrap_fluentd"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
+variable "namespaces" {
+  default = "LogMetrics"
+}
+
 variable "grafana_auth" {
 }
 
@@ -43,8 +58,53 @@ variable "email_addresses" {
   default = ""
 }
 
+data "aws_region" "current" {
+}
+
 locals {
-  slack_default = var.slack_webhook != "" ? true : false
+  slack_default  = var.slack_webhook != "" ? true : false
+  log_group_name = data.terraform_remote_state.bootstrap_fluentd.outputs.log_group_name
+  region         = data.aws_region.current.name
+  dashboard_name = "AntiVirus"
+}
+
+
+resource "aws_cloudwatch_dashboard" "clamav" {
+  dashboard_name = local.dashboard_name
+
+  dashboard_body = <<-EOF
+    {
+        "widgets": [
+            {
+                "type": "log",
+                "x": 0,
+                "y": 0,
+                "width": 24,
+                "height": 6,
+                "properties": {
+                    "query": "SOURCE '${local.log_group_name}' | filter @message like / FOUND\"/ | parse message \"*: * FOUND\" as file, sig | display @timestamp, host, ident, file, sig",
+                    "region": "${local.region}",
+                    "stacked": false,
+                    "view": "table"
+                }
+            }
+        ]
+    }
+    EOF
+}
+
+resource "aws_cloudwatch_log_metric_filter" "clamav" {
+  name           = "AntivirusScanner"
+  pattern        = "{ $.message = \"* FOUND\" }"
+  log_group_name = local.log_group_name
+
+  metric_transformation {
+    name          = "Infections"
+    namespace     = var.namespaces
+    value         = 1
+    default_value = 0
+  }
+
 }
 
 module "domains" {
@@ -74,6 +134,17 @@ resource "grafana_alert_notification" "email" {
   }
 }
 
+resource "grafana_data_source" "cloudwatch" {
+  type = "cloudwatch"
+  name = "cloudwatch"
+
+  json_data {
+    auth_type                 = ""
+    default_region            = local.region
+    custom_metrics_namespaces = var.namespaces
+  }
+}
+
 resource "grafana_dashboard" "vm-resources" {
   config_json = file("dashboards/vm-resources.json")
 }
@@ -86,3 +157,14 @@ resource "grafana_dashboard" "fluentd" {
   config_json = file("dashboards/fluentd.json")
 }
 
+data "template_file" "clamav_dashboard" {
+  template = file("dashboards/antivirus-alerts.json.tpl")
+  vars = {
+    region         = local.region
+    dashboard_name = local.dashboard_name
+  }
+}
+
+resource "grafana_dashboard" "clamav" {
+  config_json = data.template_file.clamav_dashboard.rendered
+}
