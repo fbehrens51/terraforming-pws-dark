@@ -26,6 +26,10 @@ data "aws_iam_policy_document" "director" {
       "kms:*",
       "elasticache:*",
       "logs:*",
+      "cloudwatch:PutDashboard",
+      "cloudwatch:GetDashboard",
+      "cloudwatch:ListDashboards",
+      "cloudwatch:DeleteDashboards",
     ]
 
     resources = ["*"]
