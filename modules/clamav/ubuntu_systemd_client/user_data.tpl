@@ -5,6 +5,11 @@ write_files:
       path: /usr/share/augeas/lenses/dist/clamavubuntu.aug
       permissions: '0644'
       owner: root:root
+  - content: |
+      20 20 * * * root clamscan -ir / --exclude-dir=/sys/ --exclude-dir=/proc/ --stdout | logger -i -t antivirus -p auth.alert
+    path: /etc/cron.d/antivirus
+    permissions: '0644'
+    owner: root:root
 runcmd:
   - |
     set -ex
