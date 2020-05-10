@@ -10,6 +10,11 @@ write_files:
       path: /usr/lib/systemd/system/clam-freshclam.service
       permissions: '0644'
       owner: root:root
+  - content: |
+      20 20 * * * root clamscan -ir / --exclude-dir=/sys/ --exclude-dir=/proc/ --stdout | logger -i -t antivirus -p auth.alert
+    path: /etc/cron.d/antivirus
+    permissions: '0644'
+    owner: root:root
 yum_repos:
   custom-clamav-repo:
       name: "Custom repo added for ClamAV installation"
