@@ -15,7 +15,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 42,
+  "id": 47,
   "links": [],
   "panels": [
     {
@@ -41,7 +41,7 @@
             },
             "reducer": {
               "params": [],
-              "type": "count"
+              "type": "max"
             },
             "type": "query"
           }
@@ -182,7 +182,7 @@
     "list": []
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-24h",
     "to": "now"
   },
   "timepicker": {
@@ -201,9 +201,9 @@
   },
   "timezone": "browser",
   "title": "ClamAV Virus Detections",
-  "uid": "oUwlyr6Zz",
+  "uid": "hrJozgRGk",
   "variables": {
     "list": []
   },
-  "version": 9
+  "version": 3
 }
