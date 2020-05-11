@@ -65,6 +65,9 @@ variable "region" {
 variable "metrics_key" {
 }
 
+variable "grafana_uaa_client_secret" {
+}
+
 data "template_file" "hw_vpc_azs" {
   count = length(var.availability_zones)
 
@@ -99,6 +102,8 @@ data "template_file" "healthwatch_config" {
     singleton_availability_zone = var.singleton_availability_zone
     region                      = var.region
     grafana_elb_id              = var.grafana_elb_id
+    grafana_uaa_client_secret   = var.grafana_uaa_client_secret
+    uaa_url                     = "https://uaa.${module.domains.system_fqdn}"
     smtp_enabled                = var.smtp_from == "" ? false : true
     smtp_from                   = var.smtp_from
     smtp_host                   = var.smtp_host

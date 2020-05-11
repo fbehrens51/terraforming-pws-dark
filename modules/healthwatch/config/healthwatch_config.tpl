@@ -57,8 +57,20 @@ product-properties:
     value:
     - address: ${canary_url}
   .properties.grafana_authentication:
-    selected_option: basic
-    value: basic
+    selected_option: uaa
+    value: uaa
+  .properties.grafana_authentication.uaa.client_id:
+    value: grafana
+  .properties.grafana_authentication.uaa.client_secret:
+    value:
+      secret: ${grafana_uaa_client_secret}
+  .properties.grafana_authentication.uaa.root_url:
+    value: ${uaa_url}
+  .properties.grafana_authentication.uaa.tls_skip_verify_insecure:
+    value: false
+  .properties.grafana_proxy:
+    selected_option: disabled
+    value: disabled
   .properties.pks_cluster_discovery:
     selected_option: disabled
     value: disabled

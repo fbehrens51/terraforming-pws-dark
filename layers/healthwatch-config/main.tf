@@ -116,6 +116,7 @@ module "healthwatch_config" {
   bosh_task_uaa_client_secret     = random_string.healthwatch_client_credentials_secret.result
   region                          = var.region
   metrics_key                     = data.terraform_remote_state.paperwork.outputs.metrics_key
+  grafana_uaa_client_secret       = random_string.grafana_uaa_client_secret.result
 
   splunk_syslog_host    = module.domains.fluentd_fqdn
   splunk_syslog_port    = module.splunk_ports.splunk_tcp_port
@@ -137,3 +138,14 @@ output "healthwatch_client_credentials_secret" {
   value     = random_string.healthwatch_client_credentials_secret.result
   sensitive = true
 }
+
+resource "random_string" "grafana_uaa_client_secret" {
+  length  = "32"
+  special = false
+}
+
+output "grafana_uaa_client_secret" {
+  value     = random_string.grafana_uaa_client_secret.result
+  sensitive = true
+}
+
