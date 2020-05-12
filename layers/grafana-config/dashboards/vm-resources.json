@@ -632,7 +632,7 @@
           }
         ],
         "executionErrorState": "alerting",
-        "for": "5m",
+        "for": "1m",
         "frequency": "1m",
         "handler": 1,
         "message": "One or more instances are not reporting metrics. This could be a firewall issue, or it could be an indication of something more serious.",
@@ -768,7 +768,7 @@
           }
         ],
         "executionErrorState": "alerting",
-        "for": "5m",
+        "for": "1m",
         "frequency": "1m",
         "handler": 1,
         "message": "One or more systemd units are failing. This typically indicates that some important service is down.",
@@ -960,5 +960,5 @@
   "variables": {
     "list": []
   },
-  "version": 47
+  "version": 52
 }
