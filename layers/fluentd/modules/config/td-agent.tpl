@@ -47,6 +47,11 @@
   </store>
 
   <store>
+    @type relabel
+    @label @clamav_infections
+  </store>
+
+  <store>
     @type splunk_hec # Output to Splunk HTTP event collector
     host ${splunk_http_event_collector_host}
     port ${splunk_http_event_collector_port}
@@ -72,6 +77,44 @@
     </metric>
   </store>
 </match>
+
+<label @clamav_infections>
+  <filter syslog.**>
+    @type grep
+    <regexp>
+      key ident
+      pattern /^antivirus$/
+    </regexp>
+    <regexp>
+      key message
+      pattern /Infected files: /
+    </regexp>
+  </filter>
+
+  <filter syslog.**>
+    @type parser
+    key_name message
+    reserve_data true
+    <parse>
+      @type regexp
+      types infections:integer
+      expression /Infected files: (?<infections>\d+)/
+    </parse>
+  </filter>
+
+  <match **>
+    @type prometheus
+    <metric>
+      name fluentd_clamav_infected_files
+      type gauge
+      desc The total number of infected files found by clamav
+      key infections
+      <labels>
+        source_address $.source_address
+      </labels>
+    </metric>
+  </match>
+</label>
 
 <label @audispd>
   <filter syslog.**>
