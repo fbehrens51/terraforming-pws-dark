@@ -15,7 +15,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 47,
+  "id": 29,
   "links": [],
   "panels": [
     {
@@ -25,7 +25,7 @@
           {
             "evaluator": {
               "params": [
-                1
+                0
               ],
               "type": "gt"
             },
@@ -35,7 +35,30 @@
             "query": {
               "params": [
                 "A",
-                "5m",
+                "1m",
+                "now"
+              ]
+            },
+            "reducer": {
+              "params": [],
+              "type": "max"
+            },
+            "type": "query"
+          },
+          {
+            "evaluator": {
+              "params": [
+                0
+              ],
+              "type": "gt"
+            },
+            "operator": {
+              "type": "or"
+            },
+            "query": {
+              "params": [
+                "B",
+                "1m",
                 "now"
               ]
             },
@@ -52,14 +75,14 @@
         "handler": 1,
         "message": "A virus was detected!",
         "name": "AntiVirus Infections found alert",
-        "noDataState": "ok",
+        "noDataState": "keep_state",
         "notifications": []
       },
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "cloudwatch",
+      "datasource": "prometheus",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -107,18 +130,23 @@
       "steppedLine": false,
       "targets": [
         {
-          "alias": "",
-          "dimensions": {},
-          "expression": "",
-          "id": "",
-          "matchExact": true,
-          "metricName": "Infections",
-          "namespace": "LogMetrics",
-          "refId": "A",
-          "region": "default",
-          "statistics": [
-            "Sum"
-          ]
+          "expr": " fluentd_clamav_infected_files unless on (source_address) (label_join(system_healthy{origin=\"system_metrics_agent\"}, \"source_address\", \"\", \"ip\") < 1)",
+          "interval": "",
+          "legendFormat": "{{source_address}}",
+          "refId": "A"
+        },
+        {
+          "expr": " fluentd_clamav_infected_files unless on (source_address) (label_replace(up{job=\"ec2\"}, \"source_address\", \"$1\", \"instance\", \"(.*):.*\") < 1)",
+          "interval": "",
+          "legendFormat": "{{source_address}}",
+          "refId": "C"
+        },
+        {
+          "expr": "fluentd_clamav_infected_files",
+          "hide": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "B"
         }
       ],
       "thresholds": [
@@ -127,8 +155,7 @@
           "fill": true,
           "line": true,
           "op": "gt",
-          "value": 1,
-          "yaxis": "left"
+          "value": 0
         }
       ],
       "timeFrom": null,
@@ -174,7 +201,7 @@
       }
     }
   ],
-  "refresh": "5m",
+  "refresh": "10s",
   "schemaVersion": 22,
   "style": "dark",
   "tags": [],
@@ -201,9 +228,9 @@
   },
   "timezone": "browser",
   "title": "ClamAV Virus Detections",
-  "uid": "hrJozgRGk",
+  "uid": "RLGLyeeZz",
   "variables": {
     "list": []
   },
-  "version": 3
+  "version": 7
 }
