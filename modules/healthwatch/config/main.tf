@@ -110,6 +110,9 @@ data "template_file" "healthwatch_config" {
     smtp_password               = var.smtp_client_password
     smtp_port                   = var.smtp_client_port
     smtp_user                   = var.smtp_client_user
+    splunk_syslog_host          = var.splunk_syslog_host
+    splunk_syslog_port          = var.splunk_syslog_port
+    splunk_syslog_ca_cert       = var.splunk_syslog_ca_cert
   }
 }
 
@@ -129,6 +132,9 @@ data "template_file" "healthwatch_pas_exporter_config" {
     hw_vpc_azs                     = indent(2, join("", data.template_file.hw_vpc_azs.*.rendered))
     singleton_availability_zone    = var.singleton_availability_zone
     health_check_availability_zone = var.health_check_availability_zone
+    splunk_syslog_host             = var.splunk_syslog_host
+    splunk_syslog_port             = var.splunk_syslog_port
+    splunk_syslog_ca_cert          = var.splunk_syslog_ca_cert
   }
 }
 
