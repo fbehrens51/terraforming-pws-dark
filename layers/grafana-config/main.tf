@@ -98,20 +98,6 @@ resource "aws_cloudwatch_dashboard" "clamav" {
     EOF
 }
 
-resource "aws_cloudwatch_log_metric_filter" "clamav" {
-  name           = "AntivirusScanner"
-  pattern        = "{ $.message = \"* FOUND\" }"
-  log_group_name = local.log_group_name
-
-  metric_transformation {
-    name          = "Infections"
-    namespace     = var.namespaces
-    value         = 1
-    default_value = 0
-  }
-
-}
-
 module "domains" {
   source      = "../../modules/domains"
   root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
