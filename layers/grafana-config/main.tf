@@ -65,7 +65,7 @@ locals {
   slack_default  = var.slack_webhook != "" ? true : false
   log_group_name = data.terraform_remote_state.bootstrap_fluentd.outputs.log_group_name
   region         = data.aws_region.current.name
-  dashboard_name = "AntiVirus"
+  dashboard_name = "AntiVirus_${local.region}"
 }
 
 
