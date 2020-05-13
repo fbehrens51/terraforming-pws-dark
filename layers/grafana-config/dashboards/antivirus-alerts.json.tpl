@@ -155,7 +155,8 @@
           "fill": true,
           "line": true,
           "op": "gt",
-          "value": 0
+          "value": 0,
+          "yaxis": "left"
         }
       ],
       "timeFrom": null,
@@ -164,7 +165,7 @@
       "title": "AntiVirus Infections",
       "tooltip": {
         "shared": true,
-        "sort": 0,
+        "sort": 2,
         "value_type": "individual"
       },
       "transparent": true,
@@ -180,7 +181,7 @@
         {
           "decimals": 0,
           "format": "short",
-          "label": "",
+          "label": "Infected Files",
           "logBase": 1,
           "max": "10",
           "min": "0",
@@ -232,5 +233,5 @@
   "variables": {
     "list": []
   },
-  "version": 7
+  "version": 10
 }
