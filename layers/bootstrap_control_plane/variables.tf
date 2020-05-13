@@ -37,7 +37,7 @@ variable "sjb_ingress_rules" {
 # variable "env_name" {}
 
 variable "nat_instance_type" {
-  default = "t2.small"
+  default = "t2.medium"
 }
 
 variable "availability_zones" {

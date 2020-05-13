@@ -223,7 +223,7 @@ resource "random_integer" "bucket" {
 }
 
 variable "nat_instance_type" {
-  default = "t2.small"
+  default = "t2.medium"
 }
 
 variable "remote_state_bucket" {
