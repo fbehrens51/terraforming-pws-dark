@@ -44,9 +44,9 @@ write_files:
     owner: root:root
 
   - content: |
-      tlsConfig:
-        tlsCertPath: /etc/node_exporter/cert.pem
-        tlsKeyPath: /etc/node_exporter/key.pem
+      tls_server_config:
+        cert_file: /etc/node_exporter/cert.pem
+        key_file: /etc/node_exporter/key.pem
     path: /etc/node_exporter/web-config.yml
     permissions: '0644'
     owner: root:root
