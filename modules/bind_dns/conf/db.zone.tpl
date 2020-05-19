@@ -23,10 +23,6 @@ ${control_plane_plane_uaa_subdomain} CNAME   ${control_plane_plane_uaa_elb_dns}.
 
 ${smtp_subdomain}           A       ${postfix_private_ip}
 
-${splunk_subdomain}         CNAME   ${splunk_search_head_elb_dns}.
-${splunk_logs_subdomain}    A       ${splunk_logs_private_ip}
-${splunk_monitor_subdomain} CNAME   ${splunk_monitor_elb_dns}.
-
 ${fluentd_subdomain}         A       ${fluentd_private_ip}
 
 ${grafana_subdomain} CNAME   ${grafana_elb_dns}.

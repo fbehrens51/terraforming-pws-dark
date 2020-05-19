@@ -5,20 +5,11 @@ locals {
   smtp_subdomain = "smtp"
   smtp_fqdn      = "${local.smtp_subdomain}.${var.root_domain}"
 
-  splunk_subdomain = "splunk"
-  splunk_fqdn      = "${local.splunk_subdomain}.${var.root_domain}"
-
   om_subdomain = "om"
   om_fqdn      = "${local.om_subdomain}.${var.root_domain}"
 
   grafana_subdomain = "grafana"
   grafana_fqdn      = "${local.grafana_subdomain}.${var.root_domain}"
-
-  splunk_monitor_subdomain = "splunk-monitor"
-  splunk_monitor_fqdn      = "${local.splunk_monitor_subdomain}.${var.root_domain}"
-
-  splunk_logs_subdomain = "splunk-logs"
-  splunk_logs_fqdn      = "${local.splunk_logs_subdomain}.${var.root_domain}"
 
   fluentd_subdomain = "fluentd"
   fluentd_fqdn      = "${local.fluentd_subdomain}.${var.root_domain}"
@@ -48,14 +39,6 @@ output "smtp_subdomain" {
 
 output "smtp_fqdn" {
   value = local.smtp_fqdn
-}
-
-output "splunk_subdomain" {
-  value = local.splunk_subdomain
-}
-
-output "splunk_fqdn" {
-  value = local.splunk_fqdn
 }
 
 output "control_plane_om_subdomain" {
@@ -98,28 +81,12 @@ output "om_fqdn" {
   value = local.om_fqdn
 }
 
-output "splunk_logs_subdomain" {
-  value = local.splunk_logs_subdomain
-}
-
-output "splunk_logs_fqdn" {
-  value = local.splunk_logs_fqdn
-}
-
 output "fluentd_subdomain" {
   value = local.fluentd_subdomain
 }
 
 output "fluentd_fqdn" {
   value = local.fluentd_fqdn
-}
-
-output "splunk_monitor_subdomain" {
-  value = local.splunk_monitor_subdomain
-}
-
-output "splunk_monitor_fqdn" {
-  value = local.splunk_monitor_fqdn
 }
 
 output "system_fqdn" {

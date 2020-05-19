@@ -52,15 +52,6 @@
   </store>
 
   <store>
-    @type splunk_hec # Output to Splunk HTTP event collector
-    host ${splunk_http_event_collector_host}
-    port ${splunk_http_event_collector_port}
-    token ${splunk_http_event_collector_token}
-    use_ssl true
-    ca_file /etc/td-agent/ca.pem
-  </store>
-
-  <store>
     @type cloudwatch_logs
     region ${region}
     log_group_name ${cloudwatch_log_group_name}

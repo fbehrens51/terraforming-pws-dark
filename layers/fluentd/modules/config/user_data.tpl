@@ -33,7 +33,6 @@ runcmd:
 
       rpm -iv td-agent-*.rpm
 
-      td-agent-gem install -l fluent-plugin-splunk-enterprise-*.gem
       td-agent-gem install -l aws-sdk-cloudwatchlogs-*.gem
       td-agent-gem install -l fluent-plugin-cloudwatch-logs-*.gem
       td-agent-gem install -l fluent-plugin-prometheus-*.gem

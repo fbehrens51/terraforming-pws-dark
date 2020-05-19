@@ -93,11 +93,57 @@ locals {
   private_subnets = data.terraform_remote_state.enterprise-services.outputs.private_subnet_ids
 
   log_group_name = replace("${local.env_name} log group", " ", "_")
+
+  s3_logs_bucket = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
+
+  syslog_archive_bucket       = "${replace(local.env_name, " ", "-")}-syslog-archive"
+  syslog_audit_archive_bucket = "${replace(local.env_name, " ", "-")}-syslog-audit-archive"
 }
 
 data "aws_subnet" "private_subnets" {
   count = length(local.private_subnets)
   id    = local.private_subnets[count.index]
+}
+
+
+resource "aws_s3_bucket" "syslog_archive" {
+  bucket        = local.syslog_archive_bucket
+  acl           = "private"
+  tags          = local.modified_tags
+  force_destroy = var.force_destroy_buckets
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "aws:kms"
+      }
+    }
+  }
+
+  logging {
+    target_bucket = local.s3_logs_bucket
+    target_prefix = "log/"
+  }
+}
+
+resource "aws_s3_bucket" "syslog_audit_archive" {
+  bucket        = local.syslog_audit_archive_bucket
+  acl           = "private"
+  tags          = local.modified_tags
+  force_destroy = var.force_destroy_buckets
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "aws:kms"
+      }
+    }
+  }
+
+  logging {
+    target_bucket = local.s3_logs_bucket
+    target_prefix = "log/"
+  }
 }
 
 resource "aws_cloudwatch_log_group" "fluentd_syslog_group" {
@@ -133,6 +179,11 @@ variable "tags" {
   type = map(string)
 }
 
+variable "force_destroy_buckets" {
+  type    = bool
+  default = false
+}
+
 output "fluentd_eni_ids" {
   value = module.bootstrap.eni_ids
 }
@@ -152,3 +203,12 @@ output "volume_id" {
 output "log_group_name" {
   value = local.log_group_name
 }
+
+output "s3_bucket_syslog_archive" {
+  value = aws_s3_bucket.syslog_archive.id
+}
+
+output "s3_bucket_syslog_audit_archive" {
+  value = aws_s3_bucket.syslog_audit_archive.id
+}
+

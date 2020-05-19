@@ -56,17 +56,6 @@ data "terraform_remote_state" "bastion" {
   }
 }
 
-data "terraform_remote_state" "bootstrap_splunk" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "bootstrap_splunk"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 data "terraform_remote_state" "bootstrap_fluentd" {
   backend = "s3"
 
@@ -133,13 +122,12 @@ module "configuration" {
 
   fluentd_bundle_key = var.fluentd_bundle_key
 
-  splunk_http_event_collector_token = data.terraform_remote_state.bootstrap_splunk.outputs.splunk_http_collector_token
-  cloudwatch_log_group_name         = local.log_group_name
-  cloudwatch_log_stream_name        = local.log_stream_name
-  s3_logs_bucket                    = data.terraform_remote_state.bootstrap_splunk.outputs.s3_bucket_syslog_archive
-  s3_audit_logs_bucket              = data.terraform_remote_state.bootstrap_splunk.outputs.s3_bucket_syslog_audit_archive
-  region                            = var.region
-  s3_path                           = "logs/"
+  cloudwatch_log_group_name  = local.log_group_name
+  cloudwatch_log_stream_name = local.log_stream_name
+  s3_logs_bucket             = data.terraform_remote_state.bootstrap_fluentd.outputs.s3_bucket_syslog_archive
+  s3_audit_logs_bucket       = data.terraform_remote_state.bootstrap_fluentd.outputs.s3_bucket_syslog_audit_archive
+  region                     = var.region
+  s3_path                    = "logs/"
 }
 
 data "template_cloudinit_config" "user_data" {
