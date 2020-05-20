@@ -35,12 +35,6 @@ locals {
   om_server_key_s3_path                            = "om_server_key.pem"
   control_plane_om_server_cert_s3_path             = "control_plane_om_server_cert.pem"
   control_plane_om_server_key_s3_path              = "control_plane_om_server_key.pem"
-  splunk_server_cert_s3_path                       = "splunk_server_cert.pem"
-  splunk_server_key_s3_path                        = "splunk_server_key.pem"
-  splunk_logs_server_cert_s3_path                  = "splunk_logs_server_cert.pem"
-  splunk_logs_server_key_s3_path                   = "splunk_logs_server_key.pem"
-  splunk_monitor_server_cert_s3_path               = "splunk_monitor_server_cert.pem"
-  splunk_monitor_server_key_s3_path                = "splunk_monitor_server_key.pem"
   smtp_server_cert_s3_path                         = "smtp_server_cert.pem"
   smtp_server_key_s3_path                          = "smtp_server_key.pem"
   fluentd_server_cert_s3_path                      = "fluentd_server_cert.pem"
@@ -78,7 +72,6 @@ module "paperwork" {
   worker_role_name   = var.platform_automation_engine_worker_role_name
   director_role_name = var.director_role_name
   fluentd_role_name  = var.fluentd_role_name
-  splunk_role_name   = var.splunk_role_name
   tsdb_role_name     = var.tsdb_role_name
   archive_role_name  = var.archive_role_name
   ldap_eip           = aws_eip.ldap_eip.public_ip
@@ -118,7 +111,6 @@ data "template_file" "paperwork_variables" {
     system_domain                               = module.domains.system_fqdn
     bucket_role_name                            = var.pas_bucket_role_name
     platform_automation_engine_worker_role_name = var.platform_automation_engine_worker_role_name
-    splunk_role_name                            = var.splunk_role_name
     tsdb_role_name                              = var.tsdb_role_name
     archive_role_name                           = var.archive_role_name
     fluentd_role_name                           = var.fluentd_role_name
@@ -161,12 +153,6 @@ data "template_file" "paperwork_variables" {
     om_server_key_s3_path                       = local.om_server_key_s3_path
     control_plane_om_server_cert_s3_path        = local.control_plane_om_server_cert_s3_path
     control_plane_om_server_key_s3_path         = local.control_plane_om_server_key_s3_path
-    splunk_server_cert_s3_path                  = local.splunk_server_cert_s3_path
-    splunk_server_key_s3_path                   = local.splunk_server_key_s3_path
-    splunk_logs_server_cert_s3_path             = local.splunk_logs_server_cert_s3_path
-    splunk_logs_server_key_s3_path              = local.splunk_logs_server_key_s3_path
-    splunk_monitor_server_cert_s3_path          = local.splunk_monitor_server_cert_s3_path
-    splunk_monitor_server_key_s3_path           = local.splunk_monitor_server_key_s3_path
     smtp_server_cert_s3_path                    = local.smtp_server_cert_s3_path
     smtp_server_key_s3_path                     = local.smtp_server_key_s3_path
     fluentd_server_cert_s3_path                 = local.fluentd_server_cert_s3_path
@@ -220,9 +206,6 @@ variable "director_role_name" {
 }
 
 variable "archive_role_name" {
-}
-
-variable "splunk_role_name" {
 }
 
 variable "tsdb_role_name" {
@@ -387,20 +370,6 @@ resource "aws_s3_bucket_object" "control_plane_om_server_key" {
   content      = module.paperwork.control_plane_om_server_key
 }
 
-resource "aws_s3_bucket_object" "splunk_logs_server_cert" {
-  key          = local.splunk_logs_server_cert_s3_path
-  bucket       = aws_s3_bucket.certs.bucket
-  content      = module.paperwork.splunk_logs_server_cert
-  content_type = "text/plain"
-}
-
-resource "aws_s3_bucket_object" "splunk_logs_server_key" {
-  key          = local.splunk_logs_server_key_s3_path
-  bucket       = aws_s3_bucket.certs.bucket
-  content_type = "text/plain"
-  content      = module.paperwork.splunk_logs_server_key
-}
-
 resource "aws_s3_bucket_object" "fluentd_server_cert" {
   key          = local.fluentd_server_cert_s3_path
   bucket       = aws_s3_bucket.certs.bucket
@@ -427,34 +396,6 @@ resource "aws_s3_bucket_object" "smtp_server_key" {
   bucket       = aws_s3_bucket.certs.bucket
   content_type = "text/plain"
   content      = module.paperwork.smtp_server_key
-}
-
-resource "aws_s3_bucket_object" "splunk_server_cert" {
-  key          = local.splunk_server_cert_s3_path
-  bucket       = aws_s3_bucket.certs.bucket
-  content      = module.paperwork.splunk_server_cert
-  content_type = "text/plain"
-}
-
-resource "aws_s3_bucket_object" "splunk_server_key" {
-  key          = local.splunk_server_key_s3_path
-  bucket       = aws_s3_bucket.certs.bucket
-  content_type = "text/plain"
-  content      = module.paperwork.splunk_server_key
-}
-
-resource "aws_s3_bucket_object" "splunk_monitor_server_cert" {
-  key          = local.splunk_monitor_server_cert_s3_path
-  bucket       = aws_s3_bucket.certs.bucket
-  content      = module.paperwork.splunk_monitor_server_cert
-  content_type = "text/plain"
-}
-
-resource "aws_s3_bucket_object" "splunk_monitor_server_key" {
-  key          = local.splunk_monitor_server_key_s3_path
-  bucket       = aws_s3_bucket.certs.bucket
-  content_type = "text/plain"
-  content      = module.paperwork.splunk_monitor_server_key
 }
 
 resource "aws_s3_bucket_object" "ldap_client_cert" {

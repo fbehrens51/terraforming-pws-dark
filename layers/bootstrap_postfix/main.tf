@@ -79,7 +79,7 @@ locals {
       cidr_blocks = "0.0.0.0/0"
     },
     {
-      //splunk
+      //syslog
       port        = "8090"
       protocol    = "tcp"
       cidr_blocks = "0.0.0.0/0"

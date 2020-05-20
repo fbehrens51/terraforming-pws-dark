@@ -259,9 +259,6 @@ variable "kms_key_arn" {
 variable "archive_role_name" {
 }
 
-variable "splunk_role_name" {
-}
-
 variable "tsdb_role_name" {
 }
 
@@ -503,22 +500,6 @@ data "aws_s3_bucket_object" "om_server_key" {
   key    = var.om_server_key_s3_path
 }
 
-variable "splunk_logs_server_cert_s3_path" {
-}
-
-data "aws_s3_bucket_object" "splunk_logs_server_cert" {
-  bucket = var.cert_bucket
-  key    = var.splunk_logs_server_cert_s3_path
-}
-
-variable "splunk_logs_server_key_s3_path" {
-}
-
-data "aws_s3_bucket_object" "splunk_logs_server_key" {
-  bucket = var.cert_bucket
-  key    = var.splunk_logs_server_key_s3_path
-}
-
 variable "fluentd_server_cert_s3_path" {
 }
 
@@ -549,38 +530,6 @@ variable "smtp_server_key_s3_path" {
 data "aws_s3_bucket_object" "smtp_server_key" {
   bucket = var.cert_bucket
   key    = var.smtp_server_key_s3_path
-}
-
-variable "splunk_server_cert_s3_path" {
-}
-
-data "aws_s3_bucket_object" "splunk_server_cert" {
-  bucket = var.cert_bucket
-  key    = var.splunk_server_cert_s3_path
-}
-
-variable "splunk_server_key_s3_path" {
-}
-
-data "aws_s3_bucket_object" "splunk_server_key" {
-  bucket = var.cert_bucket
-  key    = var.splunk_server_key_s3_path
-}
-
-variable "splunk_monitor_server_cert_s3_path" {
-}
-
-data "aws_s3_bucket_object" "splunk_monitor_server_cert" {
-  bucket = var.cert_bucket
-  key    = var.splunk_monitor_server_cert_s3_path
-}
-
-variable "splunk_monitor_server_key_s3_path" {
-}
-
-data "aws_s3_bucket_object" "splunk_monitor_server_key" {
-  bucket = var.cert_bucket
-  key    = var.splunk_monitor_server_key_s3_path
 }
 
 variable "portal_smoke_test_cert_s3_path" {
@@ -685,10 +634,6 @@ output "transfer_key_arn" {
 
 output "archive_role_name" {
   value = var.archive_role_name
-}
-
-output "splunk_role_name" {
-  value = var.splunk_role_name
 }
 
 output "tsdb_role_name" {
@@ -804,15 +749,6 @@ output "om_server_key" {
   sensitive = true
 }
 
-output "splunk_logs_server_cert" {
-  value = data.aws_s3_bucket_object.splunk_logs_server_cert.body
-}
-
-output "splunk_logs_server_key" {
-  value     = data.aws_s3_bucket_object.splunk_logs_server_key.body
-  sensitive = true
-}
-
 output "fluentd_server_cert" {
   value = data.aws_s3_bucket_object.fluentd_server_cert.body
 }
@@ -828,24 +764,6 @@ output "smtpd_server_cert" {
 
 output "smtpd_server_key" {
   value     = data.aws_s3_bucket_object.smtp_server_key.body
-  sensitive = true
-}
-
-output "splunk_server_cert" {
-  value = data.aws_s3_bucket_object.splunk_server_cert.body
-}
-
-output "splunk_server_key" {
-  value     = data.aws_s3_bucket_object.splunk_server_key.body
-  sensitive = true
-}
-
-output "splunk_monitor_server_cert" {
-  value = data.aws_s3_bucket_object.splunk_monitor_server_cert.body
-}
-
-output "splunk_monitor_server_key" {
-  value     = data.aws_s3_bucket_object.splunk_monitor_server_key.body
   sensitive = true
 }
 

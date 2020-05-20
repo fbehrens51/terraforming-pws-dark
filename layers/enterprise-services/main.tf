@@ -67,8 +67,6 @@ locals {
   es_vpc_id  = data.terraform_remote_state.paperwork.outputs.es_vpc_id
   pas_vpc_id = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
 
-  splunk_volume_tag = "${var.env_name}-SPLUNK_DATA"
-
   public_cidr_block  = cidrsubnet(data.aws_vpc.this_vpc.cidr_block, 1, 0)
   private_cidr_block = cidrsubnet(data.aws_vpc.this_vpc.cidr_block, 1, 1)
 }

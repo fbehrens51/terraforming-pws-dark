@@ -75,7 +75,7 @@ locals {
       cidr_blocks = "0.0.0.0/0"
     },
     {
-      //splunk syslog
+      //syslog
       port        = module.splunk_ports.splunk_tcp_port
       protocol    = "tcp"
       cidr_blocks = "0.0.0.0/0"

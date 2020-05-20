@@ -302,28 +302,6 @@ data "aws_iam_policy_document" "s3_reader" {
   }
 }
 
-resource "aws_iam_policy_attachment" "splunk" {
-  name       = var.splunk_role_name
-  roles      = [aws_iam_role.splunk_role.name]
-  policy_arn = aws_iam_policy.splunk_reader.arn
-}
-
-resource "aws_iam_policy" "splunk_reader" {
-  name   = var.splunk_role_name
-  path   = "/"
-  policy = data.aws_iam_policy_document.s3_reader.json
-}
-
-resource "aws_iam_role" "splunk_role" {
-  name               = var.splunk_role_name
-  assume_role_policy = data.aws_iam_policy_document.role_policy.json
-}
-
-resource "aws_iam_instance_profile" "splunk_instance_profile" {
-  name = aws_iam_role.splunk_role.name
-  role = aws_iam_role.splunk_role.name
-}
-
 output "director_role_arn" {
   value = aws_iam_role.director.arn
 }

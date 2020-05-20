@@ -22,8 +22,6 @@ sjb_role_name = "${sjb_role_name}"
 
 archive_role_name = "${archive_role_name}"
 
-splunk_role_name = "${splunk_role_name}"
-
 tsdb_role_name = "${tsdb_role_name}"
 
 bucket_role_name = "${bucket_role_name}"
@@ -93,18 +91,6 @@ control_plane_om_server_key_s3_path = "${control_plane_om_server_key_s3_path}"
 om_server_cert_s3_path = "${om_server_cert_s3_path}"
 
 om_server_key_s3_path = "${om_server_key_s3_path}"
-
-splunk_logs_server_cert_s3_path = "${splunk_logs_server_cert_s3_path}"
-
-splunk_logs_server_key_s3_path = "${splunk_logs_server_key_s3_path}"
-
-splunk_server_cert_s3_path = "${splunk_server_cert_s3_path}"
-
-splunk_server_key_s3_path = "${splunk_server_key_s3_path}"
-
-splunk_monitor_server_cert_s3_path = "${splunk_monitor_server_cert_s3_path}"
-
-splunk_monitor_server_key_s3_path = "${splunk_monitor_server_key_s3_path}"
 
 fluentd_server_cert_s3_path = "${fluentd_server_cert_s3_path}"
 

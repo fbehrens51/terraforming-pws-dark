@@ -46,26 +46,6 @@ module "portal_end_to_end_test_user_cert" {
   common_name        = "PortalEndToEndTestUser"
 }
 
-module "splunk_server_cert" {
-  source = "../server_cert"
-
-  env_name           = var.env_name
-  ca_cert_pem        = module.ca_cert.cert_pem
-  ca_private_key_pem = module.ca_cert.private_key_pem
-  common_name        = module.domains.splunk_subdomain
-  domains            = [module.domains.splunk_fqdn]
-}
-
-module "splunk_logs_server_cert" {
-  source = "../server_cert"
-
-  env_name           = var.env_name
-  ca_cert_pem        = module.ca_cert.cert_pem
-  ca_private_key_pem = module.ca_cert.private_key_pem
-  common_name        = module.domains.splunk_logs_subdomain
-  domains            = [module.domains.splunk_logs_fqdn]
-}
-
 module "control_plane_om_server_cert" {
   source = "../server_cert"
 
@@ -84,16 +64,6 @@ module "om_server_cert" {
   ca_private_key_pem = module.ca_cert.private_key_pem
   common_name        = module.domains.om_subdomain
   domains            = [module.domains.om_fqdn]
-}
-
-module "splunk_monitor_server_cert" {
-  source = "../server_cert"
-
-  env_name           = var.env_name
-  ca_cert_pem        = module.ca_cert.cert_pem
-  ca_private_key_pem = module.ca_cert.private_key_pem
-  common_name        = module.domains.splunk_monitor_subdomain
-  domains            = [module.domains.splunk_monitor_fqdn]
 }
 
 module "ldap_server_cert" {
