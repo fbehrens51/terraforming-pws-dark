@@ -106,7 +106,7 @@ properties-configuration:
   syslog_configuration:
     enabled: true
     address: ${syslog_host}
-    port: ${splunk_syslog_port}
+    port: ${syslog_port}
     transport_protocol: tcp
     tls_enabled: true
     permitted_peer: ${syslog_host}

@@ -4,7 +4,7 @@ locals {
     "syslog" : {
       "enabled" : true,
       "address" : var.syslog_host,
-      "port" : var.splunk_syslog_port,
+      "port" : var.syslog_port,
       "transport_protocol" : "tcp",
       "tls_enabled" : true,
       "ssl_ca_certificate" : var.splunk_syslog_ca_cert,
@@ -119,7 +119,7 @@ locals {
     pas_subnets                                 = indent(4, join("", data.template_file.pas_subnets.*.rendered)),
     pas_vpc_azs                                 = indent(2, join("", data.template_file.pas_vpc_azs.*.rendered)),
     syslog_host                          = var.syslog_host,
-    splunk_syslog_port                          = var.splunk_syslog_port,
+    syslog_port                          = var.syslog_port,
     splunk_syslog_ca_cert                       = var.splunk_syslog_ca_cert,
     isolation_segment_to_subnets                = var.isolation_segment_to_subnets,
     isolation_segment_to_security_groups        = var.isolation_segment_to_security_groups,
@@ -199,7 +199,7 @@ data "template_file" "cf_template" {
     pas_vpc_azs                                          = indent(4, join("", data.template_file.pas_vpc_azs.*.rendered))
     singleton_availability_zone                          = var.singleton_availability_zone
     syslog_host                                   = var.syslog_host
-    splunk_syslog_port                                   = var.splunk_syslog_port
+    syslog_port                                   = var.syslog_port
     splunk_syslog_ca_cert                                = var.splunk_syslog_ca_cert
     backup_restore_instance_type                         = var.backup_restore_instance_type
     clock_global_instance_type                           = var.clock_global_instance_type

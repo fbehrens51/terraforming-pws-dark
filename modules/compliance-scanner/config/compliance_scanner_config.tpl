@@ -30,7 +30,7 @@ product-properties:
   .properties.syslog_host:
     value: ${syslog_host}
   .properties.syslog_port:
-    value: ${splunk_syslog_port}
+    value: ${syslog_port}
 network-properties:
   network:
     name: ${network_name}
@@ -58,7 +58,7 @@ syslog-properties:
   enabled: true
   forward_debug_logs: false
   permitted_peer: ${syslog_host}
-  port: ${splunk_syslog_port}
+  port: ${syslog_port}
   queue_size: null
   ssl_ca_certificate: |
     ${indent(4, splunk_syslog_ca_cert)}

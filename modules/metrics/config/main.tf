@@ -9,7 +9,7 @@ variable "singleton_availability_zone" {
 variable "syslog_host" {
 }
 
-variable "splunk_syslog_port" {
+variable "syslog_port" {
 }
 
 variable "splunk_syslog_ca_cert" {
@@ -44,7 +44,7 @@ data "template_file" "metrics_template" {
     pas_vpc_azs                 = indent(4, join("", data.template_file.pas_vpc_azs.*.rendered))
     singleton_availability_zone = var.singleton_availability_zone
     syslog_host          = var.syslog_host
-    splunk_syslog_port          = var.splunk_syslog_port
+    syslog_port          = var.syslog_port
     splunk_syslog_ca_cert       = var.splunk_syslog_ca_cert
   }
 }

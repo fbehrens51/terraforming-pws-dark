@@ -31,7 +31,7 @@ variable "singleton_availability_zone" {
 variable "syslog_host" {
 }
 
-variable "splunk_syslog_port" {
+variable "syslog_port" {
 }
 
 variable "splunk_syslog_ca_cert" {
@@ -74,7 +74,7 @@ data "template_file" "clamav_mirror_template" {
     singleton_availability_zone = var.singleton_availability_zone
     clamav_mirror_instance_type = var.clamav_mirror_instance_type
     syslog_host          = var.syslog_host
-    splunk_syslog_port          = var.splunk_syslog_port
+    syslog_port          = var.syslog_port
     splunk_syslog_ca_cert       = var.splunk_syslog_ca_cert
   }
 }

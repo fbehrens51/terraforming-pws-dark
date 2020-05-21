@@ -111,7 +111,7 @@ product-properties:
   .properties.system_logging.enabled.host:
     value: ${syslog_host}
   .properties.system_logging.enabled.port:
-    value: ${splunk_syslog_port}
+    value: ${syslog_port}
   .properties.system_logging.enabled.protocol:
     value: tcp
   .properties.system_logging.enabled.syslog_drop_debug:

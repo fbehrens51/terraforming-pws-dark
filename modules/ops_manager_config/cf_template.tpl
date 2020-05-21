@@ -298,7 +298,7 @@ product-properties:
   .properties.syslog_host:
     value: ${syslog_host}
   .properties.syslog_port:
-    value: ${splunk_syslog_port}
+    value: ${syslog_port}
   .properties.syslog_protocol:
     value: tcp
   .properties.syslog_drop_debug:

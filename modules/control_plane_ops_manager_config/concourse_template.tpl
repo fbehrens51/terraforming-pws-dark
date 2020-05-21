@@ -2,7 +2,7 @@ product-name: pws-dark-concourse-tile
 syslog-properties:
   enabled: true
   address: ${syslog_host}
-  port: ${splunk_syslog_port}
+  port: ${syslog_port}
   transport_protocol: tcp
   tls_enabled: true
   ssl_ca_certificate: |

@@ -15,7 +15,7 @@ variable "ntp_servers" {
 variable "syslog_host" {
 }
 
-variable "splunk_syslog_port" {
+variable "syslog_port" {
 }
 
 variable "splunk_syslog_ca_cert" {
@@ -42,7 +42,7 @@ data "template_file" "compliance_scanner_config" {
     singleton_availability_zone = var.singleton_availability_zone
     ntp_servers                 = join(",", var.ntp_servers)
     syslog_host          = var.syslog_host
-    splunk_syslog_port          = var.splunk_syslog_port
+    syslog_port          = var.syslog_port
     splunk_syslog_ca_cert       = var.splunk_syslog_ca_cert
     custom_ssh_banner           = var.custom_ssh_banner
   }

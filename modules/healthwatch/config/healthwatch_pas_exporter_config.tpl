@@ -113,7 +113,7 @@ syslog-properties:
   enabled: true
   forward_debug_logs: false
   permitted_peer: ${syslog_host}
-  port: ${splunk_syslog_port}
+  port: ${syslog_port}
   queue_size: null
   ssl_ca_certificate: |
     ${indent(4, splunk_syslog_ca_cert)}

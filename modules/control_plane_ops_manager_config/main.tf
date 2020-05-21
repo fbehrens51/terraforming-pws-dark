@@ -3,7 +3,7 @@ locals {
     "syslog" : {
       "enabled" : true,
       "address" : var.syslog_host,
-      "port" : var.splunk_syslog_port,
+      "port" : var.syslog_port,
       "transport_protocol" : "tcp",
       "tls_enabled" : true,
       "ssl_ca_certificate" : var.splunk_syslog_ca_cert,
@@ -105,7 +105,7 @@ data "template_file" "director_template" {
       join("", data.template_file.control_plane_vpc_azs.*.rendered),
     )
     syslog_host    = var.syslog_host
-    splunk_syslog_port    = var.splunk_syslog_port
+    syslog_port    = var.syslog_port
     splunk_syslog_ca_cert = var.splunk_syslog_ca_cert
   }
 }
@@ -163,7 +163,7 @@ data "template_file" "concourse_template" {
     uaa_cert_pem              = var.uaa_cert_pem
     uaa_private_key_pem       = var.uaa_private_key_pem
     syslog_host        = var.syslog_host
-    splunk_syslog_port        = var.splunk_syslog_port
+    syslog_port        = var.syslog_port
     splunk_syslog_ca_cert     = var.splunk_syslog_ca_cert
     postgres_host             = var.postgres_host
     postgres_port             = var.postgres_port

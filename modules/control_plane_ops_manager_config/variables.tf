@@ -223,7 +223,7 @@ variable "ops_manager_ssh_private_key" {
 variable "syslog_host" {
 }
 
-variable "splunk_syslog_port" {
+variable "syslog_port" {
 }
 
 variable "splunk_syslog_ca_cert" {
