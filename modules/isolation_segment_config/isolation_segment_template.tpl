@@ -109,20 +109,20 @@ product-properties:
     selected_option: enabled
     value: enabled
   .properties.system_logging.enabled.host:
-    value: ${splunk_syslog_host}
+    value: ${syslog_host}
   .properties.system_logging.enabled.port:
-    value: ${splunk_syslog_port}
+    value: ${syslog_port}
   .properties.system_logging.enabled.protocol:
     value: tcp
   .properties.system_logging.enabled.syslog_drop_debug:
     value: true
   .properties.system_logging.enabled.tls_ca_cert:
     value: |
-      ${indent(6, splunk_syslog_ca_cert)}
+      ${indent(6, syslog_ca_cert)}
   .properties.system_logging.enabled.tls_enabled:
     value: true
   .properties.system_logging.enabled.tls_permitted_peer:
-    value: ${splunk_syslog_host}
+    value: ${syslog_host}
   .properties.system_logging.enabled.use_tcp_for_file_forwarding_local_transport:
     value: false
 network-properties:

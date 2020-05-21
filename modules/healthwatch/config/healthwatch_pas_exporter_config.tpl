@@ -108,14 +108,14 @@ errand-config:
   smoke-test:
     post-deploy-state: true
 syslog-properties:
-  address: ${splunk_syslog_host}
+  address: ${syslog_host}
   custom_rsyslog_configuration: null
   enabled: true
   forward_debug_logs: false
-  permitted_peer: ${splunk_syslog_host}
-  port: ${splunk_syslog_port}
+  permitted_peer: ${syslog_host}
+  port: ${syslog_port}
   queue_size: null
   ssl_ca_certificate: |
-    ${indent(4, splunk_syslog_ca_cert)}
+    ${indent(4, syslog_ca_cert)}
   tls_enabled: true
   transport_protocol: tcp

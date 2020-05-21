@@ -296,9 +296,9 @@ product-properties:
   .properties.syslog_drop_debug:
     value: true
   .properties.syslog_host:
-    value: ${splunk_syslog_host}
+    value: ${syslog_host}
   .properties.syslog_port:
-    value: ${splunk_syslog_port}
+    value: ${syslog_port}
   .properties.syslog_protocol:
     value: tcp
   .properties.syslog_drop_debug:
@@ -307,10 +307,10 @@ product-properties:
     selected_option: enabled
     value: enabled
   .properties.syslog_tls.enabled.tls_permitted_peer:
-    value: ${splunk_syslog_host}
+    value: ${syslog_host}
   .properties.syslog_tls.enabled.tls_ca_cert:
     value: |
-      ${indent(6, splunk_syslog_ca_cert)}
+      ${indent(6, syslog_ca_cert)}
   .properties.syslog_use_tcp_for_file_forwarding_local_transport:
     value: false
   .properties.system_blobstore:

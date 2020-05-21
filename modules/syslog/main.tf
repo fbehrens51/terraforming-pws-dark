@@ -1,7 +1,7 @@
 variable "root_domain" {
 }
 
-variable "splunk_syslog_ca_cert" {
+variable "syslog_ca_cert" {
 }
 
 variable "public_bucket_name" {
@@ -19,8 +19,8 @@ module "domains" {
   root_domain = var.root_domain
 }
 
-module "splunk_ports" {
-  source = "../splunk_ports"
+module "syslog_ports" {
+  source = "../syslog_ports"
 }
 
 locals {
@@ -42,7 +42,7 @@ package_reboot_if_required: true
 
 write_files:
   - content: |
-      ${indent(6, var.splunk_syslog_ca_cert)}
+      ${indent(6, var.syslog_ca_cert)}
     path: /etc/rsyslog.d/ca.pem
     permissions: '0400'
     owner: root:root
@@ -68,7 +68,7 @@ write_files:
 
 rsyslog:
   remotes:
-    splunk: "@@${module.domains.fluentd_fqdn}:${module.splunk_ports.splunk_tcp_port}"
+    fluentd: "@@${module.domains.fluentd_fqdn}:${module.syslog_ports.syslog_port}"
   configs:
     - filename: 10-tls.conf
       content: |

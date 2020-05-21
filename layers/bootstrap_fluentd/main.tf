@@ -40,8 +40,8 @@ data "aws_vpc" "pas_vpc" {
   id = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
 }
 
-module "splunk_ports" {
-  source = "../../modules/splunk_ports"
+module "syslog_ports" {
+  source = "../../modules/syslog_ports"
 }
 
 locals {
@@ -65,7 +65,7 @@ locals {
       cidr_blocks = "0.0.0.0/0"
     },
     {
-      port        = module.splunk_ports.splunk_tcp_port
+      port        = module.syslog_ports.syslog_port
       protocol    = "tcp"
       cidr_blocks = "0.0.0.0/0"
     },

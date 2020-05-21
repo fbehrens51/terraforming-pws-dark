@@ -520,13 +520,13 @@ variable "ops_manager_ssh_public_key_name" {
 variable "ops_manager_ssh_private_key" {
 }
 
-variable "splunk_syslog_host" {
+variable "syslog_host" {
 }
 
-variable "splunk_syslog_port" {
+variable "syslog_port" {
 }
 
-variable "splunk_syslog_ca_cert" {
+variable "syslog_ca_cert" {
 }
 
 variable "backup_restore_instance_type" {

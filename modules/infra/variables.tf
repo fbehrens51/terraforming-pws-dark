@@ -78,7 +78,7 @@ module "cidr_lookup" {
 variable "root_domain" {
 }
 
-variable "splunk_syslog_ca_cert" {
+variable "syslog_ca_cert" {
 }
 
 variable "user_data" {

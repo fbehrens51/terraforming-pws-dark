@@ -159,7 +159,7 @@ module "nat" {
   instance_type              = var.nat_instance_type
   user_data                  = data.template_cloudinit_config.nat_user_data.rendered
   root_domain                = data.terraform_remote_state.paperwork.outputs.root_domain
-  splunk_syslog_ca_cert      = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  syslog_ca_cert             = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
 
   public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url

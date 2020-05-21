@@ -119,7 +119,7 @@ resource "aws_instance" "instance" {
   }
 }
 
-// NAT and Splunk VMs
+// NAT and fluentd VMs
 
 resource "aws_instance" "unchecked_instance" {
   count = var.ignore_tag_changes == false && var.check_cloud_init == false ? var.instance_count : 0

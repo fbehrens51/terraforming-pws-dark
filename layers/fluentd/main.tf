@@ -194,9 +194,9 @@ module "fluentd_instance" {
 }
 
 module "syslog_config" {
-  source                = "../../modules/syslog"
-  root_domain           = local.root_domain
-  splunk_syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  source         = "../../modules/syslog"
+  root_domain    = local.root_domain
+  syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
 
   role_name          = "fluentd"
   public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name

@@ -90,13 +90,13 @@ properties-configuration:
       ${indent(6, security_configuration_trusted_certificates)}
   syslog_configuration:
     enabled: true
-    address: ${splunk_syslog_host}
-    port: ${splunk_syslog_port}
+    address: ${syslog_host}
+    port: ${syslog_port}
     transport_protocol: tcp
     tls_enabled: true
-    permitted_peer: ${splunk_syslog_host}
+    permitted_peer: ${syslog_host}
     ssl_ca_certificate: |
-      ${indent(6, splunk_syslog_ca_cert)}
+      ${indent(6, syslog_ca_cert)}
 resource-configuration:
   compilation:
     instances: automatic

@@ -25,7 +25,7 @@ locals {
 }
 
 module "ports" {
-  source = "../../../../modules/splunk_ports"
+  source = "../../../../modules/syslog_ports"
 }
 
 module "domains" {
@@ -38,7 +38,7 @@ data "template_file" "td_agent_configuration" {
   template = file("${path.module}/td-agent.tpl")
 
   vars = {
-    syslog_port                = module.ports.splunk_tcp_port
+    syslog_port                = module.ports.syslog_port
     s3_logs_bucket             = var.s3_logs_bucket
     region                     = var.region
     cloudwatch_log_group_name  = var.cloudwatch_log_group_name

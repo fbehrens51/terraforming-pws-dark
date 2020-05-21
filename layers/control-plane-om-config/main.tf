@@ -70,8 +70,8 @@ module "domains" {
   root_domain = local.root_domain
 }
 
-module "splunk_ports" {
-  source = "../../modules/splunk_ports"
+module "syslog_ports" {
+  source = "../../modules/syslog_ports"
 }
 
 data "aws_network_interface" "ec2_vpce_eni" {
@@ -176,9 +176,9 @@ module "om_config" {
 
   # Used by the download config
 
-  splunk_syslog_host    = module.domains.fluentd_fqdn
-  splunk_syslog_port    = module.splunk_ports.splunk_tcp_port
-  splunk_syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  syslog_host    = module.domains.fluentd_fqdn
+  syslog_port    = module.syslog_ports.syslog_port
+  syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
 }
 
 module "runtime_config_config" {
@@ -218,11 +218,11 @@ module "clamav_config" {
   clamav_enable_on_access_scanning = "false"
   clamav_mirror_instance_type      = var.clamav_mirror_instance_type
 
-  s3_endpoint           = var.s3_endpoint
-  region                = var.region
-  splunk_syslog_host    = module.domains.fluentd_fqdn
-  splunk_syslog_port    = module.splunk_ports.splunk_tcp_port
-  splunk_syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  s3_endpoint    = var.s3_endpoint
+  region         = var.region
+  syslog_host    = module.domains.fluentd_fqdn
+  syslog_port    = module.syslog_ports.syslog_port
+  syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
 }
 
 locals {

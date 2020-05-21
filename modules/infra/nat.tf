@@ -12,7 +12,7 @@ module "nat" {
   user_data                  = var.user_data
 
   root_domain           = var.root_domain
-  splunk_syslog_ca_cert = var.splunk_syslog_ca_cert
+  syslog_ca_cert = var.syslog_ca_cert
 
   public_bucket_name = var.public_bucket_name
   public_bucket_url  = var.public_bucket_url

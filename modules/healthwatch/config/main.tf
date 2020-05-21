@@ -41,13 +41,13 @@ variable "smtp_client_user" {
 }
 
 # These syslog vars are unused, but will become used once the healthwatch team adds syslog forwarding to the tile
-variable "splunk_syslog_host" {
+variable "syslog_host" {
 }
 
-variable "splunk_syslog_port" {
+variable "syslog_port" {
 }
 
-variable "splunk_syslog_ca_cert" {
+variable "syslog_ca_cert" {
 }
 
 variable "secrets_bucket_name" {
@@ -110,9 +110,9 @@ data "template_file" "healthwatch_config" {
     smtp_password               = var.smtp_client_password
     smtp_port                   = var.smtp_client_port
     smtp_user                   = var.smtp_client_user
-    splunk_syslog_host          = var.splunk_syslog_host
-    splunk_syslog_port          = var.splunk_syslog_port
-    splunk_syslog_ca_cert       = var.splunk_syslog_ca_cert
+    syslog_host          = var.syslog_host
+    syslog_port          = var.syslog_port
+    syslog_ca_cert       = var.syslog_ca_cert
   }
 }
 
@@ -132,9 +132,9 @@ data "template_file" "healthwatch_pas_exporter_config" {
     hw_vpc_azs                     = indent(2, join("", data.template_file.hw_vpc_azs.*.rendered))
     singleton_availability_zone    = var.singleton_availability_zone
     health_check_availability_zone = var.health_check_availability_zone
-    splunk_syslog_host             = var.splunk_syslog_host
-    splunk_syslog_port             = var.splunk_syslog_port
-    splunk_syslog_ca_cert          = var.splunk_syslog_ca_cert
+    syslog_host             = var.syslog_host
+    syslog_port             = var.syslog_port
+    syslog_ca_cert          = var.syslog_ca_cert
   }
 }
 

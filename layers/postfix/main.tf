@@ -163,7 +163,7 @@ module "postfix_master_host" {
 module "syslog_config" {
   source                = "../../modules/syslog"
   root_domain           = local.root_domain
-  splunk_syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
 
   role_name          = "postfix"
   public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name

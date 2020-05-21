@@ -51,8 +51,8 @@ module "domains" {
   root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
 }
 
-module "splunk_ports" {
-  source = "../../modules/splunk_ports"
+module "syslog_ports" {
+  source = "../../modules/syslog_ports"
 }
 
 module "config" {
@@ -74,7 +74,7 @@ module "config" {
   pas_subnet_availability_zones = data.terraform_remote_state.pas.outputs.pas_subnet_availability_zones
   singleton_availability_zone   = var.singleton_availability_zone
 
-  splunk_syslog_host    = module.domains.fluentd_fqdn
-  splunk_syslog_port    = module.splunk_ports.splunk_tcp_port
-  splunk_syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  syslog_host    = module.domains.fluentd_fqdn
+  syslog_port    = module.syslog_ports.syslog_port
+  syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
 }

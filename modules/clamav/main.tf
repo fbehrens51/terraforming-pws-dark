@@ -28,13 +28,13 @@ variable "singleton_availability_zone" {
   type = string
 }
 
-variable "splunk_syslog_host" {
+variable "syslog_host" {
 }
 
-variable "splunk_syslog_port" {
+variable "syslog_port" {
 }
 
-variable "splunk_syslog_ca_cert" {
+variable "syslog_ca_cert" {
 }
 
 variable "bosh_network_name" {
@@ -73,9 +73,9 @@ data "template_file" "clamav_mirror_template" {
     pas_vpc_azs                 = indent(4, join("", data.template_file.pas_vpc_azs.*.rendered))
     singleton_availability_zone = var.singleton_availability_zone
     clamav_mirror_instance_type = var.clamav_mirror_instance_type
-    splunk_syslog_host          = var.splunk_syslog_host
-    splunk_syslog_port          = var.splunk_syslog_port
-    splunk_syslog_ca_cert       = var.splunk_syslog_ca_cert
+    syslog_host          = var.syslog_host
+    syslog_port          = var.syslog_port
+    syslog_ca_cert       = var.syslog_ca_cert
   }
 }
 
