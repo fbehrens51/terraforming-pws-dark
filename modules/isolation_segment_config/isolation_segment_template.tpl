@@ -109,7 +109,7 @@ product-properties:
     selected_option: enabled
     value: enabled
   .properties.system_logging.enabled.host:
-    value: ${splunk_syslog_host}
+    value: ${syslog_host}
   .properties.system_logging.enabled.port:
     value: ${splunk_syslog_port}
   .properties.system_logging.enabled.protocol:
@@ -122,7 +122,7 @@ product-properties:
   .properties.system_logging.enabled.tls_enabled:
     value: true
   .properties.system_logging.enabled.tls_permitted_peer:
-    value: ${splunk_syslog_host}
+    value: ${syslog_host}
   .properties.system_logging.enabled.use_tcp_for_file_forwarding_local_transport:
     value: false
 network-properties:

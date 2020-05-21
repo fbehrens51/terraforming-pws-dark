@@ -74,7 +74,7 @@ module "metrics_config" {
   availability_zones          = var.availability_zones
   singleton_availability_zone = var.singleton_availability_zone
 
-  splunk_syslog_host    = module.domains.fluentd_fqdn
+  syslog_host           = module.domains.fluentd_fqdn
   splunk_syslog_port    = module.splunk_ports.splunk_tcp_port
   splunk_syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
 }

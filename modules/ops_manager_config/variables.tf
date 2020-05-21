@@ -520,7 +520,7 @@ variable "ops_manager_ssh_public_key_name" {
 variable "ops_manager_ssh_private_key" {
 }
 
-variable "splunk_syslog_host" {
+variable "syslog_host" {
 }
 
 variable "splunk_syslog_port" {

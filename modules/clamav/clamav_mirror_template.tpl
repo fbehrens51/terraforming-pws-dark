@@ -51,12 +51,12 @@ resource-config:
     internet_connected: false
 syslog-properties:
   enabled: true
-  address: ${splunk_syslog_host}
+  address: ${syslog_host}
   port: ${splunk_syslog_port}
   transport_protocol: tcp
   tls_enabled: true
   ssl_ca_certificate: |
     ${indent(4, splunk_syslog_ca_cert)}
-  permitted_peer: ${splunk_syslog_host}
+  permitted_peer: ${syslog_host}
 
 

@@ -28,7 +28,7 @@ product-properties:
     selected_option: disabled
     value: disabled
   .properties.syslog_host:
-    value: ${splunk_syslog_host}
+    value: ${syslog_host}
   .properties.syslog_port:
     value: ${splunk_syslog_port}
 network-properties:
@@ -53,11 +53,11 @@ errand-config:
   scan_results:
     post-deploy-state: false
 syslog-properties:
-  address: ${splunk_syslog_host}
+  address: ${syslog_host}
   custom_rsyslog_configuration: null
   enabled: true
   forward_debug_logs: false
-  permitted_peer: ${splunk_syslog_host}
+  permitted_peer: ${syslog_host}
   port: ${splunk_syslog_port}
   queue_size: null
   ssl_ca_certificate: |

@@ -2,12 +2,12 @@ locals {
   om_syslog_conf = jsonencode({
     "syslog" : {
       "enabled" : true,
-      "address" : var.splunk_syslog_host,
+      "address" : var.syslog_host,
       "port" : var.splunk_syslog_port,
       "transport_protocol" : "tcp",
       "tls_enabled" : true,
       "ssl_ca_certificate" : var.splunk_syslog_ca_cert,
-      "permitted_peer" : var.splunk_syslog_host,
+      "permitted_peer" : var.syslog_host,
       "queue_size" : null,
       "forward_debug_logs" : false
     }
@@ -104,7 +104,7 @@ data "template_file" "director_template" {
       2,
       join("", data.template_file.control_plane_vpc_azs.*.rendered),
     )
-    splunk_syslog_host    = var.splunk_syslog_host
+    syslog_host    = var.syslog_host
     splunk_syslog_port    = var.splunk_syslog_port
     splunk_syslog_ca_cert = var.splunk_syslog_ca_cert
   }
@@ -162,7 +162,7 @@ data "template_file" "concourse_template" {
     ca_certificate            = var.ca_certificate
     uaa_cert_pem              = var.uaa_cert_pem
     uaa_private_key_pem       = var.uaa_private_key_pem
-    splunk_syslog_host        = var.splunk_syslog_host
+    syslog_host        = var.syslog_host
     splunk_syslog_port        = var.splunk_syslog_port
     splunk_syslog_ca_cert     = var.splunk_syslog_ca_cert
     postgres_host             = var.postgres_host

@@ -86,11 +86,11 @@ errand-config:
   smoke-tests:
     post-deploy-state: true
 syslog-properties:
-  address: ${splunk_syslog_host}
+  address: ${syslog_host}
   custom_rsyslog_configuration: null
   enabled: true
   forward_debug_logs: false
-  permitted_peer: ${splunk_syslog_host}
+  permitted_peer: ${syslog_host}
   port: ${splunk_syslog_port}
   queue_size: null
   ssl_ca_certificate: |

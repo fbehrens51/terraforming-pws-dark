@@ -296,7 +296,7 @@ product-properties:
   .properties.syslog_drop_debug:
     value: true
   .properties.syslog_host:
-    value: ${splunk_syslog_host}
+    value: ${syslog_host}
   .properties.syslog_port:
     value: ${splunk_syslog_port}
   .properties.syslog_protocol:
@@ -307,7 +307,7 @@ product-properties:
     selected_option: enabled
     value: enabled
   .properties.syslog_tls.enabled.tls_permitted_peer:
-    value: ${splunk_syslog_host}
+    value: ${syslog_host}
   .properties.syslog_tls.enabled.tls_ca_cert:
     value: |
       ${indent(6, splunk_syslog_ca_cert)}

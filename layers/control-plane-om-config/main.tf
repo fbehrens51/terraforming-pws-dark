@@ -176,7 +176,7 @@ module "om_config" {
 
   # Used by the download config
 
-  splunk_syslog_host    = module.domains.fluentd_fqdn
+  syslog_host           = module.domains.fluentd_fqdn
   splunk_syslog_port    = module.splunk_ports.splunk_tcp_port
   splunk_syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
 }
@@ -220,7 +220,7 @@ module "clamav_config" {
 
   s3_endpoint           = var.s3_endpoint
   region                = var.region
-  splunk_syslog_host    = module.domains.fluentd_fqdn
+  syslog_host           = module.domains.fluentd_fqdn
   splunk_syslog_port    = module.splunk_ports.splunk_tcp_port
   splunk_syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
 }
