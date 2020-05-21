@@ -42,8 +42,8 @@ module "domains" {
   root_domain = local.root_domain
 }
 
-module "splunk_ports" {
-  source = "../../modules/splunk_ports"
+module "syslog_ports" {
+  source = "../../modules/syslog_ports"
 }
 
 locals {
@@ -60,7 +60,7 @@ module "compliance_scanner_config" {
   singleton_availability_zone = var.singleton_availability_zone
   ntp_servers                 = var.ntp_servers
   syslog_host          = module.domains.fluentd_fqdn
-  syslog_port          = module.splunk_ports.splunk_tcp_port
+  syslog_port          = module.syslog_ports.syslog_port
   syslog_ca_cert       = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
   custom_ssh_banner           = data.terraform_remote_state.paperwork.outputs.custom_ssh_banner
 }

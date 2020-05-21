@@ -19,8 +19,8 @@ module "domains" {
   root_domain = var.root_domain
 }
 
-module "splunk_ports" {
-  source = "../splunk_ports"
+module "syslog_ports" {
+  source = "../syslog_ports"
 }
 
 locals {
@@ -68,7 +68,7 @@ write_files:
 
 rsyslog:
   remotes:
-    splunk: "@@${module.domains.fluentd_fqdn}:${module.splunk_ports.splunk_tcp_port}"
+    splunk: "@@${module.domains.fluentd_fqdn}:${module.syslog_ports.syslog_port}"
   configs:
     - filename: 10-tls.conf
       content: |

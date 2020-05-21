@@ -72,8 +72,8 @@ module "domains" {
   root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
 }
 
-module "splunk_ports" {
-  source = "../../modules/splunk_ports"
+module "syslog_ports" {
+  source = "../../modules/syslog_ports"
 }
 
 data "aws_vpcs" "isolation_segment_vpcs" {
@@ -278,7 +278,7 @@ module "om_config" {
   ldap_role_attr         = data.terraform_remote_state.paperwork.outputs.ldap_role_attr
 
   syslog_host    = module.domains.fluentd_fqdn
-  syslog_port    = module.splunk_ports.splunk_tcp_port
+  syslog_port    = module.syslog_ports.syslog_port
   syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
 }
 
@@ -321,7 +321,7 @@ module "clamav_config" {
   s3_endpoint                      = var.s3_endpoint
   region                           = var.region
   syslog_host                      = module.domains.fluentd_fqdn
-  syslog_port                      = module.splunk_ports.splunk_tcp_port
+  syslog_port                      = module.syslog_ports.syslog_port
   syslog_ca_cert                   = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
 }
 
