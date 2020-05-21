@@ -26,7 +26,7 @@ variable "bastion_private_ip" {
 variable "root_domain" {
 }
 
-variable "splunk_syslog_ca_cert" {
+variable "syslog_ca_cert" {
 }
 
 variable "public_bucket_name" {
@@ -97,11 +97,11 @@ module "eni" {
 module "syslog_config" {
   source = "../syslog"
 
-  root_domain           = var.root_domain
-  splunk_syslog_ca_cert = var.splunk_syslog_ca_cert
-  role_name             = replace(local.modified_name, " ", "-")
-  public_bucket_name    = var.public_bucket_name
-  public_bucket_url     = var.public_bucket_url
+  root_domain        = var.root_domain
+  syslog_ca_cert     = var.syslog_ca_cert
+  role_name          = replace(local.modified_name, " ", "-")
+  public_bucket_name = var.public_bucket_name
+  public_bucket_url  = var.public_bucket_url
 }
 
 data "template_cloudinit_config" "user_data" {

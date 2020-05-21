@@ -61,6 +61,6 @@ module "compliance_scanner_config" {
   ntp_servers                 = var.ntp_servers
   syslog_host          = module.domains.fluentd_fqdn
   syslog_port          = module.splunk_ports.splunk_tcp_port
-  splunk_syslog_ca_cert       = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  syslog_ca_cert       = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
   custom_ssh_banner           = data.terraform_remote_state.paperwork.outputs.custom_ssh_banner
 }

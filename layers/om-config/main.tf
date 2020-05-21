@@ -277,9 +277,9 @@ module "om_config" {
   ldap_port              = data.terraform_remote_state.paperwork.outputs.ldap_port
   ldap_role_attr         = data.terraform_remote_state.paperwork.outputs.ldap_role_attr
 
-  syslog_host           = module.domains.fluentd_fqdn
-  syslog_port           = module.splunk_ports.splunk_tcp_port
-  splunk_syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  syslog_host    = module.domains.fluentd_fqdn
+  syslog_port    = module.splunk_ports.splunk_tcp_port
+  syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
 }
 
 module "runtime_config_config" {
@@ -322,7 +322,7 @@ module "clamav_config" {
   region                           = var.region
   syslog_host                      = module.domains.fluentd_fqdn
   syslog_port                      = module.splunk_ports.splunk_tcp_port
-  splunk_syslog_ca_cert            = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  syslog_ca_cert                   = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
 }
 
 data "aws_vpc" "bastion_vpc" {

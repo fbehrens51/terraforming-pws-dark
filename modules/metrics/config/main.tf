@@ -12,7 +12,7 @@ variable "syslog_host" {
 variable "syslog_port" {
 }
 
-variable "splunk_syslog_ca_cert" {
+variable "syslog_ca_cert" {
 }
 
 variable "bosh_network_name" {
@@ -45,7 +45,7 @@ data "template_file" "metrics_template" {
     singleton_availability_zone = var.singleton_availability_zone
     syslog_host          = var.syslog_host
     syslog_port          = var.syslog_port
-    splunk_syslog_ca_cert       = var.splunk_syslog_ca_cert
+    syslog_ca_cert       = var.syslog_ca_cert
   }
 }
 

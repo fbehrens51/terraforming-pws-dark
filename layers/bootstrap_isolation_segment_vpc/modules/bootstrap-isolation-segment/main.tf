@@ -19,7 +19,7 @@ variable "bastion_private_ip" {}
 variable "instance_type" {}
 variable "user_data" {}
 variable "root_domain" {}
-variable "splunk_syslog_ca_cert" {}
+variable "syslog_ca_cert" {}
 variable "public_bucket_name" {}
 variable "public_bucket_url" {}
 
@@ -69,7 +69,7 @@ module "nat" {
   instance_type              = var.instance_type
   user_data                  = var.user_data
   root_domain                = var.root_domain
-  splunk_syslog_ca_cert      = var.splunk_syslog_ca_cert
+  syslog_ca_cert      = var.syslog_ca_cert
   public_bucket_name         = var.public_bucket_name
   public_bucket_url          = var.public_bucket_url
 }

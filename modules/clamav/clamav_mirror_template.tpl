@@ -56,7 +56,7 @@ syslog-properties:
   transport_protocol: tcp
   tls_enabled: true
   ssl_ca_certificate: |
-    ${indent(4, splunk_syslog_ca_cert)}
+    ${indent(4, syslog_ca_cert)}
   permitted_peer: ${syslog_host}
 
 

@@ -29,7 +29,7 @@ variable "syslog_host" {
 variable "syslog_port" {
 }
 
-variable "splunk_syslog_ca_cert" {
+variable "syslog_ca_cert" {
 }
 
 variable "pas_subnet_availability_zones" {
@@ -85,7 +85,7 @@ data "template_file" "tile_config" {
     router_trusted_ca_certificates = var.router_trusted_ca_certificates
     syslog_host             = var.syslog_host
     syslog_port             = var.syslog_port
-    splunk_syslog_ca_cert          = var.splunk_syslog_ca_cert
+    syslog_ca_cert          = var.syslog_ca_cert
     pas_vpc_azs                    = indent(4, join("", data.template_file.pas_vpc_azs.*.rendered))
     singleton_availability_zone    = var.singleton_availability_zone
   }

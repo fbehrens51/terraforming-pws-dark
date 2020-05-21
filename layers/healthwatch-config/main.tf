@@ -107,9 +107,9 @@ module "healthwatch_config" {
   metrics_key                     = data.terraform_remote_state.paperwork.outputs.metrics_key
   grafana_uaa_client_secret       = random_string.grafana_uaa_client_secret.result
 
-  syslog_host           = module.domains.fluentd_fqdn
-  syslog_port           = module.splunk_ports.splunk_tcp_port
-  splunk_syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  syslog_host    = module.domains.fluentd_fqdn
+  syslog_port    = module.splunk_ports.splunk_tcp_port
+  syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
 
   smtp_from            = var.smtp_from
   smtp_host            = "smtp.${local.root_domain}"

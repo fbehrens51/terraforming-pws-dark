@@ -1,7 +1,7 @@
 variable "root_domain" {
 }
 
-variable "splunk_syslog_ca_cert" {
+variable "syslog_ca_cert" {
 }
 
 variable "public_bucket_name" {
@@ -42,7 +42,7 @@ package_reboot_if_required: true
 
 write_files:
   - content: |
-      ${indent(6, var.splunk_syslog_ca_cert)}
+      ${indent(6, var.syslog_ca_cert)}
     path: /etc/rsyslog.d/ca.pem
     permissions: '0400'
     owner: root:root

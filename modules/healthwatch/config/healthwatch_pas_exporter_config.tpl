@@ -116,6 +116,6 @@ syslog-properties:
   port: ${syslog_port}
   queue_size: null
   ssl_ca_certificate: |
-    ${indent(4, splunk_syslog_ca_cert)}
+    ${indent(4, syslog_ca_cert)}
   tls_enabled: true
   transport_protocol: tcp

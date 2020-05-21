@@ -526,7 +526,7 @@ variable "syslog_host" {
 variable "syslog_port" {
 }
 
-variable "splunk_syslog_ca_cert" {
+variable "syslog_ca_cert" {
 }
 
 variable "backup_restore_instance_type" {

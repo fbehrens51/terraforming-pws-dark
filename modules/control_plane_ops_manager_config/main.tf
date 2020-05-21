@@ -6,7 +6,7 @@ locals {
       "port" : var.syslog_port,
       "transport_protocol" : "tcp",
       "tls_enabled" : true,
-      "ssl_ca_certificate" : var.splunk_syslog_ca_cert,
+      "ssl_ca_certificate" : var.syslog_ca_cert,
       "permitted_peer" : var.syslog_host,
       "queue_size" : null,
       "forward_debug_logs" : false
@@ -106,7 +106,7 @@ data "template_file" "director_template" {
     )
     syslog_host    = var.syslog_host
     syslog_port    = var.syslog_port
-    splunk_syslog_ca_cert = var.splunk_syslog_ca_cert
+    syslog_ca_cert = var.syslog_ca_cert
   }
 }
 
@@ -164,7 +164,7 @@ data "template_file" "concourse_template" {
     uaa_private_key_pem       = var.uaa_private_key_pem
     syslog_host        = var.syslog_host
     syslog_port        = var.syslog_port
-    splunk_syslog_ca_cert     = var.splunk_syslog_ca_cert
+    syslog_ca_cert     = var.syslog_ca_cert
     postgres_host             = var.postgres_host
     postgres_port             = var.postgres_port
     postgres_uaa_db_name      = var.postgres_uaa_db_name

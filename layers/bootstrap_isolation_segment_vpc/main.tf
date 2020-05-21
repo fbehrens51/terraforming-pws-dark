@@ -277,7 +277,7 @@ module "isolation_segment_0" {
   user_data          = data.template_cloudinit_config.nat_user_data.rendered
 
   root_domain           = data.terraform_remote_state.paperwork.outputs.root_domain
-  splunk_syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
   ami_id                = data.terraform_remote_state.encrypt_amis.outputs.encrypted_amazon2_ami_id
   public_bucket_name    = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url     = data.terraform_remote_state.paperwork.outputs.public_bucket_url
@@ -301,7 +301,7 @@ module "isolation_segment_1" {
   user_data          = data.template_cloudinit_config.nat_user_data.rendered
 
   root_domain           = data.terraform_remote_state.paperwork.outputs.root_domain
-  splunk_syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
   ami_id                = data.terraform_remote_state.encrypt_amis.outputs.encrypted_amazon2_ami_id
   public_bucket_name    = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url     = data.terraform_remote_state.paperwork.outputs.public_bucket_url
@@ -325,7 +325,7 @@ module "isolation_segment_2" {
   user_data          = data.template_cloudinit_config.nat_user_data.rendered
 
   root_domain           = data.terraform_remote_state.paperwork.outputs.root_domain
-  splunk_syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
   ami_id                = data.terraform_remote_state.encrypt_amis.outputs.encrypted_amazon2_ami_id
   public_bucket_name    = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url     = data.terraform_remote_state.paperwork.outputs.public_bucket_url
@@ -349,7 +349,7 @@ module "isolation_segment_3" {
   user_data          = data.template_cloudinit_config.nat_user_data.rendered
 
   root_domain           = data.terraform_remote_state.paperwork.outputs.root_domain
-  splunk_syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
   ami_id                = data.terraform_remote_state.encrypt_amis.outputs.encrypted_amazon2_ami_id
   public_bucket_name    = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url     = data.terraform_remote_state.paperwork.outputs.public_bucket_url

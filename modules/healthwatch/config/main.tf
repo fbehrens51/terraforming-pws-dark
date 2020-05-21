@@ -47,7 +47,7 @@ variable "syslog_host" {
 variable "syslog_port" {
 }
 
-variable "splunk_syslog_ca_cert" {
+variable "syslog_ca_cert" {
 }
 
 variable "secrets_bucket_name" {
@@ -112,7 +112,7 @@ data "template_file" "healthwatch_config" {
     smtp_user                   = var.smtp_client_user
     syslog_host          = var.syslog_host
     syslog_port          = var.syslog_port
-    splunk_syslog_ca_cert       = var.splunk_syslog_ca_cert
+    syslog_ca_cert       = var.syslog_ca_cert
   }
 }
 
@@ -134,7 +134,7 @@ data "template_file" "healthwatch_pas_exporter_config" {
     health_check_availability_zone = var.health_check_availability_zone
     syslog_host             = var.syslog_host
     syslog_port             = var.syslog_port
-    splunk_syslog_ca_cert          = var.splunk_syslog_ca_cert
+    syslog_ca_cert          = var.syslog_ca_cert
   }
 }
 

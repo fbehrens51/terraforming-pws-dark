@@ -118,7 +118,7 @@ product-properties:
     value: true
   .properties.system_logging.enabled.tls_ca_cert:
     value: |
-      ${indent(6, splunk_syslog_ca_cert)}
+      ${indent(6, syslog_ca_cert)}
   .properties.system_logging.enabled.tls_enabled:
     value: true
   .properties.system_logging.enabled.tls_permitted_peer:
