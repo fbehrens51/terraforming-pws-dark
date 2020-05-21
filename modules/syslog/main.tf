@@ -68,7 +68,7 @@ write_files:
 
 rsyslog:
   remotes:
-    splunk: "@@${module.domains.fluentd_fqdn}:${module.syslog_ports.syslog_port}"
+    fluentd: "@@${module.domains.fluentd_fqdn}:${module.syslog_ports.syslog_port}"
   configs:
     - filename: 10-tls.conf
       content: |
