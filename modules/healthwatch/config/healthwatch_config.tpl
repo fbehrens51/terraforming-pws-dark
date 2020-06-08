@@ -4,6 +4,8 @@ product-properties:
     value: true
   .grafana.enable_login_form:
     value: true
+  .grafana.additional_cipher:
+    value: ${grafana_additional_cipher_suites}
   .grafana.pas_version:
     value: "2.8"
   .grafana.pks_version:

@@ -68,6 +68,10 @@ variable "metrics_key" {
 variable "grafana_uaa_client_secret" {
 }
 
+variable "grafana_additional_cipher_suites" {
+  type = list(string)
+}
+
 data "template_file" "hw_vpc_azs" {
   count = length(var.availability_zones)
 
@@ -90,29 +94,30 @@ data "template_file" "healthwatch_config" {
   template = file("${path.module}/healthwatch_config.tpl")
 
   vars = {
-    grafana_root_url            = "https://${module.domains.grafana_fqdn}"
-    fluentd_root_url            = "${module.domains.fluentd_fqdn}:9200"
-    canary_url                  = "https://${module.domains.apps_manager_fqdn}"
-    metrics_key                 = var.metrics_key
-    root_ca_cert                = var.grafana_server_ca_cert
-    grafana_server_cert         = var.grafana_server_cert
-    grafana_server_key          = var.grafana_server_key
-    network_name                = var.network_name
-    hw_vpc_azs                  = indent(2, join("", data.template_file.hw_vpc_azs.*.rendered))
-    singleton_availability_zone = var.singleton_availability_zone
-    region                      = var.region
-    grafana_elb_id              = var.grafana_elb_id
-    grafana_uaa_client_secret   = var.grafana_uaa_client_secret
-    uaa_url                     = "https://uaa.${module.domains.system_fqdn}"
-    smtp_enabled                = var.smtp_from == "" ? false : true
-    smtp_from                   = var.smtp_from
-    smtp_host                   = var.smtp_host
-    smtp_password               = var.smtp_client_password
-    smtp_port                   = var.smtp_client_port
-    smtp_user                   = var.smtp_client_user
-    syslog_host          = var.syslog_host
-    syslog_port          = var.syslog_port
-    syslog_ca_cert       = var.syslog_ca_cert
+    grafana_additional_cipher_suites = join(",", var.grafana_additional_cipher_suites)
+    grafana_root_url                 = "https://${module.domains.grafana_fqdn}"
+    fluentd_root_url                 = "${module.domains.fluentd_fqdn}:9200"
+    canary_url                       = "https://${module.domains.apps_manager_fqdn}"
+    metrics_key                      = var.metrics_key
+    root_ca_cert                     = var.grafana_server_ca_cert
+    grafana_server_cert              = var.grafana_server_cert
+    grafana_server_key               = var.grafana_server_key
+    network_name                     = var.network_name
+    hw_vpc_azs                       = indent(2, join("", data.template_file.hw_vpc_azs.*.rendered))
+    singleton_availability_zone      = var.singleton_availability_zone
+    region                           = var.region
+    grafana_elb_id                   = var.grafana_elb_id
+    grafana_uaa_client_secret        = var.grafana_uaa_client_secret
+    uaa_url                          = "https://uaa.${module.domains.system_fqdn}"
+    smtp_enabled                     = var.smtp_from == "" ? false : true
+    smtp_from                        = var.smtp_from
+    smtp_host                        = var.smtp_host
+    smtp_password                    = var.smtp_client_password
+    smtp_port                        = var.smtp_client_port
+    smtp_user                        = var.smtp_client_user
+    syslog_host                      = var.syslog_host
+    syslog_port                      = var.syslog_port
+    syslog_ca_cert                   = var.syslog_ca_cert
   }
 }
 
@@ -132,9 +137,9 @@ data "template_file" "healthwatch_pas_exporter_config" {
     hw_vpc_azs                     = indent(2, join("", data.template_file.hw_vpc_azs.*.rendered))
     singleton_availability_zone    = var.singleton_availability_zone
     health_check_availability_zone = var.health_check_availability_zone
-    syslog_host             = var.syslog_host
-    syslog_port             = var.syslog_port
-    syslog_ca_cert          = var.syslog_ca_cert
+    syslog_host                    = var.syslog_host
+    syslog_port                    = var.syslog_port
+    syslog_ca_cert                 = var.syslog_ca_cert
   }
 }
 
