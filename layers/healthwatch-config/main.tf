@@ -32,7 +32,7 @@ variable "healthwatch_pas_exporter_config" {
 
 variable "grafana_additional_cipher_suites" {
   type    = list(string)
-  default = ["TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384"]
+  default = ["TLS_RSA_WITH_AES_128_GCM_SHA256"]
 }
 
 terraform {
