@@ -205,6 +205,7 @@ variable "clamav_db_mirror" {
 }
 
 variable "custom_clamav_yum_repo_url" {
+  default = ""
 }
 
 variable "env_name" {

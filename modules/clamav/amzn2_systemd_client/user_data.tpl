@@ -15,6 +15,7 @@ write_files:
     path: /etc/cron.d/antivirus
     permissions: '0644'
     owner: root:root
+%{ if custom_repo_url != "" }
 yum_repos:
   custom-clamav-repo:
       name: "Custom repo added for ClamAV installation"
@@ -25,9 +26,14 @@ packages:
   - clamav
   - clamd
   - augeas
+%{ endif }
 runcmd:
   - |
     set -ex
+%{ if custom_repo_url == "" }
+    amazon-linux-extras install epel
+    yum install clamav clamd augeas -y
+%{ endif }
     augtool set /files/etc/freshclam.conf/LogSyslog yes
     augtool rm /files/etc/freshclam.conf/DatabaseMirror
     augtool set /files/etc/freshclam.conf/PrivateMirror ${clam_database_mirror}
