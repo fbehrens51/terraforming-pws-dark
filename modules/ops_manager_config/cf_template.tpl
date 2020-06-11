@@ -398,11 +398,6 @@ product-properties:
       secret: ${rds_password}
   .properties.system_database.external.networkpolicyserver_username:
     value: ${rds_username}
-  .properties.system_database.external.nfsvolume_password:
-    value:
-      secret: ${rds_password}
-  .properties.system_database.external.nfsvolume_username:
-    value: ${rds_username}
   .properties.system_database.external.notifications_password:
     value:
       secret: ${rds_password}
