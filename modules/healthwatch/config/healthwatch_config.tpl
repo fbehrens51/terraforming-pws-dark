@@ -7,7 +7,7 @@ product-properties:
   .grafana.additional_cipher:
     value: ${grafana_additional_cipher_suites}
   .grafana.pas_version:
-    value: "2.8"
+    value: "2.9"
   .grafana.pks_version:
     value: disabled
   .grafana.root_url:
