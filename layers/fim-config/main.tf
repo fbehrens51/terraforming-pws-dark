@@ -5,7 +5,7 @@ variable "remote_state_region" {
 }
 
 variable "fim_config" {
-  default = "pas/fim_config.yml"
+  default = "pas/fim_addon_config.yml"
 }
 
 terraform {
