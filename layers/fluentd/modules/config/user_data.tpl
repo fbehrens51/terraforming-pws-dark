@@ -20,7 +20,7 @@ mounts:
 
 runcmd:
   - |
-    set -ex
+    set -exo pipefail
 
     export AWS_DEFAULT_REGION=${region}
 
@@ -33,9 +33,16 @@ runcmd:
 
       rpm -iv td-agent-*.rpm
 
-      td-agent-gem install -l aws-sdk-cloudwatchlogs-*.gem
-      td-agent-gem install -l fluent-plugin-cloudwatch-logs-*.gem
-      td-agent-gem install -l fluent-plugin-prometheus-*.gem
+      td-agent-gem install -l *.gem
+
+      gems=$(ls -1 *.gem | grep -Po '^(.*)(?=-[\d+\.]+.gem)' | paste -sd ' ')
+      lines=$(td-agent-gem check $${gems} | wc -l )
+      if [ $${lines} -gt 2 ]; then
+        echo "dependency checked failed for $${gems}, exiting"
+        td-agent-gem check $${gems}
+        exit 1
+      fi
+
     popd
 
     mkdir -p /opt/td-agent/s3
