@@ -57,6 +57,7 @@
     log_group_name ${cloudwatch_log_group_name}
     log_stream_name ${cloudwatch_log_stream_name}
     auto_create_stream true
+    json_handler yajl
   </store>
 
   <store>
