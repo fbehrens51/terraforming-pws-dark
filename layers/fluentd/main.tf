@@ -203,3 +203,24 @@ module "syslog_config" {
   public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url
 }
 
+resource "null_resource" "fluentd_status" {
+  triggers = {
+    instance_id = module.fluentd_instance.instance_ids[0]
+  }
+
+  connection {
+    type         = "ssh"
+    user         = "bot"
+    host         = module.fluentd_instance.private_ips[0]
+    private_key  = data.terraform_remote_state.paperwork.outputs.bot_private_key
+    bastion_host = var.internetless ? null : data.terraform_remote_state.bastion.outputs.bastion_ip
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "echo \"Running cloud-init status --wait > /dev/null\"",
+      "sudo cloud-init status --wait > /dev/null",
+      "sudo cloud-init status --long"
+    ]
+  }
+}
