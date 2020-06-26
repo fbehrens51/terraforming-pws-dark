@@ -1,3 +1,22 @@
+<label @FLUENT_LOG>
+  <filter>
+    @type record_transformer
+    <record>
+      ident td-agent
+      source_address "#{`hostname -I`.strip}"
+      host "#{`hostname -s`.strip}"
+    </record>
+  </filter>
+  <match fluent.**>
+    @type cloudwatch_logs
+    region ${region}
+    log_group_name ${cloudwatch_log_group_name}
+    log_stream_name ${cloudwatch_log_stream_name}
+    auto_create_stream true
+    json_handler yajl
+  </match>
+</label>
+
 <source>
   @type syslog
   port ${syslog_port}
