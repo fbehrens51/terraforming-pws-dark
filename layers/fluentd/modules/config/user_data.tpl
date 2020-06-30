@@ -12,11 +12,12 @@ bootcmd:
   - |
     set -ex
     mkdir -p /opt
+    mkdir -p /data
     while [ ! -e /dev/sdf ] ; do echo "Waiting for device /dev/sdf"; sleep 1 ; done
     if [ "$(file -b -s -L /dev/sdf)" == "data" ]; then mkfs -t ext4 /dev/sdf; fi
 
 mounts:
-  - [ "/dev/sdf", "/opt", "ext4", "defaults,nofail", "0", "2" ]
+  - [ "/dev/sdf", "/data", "ext4", "defaults,nofail", "0", "2" ]
 
 runcmd:
   - |
@@ -45,9 +46,10 @@ runcmd:
 
     popd
 
-    mkdir -p /opt/td-agent/s3
+    mkdir -p /data/s3
     chown td-agent:root -R /opt/td-agent
     chown td-agent:root -R /etc/td-agent
+    chown td-agent:root -R /data
 
     systemctl enable td-agent
     systemctl start td-agent

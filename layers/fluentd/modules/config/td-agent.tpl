@@ -52,7 +52,7 @@
     path logs/
     <buffer time>
       @type file
-      path /opt/td-agent/s3
+      path /data/s3
       timekey 24h # 24 hour partition
       timekey_wait 15m
       timekey_use_utc true # use utc
@@ -143,7 +143,7 @@
     path ${s3_path}
     <buffer time>
       @type file
-      path /opt/td-agent/audispd
+      path /data/audispd
       timekey 24h # 24 hour partition
       timekey_wait 15m
       timekey_use_utc true # use utc
