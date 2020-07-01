@@ -46,10 +46,8 @@ runcmd:
 
     popd
 
-    mkdir -p /data/s3
-    chown td-agent:root -R /opt/td-agent
-    chown td-agent:root -R /etc/td-agent
-    chown td-agent:root -R /data
+    mkdir -p /data/s3 /data/log /data/audispd
+    chown td-agent:root -R /opt/td-agent /etc/td-agent /data/s3 /data/audispd /data/log
 
     systemctl enable td-agent
     systemctl start td-agent
@@ -64,6 +62,6 @@ write_files:
     permissions: '0644'
     owner: root:root
   - content: |
-      TD_AGENT_LOG_FILE=/opt/td-agent/var/log/td-agent.log
+      TD_AGENT_LOG_FILE=/data/log/td-agent.log
       TD_AGENT_OPTIONS="--log-rotate-size 104857600 --log-rotate-age 10"
     path: /etc/sysconfig/td-agent

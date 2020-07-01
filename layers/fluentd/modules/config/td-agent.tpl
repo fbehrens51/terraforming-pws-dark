@@ -1,3 +1,24 @@
+<label @ERROR>
+  <filter>
+    @type record_transformer
+    <record>
+      ident td-agent
+      source_address "#{`hostname -I`.strip}"
+      host "#{`hostname -s`.strip}"
+    </record>
+  </filter>
+  <match **>
+    @type forward
+    send_timeout 60s
+    recover_wait 10s
+    hard_timeout 50s
+    <server>
+      name localhost
+      host 127.0.0.1
+    </server>
+  </match>
+</label>
+
 <label @FLUENT_LOG>
   <filter>
     @type record_transformer
@@ -8,41 +29,29 @@
     </record>
   </filter>
   <match fluent.**>
-    @type cloudwatch_logs
-    region ${region}
-    log_group_name ${cloudwatch_log_group_name}
-    log_stream_name ${cloudwatch_log_stream_name}
-    auto_create_stream true
-    json_handler yajl
+    @type forward
+    send_timeout 60s
+    recover_wait 10s
+    hard_timeout 50s
+    <server>
+      name localhost
+      host 127.0.0.1
+    </server>
   </match>
 </label>
 
-<source>
-  @type syslog
-  port ${syslog_port}
-  bind 0.0.0.0
-  tag syslog
-  emit_unmatched_lines true
-  source_address_key source_address
-  <transport tls>
-    ca_path /etc/td-agent/ca.pem
-    cert_path /etc/td-agent/cert.pem
-    private_key_path /etc/td-agent/key.pem
-  </transport>
-  <parse>
-    message_format auto
-  </parse>
-</source>
-
-<filter syslog.**>
+<label @prometheus>
+  <match syslog.**>
   @type prometheus
   <metric>
     name fluentd_input_status_num_records_total
     type counter
     desc The total number of incoming records
   </metric>
-</filter>
+  </match>
+</label>
 
+<label @syslog>
 <match syslog.**>
   @type copy
   <store>
@@ -62,6 +71,11 @@
 
   <store>
     @type relabel
+      @label @prometheus
+    </store>
+
+    <store>
+      @type relabel
     @label @audispd
   </store>
 
@@ -88,6 +102,7 @@
     </metric>
   </store>
 </match>
+</label>
 
 <label @clamav_infections>
   <filter syslog.**>
@@ -113,7 +128,7 @@
     </parse>
   </filter>
 
-  <match **>
+  <match syslog.**>
     @type prometheus
     <metric>
       name fluentd_clamav_infected_files
@@ -157,9 +172,38 @@
   port 9200
   metrics_path /metrics
 </source>
+
 <source>
   @type prometheus_monitor
 </source>
+
 <source>
   @type prometheus_output_monitor
 </source>
+
+<source>
+  @type forward
+  port 24224
+  bind 127.0.0.1
+  @label @syslog
+  add_tag_prefix syslog
+</source>
+
+<source>
+  @type syslog
+  port 8090
+  bind 0.0.0.0
+  tag syslog
+  @label @syslog
+  emit_unmatched_lines true
+  source_address_key source_address
+  <transport tls>
+    ca_path /etc/td-agent/ca.pem
+    cert_path /etc/td-agent/cert.pem
+    private_key_path /etc/td-agent/key.pem
+  </transport>
+  <parse>
+    message_format auto
+  </parse>
+</source>
+
