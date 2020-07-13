@@ -106,8 +106,6 @@ product-properties:
   .properties.smtp.enabled.user:
     value: ${smtp_user}
 %{ endif ~}
-  .tsdb.canary_exporter_port:
-    value: 9115
   .tsdb.disk_chunk_size:
     value: 6144
   .tsdb.memory_chunk_size:
