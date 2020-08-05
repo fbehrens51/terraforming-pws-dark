@@ -15,12 +15,29 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 1,
-  "id": 21,
+  "id": 28,
   "links": [],
   "panels": [
     {
       "datasource": null,
       "description": "Records processed for both input and output. Ideally, these should be the same number, but may occasionally fluctuate during high load.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "ops"
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 8,
         "w": 12,
@@ -30,31 +47,18 @@
       "id": 15,
       "options": {
         "colorMode": "value",
-        "fieldOptions": {
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
           "calcs": [
             "last"
           ],
-          "defaults": {
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "ops"
-          },
-          "overrides": [],
+          "fields": "",
           "values": false
-        },
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto"
+        }
       },
-      "pluginVersion": "6.7.3",
+      "pluginVersion": "7.0.3",
       "targets": [
         {
           "expr": "rate(fluentd_input_status_num_records_total[5m])",
@@ -117,6 +121,12 @@
       "dashes": false,
       "datasource": null,
       "description": "The number of chunks of data currently buffered due to downstream backpressure. Ideally, this is 0, but it may occasionally spike for a short period during high log volume or if a consumer slows down.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -215,6 +225,12 @@
       "dashes": false,
       "datasource": null,
       "description": "The number of retries for each output type. This should ideally be 0, but may occasionally spike during heavy load.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -304,6 +320,12 @@
       "dashes": false,
       "datasource": null,
       "description": "Size of each output buffer in bytes. The s3 buffer rotates every 1 GB, so it's normal to see it climb and fall every 1 GB.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -388,7 +410,7 @@
     }
   ],
   "refresh": "1m",
-  "schemaVersion": 22,
+  "schemaVersion": 25,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -400,7 +422,6 @@
   },
   "timepicker": {
     "refresh_intervals": [
-      "5s",
       "10s",
       "30s",
       "1m",
@@ -414,9 +435,6 @@
   },
   "timezone": "",
   "title": "Fluentd",
-  "uid": "XAoXNK6Zz",
-  "variables": {
-    "list": []
-  },
-  "version": 3
+  "uid": "y6y_paeZz",
+  "version": 4
 }

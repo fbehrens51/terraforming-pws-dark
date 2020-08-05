@@ -32,8 +32,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 1,
-  "id": 25,
-  "iteration": 1586875920717,
+  "id": 19,
+  "iteration": 1596648865172,
   "links": [],
   "panels": [
     {
@@ -54,6 +54,12 @@
       "dashboardFilter": "",
       "dashboardTags": [],
       "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "folderId": null,
       "gridPos": {
         "h": 5,
@@ -83,6 +89,12 @@
       ],
       "datasource": null,
       "description": "These services are reporting 'failed' in systemd.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fontSize": "100%",
       "gridPos": {
         "h": 5,
@@ -145,7 +157,7 @@
       "timeShift": null,
       "title": "Failed Systemd Units",
       "transform": "timeseries_aggregations",
-      "type": "table"
+      "type": "table-old"
     },
     {
       "cacheTimeout": null,
@@ -157,6 +169,12 @@
       ],
       "datasource": null,
       "description": "TSDB is able to retrieve metrics from these instances, this means the instance is up and node_exporter is working. Check the systemd status to understand whether other services are working.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fontSize": "100%",
       "gridPos": {
         "h": 5,
@@ -219,7 +237,7 @@
       "timeShift": null,
       "title": "Up Instances",
       "transform": "timeseries_aggregations",
-      "type": "table"
+      "type": "table-old"
     },
     {
       "cacheTimeout": null,
@@ -231,6 +249,12 @@
       ],
       "datasource": null,
       "description": "TSDB is unable to retrieve metrics from these instances, this likely means the instance is not correctly configured.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fontSize": "100%",
       "gridPos": {
         "h": 5,
@@ -293,7 +317,7 @@
       "timeShift": null,
       "title": "Down Instances",
       "transform": "timeseries_aggregations",
-      "type": "table"
+      "type": "table-old"
     },
     {
       "collapsed": false,
@@ -315,6 +339,12 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -408,6 +438,12 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 0,
       "fillGradient": 0,
       "gridPos": {
@@ -497,6 +533,12 @@
       "dashes": false,
       "datasource": null,
       "decimals": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 0,
       "fillGradient": 0,
       "gridPos": {
@@ -645,6 +687,12 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 0,
       "fillGradient": 0,
       "gridPos": {
@@ -781,6 +829,12 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -873,7 +927,7 @@
     }
   ],
   "refresh": "1m",
-  "schemaVersion": 22,
+  "schemaVersion": 25,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -881,6 +935,7 @@
       {
         "allValue": null,
         "current": {
+          "selected": true,
           "text": "All",
           "value": [
             "$__all"
@@ -890,7 +945,6 @@
         "definition": "label_values(up, availability_zone)",
         "hide": 0,
         "includeAll": true,
-        "index": -1,
         "label": "Availability Zone",
         "multi": true,
         "name": "az",
@@ -909,6 +963,7 @@
       {
         "allValue": null,
         "current": {
+          "selected": true,
           "text": "All",
           "value": [
             "$__all"
@@ -918,7 +973,6 @@
         "definition": "label_values(up, name_tag)",
         "hide": 0,
         "includeAll": true,
-        "index": -1,
         "label": "Name",
         "multi": true,
         "name": "name",
@@ -942,7 +996,6 @@
   },
   "timepicker": {
     "refresh_intervals": [
-      "5s",
       "10s",
       "30s",
       "1m",
@@ -956,9 +1009,6 @@
   },
   "timezone": "",
   "title": "VM Resources",
-  "uid": "e503P_jZk",
-  "variables": {
-    "list": []
-  },
-  "version": 52
+  "uid": "HMJtNeCZz",
+  "version": 10
 }

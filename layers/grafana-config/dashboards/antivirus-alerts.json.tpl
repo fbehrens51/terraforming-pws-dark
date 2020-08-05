@@ -83,6 +83,12 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -203,7 +209,7 @@
     }
   ],
   "refresh": "10s",
-  "schemaVersion": 22,
+  "schemaVersion": 25,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -215,7 +221,6 @@
   },
   "timepicker": {
     "refresh_intervals": [
-      "5s",
       "10s",
       "30s",
       "1m",
@@ -230,8 +235,5 @@
   "timezone": "browser",
   "title": "ClamAV Virus Detections",
   "uid": "RLGLyeeZz",
-  "variables": {
-    "list": []
-  },
-  "version": 10
+  "version": 11
 }
