@@ -118,9 +118,9 @@ locals {
     infrastructure_subnets                      = join("", data.template_file.infrastructure_subnets.*.rendered),
     pas_subnets                                 = indent(4, join("", data.template_file.pas_subnets.*.rendered)),
     pas_vpc_azs                                 = indent(2, join("", data.template_file.pas_vpc_azs.*.rendered)),
-    syslog_host                          = var.syslog_host,
-    syslog_port                          = var.syslog_port,
-    syslog_ca_cert                       = var.syslog_ca_cert,
+    syslog_host                                 = var.syslog_host,
+    syslog_port                                 = var.syslog_port,
+    syslog_ca_cert                              = var.syslog_ca_cert,
     isolation_segment_to_subnets                = var.isolation_segment_to_subnets,
     isolation_segment_to_security_groups        = var.isolation_segment_to_security_groups,
     pas_vpc_dns                                 = var.pas_vpc_dns,
@@ -198,9 +198,9 @@ data "template_file" "cf_template" {
     pas_packages_backup_bucket                           = var.pas_packages_backup_bucket
     pas_vpc_azs                                          = indent(4, join("", data.template_file.pas_vpc_azs.*.rendered))
     singleton_availability_zone                          = var.singleton_availability_zone
-    syslog_host                                   = var.syslog_host
-    syslog_port                                   = var.syslog_port
-    syslog_ca_cert                                = var.syslog_ca_cert
+    syslog_host                                          = var.syslog_host
+    syslog_port                                          = var.syslog_port
+    syslog_ca_cert                                       = var.syslog_ca_cert
     backup_restore_instance_type                         = var.backup_restore_instance_type
     clock_global_instance_type                           = var.clock_global_instance_type
     cloud_controller_instance_type                       = var.cloud_controller_instance_type
@@ -235,29 +235,36 @@ data "template_file" "cf_tools_template" {
   }
 }
 
+resource "tls_private_key" "jwt" {
+  algorithm = "RSA"
+  rsa_bits  = "2048"
+}
+
 data "template_file" "portal_template" {
-  template = file("${path.module}/portal_template.tpl")
+  template = file("${path.module}/portal_yml.tpl")
 
   vars = {
-    ldap_tls_ca_cert            = var.ldap_tls_ca_cert
-    ldap_tls_client_cert        = var.ldap_tls_client_cert
-    ldap_tls_client_key         = var.ldap_tls_client_key
-    smoke_test_client_cert      = var.smoke_test_client_cert
-    smoke_test_client_key       = var.smoke_test_client_key
-    ldap_basedn                 = var.ldap_basedn
-    ldap_dn                     = var.ldap_dn
-    ldap_password               = var.ldap_password
-    ldap_host                   = var.ldap_host
-    ldap_port                   = var.ldap_port
-    ldap_role_attr              = var.ldap_role_attr
-    mysql_host                  = var.rds_address
-    mysql_port                  = var.rds_port
-    mysql_db_name               = "portal"
-    mysql_username              = var.rds_username
-    mysql_password              = var.rds_password
-    mysql_ca_cert               = var.rds_ca_cert_pem
-    pas_vpc_azs                 = indent(4, join("", data.template_file.pas_vpc_azs.*.rendered))
-    singleton_availability_zone = var.singleton_availability_zone
+    ldap_tls_ca_cert       = var.ldap_tls_ca_cert
+    ldap_tls_client_cert   = var.ldap_tls_client_cert
+    ldap_tls_client_key    = var.ldap_tls_client_key
+    ldap_basedn            = var.ldap_basedn
+    ldap_dn                = var.ldap_dn
+    ldap_password          = var.ldap_password
+    ldap_host              = var.ldap_host
+    ldap_port              = var.ldap_port
+    ldap_role_attr         = var.ldap_role_attr
+    mysql_host             = var.rds_address
+    mysql_port             = var.rds_port
+    mysql_db_name          = "portal"
+    mysql_username         = var.rds_username
+    mysql_password         = var.rds_password
+    mysql_ca_cert          = var.rds_ca_cert_pem
+    jwt_key_sign           = tls_private_key.jwt.private_key_pem
+    jwt_key_verify         = tls_private_key.jwt.public_key_pem
+    system_fqdn            = var.system_domain
+    portal_name            = "test-portal"
+    smoke_test_client_cert = var.smoke_test_client_cert
+    smoke_test_client_key  = var.smoke_test_client_key
   }
 }
 
