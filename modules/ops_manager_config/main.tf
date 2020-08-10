@@ -262,7 +262,7 @@ data "template_file" "portal_template" {
     jwt_key_sign           = tls_private_key.jwt.private_key_pem
     jwt_key_verify         = tls_private_key.jwt.public_key_pem
     system_fqdn            = var.system_domain
-    portal_name            = "test-portal"
+    portal_name            = "portal"
     smoke_test_client_cert = var.smoke_test_client_cert
     smoke_test_client_key  = var.smoke_test_client_key
   }
