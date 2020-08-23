@@ -8,8 +8,6 @@ product-properties:
     value: ${health_check_availability_zone}
   .bosh-health-exporter.health_check_vm_type:
     value: t3.medium
-  .properties.exporter_scrape_port:
-    value: 9090
 network-properties:
   network:
     name: ${network_name}
@@ -34,6 +32,18 @@ resource-config:
     swap_as_percent_of_memory_size: automatic
   bosh-health-exporter:
     max_in_flight: 2
+    additional_networks: []
+    additional_vm_extensions: []
+    elb_names: []
+    instance_type:
+      id: automatic
+    instances: automatic
+    internet_connected: false
+    persistent_disk:
+      size_mb: automatic
+    swap_as_percent_of_memory_size: automatic
+  cert-expiration-exporter:
+    max_in_flight: 5
     additional_networks: []
     additional_vm_extensions: []
     elb_names: []
@@ -105,6 +115,8 @@ resource-config:
       size_mb: automatic
     swap_as_percent_of_memory_size: automatic
 errand-config:
+  bosh-cleanup-wait:
+    pre-delete-state: true
   smoke-test:
     post-deploy-state: true
 syslog-properties:
