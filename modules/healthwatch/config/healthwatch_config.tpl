@@ -15,6 +15,32 @@ product-properties:
   .grafana.ssl_ca_certificate:
     value: |-
       ${indent(6, chomp(root_ca_cert))}
+  .properties.canary_exporter_targets:
+    value:
+    - address: ${canary_url}
+  .properties.dashboard_discovery:
+    selected_option: dynamic
+    value: dynamic
+  .properties.enable_telemetry:
+    value: false
+  .properties.grafana_authentication:
+    selected_option: uaa
+    value: uaa
+  .properties.grafana_authentication.uaa.client_id:
+    value: grafana
+  .properties.grafana_authentication.uaa.root_url:
+    value: ${uaa_url}
+  .properties.grafana_authentication.uaa.tls_skip_verify_insecure:
+    value: false
+  .properties.grafana_proxy:
+    selected_option: disabled
+    value: disabled
+  .properties.pks_cluster_discovery:
+    selected_option: disabled
+    value: disabled
+  .properties.grafana_authentication.uaa.client_secret:
+    value:
+      secret: ${grafana_uaa_client_secret}
   .grafana.ssl_certificates:
     value:
       cert_pem: |
@@ -48,6 +74,9 @@ product-properties:
         - source_labels: [__meta_ec2_instance_id]
           target_label: instance_id
       server_name: null
+    - ca: |
+        ${indent(8, chomp(root_ca_cert))}
+      insecure_skip_verify: false
       scrape_job: |
         job_name: 'fluentd'
         metrics_path: /aggregated_metrics
@@ -55,32 +84,6 @@ product-properties:
         - targets:
           - ${fluentd_root_url}
       server_name: null
-  .properties.canary_exporter_targets:
-    value:
-    - address: ${canary_url}
-  .properties.grafana_authentication:
-    selected_option: uaa
-    value: uaa
-  .properties.grafana_authentication.uaa.client_id:
-    value: grafana
-  .properties.grafana_authentication.uaa.client_secret:
-    value:
-      secret: ${grafana_uaa_client_secret}
-  .properties.dashboard_discovery:
-    selected_option: dynamic
-    value: dynamic
-  .properties.grafana_authentication.uaa.root_url:
-    value: ${uaa_url}
-  .properties.enable_telemetry:
-    value: false
-  .properties.grafana_authentication.uaa.tls_skip_verify_insecure:
-    value: false
-  .properties.grafana_proxy:
-    selected_option: disabled
-    value: disabled
-  .properties.pks_cluster_discovery:
-    selected_option: disabled
-    value: disabled
   .properties.smtp:
 %{ if smtp_enabled != "true" ~}
     selected_option: disabled
