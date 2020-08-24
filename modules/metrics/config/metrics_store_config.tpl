@@ -33,4 +33,4 @@ syslog-properties:
   ssl_ca_certificate: |
     ${indent(4, chomp(syslog_ca_cert))}
   tls_enabled: true
-  transport_protocol: tc
+  transport_protocol: tcp
