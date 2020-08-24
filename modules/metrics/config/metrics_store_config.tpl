@@ -1,13 +1,4 @@
-product-name: appMetrics
-product-properties:
-  .db-and-errand-runner.enable_logs:
-    value: true
-  .db-and-errand-runner.use_socks_proxy:
-    value: false
-  .log-store-vms.log_store_prune_interval:
-    value: 2m
-  .log-store-vms.log_store_prune_threshold:
-    value: 80
+product-name: metric-store
 network-properties:
   network:
     name: ${bosh_network_name}
@@ -16,19 +7,7 @@ network-properties:
   singleton_availability_zone:
     name: ${singleton_availability_zone}
 resource-config:
-  db-and-errand-runner:
-    max_in_flight: 1
-    additional_networks: []
-    additional_vm_extensions: []
-    elb_names: []
-    instance_type:
-      id: automatic
-    instances: automatic
-    internet_connected: false
-    persistent_disk:
-      size_mb: automatic
-    swap_as_percent_of_memory_size: automatic
-  log-store-vms:
+  metric-store:
     max_in_flight: 1
     additional_networks: []
     additional_vm_extensions: []
@@ -41,13 +20,7 @@ resource-config:
       size_mb: automatic
     swap_as_percent_of_memory_size: automatic
 errand-config:
-  delete-space:
-    pre-delete-state: true
-  migrate-route:
-    post-deploy-state: false
-  push-app-metrics:
-    post-deploy-state: true
-  smoke-test:
+  metric-store-smoke-tests:
     post-deploy-state: true
 syslog-properties:
   address: ${syslog_host}
@@ -60,4 +33,4 @@ syslog-properties:
   ssl_ca_certificate: |
     ${indent(4, chomp(syslog_ca_cert))}
   tls_enabled: true
-  transport_protocol: tcp
+  transport_protocol: tc

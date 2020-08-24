@@ -19,6 +19,10 @@ variable "metrics_config" {
   default = "pas/metrics_config.yml"
 }
 
+variable "metrics_store_config" {
+  default = "pas/metrics_store_config.yml"
+}
+
 terraform {
   backend "s3" {
   }
@@ -70,6 +74,7 @@ module "metrics_config" {
   source                      = "../../modules/metrics/config"
   secrets_bucket_name         = local.secrets_bucket_name
   metrics_config              = var.metrics_config
+  metrics_store_config        = var.metrics_store_config
   bosh_network_name           = data.terraform_remote_state.paperwork.outputs.pas_network_name
   availability_zones          = var.availability_zones
   singleton_availability_zone = var.singleton_availability_zone

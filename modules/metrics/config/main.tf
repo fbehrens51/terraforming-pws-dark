@@ -24,6 +24,9 @@ variable "secrets_bucket_name" {
 variable "metrics_config" {
 }
 
+variable "metrics_store_config" {
+}
+
 data "template_file" "pas_vpc_azs" {
   count = length(var.availability_zones)
 
@@ -41,11 +44,24 @@ data "template_file" "metrics_template" {
 
   vars = {
     bosh_network_name           = var.bosh_network_name
-    pas_vpc_azs                 = indent(4, join("", data.template_file.pas_vpc_azs.*.rendered))
+    pas_vpc_azs                 = join("", data.template_file.pas_vpc_azs.*.rendered)
     singleton_availability_zone = var.singleton_availability_zone
-    syslog_host          = var.syslog_host
-    syslog_port          = var.syslog_port
-    syslog_ca_cert       = var.syslog_ca_cert
+    syslog_host                 = var.syslog_host
+    syslog_port                 = var.syslog_port
+    syslog_ca_cert              = var.syslog_ca_cert
+  }
+}
+
+data "template_file" "metrics_store_template" {
+  template = file("${path.module}/metrics_store_config.tpl")
+
+  vars = {
+    bosh_network_name           = var.bosh_network_name
+    pas_vpc_azs                 = join("", data.template_file.pas_vpc_azs.*.rendered)
+    singleton_availability_zone = var.singleton_availability_zone
+    syslog_host                 = var.syslog_host
+    syslog_port                 = var.syslog_port
+    syslog_ca_cert              = var.syslog_ca_cert
   }
 }
 
@@ -53,4 +69,10 @@ resource "aws_s3_bucket_object" "metrics_template" {
   bucket  = var.secrets_bucket_name
   key     = var.metrics_config
   content = data.template_file.metrics_template.rendered
+}
+
+resource "aws_s3_bucket_object" "metrics_store_template" {
+  bucket  = var.secrets_bucket_name
+  key     = var.metrics_store_config
+  content = data.template_file.metrics_store_template.rendered
 }
