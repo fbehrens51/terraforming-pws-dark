@@ -15,6 +15,12 @@ product-properties:
   .grafana.ssl_ca_certificate:
     value: |-
       ${indent(6, chomp(root_ca_cert))}
+  .grafana.ssl_certificates:
+    value:
+      cert_pem: |
+        ${indent(8, chomp(grafana_server_cert))}
+      private_key_pem: |
+        ${indent(8, chomp(grafana_server_key))}
   .properties.canary_exporter_targets:
     value:
     - address: ${canary_url}
@@ -28,6 +34,9 @@ product-properties:
     value: uaa
   .properties.grafana_authentication.uaa.client_id:
     value: grafana
+  .properties.grafana_authentication.uaa.client_secret:
+    value:
+      secret: ${grafana_uaa_client_secret}
   .properties.grafana_authentication.uaa.root_url:
     value: ${uaa_url}
   .properties.grafana_authentication.uaa.tls_skip_verify_insecure:
@@ -38,15 +47,6 @@ product-properties:
   .properties.pks_cluster_discovery:
     selected_option: disabled
     value: disabled
-  .properties.grafana_authentication.uaa.client_secret:
-    value:
-      secret: ${grafana_uaa_client_secret}
-  .grafana.ssl_certificates:
-    value:
-      cert_pem: |
-        ${indent(8, chomp(grafana_server_cert))}
-      private_key_pem: |
-        ${indent(8, chomp(grafana_server_key))}
   .properties.scrape_configs:
     value:
     # We use the grafana_server_cert/key for the node_exporters on each VM

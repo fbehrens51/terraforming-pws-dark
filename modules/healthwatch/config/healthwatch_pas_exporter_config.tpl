@@ -24,7 +24,7 @@ resource-config:
     additional_vm_extensions: []
     elb_names: []
     instance_type:
-      id: automatic
+      id: t3.medium
     instances: automatic
     internet_connected: false
     persistent_disk:
@@ -36,7 +36,7 @@ resource-config:
     additional_vm_extensions: []
     elb_names: []
     instance_type:
-      id: automatic
+      id: t3.medium
     instances: automatic
     internet_connected: false
     persistent_disk:
@@ -48,7 +48,7 @@ resource-config:
     additional_vm_extensions: []
     elb_names: []
     instance_type:
-      id: automatic
+      id: t3.medium
     instances: automatic
     internet_connected: false
     persistent_disk:
@@ -96,7 +96,7 @@ resource-config:
     additional_vm_extensions: []
     elb_names: []
     instance_type:
-      id: automatic
+      id: t3.medium
     instances: automatic
     internet_connected: false
     persistent_disk:
@@ -108,7 +108,7 @@ resource-config:
     additional_vm_extensions: []
     elb_names: []
     instance_type:
-      id: automatic
+      id: t3.medium
     instances: automatic
     internet_connected: false
     persistent_disk:
