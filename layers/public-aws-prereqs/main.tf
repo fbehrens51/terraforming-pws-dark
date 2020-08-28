@@ -244,10 +244,16 @@ resource "aws_s3_bucket_object" "trusted_ca_certs" {
   content_type = "text/plain"
 }
 
+module "download-ca-certs" {
+  source = "../../modules/download_certs"
+
+  hosts = var.additional_trusted_ca_cert_hosts
+}
+
 resource "aws_s3_bucket_object" "additional_trusted_ca_certs" {
   key          = local.additional_trusted_ca_certs_s3_path
   bucket       = aws_s3_bucket.certs.bucket
-  content      = var.additional_trusted_ca_certs
+  content      = module.download-ca-certs.ca_certs
   content_type = "text/plain"
 }
 
@@ -519,8 +525,6 @@ variable "smtp_relay_password" {
   type = string
 }
 
-variable "additional_trusted_ca_certs" {
-  type    = string
-  default = ""
+variable "additional_trusted_ca_cert_hosts" {
+  type = list(string)
 }
-
