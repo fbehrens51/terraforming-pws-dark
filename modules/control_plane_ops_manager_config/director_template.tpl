@@ -104,8 +104,7 @@ resource-configuration:
       id: automatic
     internet_connected: false
   director:
-    additional_vm_extensions:
-    - disable_director_encryption
+    additional_vm_extensions: []
     instances: automatic
     persistent_disk:
       size_mb: automatic
@@ -113,13 +112,6 @@ resource-configuration:
       id: automatic
     internet_connected: false
 vmextensions-configuration:
-- name: disable_director_encryption
-  cloud_properties:
-    ephemeral_disk:
-      encrypted: false
-      kms_key_arn: ~
-      size: 65_536
-      type: gp2
 - name: worker_instance_profile
   cloud_properties:
     iam_instance_profile: ${concourse_worker_role_name}
