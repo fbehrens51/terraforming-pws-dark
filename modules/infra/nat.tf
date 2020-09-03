@@ -7,11 +7,13 @@ module "nat" {
   tags                       = var.tags
   public_subnet_ids          = aws_subnet.public_subnets.*.id
   bastion_private_ip         = "${var.bastion_private_ip}/32"
+  bastion_public_ip          = var.bastion_public_ip
   internetless               = var.internetless
   instance_type              = var.nat_instance_type
   user_data                  = var.user_data
+  bot_key_pem                = var.bot_key_pem
 
-  root_domain           = var.root_domain
+  root_domain    = var.root_domain
   syslog_ca_cert = var.syslog_ca_cert
 
   public_bucket_name = var.public_bucket_name

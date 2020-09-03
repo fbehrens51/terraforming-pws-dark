@@ -74,7 +74,7 @@ variable "root_block_device" {
   default = {}
 }
 
-// postfix, bind, sjb, ldap, ops-manager, control-plane-ops-manager
+// nat, postfix, bind, sjb, ldap, ops-manager, control-plane-ops-manager
 
 resource "aws_instance" "instance" {
   count = var.ignore_tag_changes == false && var.check_cloud_init == true ? var.instance_count : 0
@@ -110,7 +110,7 @@ resource "aws_instance" "instance" {
     ]
 
     connection {
-      user         = "bot"
+      user         = var.bot_user
       host         = self.private_ip
       timeout      = var.ssh_timeout
       private_key  = var.bot_key_pem
@@ -119,7 +119,7 @@ resource "aws_instance" "instance" {
   }
 }
 
-// NAT and fluentd VMs
+// fluentd VMs
 
 resource "aws_instance" "unchecked_instance" {
   count = var.ignore_tag_changes == false && var.check_cloud_init == false ? var.instance_count : 0

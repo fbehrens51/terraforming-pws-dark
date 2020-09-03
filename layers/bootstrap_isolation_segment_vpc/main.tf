@@ -198,9 +198,9 @@ data "template_cloudinit_config" "nat_user_data" {
   }
 
   part {
-    filename     = "user_accounts_user_data.cfg"
+    filename     = "bot_user_accounts_user_data.cfg"
     content_type = "text/x-include-url"
-    content      = data.terraform_remote_state.paperwork.outputs.user_accounts_user_data
+    content      = data.terraform_remote_state.paperwork.outputs.bot_user_accounts_user_data
   }
 }
 
@@ -273,6 +273,8 @@ module "isolation_segment_0" {
   tags               = local.modified_tags
   internetless       = var.internetless
   bastion_private_ip = "${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"
+  bastion_public_ip  = var.internetless ? null : data.terraform_remote_state.bastion.outputs.bastion_ip
+  bot_key_pem        = data.terraform_remote_state.paperwork.outputs.bot_private_key
   instance_type      = var.nat_instance_type
   user_data          = data.template_cloudinit_config.nat_user_data.rendered
 
@@ -297,6 +299,8 @@ module "isolation_segment_1" {
   tags               = local.modified_tags
   internetless       = var.internetless
   bastion_private_ip = "${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"
+  bastion_public_ip  = var.internetless ? null : data.terraform_remote_state.bastion.outputs.bastion_ip
+  bot_key_pem        = data.terraform_remote_state.paperwork.outputs.bot_private_key
   instance_type      = var.nat_instance_type
   user_data          = data.template_cloudinit_config.nat_user_data.rendered
 
@@ -321,6 +325,8 @@ module "isolation_segment_2" {
   tags               = local.modified_tags
   internetless       = var.internetless
   bastion_private_ip = "${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"
+  bastion_public_ip  = var.internetless ? null : data.terraform_remote_state.bastion.outputs.bastion_ip
+  bot_key_pem        = data.terraform_remote_state.paperwork.outputs.bot_private_key
   instance_type      = var.nat_instance_type
   user_data          = data.template_cloudinit_config.nat_user_data.rendered
 
@@ -345,6 +351,8 @@ module "isolation_segment_3" {
   tags               = local.modified_tags
   internetless       = var.internetless
   bastion_private_ip = "${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"
+  bastion_public_ip  = var.internetless ? null : data.terraform_remote_state.bastion.outputs.bastion_ip
+  bot_key_pem        = data.terraform_remote_state.paperwork.outputs.bot_private_key
   instance_type      = var.nat_instance_type
   user_data          = data.template_cloudinit_config.nat_user_data.rendered
 

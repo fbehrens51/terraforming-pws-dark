@@ -16,6 +16,10 @@ variable "ami_id" {}
 variable "public_subnet_ids" {}
 variable "internetless" {}
 variable "bastion_private_ip" {}
+variable "bastion_public_ip" {}
+variable "bot_key_pem" {
+  default = null
+}
 variable "instance_type" {}
 variable "user_data" {}
 variable "root_domain" {}

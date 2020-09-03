@@ -5,7 +5,14 @@ variable "env_name" {
 variable "nat_ami_id" {
 }
 
+variable "bot_key_pem" {
+  default = null
+}
+
 variable "bastion_private_ip" {
+}
+
+variable "bastion_public_ip" {
 }
 
 variable "hosted_zone" {

@@ -140,9 +140,9 @@ data "template_cloudinit_config" "nat_user_data" {
   }
 
   part {
-    filename     = "user_accounts_user_data.cfg"
+    filename     = "bot_user_accounts_user_data.cfg"
     content_type = "text/x-include-url"
-    content      = data.terraform_remote_state.paperwork.outputs.user_accounts_user_data
+    content      = data.terraform_remote_state.paperwork.outputs.bot_user_accounts_user_data
   }
 }
 
@@ -155,11 +155,13 @@ module "nat" {
   tags                       = local.modified_tags
   public_subnet_ids          = module.public_subnets.subnet_ids
   bastion_private_ip         = "${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"
+  bastion_public_ip          = var.internetless ? null : data.terraform_remote_state.bastion.outputs.bastion_ip
   internetless               = var.internetless
   instance_type              = var.nat_instance_type
   user_data                  = data.template_cloudinit_config.nat_user_data.rendered
   root_domain                = data.terraform_remote_state.paperwork.outputs.root_domain
   syslog_ca_cert             = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  bot_key_pem                = data.terraform_remote_state.paperwork.outputs.bot_private_key
 
   public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url

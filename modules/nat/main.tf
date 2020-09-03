@@ -23,6 +23,9 @@ variable "user_data" {
 variable "bastion_private_ip" {
 }
 
+variable "bastion_public_ip" {
+}
+
 variable "root_domain" {
 }
 
@@ -44,6 +47,9 @@ variable "ingress_cidr_blocks" {
 
 variable "metrics_ingress_cidr_block" {
   type = string
+}
+
+variable "bot_key_pem" {
 }
 
 locals {
@@ -143,11 +149,10 @@ module "nat_host" {
   ami_id         = var.ami_id
   user_data      = data.template_cloudinit_config.user_data.rendered
   eni_ids        = module.eni.eni_ids
-
-  tags          = local.modified_tags
-  instance_type = var.instance_type
-
-  check_cloud_init = false
+  tags           = local.modified_tags
+  instance_type  = var.instance_type
+  bastion_host   = var.bastion_public_ip
+  bot_key_pem    = var.bot_key_pem
 }
 
 resource "aws_route" "toggle_internet" {

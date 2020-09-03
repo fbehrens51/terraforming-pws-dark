@@ -77,9 +77,9 @@ data "template_cloudinit_config" "nat_user_data" {
   }
 
   part {
-    filename     = "user_accounts_user_data.cfg"
+    filename     = "bot_user_accounts_user_data.cfg"
     content_type = "text/x-include-url"
-    content      = data.terraform_remote_state.paperwork.outputs.user_accounts_user_data
+    content      = data.terraform_remote_state.paperwork.outputs.bot_user_accounts_user_data
   }
 }
 
@@ -97,6 +97,8 @@ module "infra" {
   vpc_id                        = local.vpc_id
   public_route_table_id         = local.route_table_id
   bastion_private_ip            = data.terraform_remote_state.bastion.outputs.bastion_private_ip
+  bastion_public_ip             = var.internetless ? null : data.terraform_remote_state.bastion.outputs.bastion_ip
+  bot_key_pem                   = data.terraform_remote_state.paperwork.outputs.bot_private_key
   private_route_table_ids       = data.terraform_remote_state.routes.outputs.pas_private_vpc_route_table_ids
   nat_instance_type             = var.nat_instance_type
   root_domain                   = data.terraform_remote_state.paperwork.outputs.root_domain

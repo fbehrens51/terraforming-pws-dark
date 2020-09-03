@@ -4,7 +4,6 @@ variable "iso_seg_name" {
 variable "iso_seg_tile_suffix" {
 }
 
-
 variable "vanity_cert_enabled" {
 }
 
@@ -83,9 +82,9 @@ data "template_file" "tile_config" {
     router_cert_pem                = var.router_cert_pem
     router_private_key_pem         = var.router_private_key_pem
     router_trusted_ca_certificates = var.router_trusted_ca_certificates
-    syslog_host             = var.syslog_host
-    syslog_port             = var.syslog_port
-    syslog_ca_cert          = var.syslog_ca_cert
+    syslog_host                    = var.syslog_host
+    syslog_port                    = var.syslog_port
+    syslog_ca_cert                 = var.syslog_ca_cert
     pas_vpc_azs                    = indent(4, join("", data.template_file.pas_vpc_azs.*.rendered))
     singleton_availability_zone    = var.singleton_availability_zone
   }

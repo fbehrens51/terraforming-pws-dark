@@ -16,6 +16,10 @@ variable "ami_id" {}
 variable "public_subnet_ids" {}
 variable "internetless" {}
 variable "bastion_private_ip" {}
+variable "bastion_public_ip" {}
+variable "bot_key_pem" {
+  default = null
+}
 variable "instance_type" {}
 variable "user_data" {}
 variable "root_domain" {}
@@ -66,10 +70,12 @@ module "nat" {
   ami_id                     = var.ami_id
   internetless               = var.internetless
   bastion_private_ip         = var.bastion_private_ip
+  bastion_public_ip          = var.bastion_public_ip
+  bot_key_pem                = var.bot_key_pem
   instance_type              = var.instance_type
   user_data                  = var.user_data
   root_domain                = var.root_domain
-  syslog_ca_cert      = var.syslog_ca_cert
+  syslog_ca_cert             = var.syslog_ca_cert
   public_bucket_name         = var.public_bucket_name
   public_bucket_url          = var.public_bucket_url
 }
