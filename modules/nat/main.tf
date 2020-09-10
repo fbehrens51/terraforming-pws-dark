@@ -145,14 +145,15 @@ EOF
 module "nat_host" {
   source = "../launch"
 
-  instance_count = length(var.private_route_table_ids)
-  ami_id         = var.ami_id
-  user_data      = data.template_cloudinit_config.user_data.rendered
-  eni_ids        = module.eni.eni_ids
-  tags           = local.modified_tags
-  instance_type  = var.instance_type
-  bastion_host   = var.bastion_public_ip
-  bot_key_pem    = var.bot_key_pem
+  instance_count   = length(var.private_route_table_ids)
+  ami_id           = var.ami_id
+  user_data        = data.template_cloudinit_config.user_data.rendered
+  eni_ids          = module.eni.eni_ids
+  tags             = local.modified_tags
+  instance_type    = var.instance_type
+  bastion_host     = var.bastion_public_ip
+  bot_key_pem      = var.bot_key_pem
+  check_cloud_init = ! var.internetless
 }
 
 resource "aws_route" "toggle_internet" {
