@@ -140,7 +140,8 @@ resource-config:
     elb_names: []
     # 4 r5.large instances is our standard 'Isolation segment' capacity @ 16
     # GB per instance, this value should also be updated in the isolation segment config
-    instances: 4
+    # the 5th instance allows for upgrades/repaves while allowing for 100% customer utilization of 4 instances.
+    instances: 5
     instance_type:
       id: r5.large
     internet_connected: false
