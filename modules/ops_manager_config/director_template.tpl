@@ -112,7 +112,6 @@ properties-configuration:
     permitted_peer: ${syslog_host}
     ssl_ca_certificate: |
       ${indent(6, syslog_ca_cert)}
-
 resource-configuration:
   compilation:
     instances: automatic
