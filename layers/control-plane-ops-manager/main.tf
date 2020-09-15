@@ -110,7 +110,6 @@ module "ops_manager_user_data" {
   customer_banner_user_data = data.terraform_remote_state.paperwork.outputs.custom_banner_user_data
   user_accounts_user_data   = local.om_user_accounts_user_data
   node_exporter_user_data   = data.terraform_remote_state.paperwork.outputs.node_exporter_user_data
-  trusted_ca_certs          = local.trusted_ca_certs
   clamav_db_mirror          = var.clamav_db_mirror
   clamav_deb_pkg_object_url = var.clamav_deb_pkg_object_url
 }
