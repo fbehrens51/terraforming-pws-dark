@@ -28,7 +28,7 @@ resource "null_resource" "ldap_configuration" {
 
   connection {
     type         = "ssh"
-    user         = "bot"
+    user         = var.bot_user
     host         = var.private_ip
     private_key  = var.bot_key_pem
     bastion_host = var.bastion_host

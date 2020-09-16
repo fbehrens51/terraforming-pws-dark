@@ -30,6 +30,10 @@ variable "tls_server_ca_cert" {
   type = string
 }
 
+variable "bot_user" {
+  default = "bot"
+}
+
 variable "bot_key_pem" {
   type = string
 }
