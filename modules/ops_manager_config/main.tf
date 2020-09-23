@@ -179,14 +179,6 @@ data "template_file" "cf_template" {
     uaa_service_provider_key_credentials_private_key_pem = var.uaa_service_provider_key_credentials_private_key_pem
     apps_manager_global_wrapper_footer_content           = var.apps_manager_global_wrapper_footer_content
     apps_manager_global_wrapper_header_content           = var.apps_manager_global_wrapper_header_content
-    apps_manager_footer_text                             = var.apps_manager_footer_text
-    apps_manager_accent_color                            = var.apps_manager_accent_color
-    apps_manager_global_wrapper_text_color               = var.apps_manager_global_wrapper_text_color
-    apps_manager_company_name                            = var.apps_manager_company_name
-    apps_manager_global_wrapper_bg_color                 = var.apps_manager_global_wrapper_bg_color
-    apps_manager_favicon                                 = filebase64(var.apps_manager_favicon_file)
-    apps_manager_square_logo                             = filebase64(var.apps_manager_square_logo_file)
-    apps_manager_main_logo                               = filebase64(var.apps_manager_main_logo_file)
     apps_manager_tools_url                               = var.apps_manager_tools_url
     kms_key_id                                           = var.kms_key_id
     pas_buildpacks_bucket                                = var.pas_buildpacks_bucket

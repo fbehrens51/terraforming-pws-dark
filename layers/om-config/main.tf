@@ -201,14 +201,6 @@ module "om_config" {
   uaa_service_provider_key_credentials_private_key_pem = data.terraform_remote_state.paperwork.outputs.uaa_server_key
   apps_manager_global_wrapper_footer_content           = var.apps_manager_global_wrapper_footer_content
   apps_manager_global_wrapper_header_content           = var.apps_manager_global_wrapper_header_content
-  apps_manager_footer_text                             = "VMWare, Inc. All rights reserved"
-  apps_manager_accent_color                            = "#172e3d"
-  apps_manager_global_wrapper_text_color               = "#172e3d"
-  apps_manager_company_name                            = "Tanzu Application Service"
-  apps_manager_global_wrapper_bg_color                 = "#172e3d"
-  apps_manager_favicon_file                            = "icons/apps_manager_favicon.png"
-  apps_manager_square_logo_file                        = "icons/apps_manager_square_logo.png"
-  apps_manager_main_logo_file                          = "icons/apps_manager_main_logo.png"
   apps_manager_tools_url                               = local.default_apps_manager_tools_url
 
   ntp_servers                                 = var.ntp_servers

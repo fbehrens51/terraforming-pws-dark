@@ -320,44 +320,6 @@ variable "apps_manager_global_wrapper_header_content" {
   description = "The classification header displayed in apps manager"
 }
 
-variable "apps_manager_footer_text" {
-  type = string
-}
-
-variable "apps_manager_accent_color" {
-  type        = string
-  description = "A Hex color, eg '#ff0000'"
-}
-
-variable "apps_manager_global_wrapper_text_color" {
-  type        = string
-  description = "A Hex color, eg '#ff0000'"
-}
-
-variable "apps_manager_company_name" {
-  type = string
-}
-
-variable "apps_manager_global_wrapper_bg_color" {
-  type        = string
-  description = "A Hex color, eg '#ff0000'"
-}
-
-variable "apps_manager_favicon_file" {
-  type        = string
-  description = "Path to a PNG file"
-}
-
-variable "apps_manager_square_logo_file" {
-  type        = string
-  description = "Path to a PNG file"
-}
-
-variable "apps_manager_main_logo_file" {
-  type        = string
-  description = "Path to a PNG file"
-}
-
 variable "apps_manager_tools_url" {
   type        = string
   description = "URL to allow users to download tools (eg cf cli)"

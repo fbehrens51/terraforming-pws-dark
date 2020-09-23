@@ -487,21 +487,21 @@ product-properties:
   .properties.push_apps_manager_global_wrapper_header_content:
     value: ${apps_manager_global_wrapper_header_content}
   .properties.push_apps_manager_footer_text:
-    value: ${apps_manager_footer_text}
+    value: ""
   .properties.push_apps_manager_accent_color:
-    value: "${apps_manager_accent_color}"
+    value: ""
   .properties.push_apps_manager_global_wrapper_text_color:
-    value: "${apps_manager_global_wrapper_text_color}"
+    value: ""
   .properties.push_apps_manager_company_name:
-    value: ${apps_manager_company_name}
+    value: ""
   .properties.push_apps_manager_global_wrapper_bg_color:
-    value: "${apps_manager_global_wrapper_bg_color}"
+    value: ""
   .properties.push_apps_manager_favicon:
-    value: ${apps_manager_favicon}
+    value: ""
   .properties.push_apps_manager_square_logo:
-    value: ${apps_manager_square_logo}
+    value: ""
   .properties.push_apps_manager_logo:
-    value: ${apps_manager_main_logo}
+    value: ""
 
 network-properties:
   network:
