@@ -77,7 +77,7 @@ product-properties:
     - ca: |
         ${indent(8, chomp(root_ca_cert))}
       insecure_skip_verify: false
-      scrape_job: |
+      scrape_job: |-
         job_name: 'fluentd'
         metrics_path: /aggregated_metrics
         static_configs:
