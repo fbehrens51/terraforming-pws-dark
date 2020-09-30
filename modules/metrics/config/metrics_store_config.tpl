@@ -19,9 +19,6 @@ resource-config:
     persistent_disk:
       size_mb: automatic
     swap_as_percent_of_memory_size: automatic
-errand-config:
-  metric-store-smoke-tests:
-    post-deploy-state: true
 syslog-properties:
   address: ${syslog_host}
   custom_rsyslog_configuration: null
