@@ -122,6 +122,8 @@ product-properties:
       primary: true
   .properties.diego_database_max_open_connections:
     value: 100
+  .properties.disable_logs_in_firehose:
+    value: false
   .properties.enable_smb_volume_driver:
     value: false
   .properties.enable_tls_to_internal_pxc:
