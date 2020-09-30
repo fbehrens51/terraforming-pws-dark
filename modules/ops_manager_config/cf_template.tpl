@@ -122,9 +122,6 @@ product-properties:
       primary: true
   .properties.diego_database_max_open_connections:
     value: 100
-  .properties.diego_log_timestamp_format:
-    selected_option: rfc3339
-    value: rfc3339
   .properties.enable_smb_volume_driver:
     value: false
   .properties.enable_tls_to_internal_pxc:
@@ -162,6 +159,9 @@ product-properties:
     value: 200
   .properties.log_cache_max_per_source:
     value: 100000
+  .properties.logging_timestamp_format:
+    selected_option: rfc3339
+    value: rfc3339
   .properties.metric_registrar_blacklisted_tags:
     value: deployment,job,index,id
   .properties.metric_registrar_enabled:
@@ -237,6 +237,9 @@ product-properties:
   .properties.router_keepalive_connections:
     selected_option: enable
     value: enable
+  .properties.router_sticky_session_cookie_names:
+    value:
+    - name: JSESSIONID
   .properties.routing_custom_ca_certificates:
     value: |
       ${indent(6, router_trusted_ca_certificates)}
