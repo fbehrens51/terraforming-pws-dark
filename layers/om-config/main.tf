@@ -144,7 +144,7 @@ module "om_config" {
   errands_deploy_autoscaler           = "true"
   errands_deploy_notifications        = "true"
   errands_deploy_notifications_ui     = "true"
-  errands_metric_registrar_smoke_test = "true"
+  errands_metric_registrar_smoke_test = "false"
   errands_nfsbrokerpush               = "false"
   errands_push_apps_manager           = "true"
   errands_push_usage_service          = "true"
