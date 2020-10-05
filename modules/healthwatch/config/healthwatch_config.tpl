@@ -44,6 +44,8 @@ product-properties:
   .properties.grafana_proxy:
     selected_option: disabled
     value: disabled
+  .properties.opsman_url:
+    value: ${ops_canary_url}
   .properties.pks_cluster_discovery:
     selected_option: disabled
     value: disabled

@@ -98,6 +98,7 @@ data "template_file" "healthwatch_config" {
     grafana_root_url                 = "https://${module.domains.grafana_fqdn}"
     fluentd_root_url                 = "${module.domains.fluentd_fqdn}:9200"
     canary_url                       = "https://${module.domains.apps_manager_fqdn}"
+    ops_canary_url                   = "https://${module.domains.om_fqdn}/api/v0/info"
     metrics_key                      = var.metrics_key
     root_ca_cert                     = var.grafana_server_ca_cert
     grafana_server_cert              = var.grafana_server_cert
