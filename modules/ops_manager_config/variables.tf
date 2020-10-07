@@ -325,6 +325,16 @@ variable "apps_manager_tools_url" {
   description = "URL to allow users to download tools (eg cf cli)"
 }
 
+variable "apps_manager_docs_url" {
+  type        = string
+  description = "URL to allow users to read docs"
+}
+
+variable "apps_manager_about_url" {
+  type        = string
+  description = "URL to allow users to learn more about the platform"
+}
+
 # ========================
 # Infrastructure Configuration
 # ========================

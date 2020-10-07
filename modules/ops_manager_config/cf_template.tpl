@@ -203,7 +203,9 @@ product-properties:
     - name: Marketplace
       href: /marketplace
     - name: Docs
-      href: https://docs.pivotal.io/pivotalcf/2-5/pas/intro.html
+      href: ${apps_manager_docs_url}
+    - name: About
+      href: ${apps_manager_about_url}
     - name: Tools
       href: ${apps_manager_tools_url}
   .properties.push_apps_manager_app_poll_interval:

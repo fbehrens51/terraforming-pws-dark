@@ -180,6 +180,8 @@ data "template_file" "cf_template" {
     apps_manager_global_wrapper_footer_content           = var.apps_manager_global_wrapper_footer_content
     apps_manager_global_wrapper_header_content           = var.apps_manager_global_wrapper_header_content
     apps_manager_tools_url                               = var.apps_manager_tools_url
+    apps_manager_about_url                               = var.apps_manager_about_url
+    apps_manager_docs_url                                = var.apps_manager_docs_url
     kms_key_id                                           = var.kms_key_id
     pas_buildpacks_bucket                                = var.pas_buildpacks_bucket
     pas_droplets_bucket                                  = var.pas_droplets_bucket

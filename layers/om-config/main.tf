@@ -202,6 +202,8 @@ module "om_config" {
   apps_manager_global_wrapper_footer_content           = var.apps_manager_global_wrapper_footer_content
   apps_manager_global_wrapper_header_content           = var.apps_manager_global_wrapper_header_content
   apps_manager_tools_url                               = local.default_apps_manager_tools_url
+  apps_manager_docs_url                                = local.default_apps_manager_docs_url
+  apps_manager_about_url                               = local.default_apps_manager_about_url
 
   ntp_servers                                 = var.ntp_servers
   custom_ssh_banner                           = data.terraform_remote_state.paperwork.outputs.custom_ssh_banner
@@ -334,6 +336,16 @@ locals {
   default_apps_manager_tools_url = format(
     "https://%s.%s",
     "cli",
+    data.terraform_remote_state.paperwork.outputs.system_domain,
+  )
+  default_apps_manager_docs_url = format(
+    "https://%s.%s",
+    "docs",
+    data.terraform_remote_state.paperwork.outputs.system_domain,
+  )
+  default_apps_manager_about_url = format(
+    "https://%s.%s",
+    "home",
     data.terraform_remote_state.paperwork.outputs.system_domain,
   )
   om_key_name = "${var.env_name}-om"
