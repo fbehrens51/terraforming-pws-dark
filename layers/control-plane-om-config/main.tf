@@ -163,6 +163,9 @@ module "om_config" {
   postgres_uaa_db_name  = "uaa"
   postgres_uaa_username = data.terraform_remote_state.bootstrap_control_plane.outputs.postgres_rds_username
   postgres_uaa_password = data.terraform_remote_state.bootstrap_control_plane.outputs.postgres_rds_password
+  postgres_cw_db_name   = "cloudwatch-log-forwarder"
+  postgres_cw_username  = data.terraform_remote_state.bootstrap_control_plane.outputs.postgres_rds_username
+  postgres_cw_password  = data.terraform_remote_state.bootstrap_control_plane.outputs.postgres_rds_password
   postgres_ca_cert      = data.terraform_remote_state.paperwork.outputs.rds_ca_cert
   postgres_host         = data.terraform_remote_state.bootstrap_control_plane.outputs.postgres_rds_address
   postgres_port         = data.terraform_remote_state.bootstrap_control_plane.outputs.postgres_rds_port
