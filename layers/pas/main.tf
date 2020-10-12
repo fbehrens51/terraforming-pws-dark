@@ -97,7 +97,7 @@ module "infra" {
   vpc_id                        = local.vpc_id
   public_route_table_id         = local.route_table_id
   bastion_private_ip            = data.terraform_remote_state.bastion.outputs.bastion_private_ip
-  bastion_public_ip             = var.internetless ? null : data.terraform_remote_state.bastion.outputs.bastion_ip
+  bastion_public_ip             = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
   bot_key_pem                   = data.terraform_remote_state.paperwork.outputs.bot_private_key
   private_route_table_ids       = data.terraform_remote_state.routes.outputs.pas_private_vpc_route_table_ids
   nat_instance_type             = var.nat_instance_type
@@ -293,6 +293,7 @@ locals {
       cidr_blocks = data.aws_vpc.pas_vpc.cidr_block
     },
   ]
+  bot_user_on_bastion = data.terraform_remote_state.bastion.outputs.bot_user_on_bastion
 }
 
 module "calculated_subnets" {

@@ -72,6 +72,7 @@ locals {
   transfer_bucket_name  = data.terraform_remote_state.bootstrap_control_plane.outputs.transfer_bucket_name
   terraform_bucket_name = data.terraform_remote_state.bootstrap_control_plane.outputs.terraform_bucket_name
   terraform_region      = data.terraform_remote_state.bootstrap_control_plane.outputs.terraform_region
+  bot_user_on_bastion   = data.terraform_remote_state.bastion.outputs.bot_user_on_bastion
 }
 
 data "template_file" "setup_source_zip" {
@@ -156,7 +157,7 @@ EOF
 module "syslog_config" {
   source = "../../modules/syslog"
 
-  root_domain           = local.root_domain
+  root_domain    = local.root_domain
   syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
 
   role_name          = "sjb"
@@ -257,5 +258,7 @@ module "sjb" {
   }
 
   bot_key_pem  = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  bastion_host = var.internetless ? null : data.terraform_remote_state.bastion.outputs.bastion_ip
+  bastion_host = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
+
+  check_cloud_init = false
 }

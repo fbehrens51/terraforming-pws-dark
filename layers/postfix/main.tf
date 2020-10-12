@@ -69,9 +69,10 @@ locals {
 
   root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
 
-  postfix_ip = data.terraform_remote_state.bootstrap_postfix.outputs.postfix_eni_ips[0]
-  smtp_user  = data.terraform_remote_state.bootstrap_postfix.outputs.smtp_client_user
-  smtp_pass  = data.terraform_remote_state.bootstrap_postfix.outputs.smtp_client_password
+  postfix_ip          = data.terraform_remote_state.bootstrap_postfix.outputs.postfix_eni_ips[0]
+  smtp_user           = data.terraform_remote_state.bootstrap_postfix.outputs.smtp_client_user
+  smtp_pass           = data.terraform_remote_state.bootstrap_postfix.outputs.smtp_client_password
+  bot_user_on_bastion = data.terraform_remote_state.bastion.outputs.bot_user_on_bastion
 }
 
 module "configuration" {
@@ -157,12 +158,12 @@ module "postfix_master_host" {
   eni_ids        = data.terraform_remote_state.bootstrap_postfix.outputs.postfix_eni_ids
   tags           = local.modified_tags
   bot_key_pem    = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  bastion_host   = var.internetless ? null : data.terraform_remote_state.bastion.outputs.bastion_ip
+  bastion_host   = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
 }
 
 module "syslog_config" {
-  source                = "../../modules/syslog"
-  root_domain           = local.root_domain
+  source         = "../../modules/syslog"
+  root_domain    = local.root_domain
   syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
 
   role_name          = "postfix"

@@ -74,7 +74,7 @@ variable "root_block_device" {
   default = {}
 }
 
-// nat, postfix, bind, sjb, ldap, ops-manager, control-plane-ops-manager
+// pas_nats, enterprise_nats, iso_seg_nats, postfix, bind, ldap, ops-manager, control-plane-ops-manager
 
 resource "aws_instance" "instance" {
   count = var.ignore_tag_changes == false && var.check_cloud_init == true ? var.instance_count : 0
@@ -119,7 +119,7 @@ resource "aws_instance" "instance" {
   }
 }
 
-// fluentd VMs
+// fluentd VMs, control_plane_nats, SJB (last two allow bootstraping an environment).
 
 resource "aws_instance" "unchecked_instance" {
   count = var.ignore_tag_changes == false && var.check_cloud_init == false ? var.instance_count : 0

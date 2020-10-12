@@ -16,3 +16,6 @@ output "bastion_cidr_block" {
   value = module.bootstrap_bastion.cidr_block
 }
 
+output "bot_user_on_bastion" {
+  value = var.add_bot_user_to_user_data
+}

@@ -53,7 +53,7 @@ variable "bot_key_pem" {
 }
 
 variable "check_cloud_init" {
-  default = null
+  default = true
 }
 
 locals {
@@ -157,7 +157,7 @@ module "nat_host" {
   instance_type    = var.instance_type
   bastion_host     = var.bastion_public_ip
   bot_key_pem      = var.bot_key_pem
-  check_cloud_init = var.check_cloud_init != null ? var.check_cloud_init : ! var.internetless
+  check_cloud_init = var.check_cloud_init
 }
 
 resource "aws_route" "toggle_internet" {

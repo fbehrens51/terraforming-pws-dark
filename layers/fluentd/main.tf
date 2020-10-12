@@ -97,6 +97,8 @@ locals {
   fluentd_eip_ips = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_eip_ips
 
   root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
+
+  bot_user_on_bastion = data.terraform_remote_state.bastion.outputs.bot_user_on_bastion
 }
 
 data "aws_vpc" "es_vpc" {
@@ -188,7 +190,7 @@ module "fluentd_instance" {
   tags                 = local.modified_tags
   check_cloud_init     = false
   bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  bastion_host         = var.internetless ? null : data.terraform_remote_state.bastion.outputs.bastion_ip
+  bastion_host         = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
   iam_instance_profile = data.terraform_remote_state.paperwork.outputs.fluentd_role_name
   volume_ids           = [data.terraform_remote_state.bootstrap_fluentd.outputs.volume_id]
 }
@@ -213,7 +215,7 @@ resource "null_resource" "fluentd_status" {
     user         = "bot"
     host         = module.fluentd_instance.private_ips[0]
     private_key  = data.terraform_remote_state.paperwork.outputs.bot_private_key
-    bastion_host = var.internetless ? null : data.terraform_remote_state.bastion.outputs.bastion_ip
+    bastion_host = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
   }
 
   provisioner "remote-exec" {

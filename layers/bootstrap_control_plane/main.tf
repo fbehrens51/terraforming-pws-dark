@@ -272,7 +272,7 @@ module "nat" {
   public_subnet_ids          = module.public_subnets.subnet_ids
   internetless               = var.internetless
   bastion_private_ip         = "${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"
-  bastion_public_ip          = var.internetless ? null : data.terraform_remote_state.bastion.outputs.bastion_ip
+  bastion_public_ip          = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
   bot_key_pem                = data.terraform_remote_state.paperwork.outputs.bot_private_key
   instance_type              = var.nat_instance_type
   user_data                  = data.template_cloudinit_config.nat_user_data.rendered
@@ -443,6 +443,7 @@ locals {
       }
     ]
   )
+  bot_user_on_bastion = data.terraform_remote_state.bastion.outputs.bot_user_on_bastion
 }
 
 module "sjb_subnet" {

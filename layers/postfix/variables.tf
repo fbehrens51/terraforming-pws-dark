@@ -16,7 +16,3 @@ variable "remote_state_bucket" {
 variable "tags" {
   type = map(string)
 }
-
-variable "internetless" {
-}
-

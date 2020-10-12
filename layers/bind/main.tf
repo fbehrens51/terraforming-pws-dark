@@ -127,6 +127,7 @@ locals {
   fluentd_private_ip              = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_eni_ips[0]
   grafana_elb_dns                 = data.terraform_remote_state.pas.outputs.grafana_elb_dns_name
   control_plane_plane_uaa_elb_dns = data.terraform_remote_state.bootstrap_control_plane.outputs.uaa_elb_dns
+  bot_user_on_bastion             = data.terraform_remote_state.bastion.outputs.bot_user_on_bastion
 }
 
 data "template_cloudinit_config" "master_bind_conf_userdata" {
@@ -196,7 +197,7 @@ module "bind_master_host" {
   eni_ids        = data.terraform_remote_state.bootstrap_bind.outputs.bind_eni_ids
   tags           = local.modified_tags
   bot_key_pem    = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  bastion_host   = var.internetless ? null : data.terraform_remote_state.bastion.outputs.bastion_ip
+  bastion_host   = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
 }
 
 module "syslog_config" {

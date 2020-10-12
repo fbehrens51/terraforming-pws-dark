@@ -56,6 +56,7 @@ locals {
   )
   trusted_ca_certs           = data.terraform_remote_state.paperwork.outputs.trusted_with_additional_ca_certs
   om_user_accounts_user_data = data.terraform_remote_state.paperwork.outputs.om_user_accounts_user_data
+  bot_user_on_bastion        = data.terraform_remote_state.bastion.outputs.bot_user_on_bastion
 }
 
 variable "remote_state_bucket" {
@@ -77,9 +78,6 @@ variable "tags" {
 variable "instance_type" {
 }
 
-variable "internetless" {
-}
-
 variable "clamav_db_mirror" {
 }
 
@@ -97,7 +95,7 @@ module "ops_manager" {
   eni_ids              = [local.om_eni_id]
   user_data            = module.ops_manager_user_data.cloud_config
   bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  bastion_host         = var.internetless ? null : data.terraform_remote_state.bastion.outputs.bastion_ip
+  bastion_host         = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
 
   root_block_device = {
     volume_type = "gp2"

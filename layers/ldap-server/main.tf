@@ -75,7 +75,8 @@ locals {
     },
   )
 
-  root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
+  bot_user_on_bastion = data.terraform_remote_state.bastion.outputs.bot_user_on_bastion
+  root_domain         = data.terraform_remote_state.paperwork.outputs.root_domain
 
   basedn        = "ou=users,dc=${join(",dc=", split(".", local.root_domain))}"
   admin         = "cn=admin,dc=${join(",dc=", split(".", local.root_domain))}"
@@ -134,7 +135,7 @@ module "ldap_host" {
 
   tags         = local.modified_tags
   bot_key_pem  = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  bastion_host = var.internetless ? null : data.terraform_remote_state.bastion.outputs.bastion_ip
+  bastion_host = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
 }
 
 module "ldap_configure" {
@@ -148,7 +149,7 @@ module "ldap_configure" {
   )
   tls_server_ca_cert = data.terraform_remote_state.paperwork.outputs.root_ca_cert
   bot_key_pem        = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  bastion_host       = var.internetless ? null : data.terraform_remote_state.bastion.outputs.bastion_ip
+  bastion_host       = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
   instance_id        = module.ldap_host.instance_ids[0]
   private_ip         = module.ldap_host.private_ips[0]
   users              = var.users
@@ -163,9 +164,6 @@ module "domains" {
   source = "../../modules/domains"
 
   root_domain = local.root_domain
-}
-
-variable "internetless" {
 }
 
 variable "remote_state_region" {
