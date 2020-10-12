@@ -546,6 +546,21 @@ variable "mysql_monitor_instance_type" {
 variable "mysql_proxy_instance_type" {
 }
 
+variable "postgres_host" {
+}
+
+variable "postgres_port" {
+}
+
+variable "postgres_cw_db_name" {
+}
+
+variable "postgres_cw_username" {
+}
+
+variable "postgres_cw_password" {
+}
+
 variable "nats_instance_type" {
 }
 

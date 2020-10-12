@@ -128,9 +128,6 @@ data "template_file" "create_db" {
     postgres_uaa_db_name  = var.postgres_uaa_db_name
     postgres_uaa_username = var.postgres_uaa_username
     postgres_uaa_password = var.postgres_uaa_password
-    postgres_cw_db_name   = var.postgres_cw_db_name
-    postgres_cw_username  = var.postgres_cw_username
-    postgres_cw_password  = var.postgres_cw_password
     mysql_host            = var.mysql_host
     mysql_port            = var.mysql_port
     mysql_username        = var.mysql_username

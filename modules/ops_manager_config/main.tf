@@ -269,6 +269,12 @@ data "template_file" "create_db" {
     rds_address  = var.rds_address
     rds_password = var.rds_password
     rds_username = var.rds_username
+
+    postgres_host        = var.postgres_host
+    postgres_port        = var.postgres_port
+    postgres_cw_db_name  = var.postgres_cw_db_name
+    postgres_cw_username = var.postgres_cw_username
+    postgres_cw_password = var.postgres_cw_password
   }
 }
 

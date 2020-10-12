@@ -135,6 +135,30 @@ module "pas" {
   force_destroy_buckets        = var.force_destroy_buckets
 }
 
+module "postgres" {
+  source = "../../modules/rds/instance"
+
+  rds_db_username    = "superuser"
+  rds_instance_class = var.rds_instance_class
+
+  engine = "postgres"
+
+  # RDS decided to upgrade the mysql patch version automatically from 10.1.31 to
+  # 10.1.34, which makes terraform see this as a change. Use a prefix version to
+  # prevent this from happening with postgres.
+  engine_version = "9.6"
+
+  db_port = 5432
+
+  env_name = local.modified_name
+  vpc_id   = module.infra.vpc_id
+  tags     = local.modified_tags
+
+  subnet_group_name = module.rds_subnet_group.subnet_group_name
+
+  kms_key_id = data.terraform_remote_state.paperwork.outputs.kms_key_arn
+}
+
 module "rds" {
   source = "../../modules/rds/instance"
 
@@ -324,6 +348,23 @@ output "grafana_elb_dns_name" {
 
 output "grafana_elb_id" {
   value = module.grafana_elb.my_elb_id
+}
+
+output "postgres_rds_address" {
+  value = module.postgres.rds_address
+}
+
+output "postgres_rds_port" {
+  value = module.postgres.rds_port
+}
+
+output "postgres_rds_username" {
+  value = module.postgres.rds_username
+}
+
+output "postgres_rds_password" {
+  value     = module.postgres.rds_password
+  sensitive = true
 }
 
 output "rds_address" {
