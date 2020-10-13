@@ -150,8 +150,8 @@ module "ldap_configure" {
   tls_server_ca_cert = data.terraform_remote_state.paperwork.outputs.root_ca_cert
   bot_key_pem        = data.terraform_remote_state.paperwork.outputs.bot_private_key
   bastion_host       = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
-  instance_id        = module.ldap_host.instance_ids[0]
-  private_ip         = module.ldap_host.private_ips[0]
+  instance_id        = length(module.ldap_host.instance_ids) > 0 ? module.ldap_host.instance_ids[0] : ""
+  private_ip         = length(module.ldap_host.private_ips) > 0 ? module.ldap_host.private_ips[0] : ""
   users              = var.users
   root_domain        = local.root_domain
 
