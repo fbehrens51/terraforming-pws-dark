@@ -341,7 +341,7 @@ locals {
   vpc_dns = data.terraform_remote_state.paperwork.outputs.pas_vpc_dns
   default_apps_manager_tools_url = format(
     "https://%s.%s",
-    "cli",
+    "plugins",
     data.terraform_remote_state.paperwork.outputs.system_domain,
   )
   default_apps_manager_docs_url = format(
