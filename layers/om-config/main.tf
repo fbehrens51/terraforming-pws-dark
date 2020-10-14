@@ -236,11 +236,11 @@ module "om_config" {
   ops_manager_ssh_public_key_name          = local.om_key_name
   ops_manager_ssh_private_key              = data.terraform_remote_state.pas.outputs.om_private_key_pem
 
-  postgres_host        = data.terraform_remote_state.pas.outputs.postgres_rds_address
-  postgres_port        = data.terraform_remote_state.pas.outputs.postgres_rds_port
-  postgres_cw_db_name  = "cloudwatch-log-forwarder"
-  postgres_cw_username = data.terraform_remote_state.pas.outputs.postgres_rds_username
-  postgres_cw_password = data.terraform_remote_state.pas.outputs.postgres_rds_password
+  postgres_host        = local.postgres_host
+  postgres_port        = local.postgres_port
+  postgres_cw_db_name  = local.postgres_cw_db_name
+  postgres_cw_username = local.postgres_username
+  postgres_cw_password = local.postgres_password
 
   backup_restore_instance_type                = var.backup_restore_instance_type
   clock_global_instance_type                  = var.clock_global_instance_type
@@ -377,5 +377,17 @@ locals {
       local.bastion_vpc_cidr,
     ],
   )
+
+  postgres_host       = data.terraform_remote_state.pas.outputs.postgres_rds_address
+  postgres_port       = data.terraform_remote_state.pas.outputs.postgres_rds_port
+  postgres_username   = data.terraform_remote_state.pas.outputs.postgres_rds_username
+  postgres_password   = data.terraform_remote_state.pas.outputs.postgres_rds_password
+  postgres_cw_db_name = "cloudwatch-log-forwarder"
 }
+
+output "cw_postgres_db_url" {
+  value     = "postgres://${local.postgres_username}:${local.postgres_password}@${local.postgres_host}:${local.postgres_port}/${local.postgres_cw_db_name}"
+  sensitive = true
+}
+
 
