@@ -153,6 +153,7 @@ data "template_file" "clamav_dashboard" {
   vars = {
     region         = local.region
     dashboard_name = local.dashboard_name
+    log_group_name = local.log_group_name
   }
 }
 
