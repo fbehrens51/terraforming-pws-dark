@@ -173,7 +173,7 @@ variable "remote_state_bucket" {
 }
 
 variable "users" {
-  type = list(object({ name = string, username = string, roles = string }))
+  type = list(object({ name = string, username = string, ou = string, roles = string }))
 }
 
 variable "tags" {

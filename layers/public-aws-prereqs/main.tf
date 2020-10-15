@@ -220,7 +220,7 @@ variable "root_domain" {
 }
 
 variable "users" {
-  type = list(object({ name = string, username = string, roles = string }))
+  type = list(object({ name = string, username = string, ou = string, roles = string }))
 }
 
 resource "aws_s3_bucket_object" "router_trusted_ca_certs" {

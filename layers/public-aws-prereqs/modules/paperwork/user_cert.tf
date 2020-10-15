@@ -10,8 +10,9 @@ resource "tls_cert_request" "user_pki_cert_request" {
   private_key_pem = tls_private_key.user_pki_cert_private_key[count.index].private_key_pem
 
   subject {
-    common_name  = var.users[count.index]["name"]
-    organization = "${var.env_name} User PKI"
+    common_name         = var.users[count.index]["name"]
+    organization        = "${var.env_name} User PKI"
+    organizational_unit = var.users[count.index]["ou"]
   }
 }
 

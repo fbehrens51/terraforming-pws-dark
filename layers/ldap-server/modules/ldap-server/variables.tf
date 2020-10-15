@@ -11,7 +11,7 @@ variable "password" {
 }
 
 variable "users" {
-  type = list(object({ name = string, username = string, roles = string }))
+  type = list(object({ name = string, username = string, ou = string, roles = string }))
 }
 
 variable "root_domain" {

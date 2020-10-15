@@ -27,6 +27,6 @@ variable "ldap_eip" {
 }
 
 variable "users" {
-  type = list(object({ name = string, username = string, roles = string }))
+  type = list(object({ name = string, username = string, ou = string, roles = string }))
 }
 

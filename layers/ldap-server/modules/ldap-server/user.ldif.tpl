@@ -1,4 +1,4 @@
-dn: uid=${username},${basedn}
+dn: uid=${username},ou=${ou},${basedn}
 cn: ${name}
 sn: ${name}
 givenname: ${name}
@@ -8,7 +8,7 @@ objectclass: organizationalPerson
 objectclass: inetOrgPerson
 objectClass: pcfExtendedPerson
 ou: Software Development
-ou: People
+ou: ${ou}
 l: DC Metro Area
 uid: ${username}
 telephonenumber: +1 703 111 1111
