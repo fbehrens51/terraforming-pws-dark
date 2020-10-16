@@ -78,7 +78,7 @@ locals {
   bot_user_on_bastion = data.terraform_remote_state.bastion.outputs.bot_user_on_bastion
   root_domain         = data.terraform_remote_state.paperwork.outputs.root_domain
 
-  basedn        = "ou=users,dc=${join(",dc=", split(".", local.root_domain))}"
+  basedn        = "dc=${join(",dc=", split(".", local.root_domain))}"
   admin         = "cn=admin,dc=${join(",dc=", split(".", local.root_domain))}"
   public_subnet = data.terraform_remote_state.enterprise-services.outputs.public_subnet_ids[0]
 

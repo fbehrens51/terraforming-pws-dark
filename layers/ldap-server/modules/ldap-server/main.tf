@@ -9,13 +9,34 @@ data "template_file" "configure" {
   }
 }
 
-data "template_file" "users_schema" {
+data "template_file" "people_schema" {
   template = file("${path.module}/users.ldif.tpl")
 
   vars = {
     basedn = var.basedn
+    ou     = "People"
   }
 }
+
+data "template_file" "applications_schema" {
+  template = file("${path.module}/users.ldif.tpl")
+
+  vars = {
+    basedn = var.basedn
+    ou     = "Applications"
+  }
+}
+
+
+data "template_file" "servers_schema" {
+  template = file("${path.module}/users.ldif.tpl")
+
+  vars = {
+    basedn = var.basedn
+    ou     = "Servers"
+  }
+}
+
 
 resource "null_resource" "ldap_configuration" {
   triggers = {
@@ -47,8 +68,18 @@ resource "null_resource" "ldap_configuration" {
   }
 
   provisioner "file" {
-    content     = data.template_file.users_schema.rendered
-    destination = "/tmp/conf/users.ldif"
+    content     = data.template_file.people_schema.rendered
+    destination = "/tmp/conf/people.ldif"
+  }
+
+  provisioner "file" {
+    content     = data.template_file.applications_schema.rendered
+    destination = "/tmp/conf/applications.ldif"
+  }
+
+  provisioner "file" {
+    content     = data.template_file.servers_schema.rendered
+    destination = "/tmp/conf/servers.ldif"
   }
 
   provisioner "remote-exec" {

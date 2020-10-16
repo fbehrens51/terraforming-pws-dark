@@ -1,3 +1,3 @@
-dn: ${basedn}
+dn: ou=${ou},${basedn}
 objectClass: organizationalUnit
-ou: People
+ou: ${ou}

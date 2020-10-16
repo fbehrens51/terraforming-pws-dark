@@ -42,5 +42,7 @@ sudo apt-get install -y slapd ldap-utils
 sudo -u openldap slapadd -b cn=config -F /etc/ldap/slapd.d -l extendedperson.ldif
 sudo systemctl restart slapd.service
 sleep 5
-ldapadd -x -D "${admin}" -w ${password} -H ldap:// -f users.ldif
+ldapadd -x -D "${admin}" -w ${password} -H ldap:// -f people.ldif
+ldapadd -x -D "${admin}" -w ${password} -H ldap:// -f applications.ldif
+ldapadd -x -D "${admin}" -w ${password} -H ldap:// -f servers.ldif
 

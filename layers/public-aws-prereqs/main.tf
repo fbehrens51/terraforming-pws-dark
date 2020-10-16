@@ -47,7 +47,7 @@ locals {
   vanity_server_cert_s3_path                       = "vanity_cert.pem"
   vanity_server_key_s3_path                        = "vanity_key.pem"
 
-  basedn = "ou=users,dc=${join(",dc=", split(".", var.root_domain))}"
+  basedn = "dc=${join(",dc=", split(".", var.root_domain))}"
   admin  = "cn=admin,dc=${join(",dc=", split(".", var.root_domain))}"
 }
 
