@@ -104,6 +104,7 @@ module "ldap_client_cert" {
   ca_cert_pem        = module.ca_cert.cert_pem
   ca_private_key_pem = module.ca_cert.private_key_pem
   common_name        = "LDAP Client"
+  ou                 = "Applications"
 }
 
 module "grafana_server_cert" {
