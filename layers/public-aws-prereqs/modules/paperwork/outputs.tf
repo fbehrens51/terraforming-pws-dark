@@ -168,6 +168,24 @@ output "portal_end_to_end_test_user_private_key_pem" {
   sensitive = true
 }
 
+output "portal_end_to_end_test_application_cert_pem" {
+  value = module.portal_end_to_end_test_application_cert.cert_pem
+}
+
+output "portal_end_to_end_test_application_private_key_pem" {
+  value     = module.portal_end_to_end_test_application_cert.private_key_pem
+  sensitive = true
+}
+
+output "portal_end_to_end_test_application_cert_b_pem" {
+  value = module.portal_end_to_end_test_application_certB.cert_pem
+}
+
+output "portal_end_to_end_test_application_private_key_b_pem" {
+  value     = module.portal_end_to_end_test_application_certB.private_key_pem
+  sensitive = true
+}
+
 data "template_file" "usernames" {
   count    = length(var.users)
   template = var.users[count.index]["username"]

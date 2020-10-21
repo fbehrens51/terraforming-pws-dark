@@ -10,6 +10,9 @@ variable "common_name" {
 variable "env_name" {
 }
 
+variable "ou" {
+}
+
 variable "domains" {
   type    = list(string)
   default = []
@@ -27,8 +30,9 @@ resource "tls_cert_request" "client_cert_request" {
   private_key_pem = tls_private_key.client_private_key[0].private_key_pem
 
   subject {
-    common_name  = var.common_name
-    organization = var.env_name
+    common_name         = var.common_name
+    organization        = var.env_name
+    organizational_unit = var.ou
   }
 
   dns_names = var.domains

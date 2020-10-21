@@ -486,6 +486,25 @@ output "portal_end_to_end_test_user_private_key_pem" {
   sensitive = true
 }
 
+output "portal_end_to_end_test_application_cert_pem" {
+  value = module.paperwork.portal_end_to_end_test_application_cert_pem
+}
+
+output "portal_end_to_end_test_application_private_key_pem" {
+  value     = module.paperwork.portal_end_to_end_test_application_private_key_pem
+  sensitive = true
+}
+
+output "portal_end_to_end_test_application_cert_b_pem" {
+  value = module.paperwork.portal_end_to_end_test_application_cert_b_pem
+}
+
+output "portal_end_to_end_test_application_private_key_b_pem" {
+  value     = module.paperwork.portal_end_to_end_test_application_private_key_b_pem
+  sensitive = true
+}
+
+
 # The following outputs are used by the ldap layer but are not needed by the
 # paperwork layer
 
