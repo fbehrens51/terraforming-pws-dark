@@ -41,9 +41,9 @@ data "template_file" "compliance_scanner_config" {
     availability_zones          = var.singleton_availability_zone
     singleton_availability_zone = var.singleton_availability_zone
     ntp_servers                 = join(",", var.ntp_servers)
-    syslog_host          = var.syslog_host
-    syslog_port          = var.syslog_port
-    syslog_ca_cert       = var.syslog_ca_cert
+    syslog_host                 = var.syslog_host
+    syslog_port                 = var.syslog_port
+    syslog_ca_cert              = var.syslog_ca_cert
     custom_ssh_banner           = var.custom_ssh_banner
   }
 }

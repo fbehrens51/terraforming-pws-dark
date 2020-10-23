@@ -59,8 +59,8 @@ module "compliance_scanner_config" {
   availability_zones          = var.availability_zones
   singleton_availability_zone = var.singleton_availability_zone
   ntp_servers                 = var.ntp_servers
-  syslog_host          = module.domains.fluentd_fqdn
-  syslog_port          = module.syslog_ports.syslog_port
-  syslog_ca_cert       = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  syslog_host                 = module.domains.fluentd_fqdn
+  syslog_port                 = module.syslog_ports.syslog_port
+  syslog_ca_cert              = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
   custom_ssh_banner           = data.terraform_remote_state.paperwork.outputs.custom_ssh_banner
 }

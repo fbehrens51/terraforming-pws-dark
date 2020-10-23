@@ -162,9 +162,9 @@ data "template_file" "concourse_template" {
     ca_certificate            = var.ca_certificate
     uaa_cert_pem              = var.uaa_cert_pem
     uaa_private_key_pem       = var.uaa_private_key_pem
-    syslog_host        = var.syslog_host
-    syslog_port        = var.syslog_port
-    syslog_ca_cert     = var.syslog_ca_cert
+    syslog_host               = var.syslog_host
+    syslog_port               = var.syslog_port
+    syslog_ca_cert            = var.syslog_ca_cert
     postgres_host             = var.postgres_host
     postgres_port             = var.postgres_port
     postgres_uaa_db_name      = var.postgres_uaa_db_name
