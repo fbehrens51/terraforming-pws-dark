@@ -12,6 +12,7 @@ provider "aws" {
 
 locals {
   cert_bucket                                      = "${replace(var.env_name, " ", "-")}-secrets"
+  cap_root_ca_cert_s3_path                         = "cap_root_ca_cert.pem"
   root_ca_cert_s3_path                             = "root_ca_cert.pem"
   router_trusted_ca_certs_s3_path                  = "router_trusted_ca_certs.pem"
   trusted_ca_certs_s3_path                         = "trusted_ca_certs.pem"
@@ -130,6 +131,7 @@ data "template_file" "paperwork_variables" {
     ldap_role_attr                              = "role"
     ldap_password_s3_path                       = local.ldap_password_s3_path
     cert_bucket                                 = aws_s3_bucket.certs.bucket
+    cap_root_ca_s3_path                         = local.cap_root_ca_cert_s3_path
     root_ca_cert_s3_path                        = local.root_ca_cert_s3_path
     router_trusted_ca_certs_s3_path             = local.router_trusted_ca_certs_s3_path
     trusted_ca_certs_s3_path                    = local.trusted_ca_certs_s3_path
@@ -221,6 +223,13 @@ variable "root_domain" {
 
 variable "users" {
   type = list(object({ name = string, username = string, ou = string, roles = string }))
+}
+
+resource "aws_s3_bucket_object" "cap_root_ca_cert" {
+  key          = local.cap_root_ca_cert_s3_path
+  bucket       = aws_s3_bucket.certs.bucket
+  content      = file("${path.module}/combine_cert.pem")
+  content_type = "text/plain"
 }
 
 resource "aws_s3_bucket_object" "router_trusted_ca_certs" {

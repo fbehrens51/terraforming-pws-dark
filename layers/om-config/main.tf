@@ -385,9 +385,21 @@ locals {
   postgres_cw_db_name = "cloudwatch-log-forwarder"
 }
 
-output "cw_postgres_db_url" {
-  value     = "postgres://${local.postgres_username}:${local.postgres_password}@${local.postgres_host}:${local.postgres_port}/${local.postgres_cw_db_name}"
-  sensitive = true
+
+resource "random_string" "log_forwarder_password" {
+  length  = "10"
+  special = false
 }
 
+module "cw_app_manifest" {
+  source = "../../modules/cloudwatch-forwarder"
+
+  secrets_bucket_name = local.secrets_bucket_name
+  root_domain         = data.terraform_remote_state.paperwork.outputs.root_domain
+  broker_password     = random_string.log_forwarder_password.result
+  database_url        = "postgres://${local.postgres_username}:${local.postgres_password}@${local.postgres_host}:${local.postgres_port}/${local.postgres_cw_db_name}"
+  region              = data.terraform_remote_state.paperwork.outputs.log_forwarder_region
+  cap_url             = data.terraform_remote_state.paperwork.outputs.cap_url
+  cap_root_ca         = data.terraform_remote_state.paperwork.outputs.cap_root_ca_cert
+}
 

@@ -552,6 +552,25 @@ data "aws_s3_bucket_object" "portal_smoke_test_key" {
   key    = var.portal_smoke_test_key_s3_path
 }
 
+variable "log_forwarder_region" {
+  default = ""
+}
+
+output "log_forwarder_region" {
+  value = var.log_forwarder_region == "" ? data.aws_region.current.name : var.log_forwarder_region
+}
+
+variable "cap_url" {
+}
+
+variable "cap_root_ca_s3_path" {
+}
+
+data "aws_s3_bucket_object" "cap_root_ca" {
+  bucket = var.cert_bucket
+  key    = var.cap_root_ca_s3_path
+}
+
 # This key is used to distinguish between metrics domains in grafana.
 resource "random_string" "metrics_key" {
   length  = "10"
@@ -766,6 +785,14 @@ output "smtpd_server_cert" {
 output "smtpd_server_key" {
   value     = data.aws_s3_bucket_object.smtp_server_key.body
   sensitive = true
+}
+
+output "cap_url" {
+  value = var.cap_url
+}
+
+output "cap_root_ca_cert" {
+  value = data.aws_s3_bucket_object.cap_root_ca.body
 }
 
 output "portal_smoke_test_cert" {

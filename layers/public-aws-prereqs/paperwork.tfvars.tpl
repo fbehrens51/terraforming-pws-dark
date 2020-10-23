@@ -107,3 +107,12 @@ portal_smoke_test_key_s3_path = "${portal_smoke_test_key_s3_path}"
 vanity_server_cert_s3_path = "${vanity_server_cert_s3_path}"
 
 vanity_server_key_s3_path = "${vanity_server_key_s3_path}"
+
+// We force this to us-east-1 because combine only supports us-east-1.
+// Using a different region for log forwarding would prevent using the CAP
+// authentication mechanism.
+log_forwarder_region = "us-east-1"
+
+cap_url = "https://combine-1-elb-tap-e-770a8babaa78d696.elb.us-east-1.amazonaws.com"
+
+cap_root_ca_s3_path = "${cap_root_ca_s3_path}"
