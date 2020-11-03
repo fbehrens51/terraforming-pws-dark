@@ -96,7 +96,7 @@ data "template_file" "director_template" {
     security_configuration_trusted_certificates = chomp(var.security_configuration_trusted_certificates)
     kms_key_arn                                 = var.volume_encryption_kms_key_arn
     concourse_worker_role_name                  = var.concourse_worker_role_name
-    concourse_lb_security_group_id              = "[${var.concourse_lb_security_group_id}]"
+    concourse_lb_security_group_id              = "[${join(",", var.concourse_lb_security_group_id)}]"
     control_plane_subnets = indent(
       4,
       chomp(join("", data.template_file.control_plane_subnets.*.rendered)),

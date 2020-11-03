@@ -19,7 +19,7 @@ variable "concourse_worker_role_name" {
 }
 
 variable "concourse_lb_security_group_id" {
-  type = string
+  type = list(string)
 }
 
 variable "region" {

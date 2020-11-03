@@ -129,7 +129,10 @@ output "plane_elb_dns" {
 }
 
 output "concourse_lb_security_group_id" {
-  value = module.concourse_nlb.concourse_nlb_security_group_id
+  value = [
+    module.concourse_nlb.concourse_nlb_security_group_id,
+    aws_security_group.vms_security_group[0].id
+  ]
 }
 
 output "terraform_bucket_name" {
