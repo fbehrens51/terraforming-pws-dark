@@ -120,11 +120,15 @@ module "om_config" {
   admin_users               = var.admin_users
   uaa_cert_pem              = data.terraform_remote_state.paperwork.outputs.concourse_uaa_server_cert
   uaa_private_key_pem       = data.terraform_remote_state.paperwork.outputs.concourse_uaa_server_key
+  credhub_cert_pem          = data.terraform_remote_state.paperwork.outputs.concourse_credhub_server_cert
+  credhub_private_key_pem   = data.terraform_remote_state.paperwork.outputs.concourse_credhub_server_key
 
   root_domain = local.root_domain
 
-  web_elb_names = [data.terraform_remote_state.bootstrap_control_plane.outputs.web_elb_id]
-  uaa_elb_names = [data.terraform_remote_state.bootstrap_control_plane.outputs.uaa_elb_id]
+  web_tg_names                   = data.terraform_remote_state.bootstrap_control_plane.outputs.web_tg_ids
+  uaa_elb_names                  = [data.terraform_remote_state.bootstrap_control_plane.outputs.uaa_elb_id]
+  credhub_tg_names               = data.terraform_remote_state.bootstrap_control_plane.outputs.credhub_tg_ids
+  concourse_lb_security_group_id = data.terraform_remote_state.bootstrap_control_plane.outputs.concourse_lb_security_group_id
 
   smtp_host       = local.smtp_host
   smtp_user       = local.smtp_user
@@ -168,6 +172,11 @@ module "om_config" {
   postgres_port         = data.terraform_remote_state.bootstrap_control_plane.outputs.postgres_rds_port
   postgres_username     = data.terraform_remote_state.bootstrap_control_plane.outputs.postgres_rds_username
   postgres_password     = data.terraform_remote_state.bootstrap_control_plane.outputs.postgres_rds_password
+
+  # Credhub database variables
+  postgres_credhub_db_name  = "credhub"
+  postgres_credhub_username = data.terraform_remote_state.bootstrap_control_plane.outputs.postgres_rds_username
+  postgres_credhub_password = data.terraform_remote_state.bootstrap_control_plane.outputs.postgres_rds_password
 
   # rds_ca_cert_pem = "${data.terraform_remote_state.paperwork.rds_ca_cert_pem}"
 

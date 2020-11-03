@@ -18,6 +18,10 @@ variable "admin_users" {
 variable "concourse_worker_role_name" {
 }
 
+variable "concourse_lb_security_group_id" {
+  type = string
+}
+
 variable "region" {
 }
 
@@ -79,14 +83,19 @@ variable "root_domain" {
   description = "The root domain for this environment"
 }
 
+variable "credhub_tg_names" {
+  type        = list(string)
+  description = "List of nlb target group names which CREDHUB should be attached to."
+}
+
 variable "uaa_elb_names" {
   type        = list(string)
   description = "List of elb names which UAA should be attached to."
 }
 
-variable "web_elb_names" {
+variable "web_tg_names" {
   type        = list(string)
-  description = "List of elb names which ATC / TSA should be attached to."
+  description = "List of nlb target group names which ATC / TSA should be attached to."
 }
 
 variable "uaa_cert_pem" {
@@ -110,6 +119,16 @@ variable "concourse_cert_pem" {
 }
 
 variable "concourse_private_key_pem" {
+  type        = string
+  description = "Server key used by the Control Plane. Must be valid for *.ci.<ROOT_DOMAIN>"
+}
+
+variable "credhub_cert_pem" {
+  type        = string
+  description = "Server certificate used by the Control Plane. Must be valid for *.ci.<ROOT_DOMAIN>"
+}
+
+variable "credhub_private_key_pem" {
   type        = string
   description = "Server key used by the Control Plane. Must be valid for *.ci.<ROOT_DOMAIN>"
 }
@@ -257,6 +276,15 @@ variable "postgres_password" {
 }
 
 variable "postgres_ca_cert" {
+}
+
+variable "postgres_credhub_db_name" {
+}
+
+variable "postgres_credhub_username" {
+}
+
+variable "postgres_credhub_password" {
 }
 
 variable "mysql_host" {

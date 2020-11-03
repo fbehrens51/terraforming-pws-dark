@@ -101,6 +101,14 @@ output "router_server_key" {
   sensitive = true
 }
 
+output "concourse_credhub_server_cert" {
+  value = module.concourse_credhub_server_cert.cert_pem
+}
+
+output "concourse_credhub_server_key" {
+  value     = module.concourse_credhub_server_cert.private_key_pem
+  sensitive = true
+}
 output "concourse_uaa_server_cert" {
   value = module.concourse_uaa_server_cert.cert_pem
 }

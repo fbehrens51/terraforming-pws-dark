@@ -115,3 +115,6 @@ vmextensions-configuration:
 - name: worker_instance_profile
   cloud_properties:
     iam_instance_profile: ${concourse_worker_role_name}
+- name: concourse-lb-security-group
+  cloud_properties:
+    security_groups: ${concourse_lb_security_group_id}

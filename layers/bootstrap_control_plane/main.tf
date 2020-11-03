@@ -176,7 +176,7 @@ resource "aws_s3_bucket" "transfer_bucket" {
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
-        kms_master_key_id = "${local.transfer_kms_key_arn}"
+        kms_master_key_id = local.transfer_kms_key_arn
         sse_algorithm     = "aws:kms"
       }
     }
@@ -342,6 +342,16 @@ module "rds_subnet_group" {
   tags               = local.modified_tags
 }
 
+module "concourse_nlb" {
+  source            = "./modules/nlb/create"
+  env_name          = local.env_name
+  internetless      = var.internetless
+  public_subnet_ids = module.public_subnets.subnet_ids
+  tags              = var.tags
+  vpc_id            = local.vpc_id
+  egress_cidrs      = module.private_subnets.subnet_cidr_blocks
+}
+
 module "uaa_elb" {
   source            = "../../modules/elb/create"
   env_name          = local.env_name
@@ -354,23 +364,14 @@ module "uaa_elb" {
   port              = 8443
 }
 
-module "web_elb" {
-  source            = "../../modules/two_port_elb/create"
-  env_name          = local.env_name
-  internetless      = var.internetless
-  public_subnet_ids = module.public_subnets.subnet_ids
-  tags              = var.tags
-  vpc_id            = local.vpc_id
-  egress_cidrs      = module.private_subnets.subnet_cidr_blocks
-  short_name        = "web"
-  port              = 443
-  additional_port   = 2222
-  health_check      = "HTTP:8080/api/v1/info" # Concourse web healthcheck
-}
-
 resource "random_integer" "bucket" {
   min = 1
   max = 100000
+}
+
+resource "random_string" "credhub_client_secret" {
+  length  = "32"
+  special = false
 }
 
 data "aws_vpc" "bastion_vpc" {

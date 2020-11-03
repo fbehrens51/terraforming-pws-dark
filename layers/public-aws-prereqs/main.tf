@@ -28,6 +28,8 @@ locals {
   concourse_server_key_s3_path                     = "concourse_server_key.pem"
   concourse_uaa_server_cert_s3_path                = "concourse_uaa_server_cert.pem"
   concourse_uaa_server_key_s3_path                 = "concourse_uaa_server_key.pem"
+  concourse_credhub_server_cert_s3_path            = "concourse_credhub_server_cert.pem"
+  concourse_credhub_server_key_s3_path             = "concourse_credhub_server_key.pem"
   uaa_server_cert_s3_path                          = "uaa_server_cert.pem"
   uaa_server_key_s3_path                           = "uaa_server_key.pem"
   ldap_client_cert_s3_path                         = "ldap_client_cert.pem"
@@ -143,6 +145,8 @@ data "template_file" "paperwork_variables" {
     grafana_server_key_s3_path                  = local.grafana_server_key_s3_path
     router_server_cert_s3_path                  = local.router_server_cert_s3_path
     router_server_key_s3_path                   = local.router_server_key_s3_path
+    concourse_credhub_server_cert_s3_path       = local.concourse_credhub_server_cert_s3_path
+    concourse_credhub_server_key_s3_path        = local.concourse_credhub_server_key_s3_path
     concourse_uaa_server_cert_s3_path           = local.concourse_uaa_server_cert_s3_path
     concourse_uaa_server_key_s3_path            = local.concourse_uaa_server_key_s3_path
     concourse_server_cert_s3_path               = local.concourse_server_cert_s3_path
@@ -312,6 +316,20 @@ resource "aws_s3_bucket_object" "router_server_key" {
   key          = local.router_server_key_s3_path
   bucket       = aws_s3_bucket.certs.bucket
   content      = module.paperwork.router_server_key
+  content_type = "text/plain"
+}
+
+resource "aws_s3_bucket_object" "concourse_credhub_server_cert" {
+  key          = local.concourse_credhub_server_cert_s3_path
+  bucket       = aws_s3_bucket.certs.bucket
+  content_type = "text/plain"
+  content      = module.paperwork.concourse_credhub_server_cert
+}
+
+resource "aws_s3_bucket_object" "concourse_credhub_server_key" {
+  key          = local.concourse_credhub_server_key_s3_path
+  bucket       = aws_s3_bucket.certs.bucket
+  content      = module.paperwork.concourse_credhub_server_key
   content_type = "text/plain"
 }
 

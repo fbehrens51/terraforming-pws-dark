@@ -92,17 +92,18 @@ data "template_file" "director_template" {
     iaas_configuration_ssh_key_pair_name        = var.ops_manager_ssh_public_key_name
     iaas_configuration_region                   = var.region
     iaas_configuration_security_group           = var.vms_security_group_id
-    iaas_configuration_ssh_private_key          = var.ops_manager_ssh_private_key
-    security_configuration_trusted_certificates = var.security_configuration_trusted_certificates
+    iaas_configuration_ssh_private_key          = chomp(var.ops_manager_ssh_private_key)
+    security_configuration_trusted_certificates = chomp(var.security_configuration_trusted_certificates)
     kms_key_arn                                 = var.volume_encryption_kms_key_arn
     concourse_worker_role_name                  = var.concourse_worker_role_name
+    concourse_lb_security_group_id              = "[${var.concourse_lb_security_group_id}]"
     control_plane_subnets = indent(
       4,
-      join("", data.template_file.control_plane_subnets.*.rendered),
+      chomp(join("", data.template_file.control_plane_subnets.*.rendered)),
     )
     control_plane_vpc_azs = indent(
       2,
-      join("", data.template_file.control_plane_vpc_azs.*.rendered),
+      chomp(join("", data.template_file.control_plane_vpc_azs.*.rendered)),
     )
     syslog_host    = var.syslog_host
     syslog_port    = var.syslog_port
@@ -120,19 +121,22 @@ data "template_file" "create_db" {
   template = file("${path.module}/create_db.tpl")
 
   vars = {
-    postgres_host         = var.postgres_host
-    postgres_port         = var.postgres_port
-    postgres_username     = var.postgres_username
-    postgres_password     = var.postgres_password
-    postgres_db_name      = var.postgres_db_name
-    postgres_uaa_db_name  = var.postgres_uaa_db_name
-    postgres_uaa_username = var.postgres_uaa_username
-    postgres_uaa_password = var.postgres_uaa_password
-    mysql_host            = var.mysql_host
-    mysql_port            = var.mysql_port
-    mysql_username        = var.mysql_username
-    mysql_password        = var.mysql_password
-    mysql_db_name         = var.mysql_db_name
+    postgres_host             = var.postgres_host
+    postgres_port             = var.postgres_port
+    postgres_username         = var.postgres_username
+    postgres_password         = var.postgres_password
+    postgres_db_name          = var.postgres_db_name
+    postgres_credhub_db_name  = var.postgres_credhub_db_name
+    postgres_credhub_username = var.postgres_credhub_username
+    postgres_credhub_password = var.postgres_credhub_password
+    postgres_uaa_db_name      = var.postgres_uaa_db_name
+    postgres_uaa_username     = var.postgres_uaa_username
+    postgres_uaa_password     = var.postgres_uaa_password
+    mysql_host                = var.mysql_host
+    mysql_port                = var.mysql_port
+    mysql_username            = var.mysql_username
+    mysql_password            = var.mysql_password
+    mysql_db_name             = var.mysql_db_name
   }
 }
 
@@ -151,9 +155,10 @@ data "template_file" "concourse_template" {
     singleton_availability_zone = var.singleton_availability_zone
     control_plane_vpc_azs = indent(
       4,
-      join("", data.template_file.control_plane_vpc_azs.*.rendered),
+      chomp(join("", data.template_file.control_plane_vpc_azs.*.rendered)),
     )
-    web_elb_names             = "[${join(",", var.web_elb_names)}]"
+    web_tg_names              = "[${join(",", formatlist("alb:%s", var.web_tg_names))}]"
+    credhub_tg_names          = "[${join(",", formatlist("alb:%s", var.credhub_tg_names))}]"
     uaa_elb_names             = "[${join(",", var.uaa_elb_names)}]"
     plane_endpoint            = module.domains.control_plane_plane_fqdn
     uaa_endpoint              = "${module.domains.control_plane_uaa_fqdn}:8443"
@@ -175,6 +180,12 @@ data "template_file" "concourse_template" {
     postgres_password         = var.postgres_password
     postgres_ca_cert          = var.postgres_ca_cert
     admin_users               = join("", data.template_file.admin_users.*.rendered)
+    credhub_cert_pem          = var.credhub_cert_pem
+    credhub_private_key_pem   = var.credhub_private_key_pem
+    postgres_credhub_db_name  = var.postgres_credhub_db_name
+    postgres_credhub_username = var.postgres_credhub_username
+    postgres_credhub_password = var.postgres_credhub_password
+    credhub_endpoint          = "${module.domains.control_plane_plane_fqdn}:8844"
   }
 }
 

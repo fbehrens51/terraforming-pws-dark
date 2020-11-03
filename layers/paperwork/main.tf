@@ -389,6 +389,22 @@ data "aws_s3_bucket_object" "router_server_key" {
   key    = var.router_server_key_s3_path
 }
 
+variable "concourse_credhub_server_cert_s3_path" {
+}
+
+data "aws_s3_bucket_object" "concourse_credhub_server_cert" {
+  bucket = var.cert_bucket
+  key    = var.concourse_credhub_server_cert_s3_path
+}
+
+variable "concourse_credhub_server_key_s3_path" {
+}
+
+data "aws_s3_bucket_object" "concourse_credhub_server_key" {
+  bucket = var.cert_bucket
+  key    = var.concourse_credhub_server_key_s3_path
+}
+
 variable "concourse_uaa_server_cert_s3_path" {
 }
 
@@ -703,6 +719,15 @@ output "router_server_cert" {
 
 output "router_server_key" {
   value     = data.aws_s3_bucket_object.router_server_key.body
+  sensitive = true
+}
+
+output "concourse_credhub_server_cert" {
+  value = data.aws_s3_bucket_object.concourse_credhub_server_cert.body
+}
+
+output "concourse_credhub_server_key" {
+  value     = data.aws_s3_bucket_object.concourse_credhub_server_key.body
   sensitive = true
 }
 

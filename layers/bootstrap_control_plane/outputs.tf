@@ -54,12 +54,16 @@ output "om_private_key_pem" {
   value = module.om_key_pair.private_key_pem
 }
 
+output "credhub_tg_ids" {
+  value = module.concourse_nlb.credhub_tg_ids
+}
+
 output "uaa_elb_id" {
   value = module.uaa_elb.my_elb_id
 }
 
-output "web_elb_id" {
-  value = module.web_elb.my_elb_id
+output "web_tg_ids" {
+  value = module.concourse_nlb.web_tg_ids
 }
 
 output "postgres_rds_address" {
@@ -121,7 +125,11 @@ output "uaa_elb_dns" {
 }
 
 output "plane_elb_dns" {
-  value = module.web_elb.dns_name
+  value = module.concourse_nlb.concourse_nlb_dns_name
+}
+
+output "concourse_lb_security_group_id" {
+  value = module.concourse_nlb.concourse_nlb_security_group_id
 }
 
 output "terraform_bucket_name" {
@@ -135,5 +143,3 @@ output "terraform_region" {
 output "ec2_vpce_eni_ids" {
   value = aws_vpc_endpoint.cp_ec2.network_interface_ids
 }
-
-
