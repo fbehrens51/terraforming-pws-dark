@@ -107,7 +107,12 @@ locals {
     {
       port        = "22"
       protocol    = "tcp"
-      cidr_blocks = [data.terraform_remote_state.bastion.outputs.bastion_cidr_block, data.aws_vpc.cp_vpc.cidr_block]
+      cidr_blocks = data.terraform_remote_state.bastion.outputs.bastion_cidr_block
+    },
+    {
+      port        = "22"
+      protocol    = "tcp"
+      cidr_blocks = data.aws_vpc.cp_vpc.cidr_block
     },
     {
       // metrics endpoint for grafana
