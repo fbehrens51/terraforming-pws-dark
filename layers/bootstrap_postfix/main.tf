@@ -40,6 +40,10 @@ data "aws_vpc" "pas_vpc" {
   id = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
 }
 
+data "aws_vpc" "cp_vpc" {
+  id = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
+}
+
 locals {
   env_name      = var.tags["Name"]
   modified_name = "${local.env_name} postfix"
@@ -103,7 +107,7 @@ locals {
     {
       port        = "22"
       protocol    = "tcp"
-      cidr_blocks = data.terraform_remote_state.bastion.outputs.bastion_cidr_block
+      cidr_blocks = [data.terraform_remote_state.bastion.outputs.bastion_cidr_block, data.aws_vpc.cp_vpc.cidr_block]
     },
     {
       // metrics endpoint for grafana
