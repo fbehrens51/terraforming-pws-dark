@@ -45,7 +45,19 @@ resource "aws_lb" "concourse_lb" {
   )
 }
 
-########## target_groups, 443/2222 on web vm, 8844 on credhub vm
+########## target_groups, 80/443/2222 on web vm, 8844 on credhub vm
+
+resource "aws_lb_target_group" "concourse_nlb_8080" {
+  name     = "${local.formatted_env_name}-concourse8080"
+  port     = 8080
+  protocol = "TCP"
+  vpc_id   = var.vpc_id
+
+  health_check {
+    port     = 8080
+    protocol = "TCP"
+  }
+}
 
 resource "aws_lb_target_group" "concourse_nlb_443" {
   name     = "${local.formatted_env_name}-concourse443"
@@ -84,6 +96,17 @@ resource "aws_lb_target_group" "concourse_nlb_8844" {
 }
 
 ########## listeners
+
+resource "aws_lb_listener" "concourse_nlb_80" {
+  load_balancer_arn = aws_lb.concourse_lb.arn
+  protocol          = "TCP"
+  port              = 80
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.concourse_nlb_8080.arn
+  }
+}
 
 resource "aws_lb_listener" "concourse_nlb_443" {
   load_balancer_arn = aws_lb.concourse_lb.arn
@@ -124,6 +147,13 @@ resource "aws_security_group" "concourse_nlb_security_group" {
   name        = "${local.formatted_env_name}-concourse-nlb-security-group"
   description = "Concourse"
   vpc_id      = var.vpc_id
+
+  ingress {
+    cidr_blocks = ["0.0.0.0/0"]
+    protocol    = "tcp"
+    from_port   = 80
+    to_port     = 8080
+  }
 
   ingress {
     cidr_blocks = ["0.0.0.0/0"]
@@ -176,7 +206,8 @@ output "credhub_tg_ids" {
 output "web_tg_ids" {
   value = [
     aws_lb_target_group.concourse_nlb_443.name,
-    aws_lb_target_group.concourse_nlb_2222.name
+    aws_lb_target_group.concourse_nlb_2222.name,
+    aws_lb_target_group.concourse_nlb_8080.name
   ]
 }
 
