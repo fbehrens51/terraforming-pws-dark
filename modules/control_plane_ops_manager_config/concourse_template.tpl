@@ -66,7 +66,7 @@ product-properties:
     value:
     ${indent(4, chomp(admin_users))}
   .properties.credhub_endpoint:
-    value: https://${credhub_endpoint}
+    value: ${credhub_endpoint}
 network-properties:
   network:
     name: control-plane-subnet
