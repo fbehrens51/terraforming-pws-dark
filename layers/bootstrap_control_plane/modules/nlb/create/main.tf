@@ -52,6 +52,11 @@ resource "aws_lb_target_group" "concourse_nlb_443" {
   port     = 443
   protocol = "TCP"
   vpc_id   = var.vpc_id
+
+  health_check {
+    port     = 8080
+    protocol = "TCP"
+  }
 }
 
 resource "aws_lb_target_group" "concourse_nlb_2222" {
@@ -59,6 +64,11 @@ resource "aws_lb_target_group" "concourse_nlb_2222" {
   port     = 2222
   protocol = "TCP"
   vpc_id   = var.vpc_id
+
+  health_check {
+    port     = 8080
+    protocol = "TCP"
+  }
 }
 
 resource "aws_lb_target_group" "concourse_nlb_8844" {
@@ -66,6 +76,11 @@ resource "aws_lb_target_group" "concourse_nlb_8844" {
   port     = 8844
   protocol = "TCP"
   vpc_id   = var.vpc_id
+
+  health_check {
+    port     = 8845
+    protocol = "TCP"
+  }
 }
 
 ########## listeners
