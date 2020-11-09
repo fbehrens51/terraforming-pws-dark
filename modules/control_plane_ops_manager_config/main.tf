@@ -14,8 +14,8 @@ locals {
   })
   om_ssl_conf = jsonencode({
     "ssl_certificate" : {
-      "certificate" : var.control_plane_om_server_cert,
-      "private_key" : var.control_plane_om_server_key
+      "certificate" : var.control_plane_star_server_cert,
+      "private_key" : var.control_plane_star_server_key
     }
   })
   om_ssh_banner_conf = jsonencode({ "ssh_banner_contents" : var.custom_ssh_banner })

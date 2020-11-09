@@ -201,10 +201,10 @@ variable "om_ssl_config" {
 variable "om_ssh_banner_config" {
 }
 
-variable "control_plane_om_server_cert" {
+variable "control_plane_star_server_cert" {
 }
 
-variable "control_plane_om_server_key" {
+variable "control_plane_star_server_key" {
 }
 
 variable "singleton_availability_zone" {

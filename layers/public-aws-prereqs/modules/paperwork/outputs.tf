@@ -38,12 +38,12 @@ output "trusted_ca_certs" {
   value = module.ca_cert.cert_pem
 }
 
-output "control_plane_om_server_cert" {
-  value = module.control_plane_om_server_cert.cert_pem
+output "control_plane_star_server_cert" {
+  value = module.control_plane_star_server_cert.cert_pem
 }
 
-output "control_plane_om_server_key" {
-  value     = module.control_plane_om_server_cert.private_key_pem
+output "control_plane_star_server_key" {
+  value     = module.control_plane_star_server_cert.private_key_pem
   sensitive = true
 }
 
@@ -98,32 +98,6 @@ output "router_server_cert" {
 
 output "router_server_key" {
   value     = module.router_server_cert.private_key_pem
-  sensitive = true
-}
-
-output "concourse_credhub_server_cert" {
-  value = module.concourse_credhub_server_cert.cert_pem
-}
-
-output "concourse_credhub_server_key" {
-  value     = module.concourse_credhub_server_cert.private_key_pem
-  sensitive = true
-}
-output "concourse_uaa_server_cert" {
-  value = module.concourse_uaa_server_cert.cert_pem
-}
-
-output "concourse_uaa_server_key" {
-  value     = module.concourse_uaa_server_cert.private_key_pem
-  sensitive = true
-}
-
-output "concourse_server_cert" {
-  value = module.concourse_server_cert.cert_pem
-}
-
-output "concourse_server_key" {
-  value     = module.concourse_server_cert.private_key_pem
   sensitive = true
 }
 

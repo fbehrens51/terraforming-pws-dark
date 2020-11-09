@@ -102,8 +102,8 @@ module "om_config" {
 
   volume_encryption_kms_key_arn = data.terraform_remote_state.paperwork.outputs.kms_key_arn
 
-  control_plane_om_server_cert = data.terraform_remote_state.paperwork.outputs.control_plane_om_server_cert
-  control_plane_om_server_key  = data.terraform_remote_state.paperwork.outputs.control_plane_om_server_key
+  control_plane_star_server_cert = data.terraform_remote_state.paperwork.outputs.control_plane_star_server_cert
+  control_plane_star_server_key  = data.terraform_remote_state.paperwork.outputs.control_plane_star_server_key
 
   vpc_id       = local.vpc_id
   env_name     = var.env_name
@@ -115,13 +115,13 @@ module "om_config" {
   singleton_availability_zone = var.singleton_availability_zone
 
   ca_certificate            = data.terraform_remote_state.paperwork.outputs.root_ca_cert
-  concourse_cert_pem        = data.terraform_remote_state.paperwork.outputs.concourse_server_cert
-  concourse_private_key_pem = data.terraform_remote_state.paperwork.outputs.concourse_server_key
+  concourse_cert_pem        = data.terraform_remote_state.paperwork.outputs.control_plane_star_server_cert
+  concourse_private_key_pem = data.terraform_remote_state.paperwork.outputs.control_plane_star_server_key
   admin_users               = var.admin_users
-  uaa_cert_pem              = data.terraform_remote_state.paperwork.outputs.concourse_uaa_server_cert
-  uaa_private_key_pem       = data.terraform_remote_state.paperwork.outputs.concourse_uaa_server_key
-  credhub_cert_pem          = data.terraform_remote_state.paperwork.outputs.concourse_credhub_server_cert
-  credhub_private_key_pem   = data.terraform_remote_state.paperwork.outputs.concourse_credhub_server_key
+  uaa_cert_pem              = data.terraform_remote_state.paperwork.outputs.control_plane_star_server_cert
+  uaa_private_key_pem       = data.terraform_remote_state.paperwork.outputs.control_plane_star_server_key
+  credhub_cert_pem          = data.terraform_remote_state.paperwork.outputs.control_plane_star_server_cert
+  credhub_private_key_pem   = data.terraform_remote_state.paperwork.outputs.control_plane_star_server_key
 
   root_domain = local.root_domain
 

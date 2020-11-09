@@ -68,18 +68,6 @@ router_server_cert_s3_path = "${router_server_cert_s3_path}"
 
 router_server_key_s3_path = "${router_server_key_s3_path}"
 
-concourse_credhub_server_cert_s3_path = "${concourse_credhub_server_cert_s3_path}"
-
-concourse_credhub_server_key_s3_path = "${concourse_credhub_server_key_s3_path}"
-
-concourse_uaa_server_cert_s3_path = "${concourse_uaa_server_cert_s3_path}"
-
-concourse_uaa_server_key_s3_path = "${concourse_uaa_server_key_s3_path}"
-
-concourse_server_cert_s3_path = "${concourse_server_cert_s3_path}"
-
-concourse_server_key_s3_path = "${concourse_server_key_s3_path}"
-
 uaa_server_cert_s3_path = "${uaa_server_cert_s3_path}"
 
 uaa_server_key_s3_path = "${uaa_server_key_s3_path}"
@@ -88,9 +76,9 @@ ldap_client_cert_s3_path = "${ldap_client_cert_s3_path}"
 
 ldap_client_key_s3_path = "${ldap_client_key_s3_path}"
 
-control_plane_om_server_cert_s3_path = "${control_plane_om_server_cert_s3_path}"
+control_plane_star_server_cert_s3_path = "${control_plane_star_server_cert_s3_path}"
 
-control_plane_om_server_key_s3_path = "${control_plane_om_server_key_s3_path}"
+control_plane_star_server_key_s3_path = "${control_plane_star_server_key_s3_path}"
 
 om_server_cert_s3_path = "${om_server_cert_s3_path}"
 

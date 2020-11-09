@@ -34,16 +34,10 @@ output "subnet_cidr_blocks" {
   value = aws_subnet.subnet.*.cidr_block
 }
 
-data "template_file" "gateways" {
-  count = length(var.availability_zones)
-
-  template = <<EOF
-${cidrhost(aws_subnet.subnet[count.index].cidr_block, 1)}
-EOF
-
-}
-
 output "subnet_gateways" {
-  value = data.template_file.gateways.*.rendered
+  value = [
+    for cidr in aws_subnet.subnet[*].cidr_block :
+    cidrhost(cidr, 1)
+  ]
 }
 
