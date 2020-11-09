@@ -109,6 +109,9 @@ resource "grafana_alert_notification" "slack" {
   type       = "slack"
   is_default = local.slack_default
 
+  send_reminder = true
+  frequency     = "24h"
+
   settings = {
     url = var.slack_webhook
   }
@@ -119,6 +122,9 @@ resource "grafana_alert_notification" "email" {
   name       = "PWS Dark Email Notifications"
   type       = "email"
   is_default = ! local.slack_default
+
+  send_reminder = true
+  frequency     = "24h"
 
   settings = {
     addresses = var.email_addresses

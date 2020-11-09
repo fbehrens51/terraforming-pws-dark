@@ -24,6 +24,6 @@ providers {
 
   local = ["~> 1.4.0"]
 
-  grafana = ["~> 1.5.0"]
+  grafana = ["~> 1.7.0"]
 
 }
