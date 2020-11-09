@@ -389,54 +389,6 @@ data "aws_s3_bucket_object" "router_server_key" {
   key    = var.router_server_key_s3_path
 }
 
-variable "concourse_credhub_server_cert_s3_path" {
-}
-
-data "aws_s3_bucket_object" "concourse_credhub_server_cert" {
-  bucket = var.cert_bucket
-  key    = var.concourse_credhub_server_cert_s3_path
-}
-
-variable "concourse_credhub_server_key_s3_path" {
-}
-
-data "aws_s3_bucket_object" "concourse_credhub_server_key" {
-  bucket = var.cert_bucket
-  key    = var.concourse_credhub_server_key_s3_path
-}
-
-variable "concourse_uaa_server_cert_s3_path" {
-}
-
-data "aws_s3_bucket_object" "concourse_uaa_server_cert" {
-  bucket = var.cert_bucket
-  key    = var.concourse_uaa_server_cert_s3_path
-}
-
-variable "concourse_uaa_server_key_s3_path" {
-}
-
-data "aws_s3_bucket_object" "concourse_uaa_server_key" {
-  bucket = var.cert_bucket
-  key    = var.concourse_uaa_server_key_s3_path
-}
-
-variable "concourse_server_cert_s3_path" {
-}
-
-data "aws_s3_bucket_object" "concourse_server_cert" {
-  bucket = var.cert_bucket
-  key    = var.concourse_server_cert_s3_path
-}
-
-variable "concourse_server_key_s3_path" {
-}
-
-data "aws_s3_bucket_object" "concourse_server_key" {
-  bucket = var.cert_bucket
-  key    = var.concourse_server_key_s3_path
-}
-
 variable "uaa_server_cert_s3_path" {
 }
 
@@ -485,20 +437,20 @@ data "aws_s3_bucket_object" "ldap_client_key" {
   key    = var.ldap_client_key_s3_path
 }
 
-variable "control_plane_om_server_cert_s3_path" {
+variable "control_plane_star_server_cert_s3_path" {
 }
 
-data "aws_s3_bucket_object" "control_plane_om_server_cert" {
+data "aws_s3_bucket_object" "control_plane_star_server_cert" {
   bucket = var.cert_bucket
-  key    = var.control_plane_om_server_cert_s3_path
+  key    = var.control_plane_star_server_cert_s3_path
 }
 
-variable "control_plane_om_server_key_s3_path" {
+variable "control_plane_star_server_key_s3_path" {
 }
 
-data "aws_s3_bucket_object" "control_plane_om_server_key" {
+data "aws_s3_bucket_object" "control_plane_star_server_key" {
   bucket = var.cert_bucket
-  key    = var.control_plane_om_server_key_s3_path
+  key    = var.control_plane_star_server_key_s3_path
 }
 
 variable "om_server_cert_s3_path" {
@@ -722,33 +674,6 @@ output "router_server_key" {
   sensitive = true
 }
 
-output "concourse_credhub_server_cert" {
-  value = data.aws_s3_bucket_object.concourse_credhub_server_cert.body
-}
-
-output "concourse_credhub_server_key" {
-  value     = data.aws_s3_bucket_object.concourse_credhub_server_key.body
-  sensitive = true
-}
-
-output "concourse_uaa_server_cert" {
-  value = data.aws_s3_bucket_object.concourse_uaa_server_cert.body
-}
-
-output "concourse_uaa_server_key" {
-  value     = data.aws_s3_bucket_object.concourse_uaa_server_key.body
-  sensitive = true
-}
-
-output "concourse_server_cert" {
-  value = data.aws_s3_bucket_object.concourse_server_cert.body
-}
-
-output "concourse_server_key" {
-  value     = data.aws_s3_bucket_object.concourse_server_key.body
-  sensitive = true
-}
-
 output "uaa_server_cert" {
   value = data.aws_s3_bucket_object.uaa_server_cert.body
 }
@@ -776,12 +701,12 @@ output "ldap_client_key" {
   sensitive = true
 }
 
-output "control_plane_om_server_cert" {
-  value = data.aws_s3_bucket_object.control_plane_om_server_cert.body
+output "control_plane_star_server_cert" {
+  value = data.aws_s3_bucket_object.control_plane_star_server_cert.body
 }
 
-output "control_plane_om_server_key" {
-  value     = data.aws_s3_bucket_object.control_plane_om_server_key.body
+output "control_plane_star_server_key" {
+  value     = data.aws_s3_bucket_object.control_plane_star_server_key.body
   sensitive = true
 }
 
