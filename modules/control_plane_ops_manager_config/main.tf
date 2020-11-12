@@ -1,6 +1,6 @@
 locals {
   om_syslog_conf = yamlencode({
-    "syslog" : {
+    "syslog-settings" : {
       "enabled" : true,
       "address" : var.syslog_host,
       "port" : var.syslog_port,
@@ -13,12 +13,16 @@ locals {
     }
   })
   om_ssl_conf = yamlencode({
-    "ssl_certificate" : {
+    "ssl-certificate" : {
       "certificate" : var.control_plane_star_server_cert,
       "private_key" : var.control_plane_star_server_key
     }
   })
-  om_ssh_banner_conf = yamlencode({ "ssh_banner_contents" : var.custom_ssh_banner })
+  om_ssh_banner_conf = yamlencode({
+    "banner-settings" : {
+      "ssh_banner_contents" : var.custom_ssh_banner
+    }
+  })
 }
 
 data "aws_vpc" "vpc" {
