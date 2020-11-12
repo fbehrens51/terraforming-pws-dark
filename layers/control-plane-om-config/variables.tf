@@ -88,17 +88,17 @@ variable "om_create_db_config" {
 
 variable "om_syslog_config" {
   description = "om syslog configuration file"
-  default     = "control_plane/om_syslog_config.json"
+  default     = "control_plane/om_syslog_config.yml"
 }
 
 variable "om_ssl_config" {
   description = "om ssl configuration file"
-  default     = "control_plane/om_ssl_config.json"
+  default     = "control_plane/om_ssl_config.yml"
 }
 
 variable "om_ssh_banner_config" {
   description = "om ssh_banner configuration file"
-  default     = "control_plane/om_ssh_banner_config.json"
+  default     = "control_plane/om_ssh_banner_config.yml"
 }
 
 variable "director_config" {

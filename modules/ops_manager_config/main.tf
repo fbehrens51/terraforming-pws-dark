@@ -1,6 +1,6 @@
 locals {
   pas_subnet_cidr = var.pas_subnet_cidrs[0]
-  om_syslog_conf = jsonencode({
+  om_syslog_conf = yamlencode({
     "syslog" : {
       "enabled" : true,
       "address" : var.syslog_host,
@@ -13,13 +13,13 @@ locals {
       "forward_debug_logs" : false
     }
   })
-  om_ssl_conf = jsonencode({
+  om_ssl_conf = yamlencode({
     "ssl_certificate" : {
       "certificate" : var.om_server_cert,
       "private_key" : var.om_server_key
     }
   })
-  om_ssh_banner_conf = jsonencode({ "ssh_banner_contents" : var.custom_ssh_banner })
+  om_ssh_banner_conf = yamlencode({ "ssh_banner_contents" : var.custom_ssh_banner })
 }
 
 data "template_file" "pas_vpc_azs" {

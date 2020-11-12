@@ -181,17 +181,17 @@ variable "om_drop_db_config" {
 
 variable "om_syslog_config" {
   description = "om syslog configuration file"
-  default     = "pas/om_syslog_config.json"
+  default     = "pas/om_syslog_config.yml"
 }
 
 variable "om_ssl_config" {
   description = "om ssl configuration file"
-  default     = "pas/om_ssl_config.json"
+  default     = "pas/om_ssl_config.yml"
 }
 
 variable "om_ssh_banner_config" {
   description = "om ssh_banner configuration file"
-  default     = "pas/om_ssh_banner_config.json"
+  default     = "pas/om_ssh_banner_config.yml"
 }
 
 variable "cf_config" {
