@@ -24,6 +24,12 @@ variable "health_check_availability_zone" {
 variable "bosh_task_uaa_client_secret" {
 }
 
+variable "slack_webhook" {
+}
+
+variable "email_addresses" {
+}
+
 # the smtp_* variables configure healthwatch2 to postfix relay.
 variable "smtp_from" {
 }
@@ -116,6 +122,9 @@ data "template_file" "healthwatch_config" {
     smtp_password                    = var.smtp_client_password
     smtp_port                        = var.smtp_client_port
     smtp_user                        = var.smtp_client_user
+    email_addresses                  = var.email_addresses
+    slack_enabled                    = var.slack_webhook == "" ? false : true
+    slack_webhook                    = var.slack_webhook
     syslog_host                      = var.syslog_host
     syslog_port                      = var.syslog_port
     syslog_ca_cert                   = var.syslog_ca_cert

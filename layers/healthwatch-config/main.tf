@@ -4,7 +4,15 @@ variable "remote_state_bucket" {
 variable "remote_state_region" {
 }
 
+variable "email_addresses" {
+  default = ""
+}
+
 variable "smtp_from" {
+  default = ""
+}
+
+variable "slack_webhook" {
   default = ""
 }
 
@@ -117,6 +125,8 @@ module "healthwatch_config" {
   syslog_port    = module.syslog_ports.syslog_port
   syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
 
+  slack_webhook        = var.slack_webhook
+  email_addresses      = var.email_addresses
   smtp_from            = var.smtp_from
   smtp_host            = "smtp.${local.root_domain}"
   smtp_client_password = data.terraform_remote_state.bootstrap_postfix.outputs.smtp_client_password

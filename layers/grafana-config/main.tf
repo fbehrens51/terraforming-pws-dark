@@ -158,6 +158,10 @@ resource "grafana_dashboard" "fluentd" {
   config_json = file("dashboards/fluentd.json")
 }
 
+resource "grafana_dashboard" "prometheus" {
+  config_json = file("dashboards/prometheus.json")
+}
+
 data "template_file" "clamav_dashboard" {
   template = file("dashboards/antivirus-alerts.json.tpl")
   vars = {
