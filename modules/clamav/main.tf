@@ -50,6 +50,15 @@ variable "clamav_addon_config" {
 variable "clamav_mirror_config" {
 }
 
+variable "clamav_director_config" {
+}
+
+variable "clamav_release_url" {
+}
+
+variable "clamav_release_sha1" {
+}
+
 data "template_file" "pas_vpc_azs" {
   count = length(var.availability_zones)
 
@@ -57,9 +66,20 @@ data "template_file" "pas_vpc_azs" {
 - name: $${availability_zone}
 EOF
 
-
   vars = {
     availability_zone = var.availability_zones[count.index]
+  }
+}
+
+data "template_file" "clamav_director_template" {
+  template = file("${path.module}/clamav_director_template.tpl")
+
+  vars = {
+    external_mirrors    = format("%#v", var.clamav_external_mirrors)
+    cpu_limit           = var.clamav_cpu_limit
+    on_access_scanning  = var.clamav_enable_on_access_scanning
+    clamav_release_url  = var.clamav_release_url
+    clamav_release_sha1 = var.clamav_release_sha1
   }
 }
 
@@ -98,4 +118,10 @@ resource "aws_s3_bucket_object" "clamav_mirror_template" {
   bucket  = var.secrets_bucket_name
   key     = var.clamav_mirror_config
   content = data.template_file.clamav_mirror_template.rendered
+}
+
+resource "aws_s3_bucket_object" "clamav_director_template" {
+  bucket  = var.secrets_bucket_name
+  key     = var.clamav_director_config
+  content = data.template_file.clamav_director_template.rendered
 }

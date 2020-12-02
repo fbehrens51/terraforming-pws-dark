@@ -229,3 +229,15 @@ variable "clamav_mirror_config" {
   default     = "pas/clamav_mirror_config.yml"
 }
 
+variable "clamav_director_config" {
+  description = "clamav director configuration file"
+  default     = "pas/clamav_director_config.json"
+}
+
+variable "clamav_release_url" {
+  description = "s3 bucket url for the clamav_release.tgz"
+}
+
+variable "clamav_release_sha1" {
+  description = "sha1 sum of clamav_release_url"
+}

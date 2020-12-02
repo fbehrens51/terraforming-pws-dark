@@ -310,6 +310,7 @@ module "clamav_config" {
   secrets_bucket_name              = local.secrets_bucket_name
   clamav_addon_config              = var.clamav_addon_config
   clamav_mirror_config             = var.clamav_mirror_config
+  clamav_director_config           = var.clamav_director_config
   bosh_network_name                = data.terraform_remote_state.paperwork.outputs.pas_network_name
   singleton_availability_zone      = var.singleton_availability_zone
   availability_zones               = data.terraform_remote_state.pas.outputs.pas_subnet_availability_zones
@@ -318,6 +319,8 @@ module "clamav_config" {
   clamav_cpu_limit                 = "50"
   clamav_enable_on_access_scanning = "false"
   clamav_mirror_instance_type      = var.clamav_mirror_instance_type
+  clamav_release_url               = var.clamav_release_url
+  clamav_release_sha1              = var.clamav_release_sha1
   s3_endpoint                      = var.s3_endpoint
   region                           = var.region
   syslog_host                      = module.domains.fluentd_fqdn
