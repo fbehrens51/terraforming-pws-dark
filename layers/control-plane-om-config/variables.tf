@@ -128,7 +128,7 @@ variable "clamav_mirror_config" {
 
 variable "clamav_director_config" {
   description = "clamav director configuration file"
-  default     = "control_plane/clamav_director_config.json"
+  default     = "control_plane/clamav_director_config.yml"
 }
 
 variable "clamav_release_url" {
