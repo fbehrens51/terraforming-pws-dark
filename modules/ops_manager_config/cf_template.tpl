@@ -498,11 +498,11 @@ product-properties:
   .properties.push_apps_manager_accent_color:
     value: ""
   .properties.push_apps_manager_global_wrapper_text_color:
-    value: ""
+    value: '#000000'
   .properties.push_apps_manager_company_name:
     value: ""
   .properties.push_apps_manager_global_wrapper_bg_color:
-    value: ""
+    value: '#FFFF00'
   .properties.push_apps_manager_favicon:
     value: ""
   .properties.push_apps_manager_square_logo:
