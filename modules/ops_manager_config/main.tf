@@ -19,6 +19,13 @@ locals {
       "private_key" : var.om_server_key
     }
   })
+  om_tokens_expiration_conf = yamlencode({
+    "tokens-expiration" : {
+      "access_token_expiration" : 3600,   # 1 hour
+      "refresh_token_expiration" : 82800, # 23 hours
+      "session_idle_timeout" : 3600       # 1 hour
+    }
+  })
   om_ssh_banner_conf = yamlencode({
     "banner-settings" : {
       "ssh_banner_contents" : var.custom_ssh_banner
@@ -314,6 +321,12 @@ resource "aws_s3_bucket_object" "om_ssl_config" {
   bucket  = var.secrets_bucket_name
   key     = var.om_ssl_config
   content = local.om_ssl_conf
+}
+
+resource "aws_s3_bucket_object" "om_tokens_expiration_config" {
+  bucket  = var.secrets_bucket_name
+  key     = var.om_tokens_expiration_config
+  content = local.om_tokens_expiration_conf
 }
 
 resource "aws_s3_bucket_object" "om_syslog_config" {

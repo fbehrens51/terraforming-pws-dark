@@ -184,6 +184,11 @@ variable "om_syslog_config" {
   default     = "pas/om_syslog_config.yml"
 }
 
+variable "om_tokens_expiration_config" {
+  description = "om tokens expiration configuration file"
+  default     = "pas/om_tokens_expiration_config.yaml"
+}
+
 variable "om_ssl_config" {
   description = "om ssl configuration file"
   default     = "pas/om_ssl_config.yml"

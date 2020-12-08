@@ -90,6 +90,7 @@ module "om_config" {
   concourse_config                        = var.concourse_config
   om_create_db_config                     = var.om_create_db_config
   om_syslog_config                        = var.om_syslog_config
+  om_tokens_expiration_config             = var.om_tokens_expiration_config
   om_ssl_config                           = var.om_ssl_config
   om_ssh_banner_config                    = var.om_ssh_banner_config
   control_plane_subnet_ids                = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_ids

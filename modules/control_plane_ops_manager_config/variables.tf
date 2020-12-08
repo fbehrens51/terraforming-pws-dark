@@ -195,6 +195,9 @@ variable "om_create_db_config" {
 variable "om_syslog_config" {
 }
 
+variable "om_tokens_expiration_config" {
+}
+
 variable "om_ssl_config" {
 }
 

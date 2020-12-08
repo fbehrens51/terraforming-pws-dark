@@ -117,22 +117,23 @@ data "aws_subnet" "isolation_segment_subnets" {
 module "om_config" {
   source = "../../modules/ops_manager_config"
 
-  secrets_bucket_name  = local.secrets_bucket_name
-  cf_config            = var.cf_config
-  cf_tools_config      = var.cf_tools_config
-  director_config      = var.director_config
-  portal_config        = var.portal_config
-  om_create_db_config  = var.om_create_db_config
-  om_drop_db_config    = var.om_drop_db_config
-  om_syslog_config     = var.om_syslog_config
-  om_ssl_config        = var.om_ssl_config
-  om_ssh_banner_config = var.om_ssh_banner_config
-  pas_vpc_dns          = local.vpc_dns
-  env_name             = var.env_name
-  region               = data.aws_region.current.name
-  s3_endpoint          = var.s3_endpoint
-  ec2_endpoint         = var.ec2_endpoint
-  elb_endpoint         = var.elb_endpoint
+  secrets_bucket_name         = local.secrets_bucket_name
+  cf_config                   = var.cf_config
+  cf_tools_config             = var.cf_tools_config
+  director_config             = var.director_config
+  portal_config               = var.portal_config
+  om_create_db_config         = var.om_create_db_config
+  om_drop_db_config           = var.om_drop_db_config
+  om_syslog_config            = var.om_syslog_config
+  om_tokens_expiration_config = var.om_tokens_expiration_config
+  om_ssl_config               = var.om_ssl_config
+  om_ssh_banner_config        = var.om_ssh_banner_config
+  pas_vpc_dns                 = local.vpc_dns
+  env_name                    = var.env_name
+  region                      = data.aws_region.current.name
+  s3_endpoint                 = var.s3_endpoint
+  ec2_endpoint                = var.ec2_endpoint
+  elb_endpoint                = var.elb_endpoint
 
   tsdb_instance_profile = data.terraform_remote_state.paperwork.outputs.tsdb_role_name
 
