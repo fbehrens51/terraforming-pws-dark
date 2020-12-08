@@ -93,7 +93,7 @@ variable "om_syslog_config" {
 
 variable "om_tokens_expiration_config" {
   description = "om tokens_expiration configuration file"
-  default     = "control_plane/om_tokens_expiration_config.yaml"
+  default     = "control_plane/om_tokens_expiration_config.yml"
 }
 
 variable "om_ssl_config" {
