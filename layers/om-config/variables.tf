@@ -236,7 +236,7 @@ variable "clamav_mirror_config" {
 
 variable "clamav_director_config" {
   description = "clamav director configuration file"
-  default     = "pas/clamav_director_config.yml"
+  default     = "pas/clamav_director_config.json"
 }
 
 variable "clamav_release_url" {
