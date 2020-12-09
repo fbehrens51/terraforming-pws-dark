@@ -1,4 +1,9 @@
 product-name: metric-store
+product-properties:
+  .properties.max_concurrent_queries:
+    value: 1
+  .properties.replication_factor:
+    value: 2
 network-properties:
   network:
     name: ${bosh_network_name}
