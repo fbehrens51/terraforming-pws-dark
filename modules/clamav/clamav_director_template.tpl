@@ -14,7 +14,7 @@
         "copy_action_destination": "/var/vcap/data/clamav/found",
         "cpu_limit": ${cpu_limit},
         "daily_db_check_frequency": 12,
-        "database_mirrors": [${mirror_url}],
+        "database_mirrors": ${external_mirrors},
         "enforce_cpu_limit": "enabled",
         "exclude_paths": [
           "/proc/",
