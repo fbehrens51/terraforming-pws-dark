@@ -498,6 +498,9 @@ variable "ops_manager_ssh_private_key" {
 variable "syslog_host" {
 }
 
+variable "apps_syslog_port" {
+}
+
 variable "syslog_port" {
 }
 

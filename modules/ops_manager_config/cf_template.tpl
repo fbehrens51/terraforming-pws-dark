@@ -300,6 +300,8 @@ product-properties:
   .properties.smtp_port:
     value: ''
 %{ endif ~}
+  .properties.syslog_agent_aggregate_drains:
+    value: syslog-tls://${syslog_host}:${apps_syslog_port}
   .properties.syslog_drop_debug:
     value: true
   .properties.syslog_host:

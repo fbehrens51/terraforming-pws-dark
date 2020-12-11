@@ -70,6 +70,11 @@ locals {
       cidr_blocks = "0.0.0.0/0"
     },
     {
+      port        = module.syslog_ports.apps_syslog_port
+      protocol    = "tcp"
+      cidr_blocks = "0.0.0.0/0"
+    },
+    {
       // node_exporter metrics endpoint for grafana
       port        = "9100"
       protocol    = "tcp"

@@ -51,9 +51,56 @@
   </match>
 </label>
 
-<label @syslog>
+<label @app_logs>
+  # Keep system application logs only
+  <filter syslog.**>
+    @type grep
+    <regexp>
+      key host
+      pattern /^system\./
+    </regexp>
+  </filter>
+
   <match syslog.**>
     @type copy
+
+    <store>
+      @type relabel
+      @label @all_logs
+    </store>
+  </match>
+</label>
+
+<label @system_logs>
+  <match syslog.**>
+    @type copy
+
+    <store>
+      @type relabel
+      @label @audispd
+    </store>
+
+    <store>
+      @type relabel
+      @label @clamav_infections
+    </store>
+
+    <store>
+      @type relabel
+      @label @all_logs
+    </store>
+  </match>
+</label>
+
+<label @all_logs>
+  <match syslog.**>
+    @type copy
+
+    <store>
+      @type relabel
+      @label @prometheus
+    </store>
+
     <store>
       @type s3
       s3_bucket ${s3_logs_bucket}
@@ -67,21 +114,6 @@
         timekey_use_utc true # use utc
         chunk_limit_size 1G
       </buffer>
-    </store>
-
-    <store>
-      @type relabel
-      @label @prometheus
-    </store>
-
-    <store>
-      @type relabel
-      @label @audispd
-    </store>
-
-    <store>
-      @type relabel
-      @label @clamav_infections
     </store>
 
     <store>
@@ -185,7 +217,7 @@
   @type forward
   port 24224
   bind 127.0.0.1
-  @label @syslog
+  @label @system_logs
   add_tag_prefix syslog
 </source>
 
@@ -194,8 +226,27 @@
   port 8090
   bind 0.0.0.0
   tag syslog
-  @label @syslog
+  @label @system_logs
   emit_unmatched_lines true
+  source_address_key source_address
+  <transport tls>
+    ca_path /etc/td-agent/ca.pem
+    cert_path /etc/td-agent/cert.pem
+    private_key_path /etc/td-agent/key.pem
+  </transport>
+  <parse>
+    message_format auto
+  </parse>
+</source>
+
+<source>
+  @type syslog
+  port 8091
+  bind 0.0.0.0
+  tag syslog
+  @label @app_logs
+  emit_unmatched_lines true
+  frame_type octet_count
   source_address_key source_address
   <transport tls>
     ca_path /etc/td-agent/ca.pem

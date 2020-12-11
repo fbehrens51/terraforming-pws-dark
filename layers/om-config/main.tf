@@ -278,9 +278,10 @@ module "om_config" {
   ldap_port              = data.terraform_remote_state.paperwork.outputs.ldap_port
   ldap_role_attr         = data.terraform_remote_state.paperwork.outputs.ldap_role_attr
 
-  syslog_host    = module.domains.fluentd_fqdn
-  syslog_port    = module.syslog_ports.syslog_port
-  syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  syslog_host      = module.domains.fluentd_fqdn
+  syslog_port      = module.syslog_ports.syslog_port
+  apps_syslog_port = module.syslog_ports.apps_syslog_port
+  syslog_ca_cert   = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
 }
 
 module "runtime_config_config" {

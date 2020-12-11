@@ -205,6 +205,7 @@ data "template_file" "cf_template" {
     singleton_availability_zone                          = var.singleton_availability_zone
     syslog_host                                          = var.syslog_host
     syslog_port                                          = var.syslog_port
+    apps_syslog_port                                     = var.apps_syslog_port
     syslog_ca_cert                                       = var.syslog_ca_cert
     backup_restore_instance_type                         = var.backup_restore_instance_type
     clock_global_instance_type                           = var.clock_global_instance_type
