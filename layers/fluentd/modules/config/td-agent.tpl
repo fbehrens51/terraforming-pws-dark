@@ -52,56 +52,56 @@
 </label>
 
 <label @syslog>
-<match syslog.**>
-  @type copy
-  <store>
-    @type s3
-    s3_bucket ${s3_logs_bucket}
-    s3_region ${region}
-    path logs/
-    <buffer time>
-      @type file
-      path /data/s3
-      timekey 24h # 24 hour partition
-      timekey_wait 15m
-      timekey_use_utc true # use utc
-      chunk_limit_size 1G
-    </buffer>
-  </store>
+  <match syslog.**>
+    @type copy
+    <store>
+      @type s3
+      s3_bucket ${s3_logs_bucket}
+      s3_region ${region}
+      path logs/
+      <buffer time>
+        @type file
+        path /data/s3
+        timekey 24h # 24 hour partition
+        timekey_wait 15m
+        timekey_use_utc true # use utc
+        chunk_limit_size 1G
+      </buffer>
+    </store>
 
-  <store>
-    @type relabel
+    <store>
+      @type relabel
       @label @prometheus
     </store>
 
     <store>
       @type relabel
-    @label @audispd
-  </store>
+      @label @audispd
+    </store>
 
-  <store>
-    @type relabel
-    @label @clamav_infections
-  </store>
+    <store>
+      @type relabel
+      @label @clamav_infections
+    </store>
 
-  <store>
-    @type cloudwatch_logs
-    region ${region}
-    log_group_name ${cloudwatch_log_group_name}
-    log_stream_name ${cloudwatch_log_stream_name}
-    auto_create_stream true
-    json_handler yajl
-  </store>
+    <store>
+      @type cloudwatch_logs
+      region ${region}
+      log_group_name ${cloudwatch_log_group_name}
+      log_stream_name ${cloudwatch_log_stream_name}
+      auto_create_stream true
+      json_handler yajl
+    </store>
 
-  <store>
-    @type prometheus
-    <metric>
-      name fluentd_output_status_num_records_total
-      type counter
-      desc The total number of outgoing records
-    </metric>
-  </store>
-</match>
+    <store>
+      @type prometheus
+      <metric>
+        name fluentd_output_status_num_records_total
+        type counter
+        desc The total number of outgoing records
+      </metric>
+    </store>
+  </match>
 </label>
 
 <label @clamav_infections>
