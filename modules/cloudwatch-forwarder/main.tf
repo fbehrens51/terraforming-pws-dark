@@ -34,7 +34,7 @@ data "template_file" "app-manifest" {
 applications:
 - name: cloudwatch-log-forwarder
   buildpacks:
-  - go_buildpack
+  - binary_buildpack
   disk_quota: 1G
   env:
     AWS_REGION: ${var.region}
