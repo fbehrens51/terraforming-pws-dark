@@ -2,7 +2,7 @@
 applications:
 - name: ${portal_name}
   buildpacks:
-  - go_buildpack
+  - binary_buildpack
   routes:
   - route: ${portal_name}.${system_fqdn}
   instances: 3
