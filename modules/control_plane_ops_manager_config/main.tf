@@ -43,7 +43,6 @@ data "template_file" "control_plane_vpc_azs" {
 - name: $${control_plane_subnet_availability_zone}
 EOF
 
-
   vars = {
     control_plane_subnet_availability_zone = var.control_plane_subnet_availability_zones[count.index]
   }
@@ -53,13 +52,13 @@ data "template_file" "control_plane_subnets" {
   count = length(var.control_plane_subnet_ids)
 
   template = <<EOF
-    - availability_zone_names:
-      - $${control_plane_subnet_availability_zone}
-      cidr: $${control_plane_subnet_cidr}
-      dns: $${control_plane_vpc_dns}
-      gateway: $${control_plane_subnet_gateway}
-      iaas_identifier: $${control_plane_subnet_id}
-      reserved_ip_ranges: $${control_plane_subnet_reserved_ips}
+- availability_zone_names:
+  - $${control_plane_subnet_availability_zone}
+  cidr: $${control_plane_subnet_cidr}
+  dns: $${control_plane_vpc_dns}
+  gateway: $${control_plane_subnet_gateway}
+  iaas_identifier: $${control_plane_subnet_id}
+  reserved_ip_ranges: $${control_plane_subnet_reserved_ips}
 EOF
 
   vars = {
