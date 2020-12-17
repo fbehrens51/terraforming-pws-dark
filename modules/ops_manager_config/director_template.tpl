@@ -88,16 +88,16 @@ properties-configuration:
       env: ${env_name}
     job_configuration_on_tmpfs: false
     keep_unreachable_vms: false
-    %{ if director_blobstore_location == "local" ~}
+    %{~ if director_blobstore_location == "local" ~}
     local_blobstore_options:
       tls_enabled: true
-    %{ endif ~}
+    %{~ endif ~}
     metrics_server_enabled: true
     ntp_servers_string: ${ntp_servers}
     post_deploy_enabled: true
     resurrector_enabled: true
     retry_bosh_deploys: false
-    %{ if director_blobstore_location == "s3" ~}
+    %{~ if director_blobstore_location == "s3" ~}
     s3_blobstore_options:
       backup_bucket_name: ${director_blobstore_bucket_backup}
       backup_bucket_region: ${director_blobstore_s3_endpoint}
@@ -109,7 +109,7 @@ properties-configuration:
       region: ${iaas_configuration_region}
       signature_version: "4"
       url_style: domain-style
-    %{ endif ~}
+    %{~ endif ~}
     skip_director_drain: true
     system_metrics_runtime_enabled: true
   dns_configuration:
