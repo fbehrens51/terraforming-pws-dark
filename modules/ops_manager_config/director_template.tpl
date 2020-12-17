@@ -44,8 +44,8 @@ networks-configuration:
       gateway: ${cidrhost(subnet.cidr_block, 1)}
       iaas_identifier: ${subnet.id}
       reserved_ip_ranges: ${cidrhost(subnet.cidr_block, 1)}-${cidrhost(subnet.cidr_block, 4)}
-    %{ endfor ~}
-  %{ endfor ~}
+    %{~ endfor ~}
+  %{~ endfor ~}
 properties-configuration:
   director_configuration:
     blobstore_type: ${director_blobstore_location}
