@@ -392,8 +392,12 @@ output "ops_manager_bucket" {
   value = module.ops_manager.bucket
 }
 
+output "director_blobstore_bucket_backup" {
+  value = module.ops_manager.director_blobstore_bucket_backup
+}
+
 output "director_blobstore_bucket" {
-  value = module.pas.director_blobstore_bucket
+  value = module.ops_manager.director_blobstore_bucket
 }
 
 output "pas_buildpacks_bucket" {

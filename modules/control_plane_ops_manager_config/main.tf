@@ -53,15 +53,14 @@ data "template_file" "control_plane_subnets" {
   count = length(var.control_plane_subnet_ids)
 
   template = <<EOF
-    - iaas_identifier: $${control_plane_subnet_id}
+    - availability_zone_names:
+      - $${control_plane_subnet_availability_zone}
       cidr: $${control_plane_subnet_cidr}
       dns: $${control_plane_vpc_dns}
       gateway: $${control_plane_subnet_gateway}
+      iaas_identifier: $${control_plane_subnet_id}
       reserved_ip_ranges: $${control_plane_subnet_reserved_ips}
-      availability_zone_names:
-      - $${control_plane_subnet_availability_zone}
 EOF
-
 
   vars = {
     control_plane_subnet_id                = var.control_plane_subnet_ids[count.index]
@@ -108,17 +107,15 @@ data "template_file" "director_template" {
     kms_key_arn                                 = var.volume_encryption_kms_key_arn
     concourse_worker_role_name                  = var.concourse_worker_role_name
     concourse_lb_security_group_id              = "[${join(",", var.concourse_lb_security_group_id)}]"
-    control_plane_subnets = indent(
-      4,
-      chomp(join("", data.template_file.control_plane_subnets.*.rendered)),
-    )
-    control_plane_vpc_azs = indent(
-      2,
-      chomp(join("", data.template_file.control_plane_vpc_azs.*.rendered)),
-    )
-    syslog_host    = var.syslog_host
-    syslog_port    = var.syslog_port
-    syslog_ca_cert = var.syslog_ca_cert
+    control_plane_subnets                       = indent(4, chomp(join("", data.template_file.control_plane_subnets.*.rendered)))
+    control_plane_vpc_azs                       = indent(2, chomp(join("", data.template_file.control_plane_vpc_azs.*.rendered)))
+    syslog_host                                 = var.syslog_host
+    syslog_port                                 = var.syslog_port
+    syslog_ca_cert                              = var.syslog_ca_cert
+    director_blobstore_bucket                   = var.director_blobstore_bucket,
+    director_blobstore_bucket_backup            = var.director_blobstore_bucket_backup,
+    director_blobstore_s3_endpoint              = "https://${var.s3_endpoint}"
+    director_blobstore_location                 = "local", // s3 or local
   }
 }
 

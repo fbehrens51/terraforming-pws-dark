@@ -49,15 +49,14 @@ data "template_file" "pas_subnets" {
   count = length(var.pas_subnet_ids)
 
   template = <<EOF
-- iaas_identifier: $${pas_subnet_id}
+- availability_zone_names:
+  - $${pas_subnet_availability_zone}
   cidr: $${pas_subnet_cidr}
   dns: $${pas_vpc_dns}
   gateway: $${pas_subnet_gateway}
+  iaas_identifier: $${pas_subnet_id}
   reserved_ip_ranges: $${pas_subnet_reserved_ips}
-  availability_zone_names:
-  - $${pas_subnet_availability_zone}
 EOF
-
 
   vars = {
     pas_subnet_id                = var.pas_subnet_ids[count.index]
@@ -73,15 +72,14 @@ data "template_file" "infrastructure_subnets" {
   count = length(var.infrastructure_subnet_ids)
 
   template = <<EOF
-    - iaas_identifier: $${infrastructure_subnet_id}
-      cidr: $${infrastructure_subnet_cidr}
-      dns: $${pas_vpc_dns}
-      gateway: $${infrastructure_subnet_gateway}
-      reserved_ip_ranges: $${infrastructure_subnet_reserved_ips}
-      availability_zone_names:
-      - $${infrastructure_subnet_availability_zone}
+- availability_zone_names:
+  - $${infrastructure_subnet_availability_zone}
+  cidr: $${infrastructure_subnet_cidr}
+  dns: $${pas_vpc_dns}
+  gateway: $${infrastructure_subnet_gateway}
+  iaas_identifier: $${infrastructure_subnet_id}
+  reserved_ip_ranges: $${infrastructure_subnet_reserved_ips}
 EOF
-
 
   vars = {
     infrastructure_subnet_id                = var.infrastructure_subnet_ids[count.index]
@@ -127,15 +125,18 @@ locals {
     kms_key_arn                                 = var.volume_encryption_kms_key_arn,
     singleton_availability_zone                 = var.pas_subnet_availability_zones[0],
     infrastructure_subnets                      = join("", data.template_file.infrastructure_subnets.*.rendered),
-    pas_subnets                                 = indent(4, join("", data.template_file.pas_subnets.*.rendered)),
-    pas_vpc_azs                                 = indent(2, join("", data.template_file.pas_vpc_azs.*.rendered)),
+    pas_subnets                                 = join("", data.template_file.pas_subnets.*.rendered),
+    pas_vpc_azs                                 = join("", data.template_file.pas_vpc_azs.*.rendered),
     syslog_host                                 = var.syslog_host,
     syslog_port                                 = var.syslog_port,
     syslog_ca_cert                              = var.syslog_ca_cert,
     isolation_segment_to_subnets                = var.isolation_segment_to_subnets,
     isolation_segment_to_security_groups        = var.isolation_segment_to_security_groups,
     pas_vpc_dns                                 = var.pas_vpc_dns,
-    //    director_blobstore_bucket                   = var.director_blobstore_bucket,
+    director_blobstore_bucket                   = var.director_blobstore_bucket,
+    director_blobstore_bucket_backup            = var.director_blobstore_bucket_backup,
+    director_blobstore_s3_endpoint              = "https://${var.s3_endpoint}"
+    director_blobstore_location                 = "local", // s3 or local
   })
 }
 

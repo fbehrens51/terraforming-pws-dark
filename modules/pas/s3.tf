@@ -1,26 +1,3 @@
-resource "aws_s3_bucket" "director_blobstore_bucket" {
-  count = 1
-
-  bucket        = "${local.bucket_env_name}-director-blobstore-bucket-${var.bucket_suffix}"
-  force_destroy = var.force_destroy_buckets
-
-  versioning {
-    enabled = true
-  }
-
-  logging {
-    target_bucket = var.s3_logs_bucket
-    target_prefix = "log/"
-  }
-
-  tags = merge(
-    var.tags,
-    {
-      "Name" = "Director Blobstore Bucket"
-    },
-  )
-}
-
 resource "aws_s3_bucket" "buildpacks_bucket" {
   count = 1
 

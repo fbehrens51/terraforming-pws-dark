@@ -1,5 +1,23 @@
 az-configuration:
   ${control_plane_vpc_azs}
+iaas-configurations:
+- additional_cloud_properties:${iaas_configuration_endpoints_ca_cert != "" ? <<EOF
+    connection_options:
+      ca_cert: |
+        ${indent(8, iaas_configuration_endpoints_ca_cert)}
+EOF
+: "" }
+    ec2_endpoint: ${ec2_endpoint}
+    elb_endpoint: ${elb_endpoint}
+  encrypted: true
+  iam_instance_profile: ${iaas_configuration_iam_instance_profile}
+  key_pair_name: ${iaas_configuration_ssh_key_pair_name}
+  kms_key_arn: ${kms_key_arn}
+  name: default
+  region: ${iaas_configuration_region}
+  security_group: ${iaas_configuration_security_group}
+  ssh_private_key: |
+    ${indent(4, iaas_configuration_ssh_private_key)}
 network-assignment:
   network:
     name: control-plane-subnet
@@ -12,36 +30,16 @@ networks-configuration:
   - name: control-plane-subnet
     subnets:
     ${control_plane_subnets}
-
-iaas-configurations:
-- additional_cloud_properties:${iaas_configuration_endpoints_ca_cert != "" ? <<EOF
-
-    connection_options:
-      ca_cert: |
-        ${indent(8, iaas_configuration_endpoints_ca_cert)}
-EOF
-: "" }
-    ec2_endpoint: ${ec2_endpoint}
-    elb_endpoint: ${elb_endpoint}
-  encrypted: true
-  kms_key_arn: ${kms_key_arn}
-  iam_instance_profile: ${iaas_configuration_iam_instance_profile}
-  key_pair_name: ${iaas_configuration_ssh_key_pair_name}
-  name: default
-  region: ${iaas_configuration_region}
-  security_group: ${iaas_configuration_security_group}
-  ssh_private_key: |
-    ${indent(4, iaas_configuration_ssh_private_key)}
-
 properties-configuration:
   director_configuration:
-    allow_legacy_agents: true
-    blobstore_type: local
+    blobstore_type: ${director_blobstore_location}
+    bosh_director_recreate_on_next_deploy: false
     bosh_recreate_on_next_deploy: false
     bosh_recreate_persistent_disks_on_next_deploy: false
     custom_ssh_banner: |
-      ${indent(6, custom_ssh_banner)}
+      ${indent(6, chomp(custom_ssh_banner))}
     database_type: external
+    director_metrics_server_enabled: true
     director_worker_count: 5
     encryption:
       keys: []
@@ -50,13 +48,13 @@ properties-configuration:
       connection_options: {}
       database: ${rds_db_name}
       host: ${rds_host}
+      password: ${rds_password}
       port: ${rds_port}
       tls_ca: |
-        ${indent(8, rds_ca_cert)}
+        ${indent(8, chomp(rds_ca_cert))}
       tls_certificate: null
       tls_enabled: true
       user: ${rds_username}
-      password: ${rds_password}
     hm_emailer_options:
       domain: ${smtp_domain}
       enabled: ${smtp_enabled}
@@ -72,14 +70,32 @@ properties-configuration:
       enabled: false
     identification_tags:
       env: ${env_name}
+    job_configuration_on_tmpfs: false
     keep_unreachable_vms: false
+    %{ if director_blobstore_location == "local" ~}
     local_blobstore_options:
       tls_enabled: true
+    %{ endif ~}
+    metrics_server_enabled: true
     ntp_servers_string: ${ntp_servers}
     post_deploy_enabled: true
     resurrector_enabled: true
     retry_bosh_deploys: false
+    %{ if director_blobstore_location == "s3" ~}
+    s3_blobstore_options:
+      backup_bucket_name: ${director_blobstore_bucket_backup}
+      backup_bucket_region: ${director_blobstore_s3_endpoint}
+      backup_strategy: backup_to_additional_bucket
+      bucket_name: ${director_blobstore_bucket}
+      credentials_source: env_or_profile
+      enable_signed_urls: true
+      endpoint: ${director_blobstore_s3_endpoint}
+      region: ${iaas_configuration_region}
+      signature_version: "4"
+      url_style: domain-style
+    %{ endif ~}
     skip_director_drain: true
+    system_metrics_runtime_enabled: true
   dns_configuration:
     excluded_recursors: []
     handlers: []
@@ -87,30 +103,38 @@ properties-configuration:
     generate_vm_passwords: true
     opsmanager_root_ca_trusted_certs: true
     trusted_certificates: |
-      ${indent(6, security_configuration_trusted_certificates)}
+      ${indent(6, chomp(security_configuration_trusted_certificates))}
   syslog_configuration:
-    enabled: true
     address: ${syslog_host}
-    port: ${syslog_port}
-    transport_protocol: tcp
-    tls_enabled: true
+    enabled: true
+    forward_debug_logs: false
     permitted_peer: ${syslog_host}
+    port: ${syslog_port}
     ssl_ca_certificate: |
-      ${indent(6, syslog_ca_cert)}
+      ${indent(6, chomp(syslog_ca_cert))}
+    tls_enabled: true
+    transport_protocol: tcp
 resource-configuration:
   compilation:
-    instances: automatic
+    additional_networks: []
+    additional_vm_extensions: []
+    elb_names: []
     instance_type:
       id: automatic
-    internet_connected: false
-  director:
-    additional_vm_extensions: []
     instances: automatic
+    internet_connected: false
+    swap_as_percent_of_memory_size: automatic
+  director:
+    additional_networks: []
+    additional_vm_extensions: []
+    elb_names: []
+    instance_type:
+      id: automatic
+    instances: automatic
+    internet_connected: false
     persistent_disk:
       size_mb: "153600"
-    instance_type:
-      id: automatic
-    internet_connected: false
+    swap_as_percent_of_memory_size: automatic
 vmextensions-configuration:
 - name: worker_instance_profile
   cloud_properties:
@@ -118,3 +142,4 @@ vmextensions-configuration:
 - name: concourse-lb-security-group
   cloud_properties:
     security_groups: ${concourse_lb_security_group_id}
+vmtypes-configuration: {}

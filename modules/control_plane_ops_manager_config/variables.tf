@@ -180,6 +180,12 @@ variable "smtp_port" {
 # Infrastructure Configuration
 # ========================
 
+variable "director_blobstore_bucket" {
+}
+
+variable "director_blobstore_bucket_backup" {
+}
+
 variable "secrets_bucket_name" {
 }
 

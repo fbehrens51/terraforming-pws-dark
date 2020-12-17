@@ -2,6 +2,14 @@ output "bucket" {
   value = aws_s3_bucket.ops_manager_bucket.bucket
 }
 
+output "director_blobstore_bucket" {
+  value = aws_s3_bucket.director_blobstore_bucket.bucket
+}
+
+output "director_blobstore_bucket_backup" {
+  value = aws_s3_bucket.director_blobstore_bucket_backup.bucket
+}
+
 output "ip" {
   value = element(
     concat(

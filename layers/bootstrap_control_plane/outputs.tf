@@ -104,6 +104,14 @@ output "ops_manager_bucket_name" {
   value = module.ops_manager.bucket
 }
 
+output "director_blobstore_bucket" {
+  value = module.ops_manager.director_blobstore_bucket
+}
+
+output "director_blobstore_bucket_backup" {
+  value = module.ops_manager.director_blobstore_bucket_backup
+}
+
 output "mirror_bucket_name" {
   value = aws_s3_bucket.mirror_bucket.bucket
 }
