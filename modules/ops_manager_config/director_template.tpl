@@ -29,20 +29,21 @@ networks-configuration:
   networks:
   - name: infrastructure
     subnets:
-      ${indent(6, chomp(infrastructure_subnets))}
+    ${indent(4, chomp(infrastructure_subnets))}
   - name: pas
     subnets:
     ${indent(4, chomp(pas_subnets))}
-  %{ for isolation_segment, subnets in isolation_segment_to_subnets ~}
+  %{~ for isolation_segment, subnets in isolation_segment_to_subnets ~}
   - name: isolation-segment-${replace(lower(isolation_segment), " ", "-")}
     subnets:
-    %{ for subnet in subnets ~}
-    - iaas_identifier: ${subnet.id}
+    %{~ for subnet in subnets ~}
+    - availability_zone_names:
+      - ${subnet.availability_zone}
       cidr: ${subnet.cidr_block}
       dns: ${pas_vpc_dns}
       gateway: ${cidrhost(subnet.cidr_block, 1)}
+      iaas_identifier: ${subnet.id}
       reserved_ip_ranges: ${cidrhost(subnet.cidr_block, 1)}-${cidrhost(subnet.cidr_block, 4)}
-      availability_zone_names: [${subnet.availability_zone}]
     %{ endfor ~}
   %{ endfor ~}
 properties-configuration:
