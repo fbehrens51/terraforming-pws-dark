@@ -413,6 +413,9 @@ variable "volume_encryption_kms_key_arn" {
 variable "kms_key_id" {
 }
 
+variable "director_blobstore_location" {
+}
+
 variable "director_blobstore_bucket" {
 }
 

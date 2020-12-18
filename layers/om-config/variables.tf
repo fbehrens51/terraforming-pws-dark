@@ -13,6 +13,9 @@ variable "cloud_controller_encrypt_key_secret" {
 variable "credhub_encryption_password" {
 }
 
+variable "director_blobstore_location" {
+}
+
 variable "smtp_from" {
 }
 

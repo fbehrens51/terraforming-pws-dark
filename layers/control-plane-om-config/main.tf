@@ -152,6 +152,7 @@ module "om_config" {
 
   director_blobstore_bucket        = data.terraform_remote_state.bootstrap_control_plane.outputs.director_blobstore_bucket
   director_blobstore_bucket_backup = data.terraform_remote_state.bootstrap_control_plane.outputs.director_blobstore_bucket_backup
+  director_blobstore_location      = var.director_blobstore_location
 
   # director_rds_address  = "${data.terraform_remote_state.bootstrap_control_plane.director_rds_address}"
   # director_rds_password = "${data.terraform_remote_state.bootstrap_control_plane.director_rds_password}"

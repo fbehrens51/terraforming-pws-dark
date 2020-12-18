@@ -113,8 +113,8 @@ data "template_file" "director_template" {
     syslog_ca_cert                              = var.syslog_ca_cert
     director_blobstore_bucket                   = var.director_blobstore_bucket,
     director_blobstore_bucket_backup            = var.director_blobstore_bucket_backup,
-    director_blobstore_s3_endpoint              = "https://${var.s3_endpoint}"
-    director_blobstore_location                 = "local", // s3 or local
+    director_blobstore_s3_endpoint              = "https://${var.s3_endpoint}",
+    director_blobstore_location                 = var.director_blobstore_location, // s3 or local
   }
 }
 

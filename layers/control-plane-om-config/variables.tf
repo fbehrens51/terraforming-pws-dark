@@ -7,6 +7,9 @@ variable "remote_state_region" {
 variable "singleton_availability_zone" {
 }
 
+variable "director_blobstore_location" {
+}
+
 variable "smtp_from" {
 }
 
