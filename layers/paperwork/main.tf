@@ -156,11 +156,13 @@ module "node_exporter_client_config" {
 }
 
 module "amazon2_clam_av_client_config" {
-  source             = "../../modules/clamav/amzn2_systemd_client"
-  clamav_db_mirror   = var.clamav_db_mirror
-  custom_repo_url    = var.custom_clamav_yum_repo_url
-  public_bucket_name = aws_s3_bucket.public_bucket.bucket
-  public_bucket_url  = local.public_bucket_url
+  source                     = "../../modules/clamav/amzn2_systemd_client"
+  clamav_db_mirror           = var.clamav_db_mirror
+  custom_repo_url            = var.custom_clamav_yum_repo_url
+  public_bucket_name         = aws_s3_bucket.public_bucket.bucket
+  public_bucket_url          = local.public_bucket_url
+  clamav_rpms_pkg_object_url = var.clamav_rpms_pkg_object_url
+
 }
 
 module "custom_banner_config" {
@@ -267,6 +269,9 @@ variable "bucket_role_name" {
 }
 
 variable "platform_automation_engine_worker_role_name" {
+}
+
+variable "clamav_rpms_pkg_object_url" {
 }
 
 variable "ldap_basedn" {

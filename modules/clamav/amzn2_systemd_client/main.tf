@@ -10,13 +10,17 @@ variable "public_bucket_name" {
 variable "public_bucket_url" {
 }
 
+variable "clamav_rpms_pkg_object_url" {
+}
+
 data "template_file" "user_data" {
   template = file("${path.module}/user_data.tpl")
 
   vars = {
-    clam_database_mirror = var.clamav_db_mirror
-    clam_freshclam       = indent(8, file("${path.module}/clam-freshclam"))
-    custom_repo_url      = var.custom_repo_url
+    clam_database_mirror       = var.clamav_db_mirror
+    clam_freshclam             = indent(8, file("${path.module}/clam-freshclam"))
+    custom_repo_url            = var.custom_repo_url
+    clamav_rpms_pkg_object_url = var.clamav_rpms_pkg_object_url
   }
 }
 
