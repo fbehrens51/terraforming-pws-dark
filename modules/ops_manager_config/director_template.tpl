@@ -101,7 +101,7 @@ properties-configuration:
     s3_blobstore_options:
       backup_bucket_name: ${director_blobstore_bucket_backup}
       backup_bucket_region: ${director_blobstore_s3_endpoint}
-      backup_strategy: backup_to_additional_bucket
+      backup_strategy: use_versioned_bucket
       bucket_name: ${director_blobstore_bucket}
       credentials_source: env_or_profile
       enable_signed_urls: true
