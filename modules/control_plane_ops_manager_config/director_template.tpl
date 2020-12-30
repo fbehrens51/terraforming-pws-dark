@@ -49,7 +49,7 @@ properties-configuration:
       database: ${rds_db_name}
       host: ${rds_host}
       password: ${rds_password}
-      port: ${rds_port}
+      port: "${rds_port}"
       tls_ca: |
         ${indent(8, chomp(rds_ca_cert))}
       tls_certificate: null
