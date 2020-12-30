@@ -3,7 +3,6 @@ product-properties:
   .properties.benchmarks:
     value:
     - Base
-    - CIS-Level-1
     - CIS-Level-2
     - STIG
   .properties.bucket_selector:
@@ -20,7 +19,6 @@ product-properties:
   .properties.scan_report_formats:
     value:
     - csv
-    - xml
     - html
   .properties.scanner_timeout:
     value: 1200
