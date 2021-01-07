@@ -223,6 +223,11 @@ variable "singleton_availability_zone" {
   type = string
 }
 
+variable "blobstore_instance_profile" {
+  type        = string
+  description = "An IAM Instance profile which permission to read and write to the buckets specified below"
+}
+
 variable "control_plane_subnet_cidrs" {
   type = list(string)
 }

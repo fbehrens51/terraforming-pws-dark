@@ -136,6 +136,9 @@ resource-configuration:
       size_mb: "153600"
     swap_as_percent_of_memory_size: automatic
 vmextensions-configuration:
+- name: s3_instance_profile
+  cloud_properties:
+    iam_instance_profile: ${blobstore_instance_profile}
 - name: worker_instance_profile
   cloud_properties:
     iam_instance_profile: ${concourse_worker_role_name}

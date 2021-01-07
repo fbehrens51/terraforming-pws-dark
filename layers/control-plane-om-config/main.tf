@@ -145,6 +145,7 @@ module "om_config" {
 
   iaas_configuration_endpoints_ca_cert    = var.iaas_configuration_endpoints_ca_cert
   iaas_configuration_iam_instance_profile = data.terraform_remote_state.paperwork.outputs.director_role_name
+  blobstore_instance_profile              = data.terraform_remote_state.paperwork.outputs.bucket_role_name
 
   ntp_servers                                 = var.ntp_servers
   custom_ssh_banner                           = data.terraform_remote_state.paperwork.outputs.custom_ssh_banner
