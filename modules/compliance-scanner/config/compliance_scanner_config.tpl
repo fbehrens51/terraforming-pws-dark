@@ -15,7 +15,7 @@ product-properties:
   .properties.cpu_limit:
     value: 50
   .properties.detection_timeout:
-    value: 1
+    value: 3
   .properties.enforce_cpu_limit:
     selected_option: disabled
     value: disabled
@@ -29,7 +29,7 @@ product-properties:
     - csv
     - html
   .properties.scanner_timeout:
-    value: 1200
+    value: 2400
   .properties.scheduled_scan_enabled:
     selected_option: disabled
     value: disabled
