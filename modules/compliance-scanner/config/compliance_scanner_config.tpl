@@ -6,8 +6,16 @@ product-properties:
     - CIS-Level-2
     - STIG
   .properties.bucket_selector:
-    selected_option: none
-    value: none
+    selected_option: aws
+    value: aws
+  .properties.bucket_selector.aws.bucket_name:
+    value: ${reports_bucket_name}
+  .properties.bucket_selector.aws.bucket_region:
+    value: ${reports_bucket_region}
+  .properties.cpu_limit:
+    value: 50
+  .properties.detection_timeout:
+    value: 1
   .properties.enforce_cpu_limit:
     selected_option: disabled
     value: disabled
@@ -40,7 +48,8 @@ resource-config:
   oscap_store:
     max_in_flight: 1
     additional_networks: []
-    additional_vm_extensions: []
+    additional_vm_extensions:
+    - s3_instance_profile
     elb_names: []
     instance_type:
       id: automatic
