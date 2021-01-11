@@ -20,8 +20,6 @@ director_role_name = "${director_role_name}"
 
 sjb_role_name = "${sjb_role_name}"
 
-archive_role_name = "${archive_role_name}"
-
 tsdb_role_name = "${tsdb_role_name}"
 
 bucket_role_name = "${bucket_role_name}"

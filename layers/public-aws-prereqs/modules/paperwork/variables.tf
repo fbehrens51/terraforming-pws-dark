@@ -14,9 +14,6 @@ variable "bucket_role_name" {
 variable "worker_role_name" {
 }
 
-variable "archive_role_name" {
-}
-
 variable "tsdb_role_name" {
 }
 

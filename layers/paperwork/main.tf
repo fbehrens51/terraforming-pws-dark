@@ -259,9 +259,6 @@ variable "kms_key_id" {
 variable "kms_key_arn" {
 }
 
-variable "archive_role_name" {
-}
-
 variable "tsdb_role_name" {
 }
 
@@ -623,10 +620,6 @@ output "kms_key_arn" {
 
 output "transfer_key_arn" {
   value = var.transfer_key_arn
-}
-
-output "archive_role_name" {
-  value = var.archive_role_name
 }
 
 output "tsdb_role_name" {
