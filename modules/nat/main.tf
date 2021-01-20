@@ -167,3 +167,6 @@ resource "aws_route" "toggle_internet" {
   destination_cidr_block = "0.0.0.0/0"
 }
 
+output "public_ips" {
+  value = module.eni.public_ips
+}

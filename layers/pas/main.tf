@@ -21,6 +21,17 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
+data "terraform_remote_state" "bootstrap_control_plane" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bootstrap_control_plane"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "routes" {
   backend = "s3"
 
@@ -300,7 +311,7 @@ locals {
   om_key_name         = "${var.env_name}-om"
   s3_logs_bucket      = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
 
-  ingress_rules = [
+  std_ingress_rules = [
     {
       port        = "22"
       protocol    = "tcp"
@@ -317,6 +328,23 @@ locals {
       cidr_blocks = data.aws_vpc.pas_vpc.cidr_block
     },
   ]
+
+  cp_nat_public_cidrs = data.terraform_remote_state.bootstrap_control_plane.outputs.cp_nat_public_cidrs
+
+  cp_nat_om_ingress_rules = [
+    {
+      port        = "22"
+      protocol    = "tcp"
+      cidr_blocks = local.cp_nat_public_cidrs
+    }
+  ]
+
+  //allows us to add CP nat IPs to ingress for external environments
+  ingress_rules = var.internetless ? local.std_ingress_rules : concat(local.std_ingress_rules, local.cp_nat_om_ingress_rules)
+
+
+
+
   bot_user_on_bastion = data.terraform_remote_state.bastion.outputs.bot_user_on_bastion
 }
 
