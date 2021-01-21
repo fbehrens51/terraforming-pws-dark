@@ -407,7 +407,7 @@ locals {
   private_cidr_block = cidrsubnet(data.aws_vpc.vpc.cidr_block, 1, 1)
   sjb_cidr_block     = cidrsubnet(local.private_cidr_block, 2, 3)
 
-  std_om_ingress_rules = [
+  om_ingress_rules = [
     {
       port        = "22"
       protocol    = "tcp"
@@ -429,20 +429,6 @@ locals {
       cidr_blocks = data.aws_vpc.pas_vpc.cidr_block
     },
   ]
-
-  nat_public_cidrs = var.internetless ? "" : join(",", formatlist("%s/32", module.nat.public_ips))
-
-  cp_nat_om_ingress_rules = [
-    {
-      port        = "22"
-      protocol    = "tcp"
-      cidr_blocks = local.nat_public_cidrs
-    }
-  ]
-
-  //allows us to add CP nat IPs to ingress for external environments
-  om_ingress_rules = var.internetless ? local.std_om_ingress_rules : concat(local.std_om_ingress_rules, local.cp_nat_om_ingress_rules)
-
   ec2_service_name = "${var.vpce_interface_prefix}${data.aws_region.current.name}.ec2"
 
   director_role_name   = data.terraform_remote_state.paperwork.outputs.director_role_name
@@ -500,6 +486,3 @@ resource "aws_vpc_endpoint" "cp_ec2" {
   tags                = local.modified_tags
 }
 
-output "cp_nat_public_cidrs" {
-  value = local.nat_public_cidrs
-}
