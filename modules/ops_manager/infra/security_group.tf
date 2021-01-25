@@ -8,6 +8,7 @@ resource "aws_security_group" "ops_manager_security_group" {
   vpc_id      = var.vpc_id
 
   egress {
+    description = "Allow all protocols/ports to all hosts"
     cidr_blocks = [var.private ? data.aws_vpc.vpc.cidr_block : "0.0.0.0/0"]
     protocol    = "-1"
     from_port   = 0
@@ -17,7 +18,8 @@ resource "aws_security_group" "ops_manager_security_group" {
   tags = merge(
     var.tags,
     {
-      "Name" = "${var.env_name}-ops-manager-security-group"
+      Name        = "${var.env_name}-ops-manager-security-group"
+      Description = "Ops Manager Security Group"
     },
   )
 }
@@ -25,8 +27,9 @@ resource "aws_security_group" "ops_manager_security_group" {
 resource "aws_security_group_rule" "ingress_rules" {
   count = length(var.ingress_rules)
 
-  from_port = var.ingress_rules[count.index]["port"]
-  to_port   = var.ingress_rules[count.index]["port"]
+  description = var.ingress_rules[count.index]["description"]
+  from_port   = var.ingress_rules[count.index]["port"]
+  to_port     = var.ingress_rules[count.index]["port"]
 
   cidr_blocks = split(",", var.ingress_rules[count.index]["cidr_blocks"])
 

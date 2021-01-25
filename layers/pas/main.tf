@@ -148,7 +148,8 @@ module "postgres" {
   # prevent this from happening with postgres.
   engine_version = "9.6"
 
-  db_port = 5432
+  db_port      = 5432
+  sg_rule_desc = "postgres/5432"
 
   env_name = local.modified_name
   vpc_id   = module.infra.vpc_id
@@ -172,7 +173,8 @@ module "rds" {
   # to prevent this from happening.
   engine_version = "10.2"
 
-  db_port = 3306
+  db_port      = 3306
+  sg_rule_desc = "rds/3306"
 
   env_name = var.env_name
   vpc_id   = module.infra.vpc_id
@@ -302,16 +304,19 @@ locals {
 
   ingress_rules = [
     {
+      description = "Allow ssh/22 from cp_vpc and bastion_vpc"
       port        = "22"
       protocol    = "tcp"
       cidr_blocks = "${data.aws_vpc.cp_vpc.cidr_block},${data.aws_vpc.bastion_vpc.cidr_block}"
     },
     {
+      description = "Allow https/443 from everywhere"
       port        = "443"
       protocol    = "tcp"
       cidr_blocks = "0.0.0.0/0"
     },
     {
+      description = "Allow node_exporter/9100 from pas_vpc"
       port        = "9100"
       protocol    = "tcp"
       cidr_blocks = data.aws_vpc.pas_vpc.cidr_block

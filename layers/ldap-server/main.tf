@@ -84,11 +84,13 @@ locals {
 
   ldap_ingress_rules = [
     {
+      description = "Allow ssh/22 from everywhere"
       port        = "22"
       protocol    = "tcp"
       cidr_blocks = "0.0.0.0/0"
     },
     {
+      description = "Allow ldaps/636 from everywhere"
       port        = "636"
       protocol    = "tcp"
       cidr_blocks = "0.0.0.0/0"
@@ -97,6 +99,7 @@ locals {
 
   ldap_egress_rules = [
     {
+      description = "Allow all protocols/ports to all external hosts"
       port        = "0"
       protocol    = "-1"
       cidr_blocks = "0.0.0.0/0"

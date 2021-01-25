@@ -72,16 +72,19 @@ module "eni" {
 
   ingress_rules = [
     {
+      description = "Allow ssh/22 from bastion host"
       port        = "22"
       protocol    = "tcp"
       cidr_blocks = var.bastion_private_ip
     },
     {
+      description = "Allow all protocols/ports from ${join(",", var.ingress_cidr_blocks)}"
       port        = "0"
       protocol    = "-1"
       cidr_blocks = join(",", var.ingress_cidr_blocks)
     },
     {
+      description = "Allow node_exporter/9100 from pas_vpc"
       port        = "9100"
       protocol    = "tcp"
       cidr_blocks = var.metrics_ingress_cidr_block
@@ -90,6 +93,7 @@ module "eni" {
 
   egress_rules = [
     {
+      description = "Allow all protocols/ports to everywhere"
       port        = "0"
       protocol    = "-1"
       cidr_blocks = "0.0.0.0/0"

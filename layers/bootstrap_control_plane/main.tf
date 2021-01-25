@@ -124,6 +124,7 @@ resource "aws_security_group" "vms_security_group" {
   vpc_id      = data.aws_vpc.vpc.id
 
   ingress {
+    description = "Allow ssh/22 from bastion host"
     cidr_blocks = ["${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"]
     protocol    = "tcp"
     from_port   = 22
@@ -131,6 +132,7 @@ resource "aws_security_group" "vms_security_group" {
   }
 
   ingress {
+    description = "Deny all traffic from everywhere"
     cidr_blocks = [data.aws_vpc.vpc.cidr_block]
     protocol    = "-1"
     from_port   = 0
@@ -138,6 +140,7 @@ resource "aws_security_group" "vms_security_group" {
   }
 
   egress {
+    description = "Allow all portocols/ports to everywhere"
     cidr_blocks = ["0.0.0.0/0"]
     protocol    = "-1"
     from_port   = 0
@@ -147,7 +150,8 @@ resource "aws_security_group" "vms_security_group" {
   tags = merge(
     local.modified_tags,
     {
-      "Name" = "${local.env_name}-vms-security-group"
+      Name        = "${local.env_name}-vms-security-group"
+      Description = "bootstrap_control_plane"
     },
   )
 }
@@ -297,7 +301,8 @@ module "postgres" {
   # prevent this from happening with postgres.
   engine_version = "9.6"
 
-  db_port = 5432
+  db_port      = 5432
+  sg_rule_desc = "postgres/5432"
 
   env_name = local.modified_name
   vpc_id   = data.aws_vpc.vpc.id
@@ -321,7 +326,8 @@ module "mysql" {
   # prevent this from happening with postgres.
   engine_version = "10.2"
 
-  db_port = 3306
+  db_port      = 3306
+  sg_rule_desc = "mysql/3306"
 
   env_name = "${local.modified_name} mysql"
   vpc_id   = data.aws_vpc.vpc.id
@@ -409,21 +415,25 @@ locals {
 
   om_ingress_rules = [
     {
+      description = "Allow ssh/22 from bastion_vpc"
       port        = "22"
       protocol    = "tcp"
       cidr_blocks = data.aws_vpc.bastion_vpc.cidr_block
     },
     {
+      description = "Allow ssh/22 from cp_vpc"
       port        = "22"
       protocol    = "tcp"
       cidr_blocks = data.aws_vpc.vpc.cidr_block
     },
     {
+      description = "Allow https/443 from everywhere"
       port        = "443"
       protocol    = "tcp"
       cidr_blocks = "0.0.0.0/0"
     },
     {
+      description = "Allow node_exporter/9100 from pas_vpc"
       port        = "9100"
       protocol    = "tcp"
       cidr_blocks = data.aws_vpc.pas_vpc.cidr_block
@@ -438,6 +448,7 @@ locals {
     [
       {
         // metrics endpoint for grafana
+        description = "Allow grafana_metrics/9100 from pas_vpc"
         port        = "9100"
         protocol    = "tcp"
         cidr_blocks = data.aws_vpc.pas_vpc.cidr_block

@@ -12,12 +12,14 @@ resource "aws_security_group" "vms_security_group" {
   tags = merge(
     var.tags,
     {
-      "Name" = "${var.env_name}-vms-security-group"
+      Name        = "${var.env_name}-vms-security-group"
+      Description = "infra/vpc module"
     },
   )
 }
 
 resource "aws_security_group_rule" "ingress_from_bastion" {
+  description       = "Allow ssh/22 from bastion host"
   security_group_id = aws_security_group.vms_security_group[0].id
   type              = "ingress"
   cidr_blocks       = ["${var.bastion_private_ip}/32"]
@@ -27,6 +29,7 @@ resource "aws_security_group_rule" "ingress_from_bastion" {
 }
 
 resource "aws_security_group_rule" "ingress_from_elb" {
+  description              = "Allow all protocols/ports from the ELB"
   security_group_id        = aws_security_group.vms_security_group[0].id
   type                     = "ingress"
   source_security_group_id = var.elb_security_group_id
@@ -36,6 +39,7 @@ resource "aws_security_group_rule" "ingress_from_elb" {
 }
 
 resource "aws_security_group_rule" "ingress_from_grafana_elb" {
+  description              = "Allow all protocols/ports from the grafana ELB"
   security_group_id        = aws_security_group.vms_security_group[0].id
   type                     = "ingress"
   source_security_group_id = var.grafana_elb_security_group_id
@@ -45,6 +49,7 @@ resource "aws_security_group_rule" "ingress_from_grafana_elb" {
 }
 
 resource "aws_security_group_rule" "ingress_from_om" {
+  description              = "Allow all protocols/ports from OM"
   security_group_id        = aws_security_group.vms_security_group[0].id
   type                     = "ingress"
   source_security_group_id = var.ops_manager_security_group_id
@@ -54,6 +59,7 @@ resource "aws_security_group_rule" "ingress_from_om" {
 }
 
 resource "aws_security_group_rule" "ingress_from_self" {
+  description       = "Allow all ingress from bastion host"
   security_group_id = aws_security_group.vms_security_group[0].id
   type              = "ingress"
   self              = true
@@ -63,6 +69,7 @@ resource "aws_security_group_rule" "ingress_from_self" {
 }
 
 resource "aws_security_group_rule" "egress_anywhere" {
+  description       = "Allow all protocols/ports to everywhere."
   security_group_id = aws_security_group.vms_security_group[0].id
   type              = "egress"
   cidr_blocks       = ["0.0.0.0/0"]

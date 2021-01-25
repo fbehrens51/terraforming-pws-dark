@@ -144,11 +144,11 @@ variable "add_bot_user_to_user_data" {
 }
 
 variable "ingress_rules" {
-  type = list(object({ port = string, protocol = string, cidr_blocks = string }))
+  type = list(object({ description = string, port = string, protocol = string, cidr_blocks = string }))
 }
 
 variable "egress_rules" {
-  type = list(object({ port = string, protocol = string, cidr_blocks = string }))
+  type = list(object({ description = string, port = string, protocol = string, cidr_blocks = string }))
 }
 
 variable "tags" {

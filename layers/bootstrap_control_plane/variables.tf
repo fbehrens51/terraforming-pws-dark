@@ -23,11 +23,11 @@ variable "singleton_availability_zone" {
 }
 
 variable "sjb_egress_rules" {
-  type = list(object({ port = string, protocol = string, cidr_blocks = string }))
+  type = list(object({ description = string, port = string, protocol = string, cidr_blocks = string }))
 }
 
 variable "sjb_ingress_rules" {
-  type = list(object({ port = string, protocol = string, cidr_blocks = string }))
+  type = list(object({ description = string, port = string, protocol = string, cidr_blocks = string }))
 }
 
 # variable "remote_state_bucket" {}

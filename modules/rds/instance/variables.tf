@@ -17,6 +17,9 @@ variable "engine_version" {
 variable "db_port" {
 }
 
+variable "sg_rule_desc" {
+}
+
 variable "env_name" {
   type = string
 }

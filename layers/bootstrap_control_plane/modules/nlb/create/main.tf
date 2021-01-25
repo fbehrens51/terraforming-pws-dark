@@ -142,6 +142,7 @@ resource "aws_lb_listener" "concourse_nlb_8844" {
 }
 
 ########## Security Group and rules
+# see https://concourse-ci.org/internals.html
 
 resource "aws_security_group" "concourse_nlb_security_group" {
   name        = "${local.formatted_env_name}-concourse-nlb-security-group"
@@ -149,6 +150,7 @@ resource "aws_security_group" "concourse_nlb_security_group" {
   vpc_id      = var.vpc_id
 
   ingress {
+    description = "Allow http/80 from everywhere - forwards to 443"
     cidr_blocks = ["0.0.0.0/0"]
     protocol    = "tcp"
     from_port   = 80
@@ -156,6 +158,7 @@ resource "aws_security_group" "concourse_nlb_security_group" {
   }
 
   ingress {
+    description = "Allow TSA/2222 from everywhere - pipeline worker registeration"
     cidr_blocks = ["0.0.0.0/0"]
     protocol    = "tcp"
     from_port   = 2222
@@ -163,6 +166,7 @@ resource "aws_security_group" "concourse_nlb_security_group" {
   }
 
   ingress {
+    description = "Allow https/443 from everywhere - cp web ui"
     cidr_blocks = ["0.0.0.0/0"]
     protocol    = "tcp"
     from_port   = 443
@@ -170,6 +174,7 @@ resource "aws_security_group" "concourse_nlb_security_group" {
   }
 
   ingress {
+    description = "Allow https/8844 from everywhere - Credhub API"
     cidr_blocks = ["0.0.0.0/0"]
     protocol    = "tcp"
     from_port   = 8844
@@ -177,6 +182,7 @@ resource "aws_security_group" "concourse_nlb_security_group" {
   }
 
   egress {
+    description = "Allow all protocols/ports to everywhere"
     cidr_blocks = ["0.0.0.0/0"]
     protocol    = "-1"
     from_port   = 0
@@ -186,7 +192,8 @@ resource "aws_security_group" "concourse_nlb_security_group" {
   tags = merge(
     var.tags,
     {
-      "Name" = "${var.env_name}-concourse-nlb-security-group"
+      Name        = "${var.env_name}-concourse-nlb-security-group"
+      Description = "Concourse network load balancer security group"
     },
   )
 }

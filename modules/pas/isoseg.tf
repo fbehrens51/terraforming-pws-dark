@@ -6,6 +6,7 @@ resource "aws_security_group" "isoseg_lb_security_group" {
   vpc_id      = var.vpc_id
 
   ingress {
+    description = "Allow http/80 from everywhere"
     cidr_blocks = ["0.0.0.0/0"]
     protocol    = "tcp"
     from_port   = 80
@@ -13,6 +14,7 @@ resource "aws_security_group" "isoseg_lb_security_group" {
   }
 
   ingress {
+    description = "Allow https/443 from everywhere"
     cidr_blocks = ["0.0.0.0/0"]
     protocol    = "tcp"
     from_port   = 443
@@ -20,6 +22,7 @@ resource "aws_security_group" "isoseg_lb_security_group" {
   }
 
   ingress {
+    description = "Allow tcp/8443 from everywhere"
     cidr_blocks = ["0.0.0.0/0"]
     protocol    = "tcp"
     from_port   = 4443
@@ -27,6 +30,7 @@ resource "aws_security_group" "isoseg_lb_security_group" {
   }
 
   egress {
+    description = "Allow all protocols/ports to everywhere"
     cidr_blocks = ["0.0.0.0/0"]
     protocol    = "-1"
     from_port   = 0
@@ -36,7 +40,8 @@ resource "aws_security_group" "isoseg_lb_security_group" {
   tags = merge(
     var.tags,
     {
-      "Name" = "${var.env_name}-isoseg-lb-security-group"
+      Name        = "${var.env_name}-isoseg-lb-security-group"
+      Description = "pas/isoseg"
     },
   )
 }

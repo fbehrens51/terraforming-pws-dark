@@ -60,28 +60,33 @@ locals {
 
   fluentd_ingress_rules = [
     {
+      description = "Allow ssh/22 from everywhere"
       port        = "22"
       protocol    = "tcp"
       cidr_blocks = "0.0.0.0/0"
     },
     {
+      description = "Allow syslog/${module.syslog_ports.syslog_port} from everywhere"
       port        = module.syslog_ports.syslog_port
       protocol    = "tcp"
       cidr_blocks = "0.0.0.0/0"
     },
     {
+      description = "Allow syslog/${module.syslog_ports.apps_syslog_port} from everywhere"
       port        = module.syslog_ports.apps_syslog_port
       protocol    = "tcp"
       cidr_blocks = "0.0.0.0/0"
     },
     {
       // node_exporter metrics endpoint for grafana
+      description = "Allow node_exporter/9100 from pas_vpc"
       port        = "9100"
       protocol    = "tcp"
       cidr_blocks = data.aws_vpc.pas_vpc.cidr_block
     },
     {
       // fluentd metrics endpoint for grafana
+      description = "Allow fluentd_metrics/9200 from pas_vpc"
       port        = "9200"
       protocol    = "tcp"
       cidr_blocks = data.aws_vpc.pas_vpc.cidr_block
@@ -90,6 +95,7 @@ locals {
 
   fluentd_egress_rules = [
     {
+      description = "Allow all protocols/ports to everywhere"
       port        = "0"
       protocol    = "-1"
       cidr_blocks = "0.0.0.0/0"

@@ -8,6 +8,7 @@ resource "aws_security_group" "rds_security_group" {
   vpc_id      = var.vpc_id
 
   ingress {
+    description = "Allow rds/${var.db_port} from this vpc"
     cidr_blocks = [data.aws_vpc.vpc.cidr_block]
     protocol    = "tcp"
     from_port   = var.db_port
@@ -15,6 +16,7 @@ resource "aws_security_group" "rds_security_group" {
   }
 
   egress {
+    description = "Allow all protocols/ports from this vpc."
     cidr_blocks = [data.aws_vpc.vpc.cidr_block]
     protocol    = "-1"
     from_port   = 0
@@ -32,7 +34,8 @@ resource "aws_security_group" "rds_security_group" {
   tags = merge(
     var.tags,
     {
-      "Name" = "${var.env_name}-rds-security-group"
+      Name        = "${var.env_name}-rds-security-group"
+      Description = "rds/instance/template"
     },
   )
 }

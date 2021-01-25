@@ -53,29 +53,34 @@ locals {
   //allow dns to reach out anywhere. This is needed for CNAME records to external DNS
   bind_egress_rules = [
     {
+      description = "Allow dns_udp/53 egress to all external hosts"
       port        = "53"
       protocol    = "udp"
       cidr_blocks = "0.0.0.0/0"
     },
     {
+      description = "Allow dns_tcp/53 egress to all external hosts"
       port        = "53"
       protocol    = "tcp"
       cidr_blocks = "0.0.0.0/0"
     },
     {
       //yum for bind install
+      description = "Allow http/80 egress to all external hosts for yum"
       port        = "80"
       protocol    = "tcp"
       cidr_blocks = "0.0.0.0/0"
     },
     {
       //yum for clamav install (some repos are on 443)
+      description = "Allow https/443 to all external hosts for clamav install"
       port        = "443"
       protocol    = "tcp"
       cidr_blocks = "0.0.0.0/0"
     },
     {
       //syslog
+      description = "Allow all syslog/${module.syslog_ports.syslog_port} to all external hosts for syslog"
       port        = module.syslog_ports.syslog_port
       protocol    = "tcp"
       cidr_blocks = "0.0.0.0/0"
@@ -84,27 +89,32 @@ locals {
 
   bind_ingress_rules = [
     {
+      description = "Allow dns_udp/53 egress from all external hosts"
       port        = "53"
       protocol    = "udp"
       cidr_blocks = "0.0.0.0/0"
     },
     {
+      description = "Allow dns_tcp/53 egress from all external hosts"
       port        = "53"
       protocol    = "tcp"
       cidr_blocks = "0.0.0.0/0"
     },
     {
+      description = "Allow ssh/22 from cp_vpc"
       port        = "22"
       protocol    = "tcp"
       cidr_blocks = data.aws_vpc.cp_vpc.cidr_block
     },
     {
+      description = "Allow ssh/22 from bastion_vpc"
       port        = "22"
       protocol    = "tcp"
       cidr_blocks = data.terraform_remote_state.bastion.outputs.bastion_cidr_block
     },
     {
       // metrics endpoint for grafana
+      description = "Allow node_exporter/9100 from pas_vpc"
       port        = "9100"
       protocol    = "tcp"
       cidr_blocks = data.aws_vpc.pas_vpc.cidr_block

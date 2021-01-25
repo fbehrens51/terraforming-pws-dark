@@ -211,6 +211,7 @@ resource "aws_security_group" "vms_security_group" {
   vpc_id      = var.vpc_id
 
   ingress {
+    description = "Allow ssh/22 from bastion host"
     cidr_blocks = ["${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"]
     protocol    = "tcp"
     from_port   = 22
@@ -218,13 +219,15 @@ resource "aws_security_group" "vms_security_group" {
   }
 
   ingress {
-    self      = true
-    protocol  = "-1"
-    from_port = 0
-    to_port   = 0
+    description = "Deny all protocols/ports from everwhere"
+    self        = true
+    protocol    = "-1"
+    from_port   = 0
+    to_port     = 0
   }
 
   ingress {
+    description     = "Deny all protocols/ports to bosh managed hosts"
     security_groups = [data.terraform_remote_state.pas.outputs.vms_security_group_id]
     protocol        = "-1"
     from_port       = 0
@@ -232,6 +235,7 @@ resource "aws_security_group" "vms_security_group" {
   }
 
   ingress {
+    description     = "Allow ssh/22 to bosh managed hosts"
     security_groups = [data.terraform_remote_state.pas.outputs.om_security_group_id]
     protocol        = "tcp"
     to_port         = 22
@@ -239,6 +243,7 @@ resource "aws_security_group" "vms_security_group" {
   }
 
   egress {
+    description = "Allow all protocols/ports to external hosts"
     cidr_blocks = ["0.0.0.0/0"]
     protocol    = "-1"
     from_port   = 0
@@ -247,11 +252,15 @@ resource "aws_security_group" "vms_security_group" {
 
   tags = merge(
     local.modified_tags,
-    { "purpose" = "vms-security-group" },
+    {
+      purpose     = "vms-security-group"
+      Description = "bootstrap_isolation_segment_vpc"
+    },
   )
 }
 
 resource "aws_security_group_rule" "pas_ingress_from_isolation_segment" {
+  description              = "Allow all iso-seg ports and protocols to reach bosh managed hosts"
   security_group_id        = data.terraform_remote_state.pas.outputs.vms_security_group_id
   source_security_group_id = aws_security_group.vms_security_group.id
   type                     = "ingress"
