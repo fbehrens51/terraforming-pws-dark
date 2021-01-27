@@ -219,7 +219,7 @@ resource "aws_security_group" "vms_security_group" {
   }
 
   ingress {
-    description = "Deny all protocols/ports from everwhere"
+    description = "Allow all protocols/ports from within this security group"
     self        = true
     protocol    = "-1"
     from_port   = 0
@@ -227,7 +227,7 @@ resource "aws_security_group" "vms_security_group" {
   }
 
   ingress {
-    description     = "Deny all protocols/ports to bosh managed hosts"
+    description     = "Allow all protocols/ports from bosh managed hosts"
     security_groups = [data.terraform_remote_state.pas.outputs.vms_security_group_id]
     protocol        = "-1"
     from_port       = 0
@@ -235,7 +235,7 @@ resource "aws_security_group" "vms_security_group" {
   }
 
   ingress {
-    description     = "Allow ssh/22 to bosh managed hosts"
+    description     = "Allow ssh/22 from bosh managed hosts"
     security_groups = [data.terraform_remote_state.pas.outputs.om_security_group_id]
     protocol        = "tcp"
     to_port         = 22

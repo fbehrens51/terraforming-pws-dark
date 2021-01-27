@@ -132,7 +132,7 @@ resource "aws_security_group" "vms_security_group" {
   }
 
   ingress {
-    description = "Deny all traffic from everywhere"
+    description = "Allow all traffic from within the control plane"
     cidr_blocks = [data.aws_vpc.vpc.cidr_block]
     protocol    = "-1"
     from_port   = 0
