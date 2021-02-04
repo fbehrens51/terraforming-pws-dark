@@ -64,4 +64,5 @@ write_files:
   - content: |
       TD_AGENT_LOG_FILE=/data/log/td-agent.log
       TD_AGENT_OPTIONS="--log-rotate-size 104857600 --log-rotate-age 10"
+      SSL_CERT_FILE=/etc/pki/tls/cert.pem
     path: /etc/sysconfig/td-agent
