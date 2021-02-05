@@ -24,9 +24,6 @@ variable "availability_zones" {
 variable "singleton_availability_zone" {
 }
 
-variable "env_name" {
-}
-
 variable "region" {
 }
 
