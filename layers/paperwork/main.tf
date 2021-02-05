@@ -14,7 +14,7 @@ data "aws_region" "current" {
 }
 
 locals {
-  bucket_prefix   = "${replace(var.env_name, " ", "-")}"
+  bucket_prefix   = "${replace(local.env_name_prefix, " ", "-")}"
   s3_service_name = "com.amazonaws.${data.aws_region.current.name}.s3"
   bot_user_data   = <<DOC
 #cloud-config
@@ -122,7 +122,7 @@ resource "aws_s3_bucket" "s3_logs_bucket" {
   force_destroy = var.force_destroy_buckets
 
   tags = {
-    "Name" = "${var.env_name} S3 Logs Bucket"
+    "Name" = "${local.env_name_prefix} S3 Logs Bucket"
   }
 }
 
@@ -143,7 +143,7 @@ resource "aws_s3_bucket_policy" "public_bucket_policy_attachement" {
 
 module "bot_host_key_pair" {
   source   = "../../modules/key_pair"
-  key_name = "${var.env_name}-bot"
+  key_name = "${local.env_name_prefix}-bot"
 }
 
 module "node_exporter_client_config" {
@@ -210,8 +210,8 @@ variable "custom_clamav_yum_repo_url" {
   default = ""
 }
 
-variable "env_name" {
-  type = string
+variable "global_vars" {
+  type = any
 }
 
 variable "root_domain" {
@@ -548,7 +548,7 @@ resource "random_string" "metrics_key" {
 }
 
 output "metrics_key" {
-  value = "${var.env_name} ${random_string.metrics_key.result}"
+  value = "${local.env_name_prefix} ${random_string.metrics_key.result}"
 }
 
 output "secrets_bucket_name" {
@@ -807,6 +807,7 @@ output "public_bucket_name" {
 
 locals {
   public_bucket_url = "https://${aws_s3_bucket.public_bucket.bucket}.${var.s3_endpoint}"
+  env_name_prefix   = var.global_vars.name_prefix
 }
 
 output "public_bucket_url" {
