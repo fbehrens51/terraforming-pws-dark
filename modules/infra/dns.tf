@@ -29,7 +29,7 @@ resource "aws_route53_zone" "pcf_zone" {
   name = "${var.env_name}.${var.dns_suffix}"
 
   tags = merge(
-    var.tags,
+    var.tags.tags,
     {
       "Name" = "${var.env_name}-hosted-zone"
     },

@@ -166,7 +166,7 @@ resource "aws_s3_bucket" "import_bucket" {
   }
 
   tags = merge(
-    var.tags,
+    var.global_vars["global_tags"],
     {
       "Name" = "${local.env_name} Import Bucket"
     },
@@ -191,8 +191,9 @@ resource "aws_s3_bucket" "transfer_bucket" {
     target_prefix = "log/"
   }
 
+
   tags = merge(
-    var.tags,
+    var.global_vars["global_tags"],
     {
       "Name" = "${local.env_name} Transfer Bucket"
     },
@@ -230,7 +231,7 @@ resource "aws_s3_bucket" "mirror_bucket" {
   }
 
   tags = merge(
-    var.tags,
+    var.global_vars["global_tags"],
     {
       "Name" = "${local.env_name} Mirror Bucket"
     },
@@ -272,7 +273,7 @@ module "nat" {
   private_route_table_ids    = data.terraform_remote_state.routes.outputs.cp_private_vpc_route_table_ids
   ingress_cidr_blocks        = [data.aws_vpc.vpc.cidr_block]
   metrics_ingress_cidr_block = data.aws_vpc.pas_vpc.cidr_block
-  tags                       = local.modified_tags
+  tags                       = { tags = local.modified_tags, instance_tags = var.global_vars["instance_tags"] }
   public_subnet_ids          = module.public_subnets.subnet_ids
   internetless               = var.internetless
   bastion_private_ip         = "${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"
@@ -353,7 +354,7 @@ module "concourse_nlb" {
   env_name          = local.env_name
   internetless      = var.internetless
   public_subnet_ids = module.public_subnets.subnet_ids
-  tags              = var.tags
+  tags              = var.global_vars["global_tags"]
   vpc_id            = local.vpc_id
   egress_cidrs      = module.private_subnets.subnet_cidr_blocks
 }
@@ -363,7 +364,7 @@ module "uaa_elb" {
   env_name          = local.env_name
   internetless      = var.internetless
   public_subnet_ids = module.public_subnets.subnet_ids
-  tags              = var.tags
+  tags              = var.global_vars["global_tags"]
   vpc_id            = local.vpc_id
   egress_cidrs      = module.private_subnets.subnet_cidr_blocks
   short_name        = "uaa"
@@ -397,15 +398,16 @@ locals {
   s3_logs_bucket = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
   bucket_suffix  = random_integer.bucket.result
   om_key_name    = "${local.env_name}-cp-om"
-  env_name       = var.tags["Name"]
+  env_name       = var.global_vars.env_name
   modified_name  = "${local.env_name} control plane"
   modified_tags = merge(
-    var.tags,
+    var.global_vars["global_tags"],
     {
-      "Name"       = local.modified_name,
+      "Name"       = local.modified_name
       "MetricsKey" = data.terraform_remote_state.paperwork.outputs.metrics_key,
     },
   )
+
   bucket_prefix = replace(local.env_name, " ", "-")
 
   public_cidr_block  = cidrsubnet(data.aws_vpc.vpc.cidr_block, 1, 0)

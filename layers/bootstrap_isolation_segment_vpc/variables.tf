@@ -10,8 +10,8 @@ variable "isolation_segment_name_1" {}
 variable "isolation_segment_name_2" {}
 variable "isolation_segment_name_3" {}
 
-variable "tags" {
-  type = map(string)
+variable "global_vars" {
+  type = any
 }
 
 variable "internetless" {

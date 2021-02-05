@@ -10,8 +10,8 @@ variable "instance_type" {
 variable "region" {
 }
 
-variable "tags" {
-  type = map(string)
+variable "global_vars" {
+  type = any
 }
 
 variable "pypi_host" {

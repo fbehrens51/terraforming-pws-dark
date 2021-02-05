@@ -6,7 +6,7 @@ variable "availability_zones" {
 }
 
 variable "tags" {
-  type = map(string)
+  type = object({ tags = map(string), instance_tags = map(string) })
 }
 
 variable "name" {}
@@ -28,9 +28,8 @@ variable "public_bucket_name" {}
 variable "public_bucket_url" {}
 
 locals {
-  env_name = var.tags["Name"]
   modified_tags = merge(
-    var.tags,
+    var.tags.tags,
     {
       "isolation_segment" = var.name
     },
@@ -66,7 +65,7 @@ module "nat" {
   ingress_cidr_blocks        = module.isolation_segment_subnets_0.subnet_cidr_blocks
   metrics_ingress_cidr_block = var.pas_vpc_cidr_block
   public_subnet_ids          = var.public_subnet_ids
-  tags                       = local.modified_tags
+  tags                       = { tags = local.modified_tags, instance_tags = var.tags.instance_tags }
   ami_id                     = var.ami_id
   internetless               = var.internetless
   bastion_private_ip         = var.bastion_private_ip

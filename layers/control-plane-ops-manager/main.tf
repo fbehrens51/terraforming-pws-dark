@@ -46,12 +46,15 @@ data "terraform_remote_state" "bootstrap_control_plane" {
 locals {
   director_role_name = data.terraform_remote_state.paperwork.outputs.director_role_name
   om_eni_id          = data.terraform_remote_state.bootstrap_control_plane.outputs.om_eni_id
-
-  tags = merge(
-    var.tags,
+  env_name           = var.global_vars.env_name
+  modified_name      = "${var.global_vars.name_prefix} cp ops-manager"
+  modified_tags = merge(
+    var.global_vars["global_tags"],
+    var.global_vars["instance_tags"],
     {
-      "Name"       = "${var.env_name}-ops-manager"
+      "Name"       = local.modified_name
       "MetricsKey" = data.terraform_remote_state.paperwork.outputs.metrics_key,
+      "job"        = "cp_ops_manager",
     },
   )
   trusted_ca_certs           = data.terraform_remote_state.paperwork.outputs.trusted_with_additional_ca_certs
@@ -68,11 +71,8 @@ variable "remote_state_region" {
 variable "om_ami_id" {
 }
 
-variable "env_name" {
-}
-
-variable "tags" {
-  type = map(string)
+variable "global_vars" {
+  type = any
 }
 
 variable "instance_type" {
@@ -91,7 +91,7 @@ module "ops_manager" {
   ami_id               = var.om_ami_id
   iam_instance_profile = local.director_role_name
   instance_type        = var.instance_type
-  tags                 = local.tags
+  tags                 = local.modified_tags
   eni_ids              = [local.om_eni_id]
   user_data            = module.ops_manager_user_data.cloud_config
   bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key

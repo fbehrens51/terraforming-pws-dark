@@ -39,9 +39,7 @@ variable "availability_zones" {
 }
 
 variable "tags" {
-  type        = map(string)
-  default     = {}
-  description = "Key/value tags to assign to all AWS resources"
+  type = object({ tags = map(string), instance_tags = map(string) })
 }
 
 variable "internetless" {

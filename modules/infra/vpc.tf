@@ -10,7 +10,7 @@ resource "aws_security_group" "vms_security_group" {
   vpc_id      = data.aws_vpc.vpc.id
 
   tags = merge(
-    var.tags,
+    var.tags.tags,
     {
       Name        = "${var.env_name}-vms-security-group"
       Description = "infra/vpc module"

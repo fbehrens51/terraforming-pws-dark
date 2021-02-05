@@ -1,5 +1,5 @@
-variable "tags" {
-  type = map(string)
+variable "global_vars" {
+  type = any
 }
 
 variable "remote_state_bucket" {
@@ -62,7 +62,7 @@ module "syslog_ports" {
 }
 
 locals {
-  env_name       = var.tags["Name"]
+  env_name       = var.global_vars.env_name
   bucket_name    = "${replace(local.env_name, " ", "-")}-compliance-scans-pas"
   root_domain    = data.terraform_remote_state.paperwork.outputs.root_domain
   s3_logs_bucket = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
@@ -98,7 +98,7 @@ resource "aws_s3_bucket" "compliance_scanner_bucket" {
   }
 
   tags = merge(
-    var.tags,
+    var.global_vars["global_tags"],
     {
       "Name" = "Compliance Scanner Results Bucket"
     },

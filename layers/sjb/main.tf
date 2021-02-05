@@ -11,13 +11,15 @@ terraform {
 }
 
 locals {
-  env_name      = var.tags["Name"]
+  env_name      = var.global_vars.env_name
   modified_name = "${local.env_name} sjb"
   modified_tags = merge(
-    var.tags,
+    var.global_vars["global_tags"],
+    var.global_vars["instance_tags"],
     {
       "Name"       = local.modified_name
       "MetricsKey" = data.terraform_remote_state.paperwork.outputs.metrics_key,
+      "job"        = "sjb"
     },
   )
 
@@ -245,12 +247,7 @@ module "sjb" {
   iam_instance_profile = data.terraform_remote_state.paperwork.outputs.sjb_role_name
   instance_type        = var.instance_type
 
-  tags = merge(
-    local.modified_tags,
-    {
-      "Name" = "${local.env_name}-sjb"
-    },
-  )
+  tags = local.modified_tags
 
   root_block_device = {
     volume_type = "gp2"

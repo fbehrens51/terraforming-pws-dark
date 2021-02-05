@@ -33,14 +33,22 @@ data "terraform_remote_state" "routes" {
 }
 
 locals {
-  env_name      = var.tags["Name"]
+  env_name      = var.global_vars.env_name
   modified_name = "${local.env_name} bastion"
   modified_tags = merge(
-    var.tags,
+    var.global_vars["global_tags"],
     {
       "Name" = local.modified_name
     },
   )
+  instance_tags = merge(
+    local.modified_tags,
+    var.global_vars["instance_tags"],
+    {
+      "job" = "bastion"
+    },
+  )
+
   bot_user_data = <<DOC
 #cloud-config
 merge_how:
@@ -118,8 +126,7 @@ module "bastion_host" {
   ami_id             = var.ami_id == "" ? module.amazon_ami.id : var.ami_id
   user_data          = var.add_bot_user_to_user_data ? data.template_cloudinit_config.bot_user_data.rendered : data.template_cloudinit_config.user_data.rendered
   eni_ids            = [module.bootstrap_bastion.eni_id]
-
-  tags = local.modified_tags
+  tags               = local.instance_tags
 }
 
 variable "ami_id" {
@@ -151,7 +158,7 @@ variable "egress_rules" {
   type = list(object({ description = string, port = string, protocol = string, cidr_blocks = string }))
 }
 
-variable "tags" {
-  type = map(string)
+variable "global_vars" {
+  type = any
 }
 

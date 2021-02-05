@@ -22,6 +22,10 @@ variable "rds_instance_class" {
 variable "singleton_availability_zone" {
 }
 
+variable "global_vars" {
+  type = any
+}
+
 variable "sjb_egress_rules" {
   type = list(object({ description = string, port = string, protocol = string, cidr_blocks = string }))
 }
@@ -29,13 +33,6 @@ variable "sjb_egress_rules" {
 variable "sjb_ingress_rules" {
   type = list(object({ description = string, port = string, protocol = string, cidr_blocks = string }))
 }
-
-# variable "remote_state_bucket" {}
-# variable "remote_state_region" {}
-# variable "rds_db_username" {}
-# variable "rds_instance_class" {}
-
-# variable "env_name" {}
 
 variable "nat_instance_type" {
   default = "t2.medium"
@@ -48,16 +45,7 @@ variable "availability_zones" {
 variable "internetless" {
 }
 
-variable "tags" {
-  type = map(string)
-}
-
 variable "vpce_interface_prefix" {}
-
-# variable "s3_endpoint" {}
-# variable "ec2_endpoint" {}
-# variable "elb_endpoint" {}
-# variable "region" {}
 
 variable "force_destroy_buckets" {
   type    = bool

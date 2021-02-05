@@ -45,10 +45,10 @@ module "syslog_ports" {
 }
 
 locals {
-  env_name      = var.tags["Name"]
+  env_name      = var.global_vars.env_name
   modified_name = "${local.env_name} fluentd"
   modified_tags = merge(
-    var.tags,
+    var.global_vars["global_tags"],
     {
       "Name" = local.modified_name
     },
@@ -186,13 +186,13 @@ variable "remote_state_region" {
 variable "remote_state_bucket" {
 }
 
-variable "tags" {
-  type = map(string)
-}
-
 variable "force_destroy_buckets" {
   type    = bool
   default = false
+}
+
+variable "global_vars" {
+  type = any
 }
 
 output "fluentd_eni_ids" {

@@ -88,11 +88,11 @@ module "infra" {
 
   nat_ami_id = data.terraform_remote_state.encrypt_amis.outputs.encrypted_amazon2_ami_id
 
-  env_name                      = var.env_name
+  env_name                      = var.global_vars.name_prefix
   availability_zones            = var.availability_zones
   internetless                  = var.internetless
   dns_suffix                    = ""
-  tags                          = local.modified_tags
+  tags                          = { tags = local.modified_tags, instance_tags = var.global_vars["instance_tags"] }
   use_route53                   = false
   vpc_id                        = local.vpc_id
   public_route_table_id         = local.route_table_id
@@ -122,7 +122,7 @@ module "pas" {
   source                       = "../../modules/pas"
   availability_zones           = var.availability_zones
   dns_suffix                   = ""
-  env_name                     = var.env_name
+  env_name                     = var.global_vars.name_prefix
   public_subnet_ids            = module.infra.public_subnet_ids
   route_table_ids              = data.terraform_remote_state.routes.outputs.pas_private_vpc_route_table_ids
   tags                         = local.modified_tags
@@ -176,7 +176,7 @@ module "rds" {
   db_port      = 3306
   sg_rule_desc = "rds/3306"
 
-  env_name = var.env_name
+  env_name = var.global_vars.name_prefix
   vpc_id   = module.infra.vpc_id
   tags     = local.modified_tags
 
@@ -188,7 +188,7 @@ module "rds" {
 module "rds_subnet_group" {
   source = "../../modules/rds/subnet_group"
 
-  env_name           = var.env_name
+  env_name           = var.global_vars.name_prefix
   availability_zones = var.availability_zones
   vpc_id             = module.infra.vpc_id
   cidr_block         = module.calculated_subnets.rds_cidr
@@ -197,7 +197,7 @@ module "rds_subnet_group" {
 
 module "grafana_elb" {
   source            = "../../modules/elb/create"
-  env_name          = var.env_name
+  env_name          = var.global_vars.name_prefix
   internetless      = var.internetless
   public_subnet_ids = module.infra.public_subnet_ids
   tags              = local.modified_tags
@@ -210,7 +210,7 @@ module "grafana_elb" {
 
 module "pas_elb" {
   source            = "../../modules/elb/create"
-  env_name          = var.env_name
+  env_name          = var.global_vars.name_prefix
   internetless      = var.internetless
   public_subnet_ids = module.infra.public_subnet_ids
   tags              = local.modified_tags
@@ -236,7 +236,7 @@ module "ops_manager" {
   source = "../../modules/ops_manager/infra"
 
   bucket_suffix         = local.bucket_suffix
-  env_name              = var.env_name
+  env_name              = var.global_vars.name_prefix
   om_eip                = ! var.internetless
   private               = false
   subnet_id             = module.infra.public_subnet_ids[0]
@@ -268,9 +268,6 @@ variable "rds_db_username" {
 variable "rds_instance_class" {
 }
 
-variable "env_name" {
-}
-
 variable "availability_zones" {
   type = list(string)
 }
@@ -278,20 +275,22 @@ variable "availability_zones" {
 variable "internetless" {
 }
 
-variable "tags" {
-  type = map(string)
+variable "global_vars" {
+  type = any
 }
 
 locals {
-  env_name      = var.tags["Name"]
+
+  env_name      = var.global_vars.env_name
   modified_name = "${local.env_name} pas"
   modified_tags = merge(
-    var.tags,
+    var.global_vars["global_tags"],
     {
-      "Name"       = local.modified_name,
+      "Name"       = local.modified_name
       "MetricsKey" = data.terraform_remote_state.paperwork.outputs.metrics_key,
     },
   )
+
   secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
   cp_vpc_id           = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
   bastion_vpc_id      = data.terraform_remote_state.paperwork.outputs.bastion_vpc_id
@@ -299,7 +298,7 @@ locals {
   route_table_id      = data.terraform_remote_state.routes.outputs.pas_public_vpc_route_table_id
   bucket_suffix       = random_integer.bucket.result
   root_domain         = data.terraform_remote_state.paperwork.outputs.root_domain
-  om_key_name         = "${var.env_name}-om"
+  om_key_name         = "${var.global_vars.name_prefix}-om"
   s3_logs_bucket      = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
 
   ingress_rules = [

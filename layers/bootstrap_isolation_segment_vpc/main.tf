@@ -62,12 +62,12 @@ data "aws_vpc" "vpc" {
 }
 
 locals {
-  env_name      = var.tags["Name"]
+  env_name      = var.global_vars.env_name
   modified_name = "${local.env_name} isolation segment"
   modified_tags = merge(
-    var.tags,
+    var.global_vars["global_tags"],
     {
-      "Name"       = local.modified_name,
+      "Name"       = local.modified_name
       "MetricsKey" = data.terraform_remote_state.paperwork.outputs.metrics_key,
     },
   )
@@ -280,7 +280,7 @@ module "isolation_segment_0" {
   vpc_id             = var.vpc_id
   availability_zones = var.availability_zones
 
-  tags               = local.modified_tags
+  tags               = { tags = local.modified_tags, instance_tags = var.global_vars["instance_tags"] }
   internetless       = var.internetless
   bastion_private_ip = "${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"
   bastion_public_ip  = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null

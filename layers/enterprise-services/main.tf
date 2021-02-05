@@ -55,15 +55,16 @@ data "terraform_remote_state" "encrypt_amis" {
 }
 
 locals {
-  env_name      = var.tags["Name"]
+  env_name      = var.global_vars.env_name
   modified_name = "${local.env_name} enterprise services"
   modified_tags = merge(
-    var.tags,
+    var.global_vars["global_tags"],
     {
       "Name"       = local.modified_name
       "MetricsKey" = data.terraform_remote_state.paperwork.outputs.metrics_key,
     },
   )
+
   es_vpc_id  = data.terraform_remote_state.paperwork.outputs.es_vpc_id
   pas_vpc_id = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
 
@@ -153,7 +154,7 @@ module "nat" {
   private_route_table_ids    = data.terraform_remote_state.routes.outputs.es_private_vpc_route_table_ids
   ingress_cidr_blocks        = [data.aws_vpc.this_vpc.cidr_block]
   metrics_ingress_cidr_block = data.aws_vpc.pas_vpc.cidr_block
-  tags                       = local.modified_tags
+  tags                       = { tags = local.modified_tags, instance_tags = var.global_vars["instance_tags"] }
   public_subnet_ids          = module.public_subnets.subnet_ids
   bastion_private_ip         = "${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"
   bastion_public_ip          = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
@@ -172,9 +173,6 @@ variable "nat_instance_type" {
   default = "t2.medium"
 }
 
-variable "env_name" {
-}
-
 variable "internetless" {
 }
 
@@ -187,8 +185,8 @@ variable "remote_state_bucket" {
 variable "singleton_availability_zone" {
 }
 
-variable "tags" {
-  type = map(string)
+variable "global_vars" {
+  type = any
 }
 
 variable "availability_zones" {

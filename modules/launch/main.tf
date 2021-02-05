@@ -102,6 +102,10 @@ resource "aws_instance" "instance" {
     }
   }
 
+  lifecycle {
+    ignore_changes = [tags["operating-system"]]
+  }
+
   provisioner "remote-exec" {
     inline = [
       "echo \"Running cloud-init status --wait > /dev/null\"",
@@ -145,6 +149,9 @@ resource "aws_instance" "unchecked_instance" {
       volume_size           = lookup(root_block_device.value, "volume_size", null)
       volume_type           = lookup(root_block_device.value, "volume_type", null)
     }
+  }
+  lifecycle {
+    ignore_changes = [tags["operating-system"]]
   }
 }
 

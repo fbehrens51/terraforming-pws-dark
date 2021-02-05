@@ -12,8 +12,8 @@ variable "remote_state_region" {
 variable "remote_state_bucket" {
 }
 
-variable "tags" {
-  type = map(string)
+variable "global_vars" {
+  type = any
 }
 
 variable "internetless" {
@@ -79,13 +79,15 @@ data "terraform_remote_state" "encrypt_amis" {
 }
 
 locals {
-  env_name      = var.tags["Name"]
+  env_name      = var.global_vars.env_name
   modified_name = "${local.env_name} fluentd"
   modified_tags = merge(
-    var.tags,
+    var.global_vars["global_tags"],
+    var.global_vars["instance_tags"],
     {
-      "Name"       = local.modified_name,
+      "Name"       = local.modified_name
       "MetricsKey" = data.terraform_remote_state.paperwork.outputs.metrics_key,
+      "job"        = "fluentd",
     },
   )
 

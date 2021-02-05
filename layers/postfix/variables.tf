@@ -13,6 +13,6 @@ variable "remote_state_region" {
 variable "remote_state_bucket" {
 }
 
-variable "tags" {
-  type = map(string)
+variable "global_vars" {
+  type = any
 }

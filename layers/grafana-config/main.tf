@@ -45,8 +45,8 @@ variable "remote_state_bucket" {
 variable "remote_state_region" {
 }
 
-variable "tags" {
-  type = map(string)
+variable "global_vars" {
+  type = any
 }
 
 provider "grafana" {
@@ -66,7 +66,7 @@ data "aws_region" "current" {
 }
 
 locals {
-  env_name       = var.tags["Name"]
+  env_name       = var.global_vars.env_name
   slack_default  = var.slack_webhook != "" ? true : false
   log_group_name = data.terraform_remote_state.bootstrap_fluentd.outputs.log_group_name
   region         = data.aws_region.current.name

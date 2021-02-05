@@ -66,12 +66,19 @@ data "terraform_remote_state" "enterprise-services" {
 }
 
 locals {
-  env_name      = var.tags["Name"]
+  env_name      = var.global_vars.env_name
   modified_name = "${local.env_name} ldap"
   modified_tags = merge(
-    var.tags,
+    var.global_vars["global_tags"],
     {
       "Name" = local.modified_name
+    },
+  )
+  instance_tags = merge(
+    local.modified_tags,
+    var.global_vars["instance_tags"],
+    {
+      "job" = "ldap"
     },
   )
 
@@ -136,7 +143,7 @@ module "ldap_host" {
   eni_ids   = module.bootstrap.eni_ids
   user_data = data.terraform_remote_state.paperwork.outputs.bot_user_accounts_user_data
 
-  tags         = local.modified_tags
+  tags         = local.instance_tags
   bot_key_pem  = data.terraform_remote_state.paperwork.outputs.bot_private_key
   bastion_host = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
 }
@@ -179,8 +186,8 @@ variable "users" {
   type = list(object({ name = string, username = string, ou = string, roles = string }))
 }
 
-variable "tags" {
-  type = map(string)
+variable "global_vars" {
+  type = any
 }
 
 output "ldap_private_ip" {

@@ -2,7 +2,7 @@ variable "internetless" {
 }
 
 variable "tags" {
-  type = map(string)
+  type = object({ tags = map(string), instance_tags = map(string) })
 }
 
 variable "private_route_table_ids" {
@@ -56,14 +56,21 @@ variable "check_cloud_init" {
   default = true
 }
 
+
 locals {
-  env_name      = var.tags["Name"]
-  modified_name = "${local.env_name} nat"
+  modified_name = "${var.tags.tags["Name"]} nat"
   modified_tags = merge(
-    var.tags,
+    var.tags.tags,
     {
-      "Name" = local.modified_name
+      "Name" = local.modified_name,
     },
+  )
+  instance_tags = merge(
+    local.modified_tags,
+    var.tags.instance_tags,
+    {
+      "job" = "nat"
+    }
   )
 }
 
@@ -157,7 +164,7 @@ module "nat_host" {
   ami_id           = var.ami_id
   user_data        = data.template_cloudinit_config.user_data.rendered
   eni_ids          = module.eni.eni_ids
-  tags             = local.modified_tags
+  tags             = local.instance_tags
   instance_type    = var.instance_type
   bastion_host     = var.bastion_public_ip
   bot_key_pem      = var.bot_key_pem

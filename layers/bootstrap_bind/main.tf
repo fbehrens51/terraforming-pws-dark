@@ -41,10 +41,10 @@ module "syslog_ports" {
 }
 
 locals {
-  env_name      = var.tags["Name"]
+  env_name      = var.global_vars.env_name
   modified_name = "${local.env_name} bootstrap bind"
   modified_tags = merge(
-    var.tags,
+    var.global_vars["global_tags"],
     {
       "Name" = local.modified_name
     },
@@ -153,8 +153,8 @@ variable "remote_state_bucket" {
 variable "internetless" {
 }
 
-variable "tags" {
-  type = map(string)
+variable "global_vars" {
+  type = any
 }
 
 output "bind_eni_ids" {
