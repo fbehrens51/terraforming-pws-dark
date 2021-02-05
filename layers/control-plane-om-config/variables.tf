@@ -48,10 +48,6 @@ variable "ntp_servers" {
   type = list(string)
 }
 
-variable "tags" {
-  type = map(string)
-}
-
 variable "availability_zones" {
   type = list(string)
 }
