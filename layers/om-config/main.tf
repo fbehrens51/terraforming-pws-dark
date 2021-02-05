@@ -79,7 +79,7 @@ module "syslog_ports" {
 data "aws_vpcs" "isolation_segment_vpcs" {
   tags = {
     Purpose  = "isolation-segment"
-    env_name = var.env_name
+    env_name = local.env_name_prefix
   }
 }
 
@@ -98,6 +98,8 @@ data "aws_security_group" "isolation_segment_security_groups" {
 }
 
 locals {
+  env_name_prefix = var.global_vars.name_prefix
+
   isolation_segment_subnet_ids = flatten([for vpc_id, value in data.aws_subnet_ids.isolation_segment_subnet_ids : value.ids])
 
   isolation_segment_subnets = [for subnet in data.aws_subnet.isolation_segment_subnets : subnet if lookup(subnet.tags, "isolation_segment", "") != ""]
@@ -129,7 +131,7 @@ module "om_config" {
   om_ssl_config               = var.om_ssl_config
   om_ssh_banner_config        = var.om_ssh_banner_config
   pas_vpc_dns                 = local.vpc_dns
-  env_name                    = var.env_name
+  env_name                    = local.env_name_prefix
   region                      = data.aws_region.current.name
   s3_endpoint                 = var.s3_endpoint
   ec2_endpoint                = var.ec2_endpoint
@@ -361,7 +363,7 @@ locals {
     "home",
     data.terraform_remote_state.paperwork.outputs.system_domain,
   )
-  om_key_name = "${var.env_name}-om"
+  om_key_name = "${local.env_name_prefix}-om"
 
   pas_ert_subnet_cidrs            = data.terraform_remote_state.pas.outputs.pas_subnet_cidrs
   pas_infrastructure_subnet_cidrs = data.terraform_remote_state.pas.outputs.infrastructure_subnet_cidrs

@@ -22,6 +22,8 @@ module "providers" {
 }
 
 locals {
+  env_name_prefix = var.global_vars.name_prefix
+
   pas_vpc_id     = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
   es_vpc_id      = data.terraform_remote_state.paperwork.outputs.es_vpc_id
   cp_vpc_id      = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
@@ -41,7 +43,7 @@ module "pas_vpc_route_tables" {
   availability_zones = var.availability_zones
 
   tags = {
-    Name = "${var.env_name} | PAS"
+    Name = "${local.env_name_prefix} | PAS"
   }
 }
 
@@ -53,7 +55,7 @@ module "bastion_vpc_route_tables" {
   availability_zones = var.availability_zones
 
   tags = {
-    Name = "${var.env_name} | BASTION"
+    Name = "${local.env_name_prefix} | BASTION"
   }
 }
 
@@ -65,7 +67,7 @@ module "es_vpc_route_tables" {
   availability_zones = var.availability_zones
 
   tags = {
-    Name = "${var.env_name} | ENT SVCS"
+    Name = "${local.env_name_prefix} | ENT SVCS"
   }
 }
 
@@ -77,7 +79,7 @@ module "cp_vpc_route_tables" {
   availability_zones = var.availability_zones
 
   tags = {
-    Name = "${var.env_name} | CP"
+    Name = "${local.env_name_prefix} | CP"
   }
 }
 
@@ -180,8 +182,8 @@ variable "remote_state_bucket" {
 variable "internetless" {
 }
 
-variable "env_name" {
-  type = string
+variable "global_vars" {
+  type = any
 }
 
 variable "availability_zones" {

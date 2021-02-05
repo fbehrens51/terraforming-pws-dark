@@ -107,7 +107,7 @@ module "om_config" {
   control_plane_star_server_key  = data.terraform_remote_state.paperwork.outputs.control_plane_star_server_key
 
   vpc_id       = local.vpc_id
-  env_name     = var.env_name
+  env_name     = local.env_name_prefix
   region       = data.aws_region.current.name
   s3_endpoint  = var.s3_endpoint
   ec2_endpoint = var.ec2_endpoint
@@ -243,10 +243,11 @@ module "clamav_config" {
 }
 
 locals {
-  vpc_dns     = data.terraform_remote_state.paperwork.outputs.pas_vpc_dns
-  vpc_id      = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
-  om_key_name = "${var.env_name}-om"
-  root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
+  vpc_dns         = data.terraform_remote_state.paperwork.outputs.pas_vpc_dns
+  vpc_id          = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
+  env_name_prefix = var.global_vars.name_prefix
+  om_key_name     = "${local.env_name_prefix}-om"
+  root_domain     = data.terraform_remote_state.paperwork.outputs.root_domain
 
   control_plane_subnet_cidrs = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs
 

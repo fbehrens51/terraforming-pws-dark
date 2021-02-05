@@ -40,7 +40,8 @@ variable "apps_manager_global_wrapper_footer_content" {
 variable "apps_manager_global_wrapper_header_content" {
 }
 
-variable "env_name" {
+variable "global_vars" {
+  type = any
 }
 
 variable "s3_endpoint" {

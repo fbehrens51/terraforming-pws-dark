@@ -25,7 +25,8 @@ variable "smtp_enabled" {
 variable "iaas_configuration_endpoints_ca_cert" {
 }
 
-variable "env_name" {
+variable "global_vars" {
+  type = any
 }
 
 variable "internetless" {
