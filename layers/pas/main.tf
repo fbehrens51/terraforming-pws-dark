@@ -166,12 +166,12 @@ module "rds" {
   rds_db_username    = var.rds_db_username
   rds_instance_class = var.rds_instance_class
 
-  engine = "mariadb"
+  engine = var.pas_db_engine
 
   # RDS decided to upgrade the patch version automatically from 10.1.31 to
   # 10.1.34, which makes terraform see this as a change.  Use a prefix version
   # to prevent this from happening.
-  engine_version = "10.2"
+  engine_version = var.pas_db_engine_version
 
   db_port      = 3306
   sg_rule_desc = "rds/3306"
@@ -250,6 +250,14 @@ module "ops_manager" {
 resource "random_integer" "bucket" {
   min = 1
   max = 100000
+}
+
+variable "pas_db_engine" {
+  default = "mariadb"
+}
+
+variable "pas_db_engine_version" {
+  default = "10.2"
 }
 
 variable "nat_instance_type" {
