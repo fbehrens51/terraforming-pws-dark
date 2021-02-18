@@ -189,8 +189,8 @@ data "template_file" "cf_template" {
     smtp_enabled                                         = var.smtp_enabled
     uaa_service_provider_key_credentials_cert_pem        = var.uaa_service_provider_key_credentials_cert_pem
     uaa_service_provider_key_credentials_private_key_pem = var.uaa_service_provider_key_credentials_private_key_pem
-    apps_manager_global_wrapper_footer_content           = var.apps_manager_global_wrapper_footer_content
-    apps_manager_global_wrapper_header_content           = var.apps_manager_global_wrapper_header_content
+    apps_manager_global_wrapper_footer_content           = yamlencode({ "value" : var.apps_manager_global_wrapper_footer_content })
+    apps_manager_global_wrapper_header_content           = yamlencode({ "value" : var.apps_manager_global_wrapper_header_content })
     apps_manager_tools_url                               = var.apps_manager_tools_url
     apps_manager_about_url                               = var.apps_manager_about_url
     apps_manager_docs_url                                = var.apps_manager_docs_url

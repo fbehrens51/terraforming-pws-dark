@@ -492,9 +492,9 @@ product-properties:
         ${indent(8, uaa_service_provider_key_credentials_private_key_pem)}
 
   .properties.push_apps_manager_global_wrapper_footer_content:
-    value: ${apps_manager_global_wrapper_footer_content}
+    ${apps_manager_global_wrapper_footer_content}
   .properties.push_apps_manager_global_wrapper_header_content:
-    value: ${apps_manager_global_wrapper_header_content}
+    ${apps_manager_global_wrapper_header_content}
   .properties.push_apps_manager_footer_text:
     value: ""
   .properties.push_apps_manager_accent_color:
