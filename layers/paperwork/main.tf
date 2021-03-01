@@ -14,9 +14,10 @@ data "aws_region" "current" {
 }
 
 locals {
-  bucket_prefix   = "${replace(local.env_name_prefix, " ", "-")}"
-  s3_service_name = "com.amazonaws.${data.aws_region.current.name}.s3"
-  bot_user_data   = <<DOC
+  trusted_with_additional_ca_certs = "${data.aws_s3_bucket_object.trusted_ca_certs.body}${data.aws_s3_bucket_object.additional_trusted_ca_certs.body}"
+  bucket_prefix                    = "${replace(local.env_name_prefix, " ", "-")}"
+  s3_service_name                  = "com.amazonaws.${data.aws_region.current.name}.s3"
+  bot_user_data                    = <<DOC
 #cloud-config
 merge_how:
   - name: list
@@ -163,6 +164,13 @@ module "amazon2_clam_av_client_config" {
   public_bucket_url          = local.public_bucket_url
   clamav_rpms_pkg_object_url = var.clamav_rpms_pkg_object_url
 
+}
+
+module "amazon2_system_certs_user_data" {
+  source             = "../../modules/cloud_init/certs"
+  ca_chain           = local.trusted_with_additional_ca_certs
+  public_bucket_name = aws_s3_bucket.public_bucket.bucket
+  public_bucket_url  = local.public_bucket_url
 }
 
 module "custom_banner_config" {
@@ -639,7 +647,7 @@ output "trusted_ca_certs" {
 }
 
 output "trusted_with_additional_ca_certs" {
-  value = "${data.aws_s3_bucket_object.trusted_ca_certs.body}${data.aws_s3_bucket_object.additional_trusted_ca_certs.body}"
+  value = local.trusted_with_additional_ca_certs
 }
 
 output "rds_ca_cert" {
@@ -832,6 +840,10 @@ output "bastion_s3_vpc_endpoint_id" {
 
 output "node_exporter_user_data" {
   value = module.node_exporter_client_config.user_data
+}
+
+output "amazon2_system_certs_user_data" {
+  value = module.amazon2_system_certs_user_data.amazon2_system_certs_user_data
 }
 
 output "amazon2_clamav_user_data" {

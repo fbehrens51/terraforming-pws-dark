@@ -158,6 +158,12 @@ data "template_cloudinit_config" "user_data" {
   }
 
   part {
+    filename     = "system_certs.cfg"
+    content_type = "text/x-include-url"
+    content      = data.terraform_remote_state.paperwork.outputs.amazon2_system_certs_user_data
+  }
+
+  part {
     filename     = "clamav.cfg"
     content_type = "text/x-include-url"
     content      = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
