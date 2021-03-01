@@ -234,3 +234,7 @@ resource "null_resource" "fluentd_status" {
     ]
   }
 }
+
+output "fluent_ip" {
+  value = module.fluentd_instance.private_ips[0]
+}
