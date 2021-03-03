@@ -90,8 +90,9 @@ locals {
   pas_vpc_id     = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
   es_vpc_id      = data.terraform_remote_state.paperwork.outputs.es_vpc_id
 
-  iso_s3_endpoint_ids = data.terraform_remote_state.paperwork.outputs.iso_s3_endpoint_ids
-  bot_user_on_bastion = data.terraform_remote_state.bastion.outputs.bot_user_on_bastion
+  iso_s3_endpoint_ids    = data.terraform_remote_state.paperwork.outputs.iso_s3_endpoint_ids
+  bot_user_on_bastion    = data.terraform_remote_state.bastion.outputs.bot_user_on_bastion
+  bastion_route_table_id = data.terraform_remote_state.bastion.outputs.bastion_route_table_id
 }
 
 data "aws_vpc" "pas_vpc" {
@@ -384,7 +385,7 @@ module "route_isolation_segment_bastion" {
     module.isolation_segment_2.private_route_table_ids,
     module.isolation_segment_3.private_route_table_ids,
   )
-  requester_route_table_ids = [data.terraform_remote_state.routes.outputs.bastion_public_vpc_route_table_id]
+  requester_route_table_ids = [local.bastion_route_table_id]
   availability_zones        = var.availability_zones
 }
 
