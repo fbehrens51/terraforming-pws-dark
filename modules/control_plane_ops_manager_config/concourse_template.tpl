@@ -80,7 +80,7 @@ resource-config:
     instance_type:
       id: automatic
     internet_connected: false
-    elb_names: ${credhub_tg_names}
+    elb_names: ${credhub_elb_names}
     additional_vm_extensions:
     - concourse-lb-security-group
   uaa:

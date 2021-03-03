@@ -371,6 +371,18 @@ module "uaa_elb" {
   port              = 8443
 }
 
+module "credhub_elb" {
+  source            = "../../modules/elb/create"
+  env_name          = local.env_name
+  internetless      = var.internetless
+  public_subnet_ids = module.public_subnets.subnet_ids
+  tags              = var.global_vars["global_tags"]
+  vpc_id            = local.vpc_id
+  egress_cidrs      = module.private_subnets.subnet_cidr_blocks
+  short_name        = "credhub"
+  port              = 8844
+  health_check      = "TCP:8844"
+}
 resource "random_integer" "bucket" {
   min = 1
   max = 100000

@@ -168,6 +168,7 @@ data "template_file" "concourse_template" {
     web_tg_names              = "[${join(",", formatlist("alb:%s", var.web_tg_names))}]"
     credhub_tg_names          = "[${join(",", formatlist("alb:%s", var.credhub_tg_names))}]"
     uaa_elb_names             = "[${join(",", var.uaa_elb_names)}]"
+    credhub_elb_names         = "[${join(",", var.credhub_elb_names)}]"
     plane_endpoint            = module.domains.control_plane_plane_fqdn
     uaa_endpoint              = "${module.domains.control_plane_uaa_fqdn}:8443"
     concourse_cert_pem        = var.concourse_cert_pem
@@ -193,7 +194,7 @@ data "template_file" "concourse_template" {
     postgres_credhub_db_name  = var.postgres_credhub_db_name
     postgres_credhub_username = var.postgres_credhub_username
     postgres_credhub_password = var.postgres_credhub_password
-    credhub_endpoint          = "${module.domains.control_plane_plane_fqdn}:8844"
+    credhub_endpoint          = "${module.domains.control_plane_credhub_fqdn}:8844"
   }
 }
 

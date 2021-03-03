@@ -20,6 +20,8 @@ ${om_subdomain}             A       ${om_public_ip}
 ${control_plane_om_subdomain}    A       ${control_plane_om_public_ip}
 ${control_plane_plane_subdomain} CNAME   ${control_plane_plane_elb_dns}.
 ${control_plane_plane_uaa_subdomain} CNAME   ${control_plane_plane_uaa_elb_dns}.
+${control_plane_plane_credhub_subdomain} CNAME   ${control_plane_plane_credhub_elb_dns}.
+
 
 ${smtp_subdomain}           A       ${postfix_private_ip}
 

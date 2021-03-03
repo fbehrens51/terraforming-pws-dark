@@ -93,6 +93,11 @@ variable "uaa_elb_names" {
   description = "List of elb names which UAA should be attached to."
 }
 
+variable "credhub_elb_names" {
+  type        = list(string)
+  description = "List of elb names which UAA should be attached to."
+}
+
 variable "web_tg_names" {
   type        = list(string)
   description = "List of nlb target group names which ATC / TSA should be attached to."

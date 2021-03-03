@@ -128,6 +128,7 @@ module "om_config" {
 
   web_tg_names                   = data.terraform_remote_state.bootstrap_control_plane.outputs.web_tg_ids
   uaa_elb_names                  = [data.terraform_remote_state.bootstrap_control_plane.outputs.uaa_elb_id]
+  credhub_elb_names              = [data.terraform_remote_state.bootstrap_control_plane.outputs.credhub_elb_id]
   credhub_tg_names               = data.terraform_remote_state.bootstrap_control_plane.outputs.credhub_tg_ids
   concourse_lb_security_group_id = data.terraform_remote_state.bootstrap_control_plane.outputs.concourse_lb_security_group_id
 

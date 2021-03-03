@@ -62,6 +62,10 @@ output "uaa_elb_id" {
   value = module.uaa_elb.my_elb_id
 }
 
+output "credhub_elb_id" {
+  value = module.credhub_elb.my_elb_id
+}
+
 output "web_tg_ids" {
   value = module.concourse_nlb.web_tg_ids
 }
@@ -130,6 +134,10 @@ output "ops_manager_ip" {
 
 output "uaa_elb_dns" {
   value = module.uaa_elb.dns_name
+}
+
+output "credhub_elb_dns" {
+  value = module.credhub_elb.dns_name
 }
 
 output "plane_elb_dns" {
