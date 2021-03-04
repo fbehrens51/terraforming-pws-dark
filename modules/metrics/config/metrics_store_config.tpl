@@ -18,7 +18,7 @@ resource-config:
     additional_vm_extensions: []
     elb_names: []
     instance_type:
-      id: automatic
+      id: r5.large
     instances: automatic
     internet_connected: false
     persistent_disk:
