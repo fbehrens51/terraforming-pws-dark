@@ -18,6 +18,17 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
+data "terraform_remote_state" "scaling-params" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "scaling-params"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "bootstrap_control_plane" {
   backend = "s3"
 
@@ -85,6 +96,7 @@ data "aws_network_interface" "ec2_vpce_eni" {
 module "om_config" {
   source = "../../modules/control_plane_ops_manager_config"
 
+  scale = data.terraform_remote_state.scaling-params.outputs.instance_types
   secrets_bucket_name                     = local.secrets_bucket_name
   director_config                         = var.director_config
   concourse_config                        = var.concourse_config
@@ -222,6 +234,7 @@ module "runtime_config_config" {
 module "clamav_config" {
   source = "../../modules/clamav"
 
+  scale = data.terraform_remote_state.scaling-params.outputs.instance_types
   secrets_bucket_name              = local.secrets_bucket_name
   clamav_addon_config              = var.clamav_addon_config
   clamav_mirror_config             = var.clamav_mirror_config

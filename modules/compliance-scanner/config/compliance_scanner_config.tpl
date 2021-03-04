@@ -52,7 +52,7 @@ resource-config:
     - s3_instance_profile
     elb_names: []
     instance_type:
-      id: m5.large
+      id: ${scale.oscap_store}
     instances: automatic
     internet_connected: false
     swap_as_percent_of_memory_size: automatic

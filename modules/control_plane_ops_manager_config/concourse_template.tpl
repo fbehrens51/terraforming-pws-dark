@@ -78,19 +78,19 @@ resource-config:
   credhub:
     instances: automatic
     instance_type:
-      id: m5.large
+      id: ${scale.credhub}
     internet_connected: false
     elb_names: ${credhub_elb_names}
   uaa:
     instances: automatic
     instance_type:
-      id: m5.large
+      id: ${scale.uaa}
     internet_connected: false
     elb_names: ${uaa_elb_names}
   web:
     instances: automatic
     instance_type:
-      id: m5.large
+      id: ${scale.web}
     internet_connected: false
     elb_names: ${web_tg_names}
     additional_vm_extensions:
@@ -98,7 +98,7 @@ resource-config:
   worker:
     instances: automatic
     instance_type:
-      id: r5.xlarge
+      id: ${scale.worker}
     internet_connected: false
     additional_vm_extensions:
     - worker_instance_profile

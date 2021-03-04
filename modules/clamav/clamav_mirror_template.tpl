@@ -39,7 +39,7 @@ resource-config:
     persistent_disk:
       size_mb: automatic
     instance_type:
-      id: m5.large
+      id: ${scale.antivirus-mirror}
     internet_connected: false
 syslog-properties:
   enabled: true

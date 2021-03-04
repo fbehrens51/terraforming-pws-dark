@@ -37,10 +37,13 @@ variable "reports_bucket_name" {
 variable "reports_bucket_region" {
 }
 
-data "template_file" "compliance_scanner_config" {
-  template = file("${path.module}/compliance_scanner_config.tpl")
+variable "scale" {
+  type = map(map(string))
+}
 
-  vars = {
+locals{
+  compliance_scanner_config = templatefile("${path.module}/compliance_scanner_config.tpl", {
+    scale = var.scale["p-compliance-scanner"]
     network_name = var.network_name
     //availability_zones value isn't being used to configure AZs, so hard coding to use singleton_az for now
     //availability_zones = "[${join(",", var.availability_zones)}]"
@@ -53,11 +56,11 @@ data "template_file" "compliance_scanner_config" {
     custom_ssh_banner           = var.custom_ssh_banner
     reports_bucket_name         = var.reports_bucket_name
     reports_bucket_region       = var.reports_bucket_region
-  }
+  })
 }
 
 resource "aws_s3_bucket_object" "compliance_scanner_template" {
   bucket  = var.secrets_bucket_name
   key     = var.compliance_scanner_config
-  content = data.template_file.compliance_scanner_config.rendered
+  content = local.compliance_scanner_config
 }

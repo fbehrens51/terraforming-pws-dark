@@ -25,6 +25,17 @@ data "terraform_remote_state" "pas" {
   }
 }
 
+data "terraform_remote_state" "scaling-params" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "scaling-params"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "bootstrap_control_plane" {
   backend = "s3"
 
@@ -58,6 +69,7 @@ module "syslog_ports" {
 module "config" {
   source = "../../modules/isolation_segment_config"
 
+  scale = data.terraform_remote_state.scaling-params.outputs.instance_types
   iso_seg_name             = var.name
   iso_seg_tile_suffix      = local.hyphenated_name
   secrets_bucket_name      = local.secrets_bucket_name

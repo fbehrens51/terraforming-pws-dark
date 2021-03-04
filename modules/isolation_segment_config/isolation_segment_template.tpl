@@ -143,7 +143,7 @@ resource-config:
     # the 5th instance allows for upgrades/repaves while allowing for 100% customer utilization of 4 instances.
     instances: 5
     instance_type:
-      id: r5.large
+      id: ${scale.isolated_diego_cell}
     internet_connected: false
     swap_as_percent_of_memory_size: automatic
   isolated_ha_proxy_${iso_seg_tile_suffix_underscore}:

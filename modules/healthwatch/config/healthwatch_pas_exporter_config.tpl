@@ -24,7 +24,7 @@ resource-config:
     additional_vm_extensions: []
     elb_names: []
     instance_type:
-      id: t3.medium
+      id: ${scale.bosh-deployments-exporter}
     instances: automatic
     internet_connected: false
     persistent_disk:
@@ -36,7 +36,7 @@ resource-config:
     additional_vm_extensions: []
     elb_names: []
     instance_type:
-      id: t3.medium
+      id: ${scale.bosh-health-exporter}
     instances: automatic
     internet_connected: false
     persistent_disk:
@@ -48,7 +48,7 @@ resource-config:
     additional_vm_extensions: []
     elb_names: []
     instance_type:
-      id: t3.medium
+      id: ${scale.cert-expiration-exporter}
     instances: automatic
     internet_connected: false
     persistent_disk:
@@ -60,7 +60,7 @@ resource-config:
     additional_vm_extensions: []
     elb_names: []
     instance_type:
-      id: m5.large
+      id: ${scale.pas-exporter-counter}
     instances: automatic
     internet_connected: false
     persistent_disk:
@@ -72,7 +72,7 @@ resource-config:
     additional_vm_extensions: []
     elb_names: []
     instance_type:
-      id: automatic
+      id: ${scale.pas-exporter-gauge}
     instances: m5.large
     internet_connected: false
     persistent_disk:
@@ -84,7 +84,7 @@ resource-config:
     additional_vm_extensions: []
     elb_names: []
     instance_type:
-      id: m5.large
+      id: ${scale.pas-exporter-timer}
     instances: automatic
     internet_connected: false
     persistent_disk:
@@ -96,7 +96,7 @@ resource-config:
     additional_vm_extensions: []
     elb_names: []
     instance_type:
-      id: t3.medium
+      id: ${scale.pas-sli-exporter}
     instances: automatic
     internet_connected: false
     persistent_disk:

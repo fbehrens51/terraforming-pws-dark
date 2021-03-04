@@ -437,7 +437,7 @@ resource-config:
     elb_names:
     - ${grafana_elb_id}
     instance_type:
-      id: automatic
+      id: ${scale.grafana}
     instances: automatic
     internet_connected: false
     persistent_disk:
@@ -449,7 +449,7 @@ resource-config:
     additional_vm_extensions: []
     elb_names: []
     instance_type:
-      id: automatic
+      id: ${scale.pxc}
     instances: automatic
     internet_connected: false
     persistent_disk:
@@ -461,7 +461,7 @@ resource-config:
     additional_vm_extensions: []
     elb_names: []
     instance_type:
-      id: automatic
+      id: ${scale.pxc-proxy}
     instances: automatic
     internet_connected: false
     persistent_disk:
@@ -474,7 +474,7 @@ resource-config:
     - tsdb_instance_profile
     elb_names: []
     instance_type:
-      id: r5.large
+      id: ${scale.tsdb}
     instances: automatic
     internet_connected: false
     persistent_disk:

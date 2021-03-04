@@ -82,6 +82,17 @@ data "terraform_remote_state" "pas" {
   }
 }
 
+data "terraform_remote_state" "scaling-params" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "scaling-params"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 module "domains" {
   source = "../../modules/domains"
 
@@ -100,6 +111,7 @@ locals {
 
 module "healthwatch_config" {
   source                           = "../../modules/healthwatch/config"
+  scale = data.terraform_remote_state.scaling-params.outputs.instance_types
   secrets_bucket_name              = local.secrets_bucket_name
   healthwatch_config               = var.healthwatch_config
   healthwatch_pas_exporter_config  = var.healthwatch_pas_exporter_config

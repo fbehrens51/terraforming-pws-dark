@@ -593,3 +593,7 @@ variable "tcp_router_instance_type" {
 
 variable "uaa_instance_type" {
 }
+
+variable "scale" {
+  type = map(map(string))
+}

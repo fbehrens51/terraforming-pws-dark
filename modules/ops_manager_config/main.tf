@@ -93,6 +93,7 @@ EOF
 
 locals {
   director_template = templatefile("${path.module}/director_template.tpl", {
+    scale                                       = var.scale["p-bosh"]
     ec2_endpoint                                = var.ec2_endpoint,
     elb_endpoint                                = var.elb_endpoint,
     custom_ssh_banner                           = var.custom_ssh_banner,
@@ -140,10 +141,9 @@ locals {
   })
 }
 
-data "template_file" "cf_template" {
-  template = file("${path.module}/cf_template.tpl")
-
-  vars = {
+locals{
+  cf_template = templatefile("${path.module}/cf_template.tpl", {
+    scale                                                = var.scale["cf"]
     region                                               = var.region
     s3_endpoint                                          = "https://${var.s3_endpoint}"
     router_elb_names                                     = "[${join(",", var.router_elb_names)}]"
@@ -230,7 +230,7 @@ data "template_file" "cf_template" {
     syslog_scheduler_instance_type                       = var.syslog_scheduler_instance_type
     tcp_router_instance_type                             = var.tcp_router_instance_type
     uaa_instance_type                                    = var.uaa_instance_type
-  }
+  })
 }
 
 resource "tls_private_key" "jwt" {
@@ -343,5 +343,5 @@ resource "aws_s3_bucket_object" "director_template" {
 resource "aws_s3_bucket_object" "cf_template" {
   bucket  = var.secrets_bucket_name
   key     = var.cf_config
-  content = data.template_file.cf_template.rendered
+  content = local.cf_template
 }

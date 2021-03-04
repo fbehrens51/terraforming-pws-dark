@@ -71,10 +71,9 @@ EOF
   }
 }
 
-data "template_file" "director_template" {
-  template = file("${path.module}/director_template.tpl")
-
-  vars = {
+locals{
+  director_template = templatefile("${path.module}/director_template.tpl", {
+    scale                                       = var.scale["p-bosh"]
     ec2_endpoint                                = var.ec2_endpoint
     elb_endpoint                                = var.elb_endpoint
     rds_host                                    = var.mysql_host
@@ -116,7 +115,7 @@ data "template_file" "director_template" {
     director_blobstore_bucket_backup            = var.director_blobstore_bucket_backup,
     director_blobstore_s3_endpoint              = "https://${var.s3_endpoint}",
     director_blobstore_location                 = var.director_blobstore_location, // s3 or local
-  }
+  })
 }
 
 module "domains" {
@@ -156,10 +155,9 @@ data "template_file" "admin_users" {
 EOF
 }
 
-data "template_file" "concourse_template" {
-  template = file("${path.module}/concourse_template.tpl")
-
-  vars = {
+locals{
+  concourse_template = templatefile("${path.module}/concourse_template.tpl", {
+    scale = var.scale["pws-dark-concourse-tile"]
     singleton_availability_zone = var.singleton_availability_zone
     control_plane_vpc_azs = indent(
       4,
@@ -195,7 +193,7 @@ data "template_file" "concourse_template" {
     postgres_credhub_username = var.postgres_credhub_username
     postgres_credhub_password = var.postgres_credhub_password
     credhub_endpoint          = "${module.domains.control_plane_credhub_fqdn}:8844"
-  }
+  })
 }
 
 resource "aws_s3_bucket_object" "om_create_db_config" {
@@ -231,11 +229,11 @@ resource "aws_s3_bucket_object" "om_syslog_config" {
 resource "aws_s3_bucket_object" "director_template" {
   bucket  = var.secrets_bucket_name
   key     = var.director_config
-  content = data.template_file.director_template.rendered
+  content = local.director_template
 }
 
 resource "aws_s3_bucket_object" "concourse_template" {
   bucket  = var.secrets_bucket_name
   key     = var.concourse_config
-  content = data.template_file.concourse_template.rendered
+  content = local.concourse_template
 }

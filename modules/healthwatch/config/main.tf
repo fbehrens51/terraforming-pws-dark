@@ -78,6 +78,10 @@ variable "grafana_additional_cipher_suites" {
   type = list(string)
 }
 
+variable "scale" {
+  type = map(map(string))
+}
+
 data "template_file" "hw_vpc_azs" {
   count = length(var.availability_zones)
 
@@ -96,10 +100,9 @@ module "domains" {
   root_domain = var.root_domain
 }
 
-data "template_file" "healthwatch_config" {
-  template = file("${path.module}/healthwatch_config.tpl")
-
-  vars = {
+locals{
+  healthwatch_config = templatefile("${path.module}/healthwatch_config.tpl", {
+    scale = var.scale["p-healthwatch2"]
     grafana_additional_cipher_suites = join(",", var.grafana_additional_cipher_suites)
     grafana_root_url                 = "https://${module.domains.grafana_fqdn}"
     fluentd_root_url                 = "${module.domains.fluentd_fqdn}:9200"
@@ -128,19 +131,18 @@ data "template_file" "healthwatch_config" {
     syslog_host                      = var.syslog_host
     syslog_port                      = var.syslog_port
     syslog_ca_cert                   = var.syslog_ca_cert
-  }
+  })
 }
 
 resource "aws_s3_bucket_object" "healthwatch_template" {
   bucket  = var.secrets_bucket_name
   key     = var.healthwatch_config
-  content = data.template_file.healthwatch_config.rendered
+  content = local.healthwatch_config
 }
 
-data "template_file" "healthwatch_pas_exporter_config" {
-  template = file("${path.module}/healthwatch_pas_exporter_config.tpl")
-
-  vars = {
+locals{
+  healthwatch_pas_exporter_config = templatefile("${path.module}/healthwatch_pas_exporter_config.tpl", {
+    scale = var.scale["p-healthwatch2-pas-exporter"]
     bosh_client_username           = "healthwatch_client"
     bosh_client_password           = var.bosh_task_uaa_client_secret
     network_name                   = var.network_name
@@ -150,11 +152,11 @@ data "template_file" "healthwatch_pas_exporter_config" {
     syslog_host                    = var.syslog_host
     syslog_port                    = var.syslog_port
     syslog_ca_cert                 = var.syslog_ca_cert
-  }
+  })
 }
 
 resource "aws_s3_bucket_object" "healthwatch_pas_exporter_template" {
   bucket  = var.secrets_bucket_name
   key     = var.healthwatch_pas_exporter_config
-  content = data.template_file.healthwatch_pas_exporter_config.rendered
+  content = local.healthwatch_pas_exporter_config
 }

@@ -120,7 +120,7 @@ resource-configuration:
     additional_vm_extensions: []
     elb_names: []
     instance_type:
-      id: automatic
+      id: ${scale.compilation}
     instances: automatic
     internet_connected: false
     swap_as_percent_of_memory_size: automatic
@@ -129,7 +129,7 @@ resource-configuration:
     additional_vm_extensions: []
     elb_names: []
     instance_type:
-      id: automatic
+      id: ${scale.director}
     instances: automatic
     internet_connected: false
     persistent_disk:

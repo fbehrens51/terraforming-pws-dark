@@ -528,7 +528,7 @@ resource-config:
     persistent_disk:
       size_mb: automatic
     instance_type:
-      id: ${backup_restore_instance_type}
+      id: ${scale.backup_restore}
     internet_connected: false
     additional_vm_extensions:
     - s3_instance_profile
@@ -538,14 +538,14 @@ resource-config:
     additional_vm_extensions: []
     instances: automatic
     instance_type:
-      id: ${clock_global_instance_type}
+      id: ${scale.clock_global}
     internet_connected: false
   cloud_controller:
     swap_as_percent_of_memory_size: automatic
     additional_networks: []
     instances: automatic
     instance_type:
-      id: ${cloud_controller_instance_type}
+      id: ${scale.cloud_controller}
     internet_connected: false
     additional_vm_extensions:
     - s3_instance_profile
@@ -554,7 +554,7 @@ resource-config:
     additional_networks: []
     instances: automatic
     instance_type:
-      id: ${cloud_controller_worker_instance_type}
+      id: ${scale.cloud_controller_worker}
     internet_connected: false
     additional_vm_extensions:
     - s3_instance_profile
@@ -564,7 +564,7 @@ resource-config:
     additional_vm_extensions: []
     instances: automatic
     instance_type:
-      id: ${credhub_instance_type}
+      id: ${scale.credhub}
     internet_connected: false
   diego_brain:
     swap_as_percent_of_memory_size: automatic
@@ -572,7 +572,7 @@ resource-config:
     additional_vm_extensions: []
     instances: automatic
     instance_type:
-      id: ${diego_brain_instance_type}
+      id: ${scale.diego_brain}
     internet_connected: false
   diego_cell:
     swap_as_percent_of_memory_size: automatic
@@ -583,7 +583,7 @@ resource-config:
     # GB per instance, this value should also be updated in the isolation segment config
     instances: 4
     instance_type:
-      id: r5.large
+      id: ${scale.diego_cell}
     internet_connected: false
   diego_database:
     swap_as_percent_of_memory_size: automatic
@@ -591,7 +591,7 @@ resource-config:
     additional_vm_extensions: []
     instances: automatic
     instance_type:
-      id: ${diego_database_instance_type}
+      id: ${scale.diego_database}
     internet_connected: false
   doppler:
     swap_as_percent_of_memory_size: automatic
@@ -599,7 +599,7 @@ resource-config:
     additional_vm_extensions: []
     instances: automatic
     instance_type:
-      id: ${doppler_instance_type}
+      id: ${scale.doppler}
     internet_connected: false
   ha_proxy:
     swap_as_percent_of_memory_size: automatic
@@ -607,7 +607,7 @@ resource-config:
     additional_vm_extensions: []
     instances: automatic
     instance_type:
-      id: ${ha_proxy_instance_type}
+      id: automatic
     internet_connected: false
   istio_control:
     swap_as_percent_of_memory_size: automatic
@@ -631,7 +631,7 @@ resource-config:
     additional_vm_extensions: []
     instances: automatic
     instance_type:
-      id: ${loggregator_trafficcontroller_instance_type}
+      id: ${scale.loggregator_trafficcontroller}
     internet_connected: false
   mysql:
     swap_as_percent_of_memory_size: automatic
@@ -641,7 +641,7 @@ resource-config:
     persistent_disk:
       size_mb: automatic
     instance_type:
-      id: ${mysql_instance_type}
+      id: automatic
     internet_connected: false
   mysql_monitor:
     swap_as_percent_of_memory_size: automatic
@@ -649,7 +649,7 @@ resource-config:
     additional_vm_extensions: []
     instances: 0
     instance_type:
-      id: ${mysql_monitor_instance_type}
+      id: automatic
     internet_connected: false
   mysql_proxy:
     swap_as_percent_of_memory_size: automatic
@@ -657,7 +657,7 @@ resource-config:
     additional_vm_extensions: []
     instances: 0
     instance_type:
-      id: ${mysql_proxy_instance_type}
+      id: automatic
     internet_connected: false
   nats:
     swap_as_percent_of_memory_size: automatic
@@ -665,7 +665,7 @@ resource-config:
     additional_vm_extensions: []
     instances: automatic
     instance_type:
-      id: ${nats_instance_type}
+      id: ${scale.nats}
     internet_connected: false
   nfs_server:
     swap_as_percent_of_memory_size: automatic
@@ -675,7 +675,7 @@ resource-config:
     persistent_disk:
       size_mb: automatic
     instance_type:
-      id: ${nfs_server_instance_type}
+      id: automatic
     internet_connected: false
   router:
     swap_as_percent_of_memory_size: automatic
@@ -683,7 +683,7 @@ resource-config:
     additional_vm_extensions: []
     instances: automatic
     instance_type:
-      id: ${router_instance_type}
+      id: ${scale.router}
     internet_connected: false
     elb_names: ${router_elb_names}
   tcp_router:
@@ -694,7 +694,7 @@ resource-config:
     persistent_disk:
       size_mb: automatic
     instance_type:
-      id: ${tcp_router_instance_type}
+      id: automatic
     internet_connected: false
   route_syncer:
     swap_as_percent_of_memory_size: automatic
@@ -710,7 +710,7 @@ resource-config:
     additional_vm_extensions: []
     instances: automatic
     instance_type:
-      id: ${uaa_instance_type}
+      id: ${scale.uaa}
     internet_connected: false
 errand-config:
   deploy-autoscaler:

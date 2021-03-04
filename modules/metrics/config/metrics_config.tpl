@@ -22,7 +22,7 @@ resource-config:
     additional_vm_extensions: []
     elb_names: []
     instance_type:
-      id: automatic
+      id: ${scale.db-and-errand-runner}
     instances: automatic
     internet_connected: false
     persistent_disk:
@@ -34,7 +34,7 @@ resource-config:
     additional_vm_extensions: []
     elb_names: []
     instance_type:
-      id: r5.large
+      id: ${scale.log-store-vms}
     instances: automatic
     internet_connected: false
     persistent_disk:

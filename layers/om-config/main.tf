@@ -21,6 +21,17 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
+data "terraform_remote_state" "scaling-params" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "scaling-params"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "bootstrap_control_plane" {
   backend = "s3"
 
@@ -119,6 +130,7 @@ data "aws_subnet" "isolation_segment_subnets" {
 module "om_config" {
   source = "../../modules/ops_manager_config"
 
+  scale = data.terraform_remote_state.scaling-params.outputs.instance_types
   secrets_bucket_name         = local.secrets_bucket_name
   cf_config                   = var.cf_config
   cf_tools_config             = var.cf_tools_config
@@ -313,6 +325,7 @@ module "runtime_config_config" {
 module "clamav_config" {
   source = "../../modules/clamav"
 
+  scale = data.terraform_remote_state.scaling-params.outputs.instance_types
   secrets_bucket_name              = local.secrets_bucket_name
   clamav_addon_config              = var.clamav_addon_config
   clamav_mirror_config             = var.clamav_mirror_config

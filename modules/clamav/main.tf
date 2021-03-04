@@ -56,6 +56,10 @@ variable "clamav_release_url" {
 variable "clamav_release_sha1" {
 }
 
+variable "scale" {
+  type = map(map(string))
+}
+
 data "template_file" "pas_vpc_azs" {
   count = length(var.availability_zones)
 
@@ -80,10 +84,9 @@ data "template_file" "clamav_director_template" {
   }
 }
 
-data "template_file" "clamav_mirror_template" {
-  template = file("${path.module}/clamav_mirror_template.tpl")
-
-  vars = {
+locals{
+  clamav_mirror_template = templatefile("${path.module}/clamav_mirror_template.tpl", {
+    scale                       = var.scale["p-antivirus-mirror"]
     bosh_network_name           = var.bosh_network_name
     external_mirrors            = join(",", var.clamav_external_mirrors)
     no_upstream_mirror          = var.clamav_no_upstream_mirror
@@ -92,7 +95,7 @@ data "template_file" "clamav_mirror_template" {
     syslog_host                 = var.syslog_host
     syslog_port                 = var.syslog_port
     syslog_ca_cert              = var.syslog_ca_cert
-  }
+  })
 }
 
 data "template_file" "clamav_addon_template" {
@@ -113,7 +116,7 @@ resource "aws_s3_bucket_object" "clamav_addon_template" {
 resource "aws_s3_bucket_object" "clamav_mirror_template" {
   bucket  = var.secrets_bucket_name
   key     = var.clamav_mirror_config
-  content = data.template_file.clamav_mirror_template.rendered
+  content = local.clamav_mirror_template
 }
 
 resource "aws_s3_bucket_object" "clamav_director_template" {
