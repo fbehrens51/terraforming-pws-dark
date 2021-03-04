@@ -233,15 +233,6 @@ data "template_file" "cf_template" {
   }
 }
 
-data "template_file" "cf_tools_template" {
-  template = file("${path.module}/cf_tools_template.tpl")
-
-  vars = {
-    pas_vpc_azs                 = indent(4, join("", data.template_file.pas_vpc_azs.*.rendered))
-    singleton_availability_zone = var.singleton_availability_zone
-  }
-}
-
 resource "tls_private_key" "jwt" {
   algorithm = "RSA"
   rsa_bits  = "2048"
@@ -347,12 +338,6 @@ resource "aws_s3_bucket_object" "director_template" {
   bucket  = var.secrets_bucket_name
   key     = var.director_config
   content = local.director_template
-}
-
-resource "aws_s3_bucket_object" "cf_tools_template" {
-  bucket  = var.secrets_bucket_name
-  key     = var.cf_tools_config
-  content = data.template_file.cf_tools_template.rendered
 }
 
 resource "aws_s3_bucket_object" "cf_template" {
