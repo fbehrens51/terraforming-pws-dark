@@ -19,10 +19,6 @@ variable "global_vars" {
 variable "internetless" {
 }
 
-variable "instance_type" {
-  default = "t3.medium"
-}
-
 variable "fluentd_bundle_key" {
   description = "Fluentd bundle S3 object key, aka filename."
 }
@@ -40,6 +36,17 @@ data "terraform_remote_state" "paperwork" {
   config = {
     bucket  = var.remote_state_bucket
     key     = "paperwork"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
+data "terraform_remote_state" "scaling-params" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "scaling-params"
     region  = var.remote_state_region
     encrypt = true
   }
@@ -191,7 +198,9 @@ data "template_cloudinit_config" "user_data" {
 module "fluentd_instance" {
   instance_count       = 1
   source               = "../../modules/launch"
-  instance_type        = var.instance_type
+  instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
+  scale_vpc_key        = "enterprise-services"
+  scale_service_key    = "fluentd"
   ami_id               = local.encrypted_amazon2_ami_id
   user_data            = data.template_cloudinit_config.user_data.rendered
   eni_ids              = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_eni_ids

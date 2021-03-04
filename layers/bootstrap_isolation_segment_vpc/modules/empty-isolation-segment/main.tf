@@ -20,7 +20,9 @@ variable "bastion_public_ip" {}
 variable "bot_key_pem" {
   default = null
 }
-variable "instance_type" {}
+variable "instance_types" {
+  type = map(map(string))
+}
 variable "user_data" {}
 variable "root_domain" {}
 variable "syslog_ca_cert" {}

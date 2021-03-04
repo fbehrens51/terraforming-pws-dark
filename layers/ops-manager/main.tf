@@ -21,6 +21,17 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
+data "terraform_remote_state" "scaling-params" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "scaling-params"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "bastion" {
   backend = "s3"
 
@@ -99,7 +110,9 @@ module "ops_manager" {
   source               = "../../modules/launch"
   ami_id               = var.om_ami_id
   iam_instance_profile = local.director_role_name
-  instance_type        = "m5.large"
+  instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
+  scale_vpc_key        = "pas"
+  scale_service_key    = "ops-manager"
   tags                 = local.modified_tags
   eni_ids              = [local.om_eni_id]
   user_data            = module.ops_manager_user_data.cloud_config

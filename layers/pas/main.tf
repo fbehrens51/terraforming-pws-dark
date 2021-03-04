@@ -21,6 +21,17 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
+data "terraform_remote_state" "scaling-params" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "scaling-params"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "routes" {
   backend = "s3"
 
@@ -100,8 +111,8 @@ module "infra" {
   bastion_public_ip             = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
   bot_key_pem                   = data.terraform_remote_state.paperwork.outputs.bot_private_key
   private_route_table_ids       = data.terraform_remote_state.routes.outputs.pas_private_vpc_route_table_ids
-  nat_instance_type             = var.nat_instance_type
   root_domain                   = data.terraform_remote_state.paperwork.outputs.root_domain
+  instance_types = data.terraform_remote_state.scaling-params.outputs.instance_types
   syslog_ca_cert                = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
   ops_manager_security_group_id = module.ops_manager.security_group_id
   elb_security_group_id         = module.pas_elb.security_group_id
@@ -258,10 +269,6 @@ variable "pas_db_engine" {
 
 variable "pas_db_engine_version" {
   default = "10.2"
-}
-
-variable "nat_instance_type" {
-  default = "t3.medium"
 }
 
 variable "remote_state_bucket" {

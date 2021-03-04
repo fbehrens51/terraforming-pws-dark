@@ -21,6 +21,17 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
+data "terraform_remote_state" "scaling-params" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "scaling-params"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "routes" {
   backend = "s3"
 
@@ -125,6 +136,9 @@ module "bastion_host" {
   instance_count     = "1"
   source             = "../../modules/launch"
   ignore_tag_changes = true
+  instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
+  scale_vpc_key        = "bastion"
+  scale_service_key    = "bastion"
   ami_id             = var.ami_id == "" ? module.amazon_ami.id : var.ami_id
   user_data          = var.add_bot_user_to_user_data ? data.template_cloudinit_config.bot_user_data.rendered : data.template_cloudinit_config.user_data.rendered
   eni_ids            = [module.bootstrap_bastion.eni_id]

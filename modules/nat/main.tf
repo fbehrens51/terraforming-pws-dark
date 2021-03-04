@@ -13,8 +13,12 @@ variable "public_subnet_ids" {
   type = list(string)
 }
 
-variable "instance_type" {
-  default = "t3.small"
+variable "scale_vpc_key" {
+  description = "key from the scaling-params layer which identified the VPC for this nat (e.g. enterprise-services)"
+}
+
+variable "instance_types" {
+  type = map(map(string))
 }
 
 variable "user_data" {
@@ -165,7 +169,9 @@ module "nat_host" {
   user_data        = data.template_cloudinit_config.user_data.rendered
   eni_ids          = module.eni.eni_ids
   tags             = local.instance_tags
-  instance_type    = var.instance_type
+  instance_types    = var.instance_types
+  scale_vpc_key        = var.scale_vpc_key
+  scale_service_key    = "nat"
   bastion_host     = var.bastion_public_ip
   bot_key_pem      = var.bot_key_pem
   check_cloud_init = var.internetless ? false : var.check_cloud_init

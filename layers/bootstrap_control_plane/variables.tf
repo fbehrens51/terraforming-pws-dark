@@ -34,10 +34,6 @@ variable "sjb_ingress_rules" {
   type = list(object({ description = string, port = string, protocol = string, cidr_blocks = string }))
 }
 
-variable "nat_instance_type" {
-  default = "t3.medium"
-}
-
 variable "availability_zones" {
   type = list(string)
 }

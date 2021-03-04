@@ -37,6 +37,17 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
+data "terraform_remote_state" "scaling-params" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "scaling-params"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "bastion" {
   backend = "s3"
 
@@ -245,7 +256,9 @@ module "sjb" {
   user_data            = data.template_cloudinit_config.user_data.rendered
   eni_ids              = data.terraform_remote_state.bootstrap_control_plane.outputs.sjb_eni_ids
   iam_instance_profile = data.terraform_remote_state.paperwork.outputs.sjb_role_name
-  instance_type        = var.instance_type
+  instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
+  scale_vpc_key        = "control-plane"
+  scale_service_key    = "sjb"
 
   tags = local.modified_tags
 

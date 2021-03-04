@@ -3,8 +3,17 @@ variable "ami_id" {
   description = "ami ID to use to launch instance"
 }
 
-variable "instance_type" {
-  default = "t3.small"
+variable "instance_types" {
+  type = map(map(string))
+  description = "output from the scaling-params layer"
+}
+
+variable "scale_vpc_key" {
+  description = "key from the scaling-params layer which indicates the VPC (e.g. control-plane)"
+}
+
+variable "scale_service_key" {
+  description = "key from the scaling-params layer which indicates the service name (e.g. nat)"
 }
 
 variable "user_data" {
@@ -64,6 +73,7 @@ variable "instance_count" {
 }
 
 locals {
+  instance_type = var.instance_types[var.scale_vpc_key][var.scale_service_key]
   computed_instance_tags = {
     SourceAmiId = var.ami_id
   }
@@ -85,7 +95,7 @@ resource "aws_instance" "instance" {
   }
 
   ami                  = var.ami_id
-  instance_type        = var.instance_type
+  instance_type        = local.instance_type
   user_data            = var.user_data
   iam_instance_profile = var.iam_instance_profile
 
@@ -134,7 +144,7 @@ resource "aws_instance" "unchecked_instance" {
   }
 
   ami                  = var.ami_id
-  instance_type        = var.instance_type
+  instance_type        = local.instance_type
   user_data            = var.user_data
   iam_instance_profile = var.iam_instance_profile
 
@@ -198,7 +208,7 @@ resource "aws_instance" "instance_ignoring_tags" {
   }
 
   ami                  = var.ami_id
-  instance_type        = var.instance_type
+  instance_type        = local.instance_type
   user_data            = var.user_data
   iam_instance_profile = var.iam_instance_profile
 

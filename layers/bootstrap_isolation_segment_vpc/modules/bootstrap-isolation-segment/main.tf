@@ -20,7 +20,9 @@ variable "bastion_public_ip" {}
 variable "bot_key_pem" {
   default = null
 }
-variable "instance_type" {}
+variable "instance_types" {
+  type = map(map(string))
+}
 variable "user_data" {}
 variable "root_domain" {}
 variable "syslog_ca_cert" {}
@@ -71,7 +73,8 @@ module "nat" {
   bastion_private_ip         = var.bastion_private_ip
   bastion_public_ip          = var.bastion_public_ip
   bot_key_pem                = var.bot_key_pem
-  instance_type              = var.instance_type
+  instance_types                  = var.instance_types
+  scale_vpc_key = "isolation-segment"
   user_data                  = var.user_data
   root_domain                = var.root_domain
   syslog_ca_cert             = var.syslog_ca_cert

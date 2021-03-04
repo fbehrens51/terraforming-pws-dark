@@ -21,6 +21,17 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
+data "terraform_remote_state" "scaling-params" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "scaling-params"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "bastion" {
   backend = "s3"
 
@@ -201,7 +212,9 @@ module "bind_master_user_data" {
 module "bind_master_host" {
   instance_count = 3
   source         = "../../modules/launch"
-  instance_type  = "t3.medium"
+  instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
+  scale_vpc_key        = "enterprise-services"
+  scale_service_key    = "bind"
   ami_id         = local.encrypted_amazon2_ami_id
   user_data      = data.template_cloudinit_config.master_bind_conf_userdata.rendered
   eni_ids        = data.terraform_remote_state.bootstrap_bind.outputs.bind_eni_ids

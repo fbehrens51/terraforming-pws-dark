@@ -21,6 +21,17 @@ data "terraform_remote_state" "public-aws-prereqs" {
   }
 }
 
+data "terraform_remote_state" "scaling-params" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "scaling-params"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "paperwork" {
   backend = "s3"
 
@@ -146,6 +157,9 @@ module "ldap_host" {
   tags         = local.instance_tags
   bot_key_pem  = data.terraform_remote_state.paperwork.outputs.bot_private_key
   bastion_host = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
+  instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
+  scale_vpc_key        = "enterprise-services"
+  scale_service_key    = "ldap"
 }
 
 module "ldap_configure" {

@@ -72,9 +72,6 @@ variable "vpc_id" {
   description = "pre-exsting VPC ID"
 }
 
-variable "nat_instance_type" {
-}
-
 module "cidr_lookup" {
   source   = "../calculate_subnets"
   vpc_cidr = data.aws_vpc.vpc.cidr_block
@@ -109,3 +106,6 @@ locals {
   public_cidr         = module.cidr_lookup.public_cidr
 }
 
+variable "instance_types" {
+  type = map(map(string))
+}

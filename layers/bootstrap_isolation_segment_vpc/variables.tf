@@ -18,8 +18,5 @@ variable "internetless" {
   type = bool
 }
 
-variable "nat_instance_type" {
-  default = "t3.medium"
-}
 variable "remote_state_bucket" {}
 variable "remote_state_region" {}
