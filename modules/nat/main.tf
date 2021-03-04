@@ -14,7 +14,7 @@ variable "public_subnet_ids" {
 }
 
 variable "instance_type" {
-  default = "t2.small"
+  default = "t3.small"
 }
 
 variable "user_data" {

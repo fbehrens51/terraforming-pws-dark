@@ -261,7 +261,7 @@ variable "pas_db_engine_version" {
 }
 
 variable "nat_instance_type" {
-  default = "t2.medium"
+  default = "t3.medium"
 }
 
 variable "remote_state_bucket" {

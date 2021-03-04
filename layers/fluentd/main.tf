@@ -20,7 +20,7 @@ variable "internetless" {
 }
 
 variable "instance_type" {
-  default = "t2.medium"
+  default = "t3.medium"
 }
 
 variable "fluentd_bundle_key" {

@@ -35,7 +35,7 @@ variable "sjb_ingress_rules" {
 }
 
 variable "nat_instance_type" {
-  default = "t2.medium"
+  default = "t3.medium"
 }
 
 variable "availability_zones" {

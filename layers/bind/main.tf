@@ -201,7 +201,7 @@ module "bind_master_user_data" {
 module "bind_master_host" {
   instance_count = 3
   source         = "../../modules/launch"
-  instance_type  = "t2.medium"
+  instance_type  = "t3.medium"
   ami_id         = local.encrypted_amazon2_ami_id
   user_data      = data.template_cloudinit_config.master_bind_conf_userdata.rendered
   eni_ids        = data.terraform_remote_state.bootstrap_bind.outputs.bind_eni_ids
