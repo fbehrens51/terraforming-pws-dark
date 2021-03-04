@@ -75,9 +75,6 @@ variable "global_vars" {
   type = any
 }
 
-variable "instance_type" {
-}
-
 variable "clamav_db_mirror" {
 }
 
@@ -90,7 +87,7 @@ module "ops_manager" {
   source               = "../../modules/launch"
   ami_id               = var.om_ami_id
   iam_instance_profile = local.director_role_name
-  instance_type        = var.instance_type
+  instance_type        = "m5.large"
   tags                 = local.modified_tags
   eni_ids              = [local.om_eni_id]
   user_data            = module.ops_manager_user_data.cloud_config
