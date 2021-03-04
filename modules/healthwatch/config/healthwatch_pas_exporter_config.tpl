@@ -73,7 +73,7 @@ resource-config:
     elb_names: []
     instance_type:
       id: ${scale.pas-exporter-gauge}
-    instances: m5.large
+    instances: automatic
     internet_connected: false
     persistent_disk:
       size_mb: automatic
