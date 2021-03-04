@@ -153,11 +153,6 @@ variable "clamav_external_mirrors" {
   type        = list(string)
 }
 
-variable "clamav_mirror_instance_type" {
-  default = "automatic"
-}
-
-
 variable "extra_user_name" {
   description = "The username of the extra user that will be added to all bosh managed VMs"
   default     = ""

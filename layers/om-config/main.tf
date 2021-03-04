@@ -324,7 +324,6 @@ module "clamav_config" {
   clamav_external_mirrors          = var.clamav_external_mirrors
   clamav_cpu_limit                 = "50"
   clamav_enable_on_access_scanning = "false"
-  clamav_mirror_instance_type      = var.clamav_mirror_instance_type
   clamav_release_url               = var.clamav_release_url
   clamav_release_sha1              = var.clamav_release_sha1
   s3_endpoint                      = var.s3_endpoint

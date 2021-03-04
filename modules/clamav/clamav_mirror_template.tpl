@@ -39,7 +39,7 @@ resource-config:
     persistent_disk:
       size_mb: automatic
     instance_type:
-      id: ${clamav_mirror_instance_type}
+      id: m5.large
     internet_connected: false
 syslog-properties:
   enabled: true

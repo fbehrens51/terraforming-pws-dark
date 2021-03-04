@@ -52,7 +52,7 @@ resource-config:
     - s3_instance_profile
     elb_names: []
     instance_type:
-      id: automatic
+      id: m5.large
     instances: automatic
     internet_connected: false
     swap_as_percent_of_memory_size: automatic
