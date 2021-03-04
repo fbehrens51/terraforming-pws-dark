@@ -259,29 +259,6 @@ module "om_config" {
   postgres_cw_username = local.postgres_username
   postgres_cw_password = local.postgres_password
 
-  backup_restore_instance_type                = var.backup_restore_instance_type
-  clock_global_instance_type                  = var.clock_global_instance_type
-  cloud_controller_instance_type              = var.cloud_controller_instance_type
-  cloud_controller_worker_instance_type       = var.cloud_controller_worker_instance_type
-  consul_server_instance_type                 = var.consul_server_instance_type
-  credhub_instance_type                       = var.credhub_instance_type
-  diego_brain_instance_type                   = var.diego_brain_instance_type
-  diego_cell_instance_type                    = var.diego_cell_instance_type
-  diego_database_instance_type                = var.diego_database_instance_type
-  doppler_instance_type                       = var.doppler_instance_type
-  ha_proxy_instance_type                      = var.ha_proxy_instance_type
-  loggregator_trafficcontroller_instance_type = var.loggregator_trafficcontroller_instance_type
-  mysql_instance_type                         = var.mysql_instance_type
-  mysql_monitor_instance_type                 = var.mysql_monitor_instance_type
-  mysql_proxy_instance_type                   = var.mysql_proxy_instance_type
-  nats_instance_type                          = var.nats_instance_type
-  nfs_server_instance_type                    = var.nfs_server_instance_type
-  router_instance_type                        = var.router_instance_type
-  syslog_adapter_instance_type                = var.syslog_adapter_instance_type
-  syslog_scheduler_instance_type              = var.syslog_scheduler_instance_type
-  tcp_router_instance_type                    = var.tcp_router_instance_type
-  uaa_instance_type                           = var.uaa_instance_type
-
   ldap_tls_ca_cert       = data.terraform_remote_state.paperwork.outputs.root_ca_cert
   ldap_tls_client_cert   = data.terraform_remote_state.paperwork.outputs.ldap_client_cert
   ldap_tls_client_key    = data.terraform_remote_state.paperwork.outputs.ldap_client_key
