@@ -51,6 +51,17 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
+data "terraform_remote_state" "scaling-params" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "scaling-params"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 module "domains" {
   source = "../../modules/domains"
 
@@ -70,6 +81,7 @@ locals {
 
 module "compliance_scanner_config" {
   source                      = "../../modules/compliance-scanner/config"
+  scale = data.terraform_remote_state.scaling-params.outputs.instance_types
   secrets_bucket_name         = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
   compliance_scanner_config   = var.compliance_scanner_config
   network_name                = data.terraform_remote_state.paperwork.outputs.control_plane_subnet_network_name
