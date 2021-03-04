@@ -14,30 +14,30 @@ locals {
   defaults = {
     // AL2 VMS
     control-plane = {
-      nat         = "t2.medium"
-      sjb         = "m4.2xlarge"
-      ops-manager = "m4.large"
+      nat         = "t3.medium"
+      sjb         = "m5.2xlarge"
+      ops-manager = "m5.large"
     }
 
     pas = {
-      nat         = "t2.medium"
-      ops-manager = "m4.large"
+      nat         = "t3.medium"
+      ops-manager = "m5.large"
     }
 
     isolation-segment = {
-      nat = "t2.medium"
+      nat = "t3.medium"
     }
 
     enterprise-services = {
-      nat     = "t2.medium"
-      bind    = "t2.medium"
-      ldap    = "t2.small"
-      fluentd = "t2.medium"
-      postfix = "t2.medium"
+      nat     = "t3.medium"
+      bind    = "t3.medium"
+      ldap    = "t3.small"
+      fluentd = "t3.medium"
+      postfix = "t3.medium"
     }
 
     bastion = {
-      bastion = "t2.small"
+      bastion = "t3.small"
     }
 
     // BOSH VMS
@@ -72,11 +72,11 @@ locals {
     }
 
     p-antivirus-mirror = {
-      antivirus-mirror = "c5.large"
+      antivirus-mirror = "m5.large"
     }
 
     p-compliance-scanner = {
-      oscap_store = "c5.large"
+      oscap_store = "m5.large"
     }
 
     p-healthwatch2 = {
@@ -91,7 +91,7 @@ locals {
       bosh-health-exporter      = "t3.medium"
       cert-expiration-exporter  = "t3.medium"
       pas-exporter-counter      = "m5.large"
-      pas-exporter-gauge        = "m5.xlarge"
+      pas-exporter-gauge        = "m5.large"
       pas-exporter-timer        = "m5.large"
       pas-sli-exporter          = "t3.medium"
     }
@@ -102,10 +102,10 @@ locals {
 
     // MARKER
     pws-dark-concourse-tile = {
-      credhub = "c5.xlarge"
-      uaa     = "c5.xlarge"
-      web     = "c5.xlarge"
-      worker  = "r5.4xlarge"
+      credhub = "m5.large"
+      uaa     = "m5.large"
+      web     = "m5.large"
+      worker  = "r5.xlarge"
     }
   }
 }
