@@ -48,6 +48,7 @@ runcmd:
 
     mkdir -p /data/s3 /data/log /data/audispd
     chown td-agent:root -R /opt/td-agent /etc/td-agent /data/s3 /data/audispd /data/log
+    sed -ie 's#/var/log/td-agent#/data/log#' /etc/logrotate.d/td-agent
 
     systemctl enable td-agent
     systemctl start td-agent
