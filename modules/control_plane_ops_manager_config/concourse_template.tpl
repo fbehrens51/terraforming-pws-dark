@@ -98,7 +98,7 @@ resource-config:
   worker:
     instances: automatic
     instance_type:
-      id: r5.large
+      id: r5.xlarge
     internet_connected: false
     additional_vm_extensions:
     - worker_instance_profile
