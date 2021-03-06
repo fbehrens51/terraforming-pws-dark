@@ -41,9 +41,9 @@ variable "scale" {
   type = map(map(string))
 }
 
-locals{
+locals {
   compliance_scanner_config = templatefile("${path.module}/compliance_scanner_config.tpl", {
-    scale = var.scale["p-compliance-scanner"]
+    scale        = var.scale["p-compliance-scanner"]
     network_name = var.network_name
     //availability_zones value isn't being used to configure AZs, so hard coding to use singleton_az for now
     //availability_zones = "[${join(",", var.availability_zones)}]"

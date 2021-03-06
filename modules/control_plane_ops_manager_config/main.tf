@@ -71,7 +71,7 @@ EOF
   }
 }
 
-locals{
+locals {
   director_template = templatefile("${path.module}/director_template.tpl", {
     scale                                       = var.scale["p-bosh"]
     ec2_endpoint                                = var.ec2_endpoint
@@ -155,9 +155,9 @@ data "template_file" "admin_users" {
 EOF
 }
 
-locals{
+locals {
   concourse_template = templatefile("${path.module}/concourse_template.tpl", {
-    scale = var.scale["pws-dark-concourse-tile"]
+    scale                       = var.scale["pws-dark-concourse-tile"]
     singleton_availability_zone = var.singleton_availability_zone
     control_plane_vpc_azs = indent(
       4,

@@ -170,8 +170,8 @@ module "nat" {
   bastion_private_ip         = "${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"
   bastion_public_ip          = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
   internetless               = var.internetless
-  instance_types                  = data.terraform_remote_state.scaling-params.outputs.instance_types
-  scale_vpc_key = "enterprise-services"
+  instance_types             = data.terraform_remote_state.scaling-params.outputs.instance_types
+  scale_vpc_key              = "enterprise-services"
   user_data                  = data.template_cloudinit_config.nat_user_data.rendered
   root_domain                = data.terraform_remote_state.paperwork.outputs.root_domain
   syslog_ca_cert             = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs

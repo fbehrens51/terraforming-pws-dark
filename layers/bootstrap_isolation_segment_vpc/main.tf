@@ -297,7 +297,7 @@ module "isolation_segment_0" {
   bastion_private_ip = "${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"
   bastion_public_ip  = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
   bot_key_pem        = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  instance_types      = data.terraform_remote_state.scaling-params.outputs.instance_types
+  instance_types     = data.terraform_remote_state.scaling-params.outputs.instance_types
   user_data          = data.template_cloudinit_config.nat_user_data.rendered
 
   root_domain        = data.terraform_remote_state.paperwork.outputs.root_domain
@@ -323,7 +323,7 @@ module "isolation_segment_1" {
   bastion_private_ip = "${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"
   bastion_public_ip  = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
   bot_key_pem        = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  instance_types      = data.terraform_remote_state.scaling-params.outputs.instance_types
+  instance_types     = data.terraform_remote_state.scaling-params.outputs.instance_types
   user_data          = data.template_cloudinit_config.nat_user_data.rendered
 
   root_domain        = data.terraform_remote_state.paperwork.outputs.root_domain
@@ -349,7 +349,7 @@ module "isolation_segment_2" {
   bastion_private_ip = "${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"
   bastion_public_ip  = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
   bot_key_pem        = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  instance_types      = data.terraform_remote_state.scaling-params.outputs.instance_types
+  instance_types     = data.terraform_remote_state.scaling-params.outputs.instance_types
   user_data          = data.template_cloudinit_config.nat_user_data.rendered
 
   root_domain        = data.terraform_remote_state.paperwork.outputs.root_domain
@@ -375,7 +375,7 @@ module "isolation_segment_3" {
   bastion_private_ip = "${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"
   bastion_public_ip  = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
   bot_key_pem        = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  instance_types      = data.terraform_remote_state.scaling-params.outputs.instance_types
+  instance_types     = data.terraform_remote_state.scaling-params.outputs.instance_types
   user_data          = data.template_cloudinit_config.nat_user_data.rendered
 
   root_domain        = data.terraform_remote_state.paperwork.outputs.root_domain

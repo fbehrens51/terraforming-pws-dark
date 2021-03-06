@@ -154,12 +154,12 @@ module "ldap_host" {
   eni_ids   = module.bootstrap.eni_ids
   user_data = data.terraform_remote_state.paperwork.outputs.bot_user_accounts_user_data
 
-  tags         = local.instance_tags
-  bot_key_pem  = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  bastion_host = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
-  instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
-  scale_vpc_key        = "enterprise-services"
-  scale_service_key    = "ldap"
+  tags              = local.instance_tags
+  bot_key_pem       = data.terraform_remote_state.paperwork.outputs.bot_private_key
+  bastion_host      = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
+  instance_types    = data.terraform_remote_state.scaling-params.outputs.instance_types
+  scale_vpc_key     = "enterprise-services"
+  scale_service_key = "ldap"
 }
 
 module "ldap_configure" {

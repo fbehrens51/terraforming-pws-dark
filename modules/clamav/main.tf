@@ -84,7 +84,7 @@ data "template_file" "clamav_director_template" {
   }
 }
 
-locals{
+locals {
   clamav_mirror_template = templatefile("${path.module}/clamav_mirror_template.tpl", {
     scale                       = var.scale["p-antivirus-mirror"]
     bosh_network_name           = var.bosh_network_name

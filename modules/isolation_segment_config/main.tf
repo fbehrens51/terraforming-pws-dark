@@ -73,9 +73,9 @@ data "aws_subnet" "isolation_segment_subnets" {
 }
 
 
-locals{
+locals {
   tile_config = templatefile("${path.module}/isolation_segment_template.tpl", {
-    scale = var.scale["p-isolation-segment"]
+    scale                          = var.scale["p-isolation-segment"]
     vpc_id                         = data.aws_subnet.isolation_segment_subnets[0].vpc_id
     iso_seg_tile_suffix            = var.iso_seg_tile_suffix
     iso_seg_tile_suffix_underscore = replace(var.iso_seg_tile_suffix, "-", "_")

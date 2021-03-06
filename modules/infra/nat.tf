@@ -9,8 +9,8 @@ module "nat" {
   bastion_private_ip         = "${var.bastion_private_ip}/32"
   bastion_public_ip          = var.bastion_public_ip
   internetless               = var.internetless
-  instance_types              = var.instance_types
-  scale_vpc_key = "pas"
+  instance_types             = var.instance_types
+  scale_vpc_key              = "pas"
   user_data                  = var.user_data
   bot_key_pem                = var.bot_key_pem
 

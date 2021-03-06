@@ -141,7 +141,7 @@ locals {
   })
 }
 
-locals{
+locals {
   cf_template = templatefile("${path.module}/cf_template.tpl", {
     scale                                                = var.scale["cf"]
     region                                               = var.region

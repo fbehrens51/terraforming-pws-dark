@@ -81,7 +81,7 @@ locals {
 
 module "compliance_scanner_config" {
   source                      = "../../modules/compliance-scanner/config"
-  scale = data.terraform_remote_state.scaling-params.outputs.instance_types
+  scale                       = data.terraform_remote_state.scaling-params.outputs.instance_types
   secrets_bucket_name         = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
   compliance_scanner_config   = var.compliance_scanner_config
   network_name                = data.terraform_remote_state.paperwork.outputs.pas_network_name

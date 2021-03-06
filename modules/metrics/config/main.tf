@@ -43,9 +43,9 @@ EOF
   }
 }
 
-locals{
+locals {
   metrics_template = templatefile("${path.module}/metrics_config.tpl", {
-    scale = var.scale["appMetrics"]
+    scale                       = var.scale["appMetrics"]
     bosh_network_name           = var.bosh_network_name
     pas_vpc_azs                 = join("", data.template_file.pas_vpc_azs.*.rendered)
     singleton_availability_zone = var.singleton_availability_zone
@@ -55,9 +55,9 @@ locals{
   })
 }
 
-locals{
+locals {
   metrics_store_template = templatefile("${path.module}/metrics_store_config.tpl", {
-    scale = var.scale["metric-store"]
+    scale                       = var.scale["metric-store"]
     bosh_network_name           = var.bosh_network_name
     pas_vpc_azs                 = join("", data.template_file.pas_vpc_azs.*.rendered)
     singleton_availability_zone = var.singleton_availability_zone

@@ -112,7 +112,7 @@ module "infra" {
   bot_key_pem                   = data.terraform_remote_state.paperwork.outputs.bot_private_key
   private_route_table_ids       = data.terraform_remote_state.routes.outputs.pas_private_vpc_route_table_ids
   root_domain                   = data.terraform_remote_state.paperwork.outputs.root_domain
-  instance_types = data.terraform_remote_state.scaling-params.outputs.instance_types
+  instance_types                = data.terraform_remote_state.scaling-params.outputs.instance_types
   syslog_ca_cert                = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
   ops_manager_security_group_id = module.ops_manager.security_group_id
   elb_security_group_id         = module.pas_elb.security_group_id

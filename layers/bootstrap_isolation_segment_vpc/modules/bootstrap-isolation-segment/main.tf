@@ -73,8 +73,8 @@ module "nat" {
   bastion_private_ip         = var.bastion_private_ip
   bastion_public_ip          = var.bastion_public_ip
   bot_key_pem                = var.bot_key_pem
-  instance_types                  = var.instance_types
-  scale_vpc_key = "isolation-segment"
+  instance_types             = var.instance_types
+  scale_vpc_key              = "isolation-segment"
   user_data                  = var.user_data
   root_domain                = var.root_domain
   syslog_ca_cert             = var.syslog_ca_cert

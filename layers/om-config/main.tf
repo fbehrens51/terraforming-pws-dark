@@ -130,7 +130,7 @@ data "aws_subnet" "isolation_segment_subnets" {
 module "om_config" {
   source = "../../modules/ops_manager_config"
 
-  scale = data.terraform_remote_state.scaling-params.outputs.instance_types
+  scale                       = data.terraform_remote_state.scaling-params.outputs.instance_types
   secrets_bucket_name         = local.secrets_bucket_name
   cf_config                   = var.cf_config
   cf_tools_config             = var.cf_tools_config
@@ -302,7 +302,7 @@ module "runtime_config_config" {
 module "clamav_config" {
   source = "../../modules/clamav"
 
-  scale = data.terraform_remote_state.scaling-params.outputs.instance_types
+  scale                            = data.terraform_remote_state.scaling-params.outputs.instance_types
   secrets_bucket_name              = local.secrets_bucket_name
   clamav_addon_config              = var.clamav_addon_config
   clamav_mirror_config             = var.clamav_mirror_config

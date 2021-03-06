@@ -115,6 +115,6 @@ variable "overrides" {
 }
 
 output "instance_types" {
-  value = merge(local.defaults, {for product, types in var.overrides: product => merge(local.defaults[product], types)})
+  value = merge(local.defaults, { for product, types in var.overrides : product => merge(local.defaults[product], types) })
 }
 

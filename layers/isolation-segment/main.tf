@@ -69,7 +69,7 @@ module "syslog_ports" {
 module "config" {
   source = "../../modules/isolation_segment_config"
 
-  scale = data.terraform_remote_state.scaling-params.outputs.instance_types
+  scale                    = data.terraform_remote_state.scaling-params.outputs.instance_types
   iso_seg_name             = var.name
   iso_seg_tile_suffix      = local.hyphenated_name
   secrets_bucket_name      = local.secrets_bucket_name

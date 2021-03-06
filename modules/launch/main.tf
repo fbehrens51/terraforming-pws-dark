@@ -4,7 +4,7 @@ variable "ami_id" {
 }
 
 variable "instance_types" {
-  type = map(map(string))
+  type        = map(map(string))
   description = "output from the scaling-params layer"
 }
 

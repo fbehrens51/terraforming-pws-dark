@@ -80,7 +80,7 @@ locals {
 
 module "metrics_config" {
   source                      = "../../modules/metrics/config"
-  scale = data.terraform_remote_state.scaling-params.outputs.instance_types
+  scale                       = data.terraform_remote_state.scaling-params.outputs.instance_types
   secrets_bucket_name         = local.secrets_bucket_name
   metrics_config              = var.metrics_config
   metrics_store_config        = var.metrics_store_config
