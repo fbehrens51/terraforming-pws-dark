@@ -82,6 +82,9 @@ variable "scale" {
   type = map(map(string))
 }
 
+variable "env_tag_name" {
+}
+
 data "template_file" "hw_vpc_azs" {
   count = length(var.availability_zones)
 
@@ -103,6 +106,7 @@ module "domains" {
 locals {
   healthwatch_config = templatefile("${path.module}/healthwatch_config.tpl", {
     scale                            = var.scale["p-healthwatch2"]
+    env_tag_name                     = var.env_tag_name
     grafana_additional_cipher_suites = join(",", var.grafana_additional_cipher_suites)
     grafana_root_url                 = "https://${module.domains.grafana_fqdn}"
     fluentd_root_url                 = "${module.domains.fluentd_fqdn}:9200"

@@ -77,6 +77,23 @@ product-properties:
           target_label: instance_id
       server_name: null
       tls_certificates: {}
+    - scrape_job: |
+        job_name: 'concourse'
+        scheme: http
+        ec2_sd_configs:
+        - region: ${region}
+          port: 9100
+        relabel_configs:
+        # This finds the web node in the concourse deployment
+        # If they were in the same BOSH foundation, we could use DNS instead
+        - source_labels: [__meta_ec2_tag_instance_group]
+          regex: web
+          action: keep
+        - source_labels: [__meta_ec2_tag_env]
+          regex: ${env_tag_name}
+          action: keep
+      server_name: null
+      tls_certificates: {}
     - ca: |
         ${indent(8, chomp(root_ca_cert))}
       insecure_skip_verify: false

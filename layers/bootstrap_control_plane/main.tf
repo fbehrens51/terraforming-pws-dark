@@ -362,14 +362,14 @@ module "rds_subnet_group" {
 }
 
 module "concourse_nlb" {
-  source            = "./modules/nlb/create"
-  env_name          = local.env_name
-  internetless      = var.internetless
-  public_subnet_ids = module.public_subnets.subnet_ids
-  tags              = var.global_vars["global_tags"]
-  vpc_id            = local.vpc_id
+  source                     = "./modules/nlb/create"
+  env_name                   = local.env_name
+  internetless               = var.internetless
+  public_subnet_ids          = module.public_subnets.subnet_ids
+  tags                       = var.global_vars["global_tags"]
+  vpc_id                     = local.vpc_id
   metrics_ingress_cidr_block = data.aws_vpc.pas_vpc.cidr_block
-  egress_cidrs      = module.private_subnets.subnet_cidr_blocks
+  egress_cidrs               = module.private_subnets.subnet_cidr_blocks
 }
 
 module "uaa_elb" {

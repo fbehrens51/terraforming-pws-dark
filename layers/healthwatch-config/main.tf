@@ -1,3 +1,7 @@
+variable "global_vars" {
+  type = any
+}
+
 variable "remote_state_bucket" {
 }
 
@@ -111,6 +115,7 @@ locals {
 
 module "healthwatch_config" {
   source                           = "../../modules/healthwatch/config"
+  env_tag_name                     = var.global_vars.env_name
   scale                            = data.terraform_remote_state.scaling-params.outputs.instance_types
   secrets_bucket_name              = local.secrets_bucket_name
   healthwatch_config               = var.healthwatch_config
