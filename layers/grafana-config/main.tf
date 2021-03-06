@@ -162,6 +162,10 @@ resource "grafana_dashboard" "prometheus" {
   config_json = file("dashboards/prometheus.json")
 }
 
+resource "grafana_dashboard" "concourse" {
+  config_json = file("dashboards/concourse.json")
+}
+
 data "template_file" "clamav_dashboard" {
   template = file("dashboards/antivirus-alerts.json.tpl")
   vars = {
