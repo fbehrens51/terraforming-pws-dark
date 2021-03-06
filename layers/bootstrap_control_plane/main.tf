@@ -368,6 +368,7 @@ module "concourse_nlb" {
   public_subnet_ids = module.public_subnets.subnet_ids
   tags              = var.global_vars["global_tags"]
   vpc_id            = local.vpc_id
+  metrics_ingress_cidr_block = data.aws_vpc.pas_vpc.cidr_block
   egress_cidrs      = module.private_subnets.subnet_cidr_blocks
 }
 

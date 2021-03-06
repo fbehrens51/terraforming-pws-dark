@@ -22,6 +22,9 @@ variable "tags" {
 variable vpc_id {
 }
 
+variable "metrics_ingress_cidr_block" {
+}
+
 variable "egress_cidrs" {
   type = list(string)
 }
@@ -55,6 +58,18 @@ resource "aws_lb_target_group" "concourse_nlb_8080" {
 
   health_check {
     port     = 8080
+    protocol = "TCP"
+  }
+}
+
+resource "aws_lb_target_group" "concourse_nlb_9100" {
+  name     = "${local.formatted_env_name}-concourse9100"
+  port     = 9100
+  protocol = "TCP"
+  vpc_id   = var.vpc_id
+
+  health_check {
+    port     = 9100
     protocol = "TCP"
   }
 }
@@ -108,6 +123,17 @@ resource "aws_lb_listener" "concourse_nlb_80" {
   }
 }
 
+resource "aws_lb_listener" "concourse_nlb_9100" {
+  load_balancer_arn = aws_lb.concourse_lb.arn
+  protocol          = "TCP"
+  port              = 9100
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.concourse_nlb_9100.arn
+  }
+}
+
 resource "aws_lb_listener" "concourse_nlb_443" {
   load_balancer_arn = aws_lb.concourse_lb.arn
   protocol          = "TCP"
@@ -155,6 +181,14 @@ resource "aws_security_group" "concourse_nlb_security_group" {
     protocol    = "tcp"
     from_port   = 8080
     to_port     = 8080
+  }
+
+  ingress {
+    description = "Allow http/9100 from internal hosts - prometheus metrics"
+    cidr_blocks = [var.metrics_ingress_cidr_block]
+    protocol    = "tcp"
+    from_port   = 9100
+    to_port     = 9100
   }
 
   ingress {
@@ -214,7 +248,8 @@ output "web_tg_ids" {
   value = [
     aws_lb_target_group.concourse_nlb_443.name,
     aws_lb_target_group.concourse_nlb_2222.name,
-    aws_lb_target_group.concourse_nlb_8080.name
+    aws_lb_target_group.concourse_nlb_8080.name,
+    aws_lb_target_group.concourse_nlb_9100.name
   ]
 }
 
