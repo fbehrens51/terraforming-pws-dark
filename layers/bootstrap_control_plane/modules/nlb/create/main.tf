@@ -153,7 +153,7 @@ resource "aws_security_group" "concourse_nlb_security_group" {
     description = "Allow http/80 from everywhere - forwards to 443"
     cidr_blocks = ["0.0.0.0/0"]
     protocol    = "tcp"
-    from_port   = 80
+    from_port   = 8080
     to_port     = 8080
   }
 
