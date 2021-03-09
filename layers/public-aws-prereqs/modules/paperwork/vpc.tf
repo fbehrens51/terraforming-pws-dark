@@ -164,3 +164,12 @@ resource "aws_vpc_peering_connection" "control_plane_pas" {
   }
 }
 
+resource "aws_vpc_peering_connection" "control_plane_iso1" {
+  peer_vpc_id = aws_vpc.control_plane_vpc.id
+  vpc_id      = aws_vpc.isolation_segment_vpc.id
+  auto_accept = true
+
+  tags = {
+    Name = "${var.env_name} | control plane/iso1 vpc peering"
+  }
+}
