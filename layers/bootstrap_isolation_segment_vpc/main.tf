@@ -99,6 +99,7 @@ locals {
 
   bastion_vpc_id = data.terraform_remote_state.paperwork.outputs.bastion_vpc_id
   pas_vpc_id     = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
+  cp_vpc_id      = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
   es_vpc_id      = data.terraform_remote_state.paperwork.outputs.es_vpc_id
 
   iso_s3_endpoint_ids    = data.terraform_remote_state.paperwork.outputs.iso_s3_endpoint_ids
@@ -432,6 +433,24 @@ module "route_isolation_segment_es" {
   requester_route_table_ids = concat(
     [data.terraform_remote_state.routes.outputs.es_public_vpc_route_table_id],
     data.terraform_remote_state.routes.outputs.es_private_vpc_route_table_ids,
+  )
+  availability_zones = var.availability_zones
+}
+
+module "route_isolation_segment_control_plane" {
+  source           = "../routes/modules/routing"
+  accepter_vpc_id  = var.vpc_id
+  requester_vpc_id = local.cp_vpc_id
+  accepter_route_table_ids = concat(
+    [aws_route_table.public_route_table.id],
+    module.isolation_segment_0.private_route_table_ids,
+    module.isolation_segment_1.private_route_table_ids,
+    module.isolation_segment_2.private_route_table_ids,
+    module.isolation_segment_3.private_route_table_ids,
+  )
+  requester_route_table_ids = concat(
+    [data.terraform_remote_state.routes.outputs.cp_public_vpc_route_table_id],
+    data.terraform_remote_state.routes.outputs.cp_private_vpc_route_table_ids,
   )
   availability_zones = var.availability_zones
 }
