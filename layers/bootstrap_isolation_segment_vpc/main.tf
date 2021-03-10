@@ -35,6 +35,17 @@ data "terraform_remote_state" "bastion" {
   }
 }
 
+data "terraform_remote_state" "bootstrap_control_plane" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bootstrap_control_plane"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "pas" {
   backend = "s3"
 
@@ -105,6 +116,8 @@ locals {
   iso_s3_endpoint_ids    = data.terraform_remote_state.paperwork.outputs.iso_s3_endpoint_ids
   bot_user_on_bastion    = data.terraform_remote_state.bastion.outputs.bot_user_on_bastion
   bastion_route_table_id = data.terraform_remote_state.bastion.outputs.bastion_route_table_id
+
+  ssh_cidrs = concat(["${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"], data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs)
 }
 
 data "aws_vpc" "pas_vpc" {
@@ -224,8 +237,8 @@ resource "aws_security_group" "vms_security_group" {
   vpc_id      = var.vpc_id
 
   ingress {
-    description = "Allow ssh/22 from bastion host"
-    cidr_blocks = ["${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"]
+    description = "Allow ssh/22 from bastion/cp"
+    cidr_blocks = local.ssh_cidrs
     protocol    = "tcp"
     from_port   = 22
     to_port     = 22
@@ -293,13 +306,13 @@ module "isolation_segment_0" {
   vpc_id             = var.vpc_id
   availability_zones = var.availability_zones
 
-  tags               = { tags = local.modified_tags, instance_tags = var.global_vars["instance_tags"] }
-  internetless       = var.internetless
-  bastion_private_ip = "${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"
-  bastion_public_ip  = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
-  bot_key_pem        = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  instance_types     = data.terraform_remote_state.scaling-params.outputs.instance_types
-  user_data          = data.template_cloudinit_config.nat_user_data.rendered
+  tags              = { tags = local.modified_tags, instance_tags = var.global_vars["instance_tags"] }
+  internetless      = var.internetless
+  nat_ssh_cidrs     = local.ssh_cidrs
+  bastion_public_ip = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
+  bot_key_pem       = data.terraform_remote_state.paperwork.outputs.bot_private_key
+  instance_types    = data.terraform_remote_state.scaling-params.outputs.instance_types
+  user_data         = data.template_cloudinit_config.nat_user_data.rendered
 
   root_domain        = data.terraform_remote_state.paperwork.outputs.root_domain
   syslog_ca_cert     = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
@@ -313,25 +326,9 @@ module "isolation_segment_1" {
 
   name               = var.isolation_segment_name_1
   cidr_block         = local.isolation_segment_cidr_block_1
-  pas_vpc_cidr_block = data.aws_vpc.pas_vpc.cidr_block
-
-  public_subnet_ids  = aws_subnet.public_subnets.*.id
   vpc_id             = var.vpc_id
   availability_zones = var.availability_zones
-
   tags               = local.modified_tags
-  internetless       = var.internetless
-  bastion_private_ip = "${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"
-  bastion_public_ip  = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
-  bot_key_pem        = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  instance_types     = data.terraform_remote_state.scaling-params.outputs.instance_types
-  user_data          = data.template_cloudinit_config.nat_user_data.rendered
-
-  root_domain        = data.terraform_remote_state.paperwork.outputs.root_domain
-  syslog_ca_cert     = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
-  ami_id             = data.terraform_remote_state.encrypt_amis.outputs.encrypted_amazon2_ami_id
-  public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name
-  public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url
 }
 
 module "isolation_segment_2" {
@@ -339,25 +336,9 @@ module "isolation_segment_2" {
 
   name               = var.isolation_segment_name_2
   cidr_block         = local.isolation_segment_cidr_block_2
-  pas_vpc_cidr_block = data.aws_vpc.pas_vpc.cidr_block
-
-  public_subnet_ids  = aws_subnet.public_subnets.*.id
   vpc_id             = var.vpc_id
   availability_zones = var.availability_zones
-
   tags               = local.modified_tags
-  internetless       = var.internetless
-  bastion_private_ip = "${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"
-  bastion_public_ip  = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
-  bot_key_pem        = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  instance_types     = data.terraform_remote_state.scaling-params.outputs.instance_types
-  user_data          = data.template_cloudinit_config.nat_user_data.rendered
-
-  root_domain        = data.terraform_remote_state.paperwork.outputs.root_domain
-  syslog_ca_cert     = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
-  ami_id             = data.terraform_remote_state.encrypt_amis.outputs.encrypted_amazon2_ami_id
-  public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name
-  public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url
 }
 
 module "isolation_segment_3" {
@@ -365,25 +346,9 @@ module "isolation_segment_3" {
 
   name               = var.isolation_segment_name_3
   cidr_block         = local.isolation_segment_cidr_block_3
-  pas_vpc_cidr_block = data.aws_vpc.pas_vpc.cidr_block
-
-  public_subnet_ids  = aws_subnet.public_subnets.*.id
   vpc_id             = var.vpc_id
   availability_zones = var.availability_zones
-
   tags               = local.modified_tags
-  internetless       = var.internetless
-  bastion_private_ip = "${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"
-  bastion_public_ip  = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
-  bot_key_pem        = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  instance_types     = data.terraform_remote_state.scaling-params.outputs.instance_types
-  user_data          = data.template_cloudinit_config.nat_user_data.rendered
-
-  root_domain        = data.terraform_remote_state.paperwork.outputs.root_domain
-  syslog_ca_cert     = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
-  ami_id             = data.terraform_remote_state.encrypt_amis.outputs.encrypted_amazon2_ami_id
-  public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name
-  public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url
 }
 
 module "route_isolation_segment_bastion" {

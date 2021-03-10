@@ -24,7 +24,8 @@ variable "instance_types" {
 variable "user_data" {
 }
 
-variable "bastion_private_ip" {
+variable "ssh_cidr_blocks" {
+  type = list(string)
 }
 
 variable "bastion_public_ip" {
@@ -83,10 +84,10 @@ module "eni" {
 
   ingress_rules = [
     {
-      description = "Allow ssh/22 from bastion host"
+      description = "Allow ssh/22 from cp/bastion hosts"
       port        = "22"
       protocol    = "tcp"
-      cidr_blocks = var.bastion_private_ip
+      cidr_blocks = join(",", var.ssh_cidr_blocks)
     },
     {
       description = "Allow all protocols/ports from ${join(",", var.ingress_cidr_blocks)}"

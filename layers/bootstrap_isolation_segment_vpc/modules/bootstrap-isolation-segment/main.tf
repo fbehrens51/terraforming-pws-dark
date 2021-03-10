@@ -15,7 +15,9 @@ variable "pas_vpc_cidr_block" {}
 variable "ami_id" {}
 variable "public_subnet_ids" {}
 variable "internetless" {}
-variable "bastion_private_ip" {}
+variable "nat_ssh_cidrs" {
+  type = list(string)
+}
 variable "bastion_public_ip" {}
 variable "bot_key_pem" {
   default = null
@@ -70,7 +72,7 @@ module "nat" {
   tags                       = { tags = local.modified_tags, instance_tags = var.tags.instance_tags }
   ami_id                     = var.ami_id
   internetless               = var.internetless
-  bastion_private_ip         = var.bastion_private_ip
+  ssh_cidr_blocks            = var.nat_ssh_cidrs
   bastion_public_ip          = var.bastion_public_ip
   bot_key_pem                = var.bot_key_pem
   instance_types             = var.instance_types

@@ -18,11 +18,11 @@ resource "aws_security_group" "vms_security_group" {
   )
 }
 
-resource "aws_security_group_rule" "ingress_from_bastion" {
+resource "aws_security_group_rule" "ingress_from_bastion_cp" {
   description       = "Allow ssh/22 from bastion host"
   security_group_id = aws_security_group.vms_security_group[0].id
   type              = "ingress"
-  cidr_blocks       = ["${var.bastion_private_ip}/32"]
+  cidr_blocks       = var.ssh_cidr_blocks
   protocol          = "tcp"
   from_port         = 22
   to_port           = 22

@@ -9,7 +9,8 @@ variable "bot_key_pem" {
   default = null
 }
 
-variable "bastion_private_ip" {
+variable "ssh_cidr_blocks" {
+  type = list(string)
 }
 
 variable "bastion_public_ip" {

@@ -65,6 +65,17 @@ data "terraform_remote_state" "encrypt_amis" {
   }
 }
 
+data "terraform_remote_state" "bootstrap_control_plane" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bootstrap_control_plane"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 data "template_cloudinit_config" "nat_user_data" {
   base64_encode = false
   gzip          = false
@@ -107,7 +118,7 @@ module "infra" {
   use_route53                   = false
   vpc_id                        = local.vpc_id
   public_route_table_id         = local.route_table_id
-  bastion_private_ip            = data.terraform_remote_state.bastion.outputs.bastion_private_ip
+  ssh_cidr_blocks               = concat(["${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"], data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs)
   bastion_public_ip             = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
   bot_key_pem                   = data.terraform_remote_state.paperwork.outputs.bot_private_key
   private_route_table_ids       = data.terraform_remote_state.routes.outputs.pas_private_vpc_route_table_ids

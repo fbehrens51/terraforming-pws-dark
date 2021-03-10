@@ -10,27 +10,11 @@ variable "tags" {
 }
 
 variable "name" {}
+
 variable "cidr_block" {}
-variable "pas_vpc_cidr_block" {}
-variable "ami_id" {}
-variable "public_subnet_ids" {}
-variable "internetless" {}
-variable "bastion_private_ip" {}
-variable "bastion_public_ip" {}
-variable "bot_key_pem" {
-  default = null
-}
-variable "instance_types" {
-  type = map(map(string))
-}
-variable "user_data" {}
-variable "root_domain" {}
-variable "syslog_ca_cert" {}
-variable "public_bucket_name" {}
-variable "public_bucket_url" {}
+
 
 locals {
-  env_name = var.tags["Name"]
   modified_tags = merge(
     var.tags,
     {

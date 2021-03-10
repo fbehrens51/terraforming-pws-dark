@@ -6,7 +6,7 @@ module "nat" {
   metrics_ingress_cidr_block = data.aws_vpc.vpc.cidr_block
   tags                       = var.tags
   public_subnet_ids          = aws_subnet.public_subnets.*.id
-  bastion_private_ip         = "${var.bastion_private_ip}/32"
+  ssh_cidr_blocks            = var.ssh_cidr_blocks
   bastion_public_ip          = var.bastion_public_ip
   internetless               = var.internetless
   instance_types             = var.instance_types
