@@ -46,3 +46,18 @@ data "aws_s3_bucket_object" "blocked-cidrs" {
 output "blocked-cidrs" {
   value = data.aws_s3_bucket_object.blocked-cidrs.*.body
 }
+
+data "aws_s3_bucket_objects" "allowed-cidr-objects" {
+  bucket = local.secrets_bucket_name
+  prefix = "allowed-cidrs/"
+}
+
+data "aws_s3_bucket_object" "allowed-cidrs" {
+  count  = length(data.aws_s3_bucket_objects.allowed-cidr-objects.keys)
+  key    = element(data.aws_s3_bucket_objects.allowed-cidr-objects.keys, count.index)
+  bucket = data.aws_s3_bucket_objects.allowed-cidr-objects.bucket
+}
+
+output "allowed-cidrs" {
+  value = data.aws_s3_bucket_object.allowed-cidrs.*.body
+}

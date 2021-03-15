@@ -553,3 +553,9 @@ resource "aws_s3_bucket_object" "blocked-vpc" {
   content      = data.aws_vpc.default_vpcs[count.index].cidr_block
 }
 
+resource "aws_s3_bucket_object" "allowed-cidr" {
+  bucket       = local.secrets_bucket_name
+  content_type = "text/plain"
+  key          = "allowed-cidrs/platform-public-cidr"
+  content      = module.calculated_subnets.public_cidr
+}
