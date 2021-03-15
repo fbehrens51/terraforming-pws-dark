@@ -530,3 +530,26 @@ variable "force_destroy_buckets" {
   type    = bool
   default = false
 }
+
+locals {
+  default_vpcs = [
+    data.terraform_remote_state.paperwork.outputs.pas_vpc_id,
+    data.terraform_remote_state.paperwork.outputs.bastion_vpc_id,
+    data.terraform_remote_state.paperwork.outputs.cp_vpc_id,
+    data.terraform_remote_state.paperwork.outputs.es_vpc_id,
+  ]
+}
+
+data "aws_vpc" "default_vpcs" {
+  count = length(local.default_vpcs)
+  id    = local.default_vpcs[count.index]
+}
+
+resource "aws_s3_bucket_object" "blocked-vpc" {
+  count        = length(local.default_vpcs)
+  bucket       = local.secrets_bucket_name
+  content_type = "text/plain"
+  key          = "blocked-cidrs/platform-${local.default_vpcs[count.index]}"
+  content      = data.aws_vpc.default_vpcs[count.index].cidr_block
+}
+

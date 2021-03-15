@@ -117,7 +117,8 @@ locals {
   bot_user_on_bastion    = data.terraform_remote_state.bastion.outputs.bot_user_on_bastion
   bastion_route_table_id = data.terraform_remote_state.bastion.outputs.bastion_route_table_id
 
-  ssh_cidrs = concat(["${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"], data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs)
+  ssh_cidrs           = concat(["${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"], data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs)
+  secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
 }
 
 data "aws_vpc" "pas_vpc" {
@@ -418,4 +419,11 @@ module "route_isolation_segment_control_plane" {
     data.terraform_remote_state.routes.outputs.cp_private_vpc_route_table_ids,
   )
   availability_zones = var.availability_zones
+}
+
+resource "aws_s3_bucket_object" "blocked-vpc" {
+  bucket       = local.secrets_bucket_name
+  key          = "blocked-cidrs/iso-seg-${var.vpc_id}"
+  content_type = "text/plain"
+  content      = data.aws_vpc.vpc.cidr_block
 }
