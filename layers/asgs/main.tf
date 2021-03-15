@@ -43,10 +43,6 @@ data "aws_s3_bucket_object" "blocked-cidrs" {
   bucket = data.aws_s3_bucket_objects.blocked-cidr-objects.bucket
 }
 
-output "blocked-cidrs" {
-  value = data.aws_s3_bucket_object.blocked-cidrs.*.body
-}
-
 data "aws_s3_bucket_objects" "allowed-cidr-objects" {
   bucket = local.secrets_bucket_name
   prefix = "allowed-cidrs/"
@@ -58,6 +54,16 @@ data "aws_s3_bucket_object" "allowed-cidrs" {
   bucket = data.aws_s3_bucket_objects.allowed-cidr-objects.bucket
 }
 
-output "allowed-cidrs" {
-  value = data.aws_s3_bucket_object.allowed-cidrs.*.body
+resource "aws_s3_bucket_object" "asg-tool-input" {
+  bucket       = local.secrets_bucket_name
+  content_type = "application/json"
+  key          = "application-security-group-config.json"
+  content = jsonencode({
+    allowed = data.aws_s3_bucket_object.allowed-cidrs.*.body,
+    blocked = data.aws_s3_bucket_object.blocked-cidrs.*.body,
+  })
+}
+
+output "asg-config" {
+  value = aws_s3_bucket_object.asg-tool-input.content
 }
