@@ -151,6 +151,8 @@ data "aws_iam_policy_document" "fluentd" {
     actions = [
       "logs:*",
       "s3:*",
+      "ec2:DeleteTags",
+      "ec2:CreateTags",
     ]
 
     resources = ["*"]
