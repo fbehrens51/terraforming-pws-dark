@@ -16,6 +16,8 @@ iso_vpc_ids = ["${iso_vpc_id}"]
 
 fluentd_role_name = "${fluentd_role_name}"
 
+instance_tagger_role_name = "${instance_tagger_role_name}"
+
 director_role_name = "${director_role_name}"
 
 sjb_role_name = "${sjb_role_name}"

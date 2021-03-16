@@ -64,13 +64,14 @@ module "domains" {
 }
 
 module "paperwork" {
-  source             = "./modules/paperwork"
-  bucket_role_name   = var.pas_bucket_role_name
-  worker_role_name   = var.platform_automation_engine_worker_role_name
-  director_role_name = var.director_role_name
-  fluentd_role_name  = var.fluentd_role_name
-  tsdb_role_name     = var.tsdb_role_name
-  ldap_eip           = aws_eip.ldap_eip.public_ip
+  source                    = "./modules/paperwork"
+  bucket_role_name          = var.pas_bucket_role_name
+  worker_role_name          = var.platform_automation_engine_worker_role_name
+  director_role_name        = var.director_role_name
+  fluentd_role_name         = var.fluentd_role_name
+  instance_tagger_role_name = var.instance_tagger_role_name
+  tsdb_role_name            = var.tsdb_role_name
+  ldap_eip                  = aws_eip.ldap_eip.public_ip
 
   env_name    = var.env_name
   root_domain = var.root_domain
@@ -109,6 +110,7 @@ data "template_file" "paperwork_variables" {
     platform_automation_engine_worker_role_name = var.platform_automation_engine_worker_role_name
     tsdb_role_name                              = var.tsdb_role_name
     fluentd_role_name                           = var.fluentd_role_name
+    instance_tagger_role_name                   = var.instance_tagger_role_name
     director_role_name                          = var.director_role_name
     sjb_role_name                               = var.director_role_name
     cp_vpc_id                                   = module.paperwork.cp_vpc_id
@@ -193,6 +195,10 @@ variable "fluentd_role_name" {
   type = string
 }
 
+variable "instance_tagger_role_name" {
+  type = string
+}
+
 variable "director_role_name" {
   type = string
 }
@@ -209,7 +215,12 @@ variable "root_domain" {
 }
 
 variable "users" {
-  type = list(object({ name = string, username = string, ou = string, roles = string }))
+  type = list(object({
+    name     = string,
+    username = string,
+    ou       = string,
+    roles    = string
+  }))
 }
 
 resource "aws_s3_bucket_object" "cap_root_ca_cert" {

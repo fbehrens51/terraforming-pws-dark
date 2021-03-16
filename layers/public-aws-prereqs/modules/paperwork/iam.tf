@@ -273,3 +273,38 @@ output "pas_bucket_role_arn" {
   value = aws_iam_role.bucket.arn
 }
 
+
+data "aws_iam_policy_document" "instance_tagger" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "ec2:DeleteTags",
+      "ec2:CreateTags",
+    ]
+
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "instance_tagger" {
+  name   = var.instance_tagger_role_name
+  path   = "/"
+  policy = data.aws_iam_policy_document.fluentd.json
+}
+
+resource "aws_iam_role" "instance_tagger" {
+  name               = var.instance_tagger_role_name
+  assume_role_policy = data.aws_iam_policy_document.role_policy.json
+}
+
+resource "aws_iam_policy_attachment" "instance_tagger" {
+  name       = var.instance_tagger_role_name
+  roles      = [aws_iam_role.instance_tagger.name]
+  policy_arn = aws_iam_policy.instance_tagger.arn
+}
+
+resource "aws_iam_instance_profile" "instance_tagger" {
+  name = var.fluentd_role_name
+  role = aws_iam_role.fluentd.name
+}
