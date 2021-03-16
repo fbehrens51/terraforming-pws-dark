@@ -106,7 +106,7 @@ product-properties:
       server_name: null
       tls_certificates: {}
   .properties.smtp:
-%{ if smtp_enabled != "true" ~}
+%{ if smtp_enabled != true ~}
     selected_option: disabled
     value: disabled
 %{ else ~}
@@ -388,7 +388,7 @@ product-properties:
                 description: |
                   The Healthwatch Tanzu Application Service Timer Exporter has been down for 10 minutes.
         ##### END HEALTHWATCH ALERTING RULES #####
-%{ if smtp_enabled == "true" ~}
+%{ if smtp_enabled == true ~}
   .tsdb.alerting_email_receiver_config:
     value:
     - auth_password:
