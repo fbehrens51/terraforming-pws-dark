@@ -290,7 +290,7 @@ data "aws_iam_policy_document" "instance_tagger" {
 resource "aws_iam_policy" "instance_tagger" {
   name   = var.instance_tagger_role_name
   path   = "/"
-  policy = data.aws_iam_policy_document.fluentd.json
+  policy = data.aws_iam_policy_document.instance_tagger.json
 }
 
 resource "aws_iam_role" "instance_tagger" {
@@ -305,6 +305,6 @@ resource "aws_iam_policy_attachment" "instance_tagger" {
 }
 
 resource "aws_iam_instance_profile" "instance_tagger" {
-  name = var.fluentd_role_name
-  role = aws_iam_role.fluentd.name
+  name = var.instance_tagger_role_name
+  role = aws_iam_role.instance_tagger.name
 }
