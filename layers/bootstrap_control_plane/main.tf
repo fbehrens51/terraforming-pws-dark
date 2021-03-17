@@ -277,6 +277,12 @@ data "template_cloudinit_config" "nat_user_data" {
     content      = data.terraform_remote_state.paperwork.outputs.bot_user_accounts_user_data
   }
 
+  part {
+    filename     = "tag_completion.cfg"
+    content_type = "text/x-include-url"
+    content      = data.terraform_remote_state.paperwork.outputs.completion_tag_user_data
+  }
+
 }
 
 module "nat" {
@@ -296,7 +302,7 @@ module "nat" {
   user_data                  = data.template_cloudinit_config.nat_user_data.rendered
   root_domain                = data.terraform_remote_state.paperwork.outputs.root_domain
   syslog_ca_cert             = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
-  check_cloud_init           = false
+  check_cloud_init           = true
 
   public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url
