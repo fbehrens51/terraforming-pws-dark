@@ -235,9 +235,11 @@ resource "null_resource" "fluentd_status" {
   }
 
   provisioner "local-exec" {
-    command = <<-EOF
+    on_failure  = fail
+    interpreter = ["/bin/bash", "-c"]
+    command     = <<-EOF
     #!/usr/bin/env bash
-    set -ex
+    set -e
     completed_tag="cloud_init_done"
     poll_tags="aws ec2 describe-tags --filters Name=resource-id,Values=${module.fluentd_instance.instance_ids[0]} Name=key,Values=$completed_tag --output text --query Tags[*].Value"
     echo "running $poll_tags"
