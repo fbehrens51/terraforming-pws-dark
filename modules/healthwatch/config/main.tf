@@ -135,6 +135,7 @@ locals {
     syslog_host                      = var.syslog_host
     syslog_port                      = var.syslog_port
     syslog_ca_cert                   = var.syslog_ca_cert
+    alerting_rules_yml               = file("${path.module}/alerting_rules.yml")
   })
 }
 
