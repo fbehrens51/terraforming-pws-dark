@@ -117,7 +117,8 @@ resource "aws_instance" "instance" {
   }
   provisioner "local-exec" {
     command = <<-EOF
-    #!/bin/bash
+    #!/usr/bin/env bash
+    set -ex
     completed_tag="cloud_init_done"
     poll_tags="aws ec2 describe-tags --filters Name=resource-id,Values=${self.id} Name=key,Values=$completed_tag --output text --query Tags[*].Value"
     echo "running $poll_tags"
