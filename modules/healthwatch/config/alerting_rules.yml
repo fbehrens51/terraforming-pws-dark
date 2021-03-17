@@ -252,3 +252,14 @@ groups:
           description: |
             The Healthwatch Tanzu Application Service Timer Exporter has been down for 10 minutes.
   ##### END HEALTHWATCH ALERTING RULES #####
+
+  ##### BEGIN CUSTOM ALERTING RULES #####
+  - name: CustomRules
+    rules:
+      - alert: TargetDown
+        expr: 'up{name_tag!=""} == 0'
+        for: 5m
+        annotations:
+          summary: "{{ $labels.name_tag }} down"
+          description: "{{ $labels.name_tag }} with id {{ $labels.instance_id }} has been down for more than 5 minutes."
+  ##### END CUSTOM ALERTING RULES #####
