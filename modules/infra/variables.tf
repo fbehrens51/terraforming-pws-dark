@@ -84,6 +84,8 @@ variable "root_domain" {
 variable "syslog_ca_cert" {
 }
 
+variable "default_instance_role_name" {}
+
 variable "user_data" {
 }
 

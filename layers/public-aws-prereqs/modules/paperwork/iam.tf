@@ -151,7 +151,6 @@ data "aws_iam_policy_document" "fluentd" {
     actions = [
       "logs:*",
       "s3:*",
-      "ec2:DeleteTags",
       "ec2:CreateTags",
     ]
 
@@ -281,7 +280,6 @@ data "aws_iam_policy_document" "instance_tagger" {
     effect = "Allow"
 
     actions = [
-      "ec2:DeleteTags",
       "ec2:CreateTags",
     ]
 

@@ -30,6 +30,7 @@ variable "root_domain" {}
 variable "syslog_ca_cert" {}
 variable "public_bucket_name" {}
 variable "public_bucket_url" {}
+variable "default_instance_role_name" {}
 
 locals {
   modified_tags = merge(
@@ -82,6 +83,8 @@ module "nat" {
   syslog_ca_cert             = var.syslog_ca_cert
   public_bucket_name         = var.public_bucket_name
   public_bucket_url          = var.public_bucket_url
+  role_name                  = var.default_instance_role_name
+
 }
 
 output "private_route_table_ids" {

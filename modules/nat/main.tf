@@ -61,6 +61,9 @@ variable "check_cloud_init" {
   default = true
 }
 
+variable "role_name" {
+}
+
 
 locals {
   modified_name = "${var.tags.tags["Name"]} nat"
@@ -165,17 +168,18 @@ EOF
 module "nat_host" {
   source = "../launch"
 
-  instance_count    = length(var.private_route_table_ids)
-  ami_id            = var.ami_id
-  user_data         = data.template_cloudinit_config.user_data.rendered
-  eni_ids           = module.eni.eni_ids
-  tags              = local.instance_tags
-  instance_types    = var.instance_types
-  scale_vpc_key     = var.scale_vpc_key
-  scale_service_key = "nat"
-  bastion_host      = var.bastion_public_ip
-  bot_key_pem       = var.bot_key_pem
-  check_cloud_init  = var.internetless ? false : var.check_cloud_init
+  instance_count       = length(var.private_route_table_ids)
+  ami_id               = var.ami_id
+  user_data            = data.template_cloudinit_config.user_data.rendered
+  eni_ids              = module.eni.eni_ids
+  tags                 = local.instance_tags
+  instance_types       = var.instance_types
+  scale_vpc_key        = var.scale_vpc_key
+  scale_service_key    = "nat"
+  bastion_host         = var.bastion_public_ip
+  bot_key_pem          = var.bot_key_pem
+  check_cloud_init     = var.internetless ? false : var.check_cloud_init
+  iam_instance_profile = var.role_name
 }
 
 resource "aws_route" "toggle_internet" {

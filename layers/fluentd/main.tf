@@ -193,6 +193,12 @@ data "template_cloudinit_config" "user_data" {
     content_type = "text/x-include-url"
     content      = data.terraform_remote_state.paperwork.outputs.custom_banner_user_data
   }
+
+  part {
+    filename     = "tag_completion.cfg"
+    content_type = "text/x-include-url"
+    content      = data.terraform_remote_state.paperwork.outputs.completion_tag_user_data
+  }
 }
 
 module "fluentd_instance" {
@@ -210,6 +216,7 @@ module "fluentd_instance" {
   bastion_host         = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
   iam_instance_profile = data.terraform_remote_state.paperwork.outputs.fluentd_role_name
   volume_ids           = [data.terraform_remote_state.bootstrap_fluentd.outputs.volume_id]
+
 }
 
 module "syslog_config" {
@@ -227,20 +234,29 @@ resource "null_resource" "fluentd_status" {
     instance_id = module.fluentd_instance.instance_ids[0]
   }
 
-  connection {
-    type         = "ssh"
-    user         = "bot"
-    host         = module.fluentd_instance.private_ips[0]
-    private_key  = data.terraform_remote_state.paperwork.outputs.bot_private_key
-    bastion_host = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "echo \"Running cloud-init status --wait > /dev/null\"",
-      "sudo cloud-init status --wait > /dev/null",
-      "sudo cloud-init status --long"
-    ]
+  provisioner "local-exec" {
+    command = <<-EOF
+    #!/bin/bash
+    completed_tag="cloud_init_done"
+    poll_tags="aws ec2 describe-tags --filters Name=resource-id,Values=${module.fluentd_instance.instance_ids[0]} Name=key,Values=$completed_tag --output text --query Tags[*].Value"
+    echo "running $poll_tags"
+    tags="$($poll_tags)"
+    COUNTER=0
+    LOOP_LIMIT=30
+    while [[ "$tags" == "" ]] ; do
+      if [[ $COUNTER -eq $LOOP_LIMIT ]]; then
+        echo "timed out waiting for $completed_tag to be set"
+        exit 1
+      fi
+      if [[ $COUNTER -gt 0 ]]; then
+        echo "$completed_tag not set, sleeping for 10s"
+        sleep 10s
+      fi
+      tags="$($poll_tags)"
+      let COUNTER=COUNTER+1
+    done
+    echo "$completed_tag = $tags"
+    EOF
   }
 }
 

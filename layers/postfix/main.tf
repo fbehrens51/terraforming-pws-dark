@@ -166,20 +166,27 @@ data "template_cloudinit_config" "user_data" {
     content_type = "text/x-include-url"
     content      = data.terraform_remote_state.paperwork.outputs.custom_banner_user_data
   }
+
+  part {
+    filename     = "tag_completion.cfg"
+    content_type = "text/x-include-url"
+    content      = data.terraform_remote_state.paperwork.outputs.completion_tag_user_data
+  }
 }
 
 module "postfix_master_host" {
-  instance_count    = 1
-  source            = "../../modules/launch"
-  instance_types    = data.terraform_remote_state.scaling-params.outputs.instance_types
-  scale_vpc_key     = "enterprise-services"
-  scale_service_key = "postfix"
-  ami_id            = local.encrypted_amazon2_ami_id
-  user_data         = data.template_cloudinit_config.user_data.rendered
-  eni_ids           = data.terraform_remote_state.bootstrap_postfix.outputs.postfix_eni_ids
-  tags              = local.modified_tags
-  bot_key_pem       = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  bastion_host      = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
+  instance_count       = 1
+  source               = "../../modules/launch"
+  instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
+  scale_vpc_key        = "enterprise-services"
+  scale_service_key    = "postfix"
+  ami_id               = local.encrypted_amazon2_ami_id
+  user_data            = data.template_cloudinit_config.user_data.rendered
+  eni_ids              = data.terraform_remote_state.bootstrap_postfix.outputs.postfix_eni_ids
+  tags                 = local.modified_tags
+  bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
+  bastion_host         = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
+  iam_instance_profile = data.terraform_remote_state.paperwork.outputs.instance_tagger_role_name
 }
 
 module "syslog_config" {

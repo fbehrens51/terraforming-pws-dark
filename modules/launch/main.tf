@@ -113,28 +113,35 @@ resource "aws_instance" "instance" {
   }
 
   lifecycle {
-    ignore_changes = [tags["operating-system"]]
+    ignore_changes = [tags["operating-system"], tags["cloud_init_done"]]
   }
-
-  provisioner "remote-exec" {
-    inline = [
-      "echo \"Running cloud-init status --wait > /dev/null\"",
-      "sudo cloud-init status --wait > /dev/null",
-      "sudo cloud-init status --long"
-    ]
-
-    connection {
-      user         = var.bot_user
-      host         = self.private_ip
-      timeout      = var.ssh_timeout
-      private_key  = var.bot_key_pem
-      bastion_host = var.bastion_host
-    }
+  provisioner "local-exec" {
+    command = <<-EOF
+    #!/bin/bash
+    completed_tag="cloud_init_done"
+    poll_tags="aws ec2 describe-tags --filters Name=resource-id,Values=${self.id} Name=key,Values=$completed_tag --output text --query Tags[*].Value"
+    echo "running $poll_tags"
+    tags="$($poll_tags)"
+    COUNTER=0
+    LOOP_LIMIT=30
+    while [[ "$tags" == "" ]] ; do
+      if [[ $COUNTER -eq $LOOP_LIMIT ]]; then
+        echo "timed out waiting for $completed_tag to be set"
+        exit 1
+      fi
+      if [[ $COUNTER -gt 0 ]]; then
+        echo "$completed_tag not set, sleeping for 10s"
+        sleep 10s
+      fi
+      tags="$($poll_tags)"
+      let COUNTER=COUNTER+1
+    done
+    echo "$completed_tag = $tags"
+    EOF
   }
 }
 
 // fluentd VMs, control_plane_nats, SJB (last two allow bootstraping an environment).
-
 resource "aws_instance" "unchecked_instance" {
   count = var.ignore_tag_changes == false && var.check_cloud_init == false ? var.instance_count : 0
 
@@ -173,32 +180,7 @@ resource "aws_volume_attachment" "volume_attachment" {
   device_name  = var.device_name
 }
 
-//resource "null_resource" "cloud_init_status" {
-//  count = var.ignore_tag_changes == false && var.bot_key_pem != null ? var.instance_count : 0
-//
-//  triggers = {
-//    instance_id = element(aws_instance.instance.*.id, count.index)
-//  }
-//
-//  provisioner "remote-exec" {
-//    inline = [
-//      "echo \"Running cloud-init status --wait > /dev/null\"",
-//      "sudo cloud-init status --wait > /dev/null",
-//      "sudo cloud-init status --long"
-//    ]
-//
-//    connection {
-//      user         = "bot"
-//      host         = element(aws_instance.instance.*.private_ip, count.index)
-//      timeout      = var.ssh_timeout
-//      private_key  = var.bot_key_pem
-//      bastion_host = var.bastion_host
-//    }
-//  }
-//}
-
 // Bastion instance
-
 resource "aws_instance" "instance_ignoring_tags" {
   count = var.ignore_tag_changes ? var.instance_count : 0
 

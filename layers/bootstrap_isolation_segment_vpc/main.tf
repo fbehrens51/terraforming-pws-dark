@@ -230,6 +230,12 @@ data "template_cloudinit_config" "nat_user_data" {
     content_type = "text/x-include-url"
     content      = data.terraform_remote_state.paperwork.outputs.bot_user_accounts_user_data
   }
+
+  part {
+    filename     = "tag_completion.cfg"
+    content_type = "text/x-include-url"
+    content      = data.terraform_remote_state.paperwork.outputs.completion_tag_user_data
+  }
 }
 
 resource "aws_security_group" "vms_security_group" {
@@ -315,11 +321,12 @@ module "isolation_segment_0" {
   instance_types    = data.terraform_remote_state.scaling-params.outputs.instance_types
   user_data         = data.template_cloudinit_config.nat_user_data.rendered
 
-  root_domain        = data.terraform_remote_state.paperwork.outputs.root_domain
-  syslog_ca_cert     = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
-  ami_id             = data.terraform_remote_state.encrypt_amis.outputs.encrypted_amazon2_ami_id
-  public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name
-  public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url
+  root_domain                = data.terraform_remote_state.paperwork.outputs.root_domain
+  syslog_ca_cert             = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  ami_id                     = data.terraform_remote_state.encrypt_amis.outputs.encrypted_amazon2_ami_id
+  public_bucket_name         = data.terraform_remote_state.paperwork.outputs.public_bucket_name
+  public_bucket_url          = data.terraform_remote_state.paperwork.outputs.public_bucket_url
+  default_instance_role_name = data.terraform_remote_state.paperwork.outputs.instance_tagger_role_name
 }
 
 module "isolation_segment_1" {

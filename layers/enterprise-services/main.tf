@@ -169,6 +169,12 @@ data "template_cloudinit_config" "nat_user_data" {
     content_type = "text/x-include-url"
     content      = data.terraform_remote_state.paperwork.outputs.bot_user_accounts_user_data
   }
+
+  part {
+    filename     = "tag_completion.cfg"
+    content_type = "text/x-include-url"
+    content      = data.terraform_remote_state.paperwork.outputs.completion_tag_user_data
+  }
 }
 
 module "nat" {
@@ -191,6 +197,7 @@ module "nat" {
 
   public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url
+  role_name          = data.terraform_remote_state.paperwork.outputs.instance_tagger_role_name
 }
 
 variable "internetless" {

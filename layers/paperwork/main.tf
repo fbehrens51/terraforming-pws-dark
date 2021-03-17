@@ -34,6 +34,7 @@ users:
     ssh_authorized_keys:
       - ${module.bot_host_key_pair.public_key_openssh}
 DOC
+
 }
 
 resource "aws_vpc_endpoint" "iso_s3" {
@@ -201,6 +202,12 @@ module "bot_user_accounts_config" {
   public_bucket_url       = local.public_bucket_url
 }
 
+module "tag_completion_config" {
+  source             = "../../modules/cloud_init/completion_tag"
+  public_bucket_name = aws_s3_bucket.public_bucket.bucket
+  public_bucket_url  = local.public_bucket_url
+}
+
 variable "force_destroy_buckets" {
   type    = bool
   default = false
@@ -251,6 +258,9 @@ variable "cp_vpc_id" {
 }
 
 variable "fluentd_role_name" {
+}
+
+variable "instance_tagger_role_name" {
 }
 
 variable "director_role_name" {
@@ -614,6 +624,10 @@ output "fluentd_role_name" {
   value = var.fluentd_role_name
 }
 
+output "instance_tagger_role_name" {
+  value = var.instance_tagger_role_name
+}
+
 output "director_role_name" {
   value = var.director_role_name
 }
@@ -864,6 +878,10 @@ output "om_user_accounts_user_data" {
 
 output "bot_user_accounts_user_data" {
   value = module.bot_user_accounts_config.user_accounts_user_data
+}
+
+output "completion_tag_user_data" {
+  value = module.tag_completion_config.tg_include_user_data
 }
 
 output "bot_public_key" {

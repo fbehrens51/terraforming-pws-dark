@@ -115,6 +115,7 @@ data "template_cloudinit_config" "bot_user_data" {
     content_type = "text/cloud-config"
     content      = local.bot_user_data
   }
+
 }
 
 data "template_cloudinit_config" "user_data" {
@@ -133,16 +134,17 @@ module "amazon_ami" {
 }
 
 module "bastion_host" {
-  instance_count     = "1"
-  source             = "../../modules/launch"
-  ignore_tag_changes = true
-  instance_types     = data.terraform_remote_state.scaling-params.outputs.instance_types
-  scale_vpc_key      = "bastion"
-  scale_service_key  = "bastion"
-  ami_id             = var.ami_id == "" ? module.amazon_ami.id : var.ami_id
-  user_data          = var.add_bot_user_to_user_data ? data.template_cloudinit_config.bot_user_data.rendered : data.template_cloudinit_config.user_data.rendered
-  eni_ids            = [module.bootstrap_bastion.eni_id]
-  tags               = local.instance_tags
+  instance_count       = "1"
+  source               = "../../modules/launch"
+  ignore_tag_changes   = true
+  instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
+  scale_vpc_key        = "bastion"
+  scale_service_key    = "bastion"
+  ami_id               = var.ami_id == "" ? module.amazon_ami.id : var.ami_id
+  user_data            = var.add_bot_user_to_user_data ? data.template_cloudinit_config.bot_user_data.rendered : data.template_cloudinit_config.user_data.rendered
+  eni_ids              = [module.bootstrap_bastion.eni_id]
+  tags                 = local.instance_tags
+  iam_instance_profile = var.ami_id == "" ? data.terraform_remote_state.paperwork.outputs.instance_tagger_role_name : ""
 }
 
 variable "ami_id" {
