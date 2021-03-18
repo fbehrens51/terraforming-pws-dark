@@ -258,3 +258,8 @@
   </parse>
 </source>
 
+<source>
+  @type http_healthcheck
+  port 8888
+  bind 0.0.0.0
+</source>

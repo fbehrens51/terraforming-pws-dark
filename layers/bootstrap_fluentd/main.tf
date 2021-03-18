@@ -91,6 +91,13 @@ locals {
       protocol    = "tcp"
       cidr_blocks = data.aws_vpc.pas_vpc.cidr_block
     },
+    {
+      // fluentd healthcheck endpoint
+      description = "Allow healthcheck from ent svcs vpc"
+      port        = "8888"
+      protocol    = "tcp"
+      cidr_blocks = join(",", data.terraform_remote_state.enterprise-services.outputs.private_subnet_cidrs)
+    },
   ]
 
   fluentd_egress_rules = [
@@ -205,7 +212,7 @@ resource "aws_lb_target_group" "fluentd_nlb_syslog" {
   target_type = "ip"
 
   health_check {
-    port     = module.syslog_ports.syslog_port
+    port     = 8888
     protocol = "TCP"
   }
 }
@@ -218,7 +225,7 @@ resource "aws_lb_target_group" "fluentd_nlb_apps_syslog" {
   target_type = "ip"
 
   health_check {
-    port     = module.syslog_ports.apps_syslog_port
+    port     = 8888
     protocol = "TCP"
   }
 }
