@@ -100,9 +100,17 @@ product-properties:
       scrape_job: |-
         job_name: 'fluentd'
         metrics_path: /aggregated_metrics
-        static_configs:
-        - targets:
-          - ${fluentd_root_url}
+        scheme: http
+        ec2_sd_configs:
+          - region: ${region}
+            port: 9200
+        relabel_configs:
+          - source_labels: [__meta_ec2_tag_job]
+            regex: fluentd
+            action: keep
+          - source_labels: [__meta_ec2_tag_env]
+            regex: ${env_tag_name}
+            action: keep
       server_name: null
       tls_certificates: {}
   .properties.smtp:
