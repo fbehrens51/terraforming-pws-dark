@@ -262,4 +262,13 @@ groups:
         annotations:
           summary: "{{ $labels.name_tag }} down"
           description: "{{ $labels.name_tag }} with id {{ $labels.instance_id }} has been down for more than 5 minutes."
+      - alert: LargeFluentdOutputBuffer
+        expr: 'fluentd_output_status_buffer_queue_length > 3'
+        for: 5m
+        annotations:
+          summary: "Fluentd has a large buffer"
+          description: |
+            Fluentd's output buffer has been down for more than 5 minutes.
+            If left unchecked, this could lead to log loss once the fluentd disk is full.
+
   ##### END CUSTOM ALERTING RULES #####
