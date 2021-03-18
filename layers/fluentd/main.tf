@@ -103,8 +103,6 @@ locals {
 
   encrypted_amazon2_ami_id = data.terraform_remote_state.encrypt_amis.outputs.encrypted_amazon2_ami_id
 
-  fluentd_eip_ips = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_eip_ips
-
   root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
 
   bot_user_on_bastion = data.terraform_remote_state.bastion.outputs.bot_user_on_bastion
@@ -217,6 +215,19 @@ module "fluentd_instance" {
   iam_instance_profile = data.terraform_remote_state.paperwork.outputs.fluentd_role_name
   volume_ids           = [data.terraform_remote_state.bootstrap_fluentd.outputs.volume_id]
 
+}
+
+
+resource "aws_lb_target_group_attachment" "fluentd_syslog_attachment" {
+  count            = 1
+  target_group_arn = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_lb_syslog_tg_arn
+  target_id        = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_eni_ips[0]
+}
+
+resource "aws_lb_target_group_attachment" "fluentd_apps_syslog_attachment" {
+  count            = 1
+  target_group_arn = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_lb_apps_syslog_tg_arn
+  target_id        = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_eni_ips[0]
 }
 
 module "syslog_config" {

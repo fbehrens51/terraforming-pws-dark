@@ -103,12 +103,16 @@ locals {
   ]
   private_subnets = data.terraform_remote_state.enterprise-services.outputs.private_subnet_ids
 
-  log_group_name = replace("${local.env_name} log group", " ", "_")
+  formatted_env_name = replace(local.env_name, " ", "-")
+
+  log_group_name = "${replace(local.env_name, " ", "_")}_log_group"
 
   s3_logs_bucket = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
 
-  syslog_archive_bucket       = "${replace(local.env_name, " ", "-")}-syslog-archive"
-  syslog_audit_archive_bucket = "${replace(local.env_name, " ", "-")}-syslog-audit-archive"
+  syslog_archive_bucket       = "${local.formatted_env_name}-syslog-archive"
+  syslog_audit_archive_bucket = "${local.formatted_env_name}-syslog-audit-archive"
+
+  fluentd_lb_name = "${local.formatted_env_name}-fluentd-lb"
 }
 
 data "aws_subnet" "private_subnets" {
@@ -180,6 +184,69 @@ module "bootstrap" {
   tags          = local.modified_tags
 }
 
+resource "aws_lb" "fluentd_lb" {
+  name               = local.fluentd_lb_name
+  internal           = true
+  load_balancer_type = "network"
+  subnets            = data.terraform_remote_state.enterprise-services.outputs.public_subnet_ids
+  tags = merge(
+    local.modified_tags,
+    {
+      "Name" = local.fluentd_lb_name
+    },
+  )
+}
+
+resource "aws_lb_target_group" "fluentd_nlb_syslog" {
+  name        = "${local.formatted_env_name}-fluentd${module.syslog_ports.syslog_port}"
+  port        = module.syslog_ports.syslog_port
+  protocol    = "TCP"
+  vpc_id      = data.terraform_remote_state.paperwork.outputs.es_vpc_id
+  target_type = "ip"
+
+  health_check {
+    port     = module.syslog_ports.syslog_port
+    protocol = "TCP"
+  }
+}
+
+resource "aws_lb_target_group" "fluentd_nlb_apps_syslog" {
+  name        = "${local.formatted_env_name}-fluentd${module.syslog_ports.apps_syslog_port}"
+  port        = module.syslog_ports.apps_syslog_port
+  protocol    = "TCP"
+  vpc_id      = data.terraform_remote_state.paperwork.outputs.es_vpc_id
+  target_type = "ip"
+
+  health_check {
+    port     = module.syslog_ports.apps_syslog_port
+    protocol = "TCP"
+  }
+}
+
+
+resource "aws_lb_listener" "fluentd_nlb_syslog" {
+  load_balancer_arn = aws_lb.fluentd_lb.arn
+  protocol          = "TCP"
+  port              = module.syslog_ports.syslog_port
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.fluentd_nlb_syslog.arn
+  }
+}
+
+resource "aws_lb_listener" "fluentd_nlb_apps_syslog" {
+  load_balancer_arn = aws_lb.fluentd_lb.arn
+  protocol          = "TCP"
+  port              = module.syslog_ports.apps_syslog_port
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.fluentd_nlb_apps_syslog.arn
+  }
+}
+
+
 variable "remote_state_region" {
 }
 
@@ -203,10 +270,6 @@ output "fluentd_eni_ips" {
   value = module.bootstrap.eni_ips
 }
 
-output "fluentd_eip_ips" {
-  value = module.bootstrap.public_ips
-}
-
 output "volume_id" {
   value = aws_ebs_volume.fluentd_data.id
 }
@@ -223,3 +286,14 @@ output "s3_bucket_syslog_audit_archive" {
   value = aws_s3_bucket.syslog_audit_archive.id
 }
 
+output "fluentd_lb_syslog_tg_arn" {
+  value = aws_lb_target_group.fluentd_nlb_syslog.arn
+}
+
+output "fluentd_lb_apps_syslog_tg_arn" {
+  value = aws_lb_target_group.fluentd_nlb_apps_syslog.arn
+}
+
+output "fluentd_lb_dns_name" {
+  value = aws_lb.fluentd_lb.dns_name
+}

@@ -25,6 +25,6 @@ ${control_plane_plane_credhub_subdomain} CNAME   ${control_plane_plane_credhub_e
 
 ${smtp_subdomain}           A       ${postfix_private_ip}
 
-${fluentd_subdomain}         A       ${fluentd_private_ip}
+${fluentd_subdomain}        CNAME   ${fluentd_dns_name}.
 
 ${grafana_subdomain} CNAME   ${grafana_elb_dns}.
