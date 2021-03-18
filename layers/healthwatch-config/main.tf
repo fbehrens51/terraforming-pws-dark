@@ -64,6 +64,17 @@ data "terraform_remote_state" "bootstrap_postfix" {
   }
 }
 
+data "terraform_remote_state" "bootstrap_fluentd" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bootstrap_fluentd"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "paperwork" {
   backend = "s3"
 
@@ -138,6 +149,7 @@ module "healthwatch_config" {
   syslog_host    = module.domains.fluentd_fqdn
   syslog_port    = module.syslog_ports.syslog_port
   syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  log_group_name = data.terraform_remote_state.bootstrap_fluentd.outputs.log_group_name
 
   slack_webhook        = var.slack_webhook
   email_addresses      = var.email_addresses

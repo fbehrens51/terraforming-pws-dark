@@ -30,6 +30,9 @@ variable "slack_webhook" {
 variable "email_addresses" {
 }
 
+variable "log_group_name" {
+}
+
 # the smtp_* variables configure healthwatch2 to postfix relay.
 variable "smtp_from" {
 }
@@ -135,7 +138,12 @@ locals {
     syslog_host                      = var.syslog_host
     syslog_port                      = var.syslog_port
     syslog_ca_cert                   = var.syslog_ca_cert
-    alerting_rules_yml               = file("${path.module}/alerting_rules.yml")
+
+    alerting_rules_yml = templatefile("${path.module}/alerting_rules.yml", {
+      log_group_name = var.log_group_name
+      region         = var.region
+      dashboard_name = replace("${var.env_tag_name} AntiVirus", " ", "_")
+    })
   })
 }
 
