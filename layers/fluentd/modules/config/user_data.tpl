@@ -50,6 +50,8 @@ runcmd:
     chown td-agent:root -R /opt/td-agent /etc/td-agent /data/s3 /data/audispd /data/log
     sed -i -e 's#/var/log/td-agent#/data/log#' /etc/logrotate.d/td-agent
 
+    TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600") && INSTANCE_ID=$(curl -H "X-aws-ec2 -$TOKEN" -v http://169.254.169.254/latest/meta-data/instance-id) && AWSAZ=$(curl -H "X-aws-ec2 -$TOKEN" -v http://169.254.169.254/latest/meta-data/placement/availability-zone) && echo -e "\nAWSAZ=$AWSAZ" >> /etc/sysconfig/td-agent
+
     systemctl enable td-agent
     systemctl start td-agent
 

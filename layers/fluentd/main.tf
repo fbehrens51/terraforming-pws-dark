@@ -99,7 +99,7 @@ locals {
   )
 
   log_group_name  = data.terraform_remote_state.bootstrap_fluentd.outputs.log_group_name
-  log_stream_name = "\"fluentd_syslog_#{`hostname -s`}\""
+  log_stream_name = "\"fluentd_syslog_#{ENV['AWSAZ']}\""
 
   encrypted_amazon2_ami_id = data.terraform_remote_state.encrypt_amis.outputs.encrypted_amazon2_ami_id
 

@@ -105,7 +105,7 @@
       @type s3
       s3_bucket ${s3_logs_bucket}
       s3_region ${region}
-      path logs/
+      path "logs/#{ENV['AWSAZ']}/"
       <buffer time>
         @type file
         path /data/s3
@@ -187,7 +187,7 @@
     @type s3
     s3_bucket ${s3_audit_logs_bucket}
     s3_region ${region}
-    path ${s3_path}
+    path "${s3_path}#{ENV['AWSAZ']}/"
     <buffer time>
       @type file
       path /data/audispd
