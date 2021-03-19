@@ -114,12 +114,12 @@
         {
           "targetBlank": true,
           "title": "Insights list of hosts, files, and signatures ",
-          "url": "https://${region}.console.aws.amazon.com/cloudwatch/home?region=${region}#dashboards:name=${dashboard_name};expand=true"
+          "url": "https://${region}.console.${aws_base_domain}/cloudwatch/home?region=${region}#dashboards:name=${dashboard_name};expand=true"
         },
         {
           "targetBlank": true,
           "title": "Cloudwatch Logs query for ' FOUND\\\"'",
-          "url": "https://${region}.console.aws.amazon.com/cloudwatch/home?region=${region}#logsV2:log-groups/log-group/${log_group_name}/log-events/fluentd_syslog$3FfilterPattern$3D$2522+FOUND$255C$2522$2522"
+          "url": "https://${region}.console.${aws_base_domain}/cloudwatch/home?region=${region}#logsV2:log-groups/log-group/${log_group_name}/log-events$3FfilterPattern$3D$2522+FOUND$255C$2522$2522"
         }
       ],
       "nullPointMode": "null as zero",

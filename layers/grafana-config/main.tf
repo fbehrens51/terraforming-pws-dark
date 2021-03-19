@@ -62,6 +62,10 @@ variable "email_addresses" {
   default = ""
 }
 
+variable "aws_base_domain" {
+  default = "aws.amazon.com"
+}
+
 data "aws_region" "current" {
 }
 
@@ -169,9 +173,10 @@ resource "grafana_dashboard" "concourse" {
 data "template_file" "clamav_dashboard" {
   template = file("dashboards/antivirus-alerts.json.tpl")
   vars = {
-    region         = local.region
-    dashboard_name = local.dashboard_name
-    log_group_name = local.log_group_name
+    region          = local.region
+    dashboard_name  = local.dashboard_name
+    log_group_name  = local.log_group_name
+    aws_base_domain = var.aws_base_domain
   }
 }
 
