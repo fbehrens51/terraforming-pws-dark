@@ -401,3 +401,9 @@ module "cw_app_manifest" {
   cap_root_ca         = data.terraform_remote_state.paperwork.outputs.cap_root_ca_cert
 }
 
+module "cf_events_logger_app_manifest" {
+  source = "../../modules/cf-events-logger"
+
+  secrets_bucket_name = local.secrets_bucket_name
+  root_domain         = data.terraform_remote_state.paperwork.outputs.root_domain
+}
