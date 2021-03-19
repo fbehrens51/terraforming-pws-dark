@@ -15,7 +15,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 20,
+  "id": 32,
   "links": [],
   "panels": [
     {
@@ -62,9 +62,10 @@
           ],
           "fields": "",
           "values": false
-        }
+        },
+        "textMode": "auto"
       },
-      "pluginVersion": "7.0.3",
+      "pluginVersion": "7.3.4",
       "targets": [
         {
           "expr": "(sum(node_systemd_unit_state{name=\"cloud-init.service\",state=\"active\"})) / sum(up{job=\"ec2\"})",
@@ -122,9 +123,10 @@
           ],
           "fields": "",
           "values": false
-        }
+        },
+        "textMode": "auto"
       },
-      "pluginVersion": "7.0.3",
+      "pluginVersion": "7.3.4",
       "targets": [
         {
           "expr": "(sum(node_systemd_unit_state{name=\"rsyslog.service\",state=\"active\"})) / sum(up{job=\"ec2\"})",
@@ -182,9 +184,10 @@
           ],
           "fields": "",
           "values": false
-        }
+        },
+        "textMode": "auto"
       },
-      "pluginVersion": "7.0.3",
+      "pluginVersion": "7.3.4",
       "targets": [
         {
           "expr": "(sum(node_systemd_unit_state{name=\"clamd@scan.service\",state=\"active\"}) + sum(node_systemd_unit_state{name=\"clamav-daemon.service\",state=\"active\"})) / sum(up{job=\"ec2\"})",
@@ -256,7 +259,7 @@
       },
       "gridPos": {
         "h": 7,
-        "w": 17,
+        "w": 12,
         "x": 0,
         "y": 7
       },
@@ -272,9 +275,10 @@
           ],
           "fields": "",
           "values": false
-        }
+        },
+        "textMode": "auto"
       },
-      "pluginVersion": "7.0.3",
+      "pluginVersion": "7.3.4",
       "targets": [
         {
           "expr": "up{name_tag=~\".*bind\"} + on(name_tag, availability_zone) node_systemd_unit_state{name=\"named.service\",state=\"active\"}",
@@ -341,8 +345,8 @@
       },
       "gridPos": {
         "h": 7,
-        "w": 7,
-        "x": 17,
+        "w": 12,
+        "x": 12,
         "y": 7
       },
       "id": 13,
@@ -357,16 +361,21 @@
           ],
           "fields": "",
           "values": false
-        }
+        },
+        "textMode": "auto"
       },
-      "pluginVersion": "7.0.3",
+      "pluginVersion": "7.3.4",
       "targets": [
         {
-          "expr": "sum(up{job=\"fluentd\"}) + sum(node_systemd_unit_state{name=\"td-agent.service\",state=\"active\"})",
+          "expr": "up{name_tag=~\".*fluentd\"} + on(name_tag, availability_zone)  node_systemd_unit_state{name=\"td-agent.service\",state=\"active\"}",
           "hide": false,
           "interval": "",
+          "intervalFactor": 1,
           "legendFormat": "{{name_tag}}",
           "refId": "A"
+        },
+        {
+          "refId": "B"
         }
       ],
       "timeFrom": null,
@@ -418,7 +427,8 @@
       "datasource": null,
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "custom": {},
+          "links": []
         },
         "overrides": []
       },
@@ -446,9 +456,10 @@
       "maxPerRow": 4,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.3.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -472,8 +483,7 @@
           "fill": true,
           "line": true,
           "op": "lt",
-          "value": 0.5,
-          "yaxis": "left"
+          "value": 0.5
         }
       ],
       "timeFrom": null,
@@ -518,7 +528,7 @@
     }
   ],
   "refresh": "30s",
-  "schemaVersion": 25,
+  "schemaVersion": 26,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -543,6 +553,6 @@
   },
   "timezone": "",
   "title": "VM Health",
-  "uid": "WaLx-n3Zz",
-  "version": 7
+  "uid": "wKsWYuEGk",
+  "version": 1
 }

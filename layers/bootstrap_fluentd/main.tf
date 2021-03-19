@@ -93,10 +93,10 @@ locals {
     },
     {
       // fluentd healthcheck endpoint
-      description = "Allow healthcheck from ent svcs vpc"
+      description = "Allow healthcheck from ELBs"
       port        = "8888"
       protocol    = "tcp"
-      cidr_blocks = join(",", data.terraform_remote_state.enterprise-services.outputs.private_subnet_cidrs)
+      cidr_blocks = "0.0.0.0/0"
     },
   ]
 
@@ -175,7 +175,8 @@ resource "aws_cloudwatch_log_group" "fluentd_syslog_group" {
 }
 
 resource "aws_ebs_volume" "fluentd_data" {
-  availability_zone = element(data.aws_subnet.private_subnets.*.availability_zone, 0)
+  count             = length(local.private_subnets)
+  availability_zone = element(data.aws_subnet.private_subnets.*.availability_zone, count.index)
   size              = 100
   encrypted         = true
   kms_key_id        = data.terraform_remote_state.paperwork.outputs.kms_key_arn
@@ -187,15 +188,16 @@ module "bootstrap" {
   egress_rules  = local.fluentd_egress_rules
   subnet_ids    = local.subnets
   create_eip    = "false"
-  eni_count     = "1"
+  eni_count     = "3"
   tags          = local.modified_tags
 }
 
 resource "aws_lb" "fluentd_lb" {
-  name               = local.fluentd_lb_name
-  internal           = true
-  load_balancer_type = "network"
-  subnets            = data.terraform_remote_state.enterprise-services.outputs.public_subnet_ids
+  name                             = local.fluentd_lb_name
+  internal                         = true
+  load_balancer_type               = "network"
+  subnets                          = data.terraform_remote_state.enterprise-services.outputs.public_subnet_ids
+  enable_cross_zone_load_balancing = true
   tags = merge(
     local.modified_tags,
     {
@@ -278,11 +280,11 @@ output "fluentd_eni_ips" {
 }
 
 output "volume_id" {
-  value = aws_ebs_volume.fluentd_data.id
+  value = aws_ebs_volume.fluentd_data.*.id
 }
 
 output "log_group_name" {
-  value = local.log_group_name
+  value = aws_cloudwatch_log_group.fluentd_syslog_group.name
 }
 
 output "s3_bucket_syslog_archive" {

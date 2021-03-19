@@ -99,7 +99,7 @@ locals {
   )
 
   log_group_name  = data.terraform_remote_state.bootstrap_fluentd.outputs.log_group_name
-  log_stream_name = "fluentd_syslog"
+  log_stream_name = "\"fluentd_syslog_#{`hostname -s`}\""
 
   encrypted_amazon2_ami_id = data.terraform_remote_state.encrypt_amis.outputs.encrypted_amazon2_ami_id
 
@@ -200,7 +200,7 @@ data "template_cloudinit_config" "user_data" {
 }
 
 module "fluentd_instance" {
-  instance_count       = 1
+  instance_count       = length(data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_eni_ids)
   source               = "../../modules/launch"
   instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
   scale_vpc_key        = "enterprise-services"
@@ -213,21 +213,21 @@ module "fluentd_instance" {
   bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
   bastion_host         = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
   iam_instance_profile = data.terraform_remote_state.paperwork.outputs.fluentd_role_name
-  volume_ids           = [data.terraform_remote_state.bootstrap_fluentd.outputs.volume_id]
+  volume_ids           = data.terraform_remote_state.bootstrap_fluentd.outputs.volume_id
 
 }
 
 
 resource "aws_lb_target_group_attachment" "fluentd_syslog_attachment" {
-  count            = 1
+  count            = length(data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_eni_ids)
   target_group_arn = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_lb_syslog_tg_arn
-  target_id        = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_eni_ips[0]
+  target_id        = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_eni_ips[count.index]
 }
 
 resource "aws_lb_target_group_attachment" "fluentd_apps_syslog_attachment" {
-  count            = 1
+  count            = length(data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_eni_ids)
   target_group_arn = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_lb_apps_syslog_tg_arn
-  target_id        = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_eni_ips[0]
+  target_id        = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_eni_ips[count.index]
 }
 
 module "syslog_config" {
@@ -241,8 +241,9 @@ module "syslog_config" {
 }
 
 resource "null_resource" "fluentd_status" {
+  count = length(data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_eni_ids)
   triggers = {
-    instance_id = module.fluentd_instance.instance_ids[0]
+    instance_id = module.fluentd_instance.instance_ids[count.index]
   }
 
   provisioner "local-exec" {
@@ -252,7 +253,7 @@ resource "null_resource" "fluentd_status" {
     #!/usr/bin/env bash
     set -e
     completed_tag="cloud_init_done"
-    poll_tags="aws ec2 describe-tags --filters Name=resource-id,Values=${module.fluentd_instance.instance_ids[0]} Name=key,Values=$completed_tag --output text --query Tags[*].Value"
+    poll_tags="aws ec2 describe-tags --filters Name=resource-id,Values=${module.fluentd_instance.instance_ids[count.index]} Name=key,Values=$completed_tag --output text --query Tags[*].Value"
     echo "running $poll_tags"
     tags="$($poll_tags)"
     COUNTER=0
@@ -275,5 +276,5 @@ resource "null_resource" "fluentd_status" {
 }
 
 output "fluent_ip" {
-  value = module.fluentd_instance.private_ips[0]
+  value = module.fluentd_instance.private_ips
 }
