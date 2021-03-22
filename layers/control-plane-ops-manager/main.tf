@@ -106,6 +106,7 @@ module "ops_manager" {
   user_data            = module.ops_manager_user_data.cloud_config
   bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
   bastion_host         = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
+  check_cloud_init     = false
 
   root_block_device = {
     volume_type = "gp2"
@@ -120,6 +121,8 @@ module "ops_manager_user_data" {
   node_exporter_user_data   = data.terraform_remote_state.paperwork.outputs.node_exporter_user_data
   clamav_db_mirror          = var.clamav_db_mirror
   clamav_deb_pkg_object_url = var.clamav_deb_pkg_object_url
+  //  tag_completion_user_data  = data.terraform_remote_state.paperwork.outputs.completion_tag_user_data
+
 }
 
 
