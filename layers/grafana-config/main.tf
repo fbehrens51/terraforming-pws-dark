@@ -170,6 +170,10 @@ resource "grafana_dashboard" "concourse" {
   config_json = file("dashboards/concourse.json")
 }
 
+resource "grafana_dashboard" "events-logger" {
+  config_json = file("dashboards/events-logger.json")
+}
+
 data "template_file" "clamav_dashboard" {
   template = file("dashboards/antivirus-alerts.json.tpl")
   vars = {
