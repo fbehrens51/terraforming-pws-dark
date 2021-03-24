@@ -161,6 +161,7 @@ module "ldap_host" {
   scale_vpc_key        = "enterprise-services"
   scale_service_key    = "ldap"
   iam_instance_profile = data.terraform_remote_state.paperwork.outputs.instance_tagger_role_name
+  check_cloud_init     = false
 }
 
 module "ldap_configure" {
