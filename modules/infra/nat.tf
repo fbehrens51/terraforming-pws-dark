@@ -7,7 +7,6 @@ module "nat" {
   tags                       = var.tags
   public_subnet_ids          = aws_subnet.public_subnets.*.id
   ssh_cidr_blocks            = var.ssh_cidr_blocks
-  bastion_public_ip          = var.bastion_public_ip
   internetless               = var.internetless
   instance_types             = var.instance_types
   scale_vpc_key              = "pas"

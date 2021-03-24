@@ -116,7 +116,6 @@ module "ops_manager" {
   eni_ids              = [local.om_eni_id]
   user_data            = module.ops_manager_user_data.cloud_config
   bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  bastion_host         = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
   check_cloud_init     = false
 
   root_block_device = {

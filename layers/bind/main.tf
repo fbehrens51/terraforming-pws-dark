@@ -32,17 +32,6 @@ data "terraform_remote_state" "scaling-params" {
   }
 }
 
-data "terraform_remote_state" "bastion" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "bastion"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 data "terraform_remote_state" "bootstrap_control_plane" {
   backend = "s3"
 
@@ -141,7 +130,6 @@ locals {
   grafana_elb_dns                     = data.terraform_remote_state.pas.outputs.grafana_elb_dns_name
   control_plane_plane_uaa_elb_dns     = data.terraform_remote_state.bootstrap_control_plane.outputs.uaa_elb_dns
   control_plane_plane_credhub_elb_dns = data.terraform_remote_state.bootstrap_control_plane.outputs.credhub_elb_dns
-  bot_user_on_bastion                 = data.terraform_remote_state.bastion.outputs.bot_user_on_bastion
 }
 
 data "template_cloudinit_config" "master_bind_conf_userdata" {
@@ -226,7 +214,6 @@ module "bind_master_host" {
   eni_ids              = data.terraform_remote_state.bootstrap_bind.outputs.bind_eni_ids
   tags                 = local.modified_tags
   bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  bastion_host         = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
   iam_instance_profile = data.terraform_remote_state.paperwork.outputs.instance_tagger_role_name
 }
 

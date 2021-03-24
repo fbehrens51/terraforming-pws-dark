@@ -32,17 +32,6 @@ data "terraform_remote_state" "scaling-params" {
   }
 }
 
-data "terraform_remote_state" "bastion" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "bastion"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 data "terraform_remote_state" "bootstrap_postfix" {
   backend = "s3"
 
@@ -82,10 +71,9 @@ locals {
 
   root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
 
-  postfix_ip          = data.terraform_remote_state.bootstrap_postfix.outputs.postfix_eni_ips[0]
-  smtp_user           = data.terraform_remote_state.bootstrap_postfix.outputs.smtp_client_user
-  smtp_pass           = data.terraform_remote_state.bootstrap_postfix.outputs.smtp_client_password
-  bot_user_on_bastion = data.terraform_remote_state.bastion.outputs.bot_user_on_bastion
+  postfix_ip = data.terraform_remote_state.bootstrap_postfix.outputs.postfix_eni_ips[0]
+  smtp_user  = data.terraform_remote_state.bootstrap_postfix.outputs.smtp_client_user
+  smtp_pass  = data.terraform_remote_state.bootstrap_postfix.outputs.smtp_client_password
 }
 
 module "configuration" {
@@ -185,7 +173,6 @@ module "postfix_master_host" {
   eni_ids              = data.terraform_remote_state.bootstrap_postfix.outputs.postfix_eni_ids
   tags                 = local.modified_tags
   bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  bastion_host         = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
   iam_instance_profile = data.terraform_remote_state.paperwork.outputs.instance_tagger_role_name
 }
 

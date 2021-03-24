@@ -13,9 +13,6 @@ variable "ssh_cidr_blocks" {
   type = list(string)
 }
 
-variable "bastion_public_ip" {
-}
-
 variable "hosted_zone" {
   type    = string
   default = ""

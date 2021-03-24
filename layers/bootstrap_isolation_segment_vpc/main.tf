@@ -114,7 +114,6 @@ locals {
   es_vpc_id      = data.terraform_remote_state.paperwork.outputs.es_vpc_id
 
   iso_s3_endpoint_ids    = data.terraform_remote_state.paperwork.outputs.iso_s3_endpoint_ids
-  bot_user_on_bastion    = data.terraform_remote_state.bastion.outputs.bot_user_on_bastion
   bastion_route_table_id = data.terraform_remote_state.bastion.outputs.bastion_route_table_id
 
   ssh_cidrs           = concat(["${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"], data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs)
@@ -313,13 +312,12 @@ module "isolation_segment_0" {
   vpc_id             = var.vpc_id
   availability_zones = var.availability_zones
 
-  tags              = { tags = local.modified_tags, instance_tags = var.global_vars["instance_tags"] }
-  internetless      = var.internetless
-  nat_ssh_cidrs     = local.ssh_cidrs
-  bastion_public_ip = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
-  bot_key_pem       = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  instance_types    = data.terraform_remote_state.scaling-params.outputs.instance_types
-  user_data         = data.template_cloudinit_config.nat_user_data.rendered
+  tags           = { tags = local.modified_tags, instance_tags = var.global_vars["instance_tags"] }
+  internetless   = var.internetless
+  nat_ssh_cidrs  = local.ssh_cidrs
+  bot_key_pem    = data.terraform_remote_state.paperwork.outputs.bot_private_key
+  instance_types = data.terraform_remote_state.scaling-params.outputs.instance_types
+  user_data      = data.template_cloudinit_config.nat_user_data.rendered
 
   root_domain                = data.terraform_remote_state.paperwork.outputs.root_domain
   syslog_ca_cert             = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs

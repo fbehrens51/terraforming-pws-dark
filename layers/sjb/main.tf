@@ -48,17 +48,6 @@ data "terraform_remote_state" "scaling-params" {
   }
 }
 
-data "terraform_remote_state" "bastion" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "bastion"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 data "terraform_remote_state" "bootstrap_control_plane" {
   backend = "s3"
 
@@ -85,7 +74,6 @@ locals {
   transfer_bucket_name  = data.terraform_remote_state.bootstrap_control_plane.outputs.transfer_bucket_name
   terraform_bucket_name = data.terraform_remote_state.bootstrap_control_plane.outputs.terraform_bucket_name
   terraform_region      = data.terraform_remote_state.bootstrap_control_plane.outputs.terraform_region
-  bot_user_on_bastion   = data.terraform_remote_state.bastion.outputs.bot_user_on_bastion
 }
 
 data "template_file" "setup_source_zip" {
@@ -273,8 +261,7 @@ module "sjb" {
     volume_size = 64
   }
 
-  bot_key_pem  = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  bastion_host = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
+  bot_key_pem = data.terraform_remote_state.paperwork.outputs.bot_private_key
 
   check_cloud_init = true
 }

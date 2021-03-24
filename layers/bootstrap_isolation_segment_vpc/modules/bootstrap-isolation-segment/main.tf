@@ -18,7 +18,6 @@ variable "internetless" {}
 variable "nat_ssh_cidrs" {
   type = list(string)
 }
-variable "bastion_public_ip" {}
 variable "bot_key_pem" {
   default = null
 }
@@ -74,7 +73,6 @@ module "nat" {
   ami_id                     = var.ami_id
   internetless               = var.internetless
   ssh_cidr_blocks            = var.nat_ssh_cidrs
-  bastion_public_ip          = var.bastion_public_ip
   bot_key_pem                = var.bot_key_pem
   instance_types             = var.instance_types
   scale_vpc_key              = "isolation-segment"

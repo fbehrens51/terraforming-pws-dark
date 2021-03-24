@@ -28,9 +28,6 @@ variable "ssh_cidr_blocks" {
   type = list(string)
 }
 
-variable "bastion_public_ip" {
-}
-
 variable "root_domain" {
 }
 
@@ -176,7 +173,6 @@ module "nat_host" {
   instance_types       = var.instance_types
   scale_vpc_key        = var.scale_vpc_key
   scale_service_key    = "nat"
-  bastion_host         = var.bastion_public_ip
   bot_key_pem          = var.bot_key_pem
   check_cloud_init     = var.internetless ? false : var.check_cloud_init
   iam_instance_profile = var.role_name

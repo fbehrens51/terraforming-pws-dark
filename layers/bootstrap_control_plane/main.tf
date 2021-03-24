@@ -295,7 +295,6 @@ module "nat" {
   public_subnet_ids          = module.public_subnets.subnet_ids
   internetless               = var.internetless
   ssh_cidr_blocks            = concat(["${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"], [local.private_cidr_block])
-  bastion_public_ip          = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
   bot_key_pem                = data.terraform_remote_state.paperwork.outputs.bot_private_key
   instance_types             = data.terraform_remote_state.scaling-params.outputs.instance_types
   scale_vpc_key              = "control-plane"
@@ -491,7 +490,6 @@ locals {
       }
     ]
   )
-  bot_user_on_bastion = data.terraform_remote_state.bastion.outputs.bot_user_on_bastion
 }
 
 module "sjb_subnet" {

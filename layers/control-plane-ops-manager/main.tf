@@ -32,17 +32,6 @@ data "terraform_remote_state" "scaling-params" {
   }
 }
 
-data "terraform_remote_state" "bastion" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "bastion"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 data "terraform_remote_state" "bootstrap_control_plane" {
   backend = "s3"
 
@@ -70,7 +59,6 @@ locals {
   )
   trusted_ca_certs           = data.terraform_remote_state.paperwork.outputs.trusted_with_additional_ca_certs
   om_user_accounts_user_data = data.terraform_remote_state.paperwork.outputs.om_user_accounts_user_data
-  bot_user_on_bastion        = data.terraform_remote_state.bastion.outputs.bot_user_on_bastion
 }
 
 variable "remote_state_bucket" {
@@ -105,7 +93,6 @@ module "ops_manager" {
   eni_ids              = [local.om_eni_id]
   user_data            = module.ops_manager_user_data.cloud_config
   bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  bastion_host         = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
   check_cloud_init     = false
 
   root_block_device = {

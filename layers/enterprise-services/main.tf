@@ -91,9 +91,8 @@ locals {
   es_vpc_id  = data.terraform_remote_state.paperwork.outputs.es_vpc_id
   pas_vpc_id = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
 
-  public_cidr_block   = cidrsubnet(data.aws_vpc.this_vpc.cidr_block, 1, 0)
-  private_cidr_block  = cidrsubnet(data.aws_vpc.this_vpc.cidr_block, 1, 1)
-  bot_user_on_bastion = data.terraform_remote_state.bastion.outputs.bot_user_on_bastion
+  public_cidr_block  = cidrsubnet(data.aws_vpc.this_vpc.cidr_block, 1, 0)
+  private_cidr_block = cidrsubnet(data.aws_vpc.this_vpc.cidr_block, 1, 1)
 }
 
 data "aws_vpc" "this_vpc" {
@@ -186,7 +185,6 @@ module "nat" {
   tags                       = { tags = local.modified_tags, instance_tags = var.global_vars["instance_tags"] }
   public_subnet_ids          = module.public_subnets.subnet_ids
   ssh_cidr_blocks            = concat(["${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"], data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs)
-  bastion_public_ip          = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
   internetless               = var.internetless
   instance_types             = data.terraform_remote_state.scaling-params.outputs.instance_types
   scale_vpc_key              = "enterprise-services"
