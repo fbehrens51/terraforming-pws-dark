@@ -7,6 +7,8 @@ merge_how:
 
 write_files:
   - content: |
+      #!/usr/bin/env bash
+      set -ex
       echo "Running cloud-init status --wait > /dev/null"
       sudo cloud-init status --wait > /dev/null
       sudo cloud-init status --long
@@ -20,4 +22,6 @@ write_files:
     owner: root:root
 
 runcmd:
-  - nohup /root/tagOnCompletion.sh &
+  - |
+    sleep 10
+    sudo nohup /root/tagOnCompletion.sh &

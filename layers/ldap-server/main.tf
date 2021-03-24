@@ -148,11 +148,47 @@ resource "aws_eip_association" "ldap_eip_association" {
   network_interface_id = module.bootstrap.eni_ids[0]
 }
 
+
+
+data "template_file" "setup_awscli" {
+  template = <<EOF
+  runcmd:
+  - sudo apt-get update -y && sudo apt-get install awscli -y
+EOF
+
+}
+
+data "template_cloudinit_config" "ldap_userdata" {
+  base64_encode = true
+  gzip          = true
+
+  part {
+    filename     = "user_accounts_user_data.cfg"
+    content_type = "text/x-include-url"
+    content      = data.terraform_remote_state.paperwork.outputs.bot_user_accounts_user_data
+  }
+
+  # awscli
+  part {
+    filename     = "awscli.cfg"
+    content_type = "text/cloud-config"
+    content      = data.template_file.setup_awscli.rendered
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+
+  part {
+    filename     = "tag_completion.cfg"
+    content_type = "text/x-include-url"
+    content      = data.terraform_remote_state.paperwork.outputs.completion_tag_user_data
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+}
+
 module "ldap_host" {
   source    = "../../modules/launch"
   ami_id    = module.ubuntu_ami.id
   eni_ids   = module.bootstrap.eni_ids
-  user_data = data.terraform_remote_state.paperwork.outputs.bot_user_accounts_user_data
+  user_data = data.template_cloudinit_config.ldap_userdata.rendered
 
   tags                 = local.instance_tags
   bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
@@ -161,7 +197,6 @@ module "ldap_host" {
   scale_vpc_key        = "enterprise-services"
   scale_service_key    = "ldap"
   iam_instance_profile = data.terraform_remote_state.paperwork.outputs.instance_tagger_role_name
-  check_cloud_init     = false
 }
 
 module "ldap_configure" {
