@@ -43,17 +43,6 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
-data "terraform_remote_state" "bastion" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "bastion"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 data "terraform_remote_state" "routes" {
   backend = "s3"
 
@@ -93,8 +82,7 @@ locals {
     },
   )
 
-  bot_user_on_bastion = data.terraform_remote_state.bastion.outputs.bot_user_on_bastion
-  root_domain         = data.terraform_remote_state.paperwork.outputs.root_domain
+  root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
 
   basedn        = "dc=${join(",dc=", split(".", local.root_domain))}"
   admin         = "cn=admin,dc=${join(",dc=", split(".", local.root_domain))}"
@@ -153,7 +141,7 @@ resource "aws_eip_association" "ldap_eip_association" {
 data "template_file" "setup_awscli" {
   template = <<EOF
   runcmd:
-  - sudo apt-get update -y && sudo apt-get install awscli -y
+  - sudo DEBIAN_FRONTEND=noninteractive apt-get update -y && sudo  DEBIAN_FRONTEND=noninteractive apt-get install awscli -y
 EOF
 
 }
@@ -192,7 +180,6 @@ module "ldap_host" {
 
   tags                 = local.instance_tags
   bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  bastion_host         = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
   instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
   scale_vpc_key        = "enterprise-services"
   scale_service_key    = "ldap"
@@ -210,7 +197,6 @@ module "ldap_configure" {
   )
   tls_server_ca_cert = data.terraform_remote_state.paperwork.outputs.root_ca_cert
   bot_key_pem        = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  bastion_host       = local.bot_user_on_bastion ? data.terraform_remote_state.bastion.outputs.bastion_ip : null
   instance_id        = length(module.ldap_host.instance_ids) > 0 ? module.ldap_host.instance_ids[0] : ""
   private_ip         = length(module.ldap_host.private_ips) > 0 ? module.ldap_host.private_ips[0] : ""
   users              = var.users

@@ -43,17 +43,6 @@ data "terraform_remote_state" "routes" {
   }
 }
 
-data "terraform_remote_state" "bastion" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "bastion"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 data "terraform_remote_state" "encrypt_amis" {
   backend = "s3"
 
@@ -124,7 +113,7 @@ module "infra" {
   use_route53                   = false
   vpc_id                        = local.vpc_id
   public_route_table_id         = local.route_table_id
-  ssh_cidr_blocks               = concat(["${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"], data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs)
+  ssh_cidr_blocks               = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs
   bot_key_pem                   = data.terraform_remote_state.paperwork.outputs.bot_private_key
   private_route_table_ids       = data.terraform_remote_state.routes.outputs.pas_private_vpc_route_table_ids
   root_domain                   = data.terraform_remote_state.paperwork.outputs.root_domain
@@ -256,10 +245,6 @@ data "aws_vpc" "pas_vpc" {
   id = local.vpc_id
 }
 
-data "aws_vpc" "bastion_vpc" {
-  id = local.bastion_vpc_id
-}
-
 module "ops_manager" {
   source = "../../modules/ops_manager/infra"
 
@@ -325,7 +310,6 @@ locals {
 
   secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
   cp_vpc_id           = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
-  bastion_vpc_id      = data.terraform_remote_state.paperwork.outputs.bastion_vpc_id
   vpc_id              = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
   route_table_id      = data.terraform_remote_state.routes.outputs.pas_public_vpc_route_table_id
   bucket_suffix       = random_integer.bucket.result
@@ -335,10 +319,10 @@ locals {
 
   ingress_rules = [
     {
-      description = "Allow ssh/22 from cp_vpc and bastion_vpc"
+      description = "Allow ssh/22 from cp_vpc"
       port        = "22"
       protocol    = "tcp"
-      cidr_blocks = "${data.aws_vpc.cp_vpc.cidr_block},${data.aws_vpc.bastion_vpc.cidr_block}"
+      cidr_blocks = data.aws_vpc.cp_vpc.cidr_block
     },
     {
       description = "Allow https/443 from everywhere"

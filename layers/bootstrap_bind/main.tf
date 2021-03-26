@@ -25,17 +25,6 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
-data "terraform_remote_state" "bastion" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "bastion"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 module "syslog_ports" {
   source = "../../modules/syslog_ports"
 }
@@ -105,12 +94,6 @@ locals {
       port        = "22"
       protocol    = "tcp"
       cidr_blocks = data.aws_vpc.cp_vpc.cidr_block
-    },
-    {
-      description = "Allow ssh/22 from bastion_vpc"
-      port        = "22"
-      protocol    = "tcp"
-      cidr_blocks = data.terraform_remote_state.bastion.outputs.bastion_cidr_block
     },
     {
       // metrics endpoint for grafana

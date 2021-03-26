@@ -32,17 +32,6 @@ data "terraform_remote_state" "scaling-params" {
   }
 }
 
-data "terraform_remote_state" "bastion" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "bastion"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 data "terraform_remote_state" "routes" {
   backend = "s3"
 
@@ -133,14 +122,6 @@ resource "aws_security_group" "vms_security_group" {
   name        = "vms_security_group"
   description = "VMs Security Group"
   vpc_id      = data.aws_vpc.vpc.id
-
-  ingress {
-    description = "Allow ssh/22 from bastion host"
-    cidr_blocks = ["${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"]
-    protocol    = "tcp"
-    from_port   = 22
-    to_port     = 22
-  }
 
   ingress {
     description = "Allow all traffic from within the control plane"
@@ -294,7 +275,7 @@ module "nat" {
   tags                       = { tags = local.modified_tags, instance_tags = var.global_vars["instance_tags"] }
   public_subnet_ids          = module.public_subnets.subnet_ids
   internetless               = var.internetless
-  ssh_cidr_blocks            = concat(["${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"], [local.private_cidr_block])
+  ssh_cidr_blocks            = [local.private_cidr_block]
   bot_key_pem                = data.terraform_remote_state.paperwork.outputs.bot_private_key
   instance_types             = data.terraform_remote_state.scaling-params.outputs.instance_types
   scale_vpc_key              = "control-plane"
@@ -450,12 +431,6 @@ locals {
 
   om_ingress_rules = [
     {
-      description = "Allow ssh/22 from bastion_vpc"
-      port        = "22"
-      protocol    = "tcp"
-      cidr_blocks = data.aws_vpc.bastion_vpc.cidr_block
-    },
-    {
       description = "Allow ssh/22 from cp_vpc"
       port        = "22"
       protocol    = "tcp"
@@ -487,7 +462,13 @@ locals {
         port        = "9100"
         protocol    = "tcp"
         cidr_blocks = data.aws_vpc.pas_vpc.cidr_block
-      }
+      },
+      {
+        description = "Allow ssh from bastion"
+        port        = "22"
+        protocol    = "tcp"
+        cidr_blocks = data.aws_vpc.bastion_vpc.cidr_block
+      },
     ]
   )
 }

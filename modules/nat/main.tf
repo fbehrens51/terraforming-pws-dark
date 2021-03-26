@@ -84,7 +84,7 @@ module "eni" {
 
   ingress_rules = [
     {
-      description = "Allow ssh/22 from cp/bastion hosts"
+      description = "Allow ssh/22 from cp hosts"
       port        = "22"
       protocol    = "tcp"
       cidr_blocks = join(",", var.ssh_cidr_blocks)

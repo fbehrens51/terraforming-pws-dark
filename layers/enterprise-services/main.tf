@@ -32,17 +32,6 @@ data "terraform_remote_state" "scaling-params" {
   }
 }
 
-data "terraform_remote_state" "bastion" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "bastion"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 data "terraform_remote_state" "routes" {
   backend = "s3"
 
@@ -184,7 +173,7 @@ module "nat" {
   metrics_ingress_cidr_block = data.aws_vpc.pas_vpc.cidr_block
   tags                       = { tags = local.modified_tags, instance_tags = var.global_vars["instance_tags"] }
   public_subnet_ids          = module.public_subnets.subnet_ids
-  ssh_cidr_blocks            = concat(["${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"], data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs)
+  ssh_cidr_blocks            = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs
   internetless               = var.internetless
   instance_types             = data.terraform_remote_state.scaling-params.outputs.instance_types
   scale_vpc_key              = "enterprise-services"

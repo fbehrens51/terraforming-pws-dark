@@ -35,13 +35,13 @@ resource "aws_internet_gateway" "isolation_segment_igw" {
   }
 }
 
-resource "aws_vpc_peering_connection" "isolation_segment_bastion" {
+resource "aws_vpc_peering_connection" "isolation_segment_cp" {
   peer_vpc_id = aws_vpc.isolation_segment_vpc.id
-  vpc_id      = aws_vpc.bastion_vpc.id
+  vpc_id      = aws_vpc.control_plane_vpc.id
   auto_accept = true
 
   tags = {
-    Name = "${var.env_name} | isolation segment/bastion vpc peering"
+    Name = "${var.env_name} | isolation segment/cp vpc peering"
   }
 }
 

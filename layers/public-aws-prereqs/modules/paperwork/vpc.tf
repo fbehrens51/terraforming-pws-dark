@@ -104,26 +104,6 @@ resource "aws_internet_gateway" "enterprise_services_igw" {
   }
 }
 
-resource "aws_vpc_peering_connection" "bastion_pas" {
-  peer_vpc_id = aws_vpc.bastion_vpc.id
-  vpc_id      = aws_vpc.pas_vpc.id
-  auto_accept = true
-
-  tags = {
-    Name = "${var.env_name} | bastion/pas vpc peering"
-  }
-}
-
-resource "aws_vpc_peering_connection" "bastion_enterprise_services" {
-  peer_vpc_id = aws_vpc.bastion_vpc.id
-  vpc_id      = aws_vpc.enterprise_services_vpc.id
-  auto_accept = true
-
-  tags = {
-    Name = "${var.env_name} | bastion/enterprise services vpc peering"
-  }
-}
-
 resource "aws_vpc_peering_connection" "bastion_control_plane" {
   peer_vpc_id = aws_vpc.bastion_vpc.id
   vpc_id      = aws_vpc.control_plane_vpc.id

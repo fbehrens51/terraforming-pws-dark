@@ -32,17 +32,6 @@ data "terraform_remote_state" "scaling-params" {
   }
 }
 
-data "terraform_remote_state" "bastion" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "bastion"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 data "terraform_remote_state" "pas" {
   backend = "s3"
 
@@ -71,7 +60,6 @@ locals {
   )
 
   om_user_accounts_user_data = data.terraform_remote_state.paperwork.outputs.om_user_accounts_user_data
-  bot_user_on_bastion        = data.terraform_remote_state.bastion.outputs.bot_user_on_bastion
 }
 
 variable "remote_state_bucket" {

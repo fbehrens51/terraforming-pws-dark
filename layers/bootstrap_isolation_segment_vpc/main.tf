@@ -24,17 +24,6 @@ data "terraform_remote_state" "scaling-params" {
   }
 }
 
-data "terraform_remote_state" "bastion" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "bastion"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 data "terraform_remote_state" "bootstrap_control_plane" {
   backend = "s3"
 
@@ -108,15 +97,13 @@ locals {
   // the following cidr is unallocated and left for future use
   // unused_cidr = cidrsubnet(local.isolation_segment_cidr_block_3, 2, 3),
 
-  bastion_vpc_id = data.terraform_remote_state.paperwork.outputs.bastion_vpc_id
-  pas_vpc_id     = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
-  cp_vpc_id      = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
-  es_vpc_id      = data.terraform_remote_state.paperwork.outputs.es_vpc_id
+  pas_vpc_id = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
+  cp_vpc_id  = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
+  es_vpc_id  = data.terraform_remote_state.paperwork.outputs.es_vpc_id
 
-  iso_s3_endpoint_ids    = data.terraform_remote_state.paperwork.outputs.iso_s3_endpoint_ids
-  bastion_route_table_id = data.terraform_remote_state.bastion.outputs.bastion_route_table_id
+  iso_s3_endpoint_ids = data.terraform_remote_state.paperwork.outputs.iso_s3_endpoint_ids
 
-  ssh_cidrs           = concat(["${data.terraform_remote_state.bastion.outputs.bastion_private_ip}/32"], data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs)
+  ssh_cidrs           = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs
   secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
 }
 
@@ -243,7 +230,7 @@ resource "aws_security_group" "vms_security_group" {
   vpc_id      = var.vpc_id
 
   ingress {
-    description = "Allow ssh/22 from bastion/cp"
+    description = "Allow ssh/22 from cp"
     cidr_blocks = local.ssh_cidrs
     protocol    = "tcp"
     from_port   = 22
@@ -355,21 +342,6 @@ module "isolation_segment_3" {
   vpc_id             = var.vpc_id
   availability_zones = var.availability_zones
   tags               = local.modified_tags
-}
-
-module "route_isolation_segment_bastion" {
-  source           = "../routes/modules/routing"
-  accepter_vpc_id  = var.vpc_id
-  requester_vpc_id = local.bastion_vpc_id
-  accepter_route_table_ids = concat(
-    [aws_route_table.public_route_table.id],
-    module.isolation_segment_0.private_route_table_ids,
-    module.isolation_segment_1.private_route_table_ids,
-    module.isolation_segment_2.private_route_table_ids,
-    module.isolation_segment_3.private_route_table_ids,
-  )
-  requester_route_table_ids = [local.bastion_route_table_id]
-  availability_zones        = var.availability_zones
 }
 
 module "route_isolation_segment_pas" {

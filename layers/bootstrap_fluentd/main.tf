@@ -25,17 +25,6 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
-data "terraform_remote_state" "bastion" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "bastion"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 data "aws_vpc" "pas_vpc" {
   id = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
 }

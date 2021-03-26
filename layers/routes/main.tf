@@ -98,36 +98,6 @@ module "route_bastion_cp" {
   availability_zones = var.availability_zones
 }
 
-module "route_bastion_pas" {
-  source           = "./modules/routing"
-  accepter_vpc_id  = local.bastion_vpc_id
-  requester_vpc_id = local.pas_vpc_id
-  accepter_route_table_ids = concat(
-    module.bastion_vpc_route_tables.private_route_table_ids,
-    [module.bastion_vpc_route_tables.public_route_table_id],
-  )
-  requester_route_table_ids = concat(
-    module.pas_vpc_route_tables.private_route_table_ids,
-    [module.pas_vpc_route_tables.public_route_table_id],
-  )
-  availability_zones = var.availability_zones
-}
-
-module "route_bastion_es" {
-  source           = "./modules/routing"
-  accepter_vpc_id  = local.bastion_vpc_id
-  requester_vpc_id = local.es_vpc_id
-  accepter_route_table_ids = concat(
-    module.bastion_vpc_route_tables.private_route_table_ids,
-    [module.bastion_vpc_route_tables.public_route_table_id],
-  )
-  requester_route_table_ids = concat(
-    module.es_vpc_route_tables.private_route_table_ids,
-    [module.es_vpc_route_tables.public_route_table_id],
-  )
-  availability_zones = var.availability_zones
-}
-
 module "route_cp_pas" {
   source           = "./modules/routing"
   accepter_vpc_id  = local.cp_vpc_id
@@ -189,4 +159,3 @@ variable "global_vars" {
 variable "availability_zones" {
   type = list(string)
 }
-
