@@ -75,7 +75,7 @@ output ldap_domain {
 }
 
 output ldap_port {
-  value = local.ldap_port
+  value = tostring(local.ldap_port)
 }
 
 output ldap_password {
