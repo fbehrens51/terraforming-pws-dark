@@ -2,10 +2,6 @@ module "providers" {
   source = "../dark_providers"
 }
 
-variable "eagle-openldap-image" {
-
-}
-
 locals {
   ldap_port  = 1389
   ldaps_port = 1636
