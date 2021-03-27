@@ -7,7 +7,7 @@ objectclass: organizationalPerson
 objectclass: inetOrgPerson
 objectClass: pcfExtendedPerson
 ou: ${user.ou}
-userCertificate;binary:: ${der~}
+userCertificate;binary:: ${join("\n ", split("\n", trimspace(der)))}
 %{ for role in user.roles ~}
 role: ${role}
 %{ endfor }
