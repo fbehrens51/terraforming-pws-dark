@@ -37,26 +37,26 @@ resource "tls_locally_signed_cert" "issuer" {
 # User certificates
 
 resource "tls_private_key" "user" {
-  count     = length(var.users)
+  for_each  = var.users
   algorithm = "RSA"
   rsa_bits  = "2048"
 }
 
 resource "tls_cert_request" "user" {
-  count           = length(var.users)
+  for_each        = var.users
   key_algorithm   = "RSA"
-  private_key_pem = tls_private_key.user[count.index].private_key_pem
+  private_key_pem = tls_private_key.user[each.key].private_key_pem
 
   subject {
-    common_name         = var.users[count.index].common_name
+    common_name         = each.value.common_name
     organization        = "VMware Tanzu Web Services"
-    organizational_unit = var.users[count.index].ou
+    organizational_unit = each.value.ou
   }
 }
 
 resource "tls_locally_signed_cert" "user" {
-  count              = length(var.users)
-  cert_request_pem   = tls_cert_request.user[count.index].cert_request_pem
+  for_each           = var.users
+  cert_request_pem   = tls_cert_request.user[each.key].cert_request_pem
   ca_key_algorithm   = "RSA"
   ca_private_key_pem = tls_private_key.issuer.private_key_pem
   ca_cert_pem        = tls_locally_signed_cert.issuer.cert_pem
@@ -72,39 +72,43 @@ resource "tls_locally_signed_cert" "user" {
 }
 
 data "external" "pem-to-der" {
-  count   = length(var.users)
-  program = ["bash", "${path.module}/pem-to-der.sh"]
+  for_each = var.users
+  program  = ["bash", "${path.module}/pem-to-der.sh"]
 
   query = {
-    pem = tls_locally_signed_cert.user[count.index].cert_pem
+    pem = tls_locally_signed_cert.user[each.key].cert_pem
   }
 }
 
 data "external" "create-p12" {
-  count   = length(var.users)
-  program = ["bash", "${path.module}/create-p12.sh"]
+  for_each = var.users
+  program  = ["bash", "${path.module}/create-p12.sh"]
 
   query = {
-    passphrase = var.users[count.index].common_name
-    pem        = tls_locally_signed_cert.user[count.index].cert_pem
-    key        = tls_private_key.user[count.index].private_key_pem
+    passphrase = each.value.common_name
+    pem        = tls_locally_signed_cert.user[each.key].cert_pem
+    key        = tls_private_key.user[each.key].private_key_pem
   }
 }
 
 data "null_data_source" "ldifs" {
-  count = length(var.users)
+  for_each = var.users
   inputs = {
     ldif = templatefile("${path.module}/users.ldif.tpl", {
-      user = var.users[count.index],
-      der  = data.external.pem-to-der[count.index].result.der,
+      user = each.value,
+      der  = data.external.pem-to-der[each.key].result.der,
     })
   }
 }
 
-output "user_ldifs" {
-  value = join("\n", data.null_data_source.ldifs.*.outputs.ldif)
+resource local_file user_p12 {
+  for_each        = var.users
+  filename        = "${each.value.common_name}.p12"
+  content_base64  = data.external.create-p12[each.key].result.p12
+  file_permission = "0600"
 }
 
-output "user_p12s" {
-  value = data.external.create-p12.*.result.p12
+output "user_ldifs" {
+  value = join("\n", [for key in keys(var.users) : data.null_data_source.ldifs[key].outputs.ldif])
 }
+
