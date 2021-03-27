@@ -1,3 +1,7 @@
+terraform {
+  backend "s3" {}
+}
+
 module "providers" {
   source = "../dark_providers"
 }
@@ -13,7 +17,7 @@ resource random_string ldap_password {
 }
 
 resource "aws_secretsmanager_secret" "ldap_password" {
-  name = "ldap_password"
+  name_prefix = "ldap_password"
 }
 
 resource "aws_secretsmanager_secret_version" "ldap_password" {
