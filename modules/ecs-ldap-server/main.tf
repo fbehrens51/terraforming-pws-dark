@@ -77,10 +77,23 @@ output ldap_domain {
 }
 
 output ldap_port {
-  value = tostring(local.external_ldap_port)
+  value = tostring(local.external_ldaps_port)
 }
 
 output ldap_password {
   value     = random_string.ldap_password.result
   sensitive = true
+}
+
+output ldap_cert {
+  value = {
+    private_key       = tls_private_key.ldap.private_key_pem
+    certificate_body  = tls_locally_signed_cert.ldap.cert_pem
+    certificate_chain = tls_self_signed_cert.root.cert_pem
+  }
+  sensitive = true
+}
+
+output user_ca {
+  value = "${tls_self_signed_cert.root.cert_pem}\n${tls_locally_signed_cert.issuer.cert_pem}"
 }

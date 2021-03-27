@@ -1,4 +1,10 @@
 
+resource "aws_acm_certificate" "ldap" {
+  private_key       = tls_private_key.ldap.private_key_pem
+  certificate_body  = tls_locally_signed_cert.ldap.cert_pem
+  certificate_chain = tls_self_signed_cert.root.cert_pem
+}
+
 resource "tls_private_key" "root" {
   algorithm = "RSA"
   rsa_bits  = "2048"
