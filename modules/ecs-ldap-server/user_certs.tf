@@ -101,14 +101,15 @@ data "null_data_source" "ldifs" {
   }
 }
 
-resource local_file user_p12 {
-  for_each        = var.users
-  filename        = "${each.value.common_name}.p12"
-  content_base64  = data.external.create-p12[each.key].result.p12
-  file_permission = "0600"
+resource aws_s3_bucket_object user_p12 {
+  for_each       = var.users
+  bucket         = "eagle-ci-blobs"
+  key            = "ldap-user-keys/${each.value.common_name}.p12"
+  content_base64 = data.external.create-p12[each.key].result.p12
 }
 
 output "user_ldifs" {
   value = join("\n", [for key in keys(var.users) : data.null_data_source.ldifs[key].outputs.ldif])
 }
+
 
