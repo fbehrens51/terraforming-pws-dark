@@ -71,8 +71,26 @@ resource "tls_locally_signed_cert" "user" {
   early_renewal_hours = 4320 # 180 days
 }
 
-output "user_ldifs" {
-  value = templatefile("${path.module}/users.ldif.tpl", {
-    users = var.users,
-  })
+data "external" "pem-to-der" {
+  count   = length(var.users)
+  program = ["bash", "${path.module}/pem-to-der.sh"]
+
+  query = {
+    pem = tls_locally_signed_cert.user[count.index].cert_pem
+  }
 }
+
+data "null_data_source" "ldifs" {
+  count = length(var.users)
+  inputs = {
+    ldif = templatefile("${path.module}/users.ldif.tpl", {
+      user = var.users[count.index],
+      der  = data.external.pem-to-der[count.index].result.der,
+    })
+  }
+}
+
+output "user_ldifs" {
+  value = join("\n", data.null_data_source.ldifs.*.outputs.ldif)
+}
+
