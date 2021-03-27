@@ -80,6 +80,17 @@ data "external" "pem-to-der" {
   }
 }
 
+data "external" "create-p12" {
+  count   = length(var.users)
+  program = ["bash", "${path.module}/create-p12.sh"]
+
+  query = {
+    passphrase = var.users[count.index].common_name
+    pem        = tls_locally_signed_cert.user[count.index].cert_pem
+    key        = tls_private_key.user[count.index].private_key_pem
+  }
+}
+
 data "null_data_source" "ldifs" {
   count = length(var.users)
   inputs = {
@@ -94,3 +105,6 @@ output "user_ldifs" {
   value = join("\n", data.null_data_source.ldifs.*.outputs.ldif)
 }
 
+output "user_p12s" {
+  value = data.external.create-p12.*.result.p12
+}

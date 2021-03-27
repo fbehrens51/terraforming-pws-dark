@@ -88,15 +88,11 @@ output ldap_password {
   sensitive = true
 }
 
-output ldap_cert {
-  value = {
-    private_key       = tls_private_key.ldap.private_key_pem
-    certificate_body  = tls_locally_signed_cert.ldap.cert_pem
-    certificate_chain = tls_self_signed_cert.root.cert_pem
-  }
+output ldap_ca_cert {
+  value     = tls_self_signed_cert.root.cert_pem
   sensitive = true
 }
 
-output user_ca {
+output user_ca_cert {
   value = "${tls_self_signed_cert.root.cert_pem}\n${tls_locally_signed_cert.issuer.cert_pem}"
 }
