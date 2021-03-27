@@ -7,7 +7,7 @@ objectclass: organizationalPerson
 objectclass: inetOrgPerson
 objectClass: pcfExtendedPerson
 ou: ${user.ou}
-usercertificate;binary:: ${der~}
+userCertificate;binary:: ${der~}
 %{ for role in user.roles ~}
 role: ${role}
 %{ endfor }
