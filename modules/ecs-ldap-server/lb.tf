@@ -14,7 +14,7 @@ resource aws_lb ldap {
 
 resource aws_lb_listener ldap {
   load_balancer_arn = aws_lb.ldap.arn
-  port              = local.ldap_port
+  port              = local.external_ldap_port
   protocol          = "TCP"
 
   default_action {
@@ -25,7 +25,7 @@ resource aws_lb_listener ldap {
 
 resource aws_lb_listener ldaps {
   load_balancer_arn = aws_lb.ldap.arn
-  port              = local.ldaps_port
+  port              = local.external_ldaps_port
   protocol          = "TLS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
   certificate_arn   = aws_acm_certificate.ldap.arn

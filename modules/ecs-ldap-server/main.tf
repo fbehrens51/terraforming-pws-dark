@@ -3,8 +3,10 @@ module "providers" {
 }
 
 locals {
-  ldap_port  = 1389
-  ldaps_port = 1636
+  external_ldap_port  = 80
+  external_ldaps_port = 443
+  ldap_port           = 1389
+  ldaps_port          = 1636
 }
 
 resource random_string ldap_password {
@@ -75,7 +77,7 @@ output ldap_domain {
 }
 
 output ldap_port {
-  value = tostring(local.ldap_port)
+  value = tostring(local.external_ldap_port)
 }
 
 output ldap_password {
