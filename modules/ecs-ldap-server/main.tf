@@ -3,10 +3,9 @@ module "providers" {
 }
 
 locals {
-  external_ldap_port  = 80
+  // We use 443 here in order to escape the corporate firewall
   external_ldaps_port = 443
-  ldap_port           = 1389
-  ldaps_port          = 1636
+  internal_ldap_port  = 1389
 }
 
 resource random_string ldap_password {
@@ -41,7 +40,7 @@ resource aws_ecs_task_definition ldap {
       cpu       = 256
       memory    = 512
       portMappings = [
-        { containerPort = local.ldap_port }
+        { containerPort = local.internal_ldap_port }
       ]
       secrets = [
         { name = "LDAP_ADMIN_PASSWORD", valueFrom = aws_secretsmanager_secret.ldap_password.arn },
@@ -67,7 +66,7 @@ resource aws_ecs_service ldap {
   load_balancer {
     target_group_arn = aws_lb_target_group.ldap.arn
     container_name   = "openldap"
-    container_port   = local.ldap_port
+    container_port   = local.internal_ldap_port
   }
 }
 

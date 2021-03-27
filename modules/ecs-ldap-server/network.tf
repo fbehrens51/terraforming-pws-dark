@@ -35,8 +35,8 @@ resource aws_security_group ldap {
 
 resource aws_security_group_rule ldap {
   type              = "ingress"
-  from_port         = local.ldap_port
-  to_port           = local.ldap_port
+  from_port         = local.internal_ldap_port
+  to_port           = local.internal_ldap_port
   protocol          = "tcp"
   cidr_blocks       = aws_subnet.public.*.cidr_block
   security_group_id = aws_security_group.ldap.id
@@ -57,8 +57,8 @@ resource aws_security_group nlb {
 
 resource aws_security_group_rule nlb {
   type              = "ingress"
-  from_port         = local.ldap_port
-  to_port           = local.ldap_port
+  from_port         = local.internal_ldap_port
+  to_port           = local.internal_ldap_port
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = aws_security_group.nlb.id
