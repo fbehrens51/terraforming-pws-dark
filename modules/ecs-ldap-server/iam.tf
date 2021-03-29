@@ -19,6 +19,11 @@ resource "aws_iam_role" "ldap" {
   })
 }
 
+resource "aws_iam_role_policy_attachment" "default" {
+  role       = aws_iam_role.ldap.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
 resource "aws_iam_role_policy_attachment" "ldap" {
   role       = aws_iam_role.ldap.name
   policy_arn = aws_iam_policy.ldap.arn
@@ -40,19 +45,6 @@ data "aws_iam_policy_document" "ldap" {
 
     resources = [
       aws_secretsmanager_secret.ldap_password.arn
-    ]
-  }
-
-  statement {
-    actions = [
-      "ecr:BatchCheckLayerAvailability",
-      "ecr:BatchGetImage",
-      "ecr:GetDownloadUrlForLayer",
-      "ecr:GetAuthorizationToken",
-    ]
-
-    resources = [
-      "*",
     ]
   }
 }

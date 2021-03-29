@@ -26,10 +26,12 @@ resource aws_lb_target_group ldap {
   target_type = "ip"
   vpc_id      = aws_vpc.vpc.id
 
-  depends_on = [aws_lb.ldap]
+  deregistration_delay = 0
+  depends_on           = [aws_lb.ldap]
 
   stickiness {
     enabled = false
     type    = "lb_cookie"
   }
+
 }

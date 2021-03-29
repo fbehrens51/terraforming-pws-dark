@@ -30,7 +30,8 @@ resource aws_subnet private {
 }
 
 resource aws_security_group ldap {
-  vpc_id = aws_vpc.vpc.id
+  vpc_id      = aws_vpc.vpc.id
+  name_prefix = "ldap"
 }
 
 resource aws_security_group_rule ldap {
@@ -52,7 +53,8 @@ resource aws_security_group_rule ldap_egress {
 }
 
 resource aws_security_group nlb {
-  vpc_id = aws_vpc.vpc.id
+  vpc_id      = aws_vpc.vpc.id
+  name_prefix = "ldap-nlb"
 }
 
 resource aws_security_group_rule nlb {
