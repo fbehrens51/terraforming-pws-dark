@@ -19,6 +19,8 @@ product-properties:
   .properties.enforce_cpu_limit:
     selected_option: disabled
     value: disabled
+  .properties.exclude_instance_groups:
+    value: bosh-health-check
   .properties.login_banner:
     value: |
       ${indent(6, custom_ssh_banner)}
