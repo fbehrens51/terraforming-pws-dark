@@ -2,8 +2,6 @@ product-name: p-healthwatch2
 product-properties:
   .grafana.additional_cipher:
     value: ${grafana_additional_cipher_suites}
-  .grafana.enable_indipro_integration:
-    value: true
   .grafana.enable_login_form:
     value: true
   .grafana.enable_mysql:
@@ -44,6 +42,8 @@ product-properties:
   .properties.grafana_proxy:
     selected_option: disabled
     value: disabled
+  .properties.opsman_skip_ssl_validation:
+    value: false
   .properties.opsman_url:
     value: ${ops_canary_url}
   .properties.pks_cluster_discovery:
