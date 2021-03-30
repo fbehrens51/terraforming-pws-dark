@@ -67,6 +67,11 @@ variable "device_name" {
   default = "/dev/sdf"
 }
 
+variable "cloud_init_timeout" {
+  type    = number
+  default = 300
+}
+
 //allows calling module to set a fixed count since count cannot use a value calculated from something that may not exist yet (e.g. eni_ids)
 variable "instance_count" {
   default = 1
@@ -126,7 +131,7 @@ resource "aws_instance" "instance" {
     echo "running $poll_tags"
     tags="$($poll_tags)"
     COUNTER=0
-    LOOP_LIMIT=30
+    LOOP_LIMIT=${var.cloud_init_timeout / 10}
     while [[ "$tags" == "" ]] ; do
       if [[ $COUNTER -eq $LOOP_LIMIT ]]; then
         echo "timed out waiting for $completed_tag to be set"

@@ -12,9 +12,9 @@ variable "user_accounts_user_data" {
 
 variable "node_exporter_user_data" {
 }
-//
-//variable "tag_completion_user_data" {
-//}
+
+variable "tag_completion_user_data" {
+}
 
 module "clamav_config" {
   source           = "../clamav/ubuntu_systemd_client"
@@ -52,12 +52,12 @@ data "template_cloudinit_config" "config" {
     content      = var.customer_banner_user_data
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
-  //
-  //  part {
-  //    filename     = "tag_completion.cfg"
-  //    content_type = "text/x-include-url"
-  //    content      = var.tag_completion_user_data
-  //  }
+
+  part {
+    filename     = "tag_completion.cfg"
+    content_type = "text/x-include-url"
+    content      = var.tag_completion_user_data
+  }
 
 }
 

@@ -88,7 +88,7 @@ module "ops_manager_user_data" {
   node_exporter_user_data   = data.terraform_remote_state.paperwork.outputs.node_exporter_user_data
   clamav_db_mirror          = var.clamav_db_mirror
   clamav_deb_pkg_object_url = var.clamav_deb_pkg_object_url
-  //  tag_completion_user_data  = data.terraform_remote_state.paperwork.outputs.completion_tag_user_data
+  tag_completion_user_data  = data.terraform_remote_state.paperwork.outputs.completion_tag_om_user_data
 }
 
 module "ops_manager" {
@@ -104,7 +104,7 @@ module "ops_manager" {
   eni_ids              = [local.om_eni_id]
   user_data            = module.ops_manager_user_data.cloud_config
   bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  check_cloud_init     = false
+  cloud_init_timeout   = 600
 
   root_block_device = {
     volume_type = "gp2"

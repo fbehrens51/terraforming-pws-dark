@@ -208,6 +208,12 @@ module "tag_completion_config" {
   public_bucket_url  = local.public_bucket_url
 }
 
+module "tag_completion_config_om" {
+  source             = "../../modules/cloud_init/completion_tag_om"
+  public_bucket_name = aws_s3_bucket.public_bucket.bucket
+  public_bucket_url  = local.public_bucket_url
+}
+
 variable "force_destroy_buckets" {
   type    = bool
   default = false
@@ -882,6 +888,10 @@ output "bot_user_accounts_user_data" {
 
 output "completion_tag_user_data" {
   value = module.tag_completion_config.tg_include_user_data
+}
+
+output "completion_tag_om_user_data" {
+  value = module.tag_completion_config_om.tg_include_user_data
 }
 
 output "bot_public_key" {
