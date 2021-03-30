@@ -36,10 +36,11 @@ locals {
 ##########
 
 resource "aws_lb" "concourse_lb" {
-  name               = "${local.formatted_env_name}-concourse-lb"
-  internal           = var.internetless
-  load_balancer_type = "network"
-  subnets            = var.public_subnet_ids
+  name                             = "${local.formatted_env_name}-concourse-lb"
+  internal                         = var.internetless
+  load_balancer_type               = "network"
+  subnets                          = var.public_subnet_ids
+  enable_cross_zone_load_balancing = true
   tags = merge(
     var.tags,
     {
