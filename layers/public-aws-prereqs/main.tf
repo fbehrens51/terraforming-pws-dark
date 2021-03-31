@@ -111,6 +111,7 @@ data "template_file" "paperwork_variables" {
     platform_automation_engine_worker_role_name = var.platform_automation_engine_worker_role_name
     tsdb_role_name                              = var.tsdb_role_name
     fluentd_role_name                           = var.fluentd_role_name
+    isse_role_name                              = var.isse_role_name
     instance_tagger_role_name                   = var.instance_tagger_role_name
     director_role_name                          = var.director_role_name
     sjb_role_name                               = var.director_role_name
@@ -196,7 +197,7 @@ variable "fluentd_role_name" {
   type = string
 }
 
-variable "isse_role_name"{
+variable "isse_role_name" {
   type = string
 }
 
