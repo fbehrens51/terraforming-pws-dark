@@ -5,6 +5,10 @@ variable "env_name" {
 variable "fluentd_role_name" {
 }
 
+
+variable "isse_role_name" {
+}
+
 variable "instance_tagger_role_name" {
 }
 

@@ -144,6 +144,42 @@ resource "aws_iam_instance_profile" "bucket" {
   role = aws_iam_role.bucket.name
 }
 
+data "aws_iam_policy_document" "isse" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "s3:Get*",
+      "s3:List*",
+      "logs:Describe*",
+      "logs:Get*",
+      "logs:List*",
+      "logs:StartQuery",
+      "logs:StopQuery",
+      "logs:TestMetricFilter",
+      "logs:FilterLogEvents"
+    ]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "isse" {
+  name   = var.isse_role_name
+  path   = "/"
+  policy = data.aws_iam_policy_document.isse.json
+}
+
+resource "aws_iam_role" "isse" {
+  name               = var.isse_role_name
+  assume_role_policy = data.aws_iam_policy_document.user_assume_role_policy.json
+}
+
+resource "aws_iam_policy_attachment" "isse" {
+  name       = var.isse_role_name
+  roles      = [aws_iam_role.isse.name]
+  policy_arn = aws_iam_policy.isse.arn
+}
+
 data "aws_iam_policy_document" "fluentd" {
   statement {
     effect = "Allow"

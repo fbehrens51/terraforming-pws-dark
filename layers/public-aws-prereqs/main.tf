@@ -71,6 +71,7 @@ module "paperwork" {
   fluentd_role_name         = var.fluentd_role_name
   instance_tagger_role_name = var.instance_tagger_role_name
   tsdb_role_name            = var.tsdb_role_name
+  isse_role_name            = var.isse_role_name
   ldap_eip                  = aws_eip.ldap_eip.public_ip
 
   env_name    = var.env_name
@@ -192,6 +193,10 @@ variable "pas_bucket_role_name" {
 }
 
 variable "fluentd_role_name" {
+  type = string
+}
+
+variable "isse_role_name"{
   type = string
 }
 
