@@ -6,6 +6,7 @@ data "aws_iam_policy_document" "director" {
       "iam:GetServerCertificate",
       "iam:GetInstanceProfile",
       "iam:GetRole",
+      "iam:GetUser",
       "s3:*",
       "iam:ListServerCertificates",
       "rds:DescribeEngineDefaultParameters",
