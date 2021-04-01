@@ -14,6 +14,11 @@ data "aws_region" "current" {
 }
 
 locals {
+  super_user_role_wildcards = [
+    for num in data.aws_iam_role.super_user_roles.*.unique_id :
+    "${num}:*"
+  ]
+
   trusted_with_additional_ca_certs = "${data.aws_s3_bucket_object.trusted_ca_certs.body}${data.aws_s3_bucket_object.additional_trusted_ca_certs.body}"
   bucket_prefix                    = "${replace(local.env_name_prefix, " ", "-")}"
   s3_service_name                  = "com.amazonaws.${data.aws_region.current.name}.s3"
@@ -146,28 +151,67 @@ data "aws_iam_role" "director_role" {
   name = var.director_role_name
 }
 
+data "aws_iam_user" "super_users" {
+  count     = length(var.account_super_user_names)
+  user_name = element(var.account_super_user_names, count.index)
+}
+
+
+data "aws_iam_role" "super_user_roles" {
+  count = length(var.account_super_user_role_names)
+  name  = element(var.account_super_user_role_names, count.index)
+}
+
 data "aws_iam_policy_document" "reporting_bucket_policy" {
-  // Allow unauthenticated access only via the vpc endpoints
   statement {
     effect  = "Allow"
     actions = ["s3:GetObject", "s3:ListBucket"]
 
     principals {
       type        = "AWS"
-      identifiers = [data.aws_iam_role.isse_role.arn]
+      identifiers = ["*"]
+    }
+    condition {
+      test     = "StringLike"
+      variable = "aws:userid"
+      values   = ["${data.aws_iam_role.isse_role.unique_id}:*"]
+
     }
     resources = [aws_s3_bucket.reporting_bucket.arn, "${aws_s3_bucket.reporting_bucket.arn}/*"]
   }
+
   statement {
     effect  = "Allow"
     actions = ["s3:*"]
 
     principals {
       type        = "AWS"
-      identifiers = concat([data.aws_iam_role.director_role.arn], var.account_super_user_arns)
+      identifiers = ["*"]
+    }
+    condition {
+      test     = "StringLike"
+      variable = "aws:userid"
+      values   = concat(["${data.aws_iam_role.isse_role.unique_id}:*"], data.aws_iam_user.super_users.*.user_id, local.super_user_role_wildcards)
     }
     resources = [aws_s3_bucket.reporting_bucket.arn, "${aws_s3_bucket.reporting_bucket.arn}/*"]
   }
+
+  statement {
+    effect  = "Deny"
+    actions = ["s3:*"]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    condition {
+      test     = "StringNotLike"
+      variable = "aws:userid"
+      values   = concat(["${data.aws_iam_role.director_role.unique_id}:*", "${data.aws_iam_role.isse_role.unique_id}:*"], data.aws_iam_user.super_users.*.user_id, local.super_user_role_wildcards)
+    }
+    resources = [aws_s3_bucket.reporting_bucket.arn, "${aws_s3_bucket.reporting_bucket.arn}/*"]
+  }
+
 }
 
 resource "aws_s3_bucket_policy" "reporting_bucket_policy_attachment" {
@@ -611,7 +655,12 @@ variable "cap_url" {
 variable "cap_root_ca_s3_path" {
 }
 
-variable "account_super_user_arns" {
+variable "account_super_user_names" {
+  type    = list(string)
+  default = []
+}
+
+variable "account_super_user_role_names" {
   type    = list(string)
   default = []
 }
@@ -966,4 +1015,22 @@ output "s3_logs_bucket" {
 output "reporting_bucket" {
   value = aws_s3_bucket.reporting_bucket.bucket
 }
+
+output "director_role_id" {
+  value = data.aws_iam_role.director_role.unique_id
+}
+
+output "isse_role_id" {
+  value = data.aws_iam_role.isse_role.unique_id
+}
+
+output "super_user_ids" {
+  value = data.aws_iam_user.super_users.*.user_id
+}
+
+output "super_user_role_ids" {
+  value = data.aws_iam_role.super_user_roles.*.unique_id
+}
+
+
 

@@ -73,10 +73,17 @@ module "syslog_ports" {
 }
 
 locals {
-  env_name       = var.global_vars.env_name
-  bucket_name    = "${replace(local.env_name, " ", "-")}-compliance-scans-cp"
-  root_domain    = data.terraform_remote_state.paperwork.outputs.root_domain
-  s3_logs_bucket = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
+  env_name         = var.global_vars.env_name
+  bucket_name      = "${replace(local.env_name, " ", "-")}-compliance-scans-cp"
+  root_domain      = data.terraform_remote_state.paperwork.outputs.root_domain
+  s3_logs_bucket   = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
+  director_role_id = data.terraform_remote_state.paperwork.outputs.director_role_id
+  isse_role_id     = data.terraform_remote_state.paperwork.outputs.isse_role_id
+  super_user_ids   = data.terraform_remote_state.paperwork.outputs.super_user_ids
+  super_user_role_wildcards = [
+    for num in data.terraform_remote_state.paperwork.outputs.super_user_role_ids :
+    "${num}:*"
+  ]
 }
 
 module "compliance_scanner_config" {
@@ -115,4 +122,61 @@ resource "aws_s3_bucket" "compliance_scanner_bucket" {
       "Name" = "Compliance Scanner Results Bucket"
     },
   )
+}
+
+data "aws_iam_policy_document" "compliance_scanner_bucket_policy" {
+  statement {
+    effect  = "Allow"
+    actions = ["s3:GetObject", "s3:ListBucket"]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    condition {
+      test     = "StringLike"
+      variable = "aws:userid"
+      values   = ["${local.isse_role_id}:*"]
+
+    }
+    resources = [aws_s3_bucket.compliance_scanner_bucket.arn, "${aws_s3_bucket.compliance_scanner_bucket.arn}/*"]
+  }
+
+  statement {
+    effect  = "Allow"
+    actions = ["s3:*"]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    condition {
+      test     = "StringLike"
+      variable = "aws:userid"
+      values   = concat(["${local.director_role_id}:*"], local.super_user_ids, local.super_user_role_wildcards)
+    }
+    resources = [aws_s3_bucket.compliance_scanner_bucket.arn, "${aws_s3_bucket.compliance_scanner_bucket.arn}/*"]
+  }
+
+  statement {
+    effect  = "Deny"
+    actions = ["s3:*"]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    condition {
+      test     = "StringNotLike"
+      variable = "aws:userid"
+      values   = concat(["${local.director_role_id}:*", "${local.isse_role_id}:*"], local.super_user_ids, local.super_user_role_wildcards)
+    }
+    resources = [aws_s3_bucket.compliance_scanner_bucket.arn, "${aws_s3_bucket.compliance_scanner_bucket.arn}/*"]
+  }
+
+}
+
+resource "aws_s3_bucket_policy" "compliance_scanner_bucket_policy_attachment" {
+  bucket = aws_s3_bucket.compliance_scanner_bucket.bucket
+  policy = data.aws_iam_policy_document.compliance_scanner_bucket_policy.json
 }
