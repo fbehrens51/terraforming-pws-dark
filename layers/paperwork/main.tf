@@ -138,6 +138,44 @@ resource "aws_s3_bucket" "reporting_bucket" {
   }
 }
 
+data "aws_iam_role" "isse_role" {
+  name = var.isse_role_name
+}
+
+data "aws_iam_role" "director_role" {
+  name = var.director_role_name
+}
+
+data "aws_iam_policy_document" "reporting_bucket_policy" {
+  // Allow unauthenticated access only via the vpc endpoints
+  statement {
+    effect  = "Allow"
+    actions = ["s3:GetObject", "s3:ListBucket"]
+
+    principals {
+      type        = "AWS"
+      identifiers = [data.aws_iam_role.isse_role.arn]
+    }
+    resources = [aws_s3_bucket.reporting_bucket.arn, "${aws_s3_bucket.reporting_bucket.arn}/*"]
+  }
+  statement {
+    effect  = "Allow"
+    actions = ["s3:*"]
+
+    principals {
+      type        = "AWS"
+      identifiers = concat([data.aws_iam_role.director_role.arn], var.account_super_user_arns)
+    }
+    resources = [aws_s3_bucket.reporting_bucket.arn, "${aws_s3_bucket.reporting_bucket.arn}/*"]
+  }
+}
+
+resource "aws_s3_bucket_policy" "reporting_bucket_policy_attachment" {
+  bucket = aws_s3_bucket.reporting_bucket.bucket
+  policy = data.aws_iam_policy_document.reporting_bucket_policy.json
+}
+
+
 resource "aws_s3_bucket" "public_bucket" {
   bucket_prefix = "${local.bucket_prefix}-public-bucket"
   force_destroy = var.force_destroy_buckets
@@ -274,6 +312,9 @@ variable "cp_vpc_id" {
 }
 
 variable "fluentd_role_name" {
+}
+
+variable "isse_role_name" {
 }
 
 variable "instance_tagger_role_name" {
@@ -568,6 +609,11 @@ variable "cap_url" {
 }
 
 variable "cap_root_ca_s3_path" {
+}
+
+variable "account_super_user_arns" {
+  type    = list(string)
+  default = []
 }
 
 data "aws_s3_bucket_object" "cap_root_ca" {
