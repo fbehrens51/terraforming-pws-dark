@@ -128,6 +128,16 @@ resource "aws_s3_bucket" "s3_logs_bucket" {
   }
 }
 
+resource "aws_s3_bucket" "reporting_bucket" {
+  bucket_prefix = "${local.bucket_prefix}-reporting-bucket"
+  force_destroy = var.force_destroy_buckets
+
+  logging {
+    target_bucket = aws_s3_bucket.s3_logs_bucket.bucket
+    target_prefix = "log/"
+  }
+}
+
 resource "aws_s3_bucket" "public_bucket" {
   bucket_prefix = "${local.bucket_prefix}-public-bucket"
   force_destroy = var.force_destroy_buckets
@@ -906,3 +916,8 @@ output "bot_private_key" {
 output "s3_logs_bucket" {
   value = aws_s3_bucket.s3_logs_bucket.bucket
 }
+
+output "reporting_bucket" {
+  value = aws_s3_bucket.reporting_bucket.bucket
+}
+
