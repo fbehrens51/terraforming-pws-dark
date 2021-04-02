@@ -140,16 +140,6 @@ data "external" "create-p12" {
   }
 }
 
-data "null_data_source" "ldifs" {
-  for_each = local.users_with_ldap_entries
-  inputs = {
-    ldif = templatefile("${path.module}/users.ldif.tpl", {
-      user = each.value,
-      der  = data.external.pem-to-der[each.key].result.der,
-    })
-  }
-}
-
 resource aws_s3_bucket_object user_p12 {
   for_each       = local.users_with_certs
   bucket         = "eagle-ci-blobs"
@@ -158,7 +148,11 @@ resource aws_s3_bucket_object user_p12 {
 }
 
 output "user_ldifs" {
-  value = join("\n", [for key in keys(local.users_with_ldap_entries) : data.null_data_source.ldifs[key].outputs.ldif])
+  value = templatefile("${path.module}/users.ldif.tpl", {
+    users = { for key, value in local.users_with_ldap_entries : key => merge(value, {
+      der = data.external.pem-to-der[key].result.der
+    }) }
+  })
 }
 
 
