@@ -45,9 +45,22 @@ resource aws_ecs_task_definition ldap {
       secrets = [
         { name = "LDAP_ADMIN_PASSWORD", valueFrom = data.terraform_remote_state.infra.outputs.ldap_password_secret },
       ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-region"        = "us-east-1"
+          "awslogs-group"         = aws_cloudwatch_log_group.ldap-logs.name
+          "awslogs-stream-prefix" = "ldap"
+        }
+      }
     },
   ])
 
+}
+
+resource "aws_cloudwatch_log_group" "ldap-logs" {
+  name              = "LDAP-ECS"
+  retention_in_days = 30
 }
 
 resource aws_ecs_service ldap {
