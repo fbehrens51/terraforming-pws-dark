@@ -13,7 +13,8 @@ locals {
 }
 
 resource random_string ldap_password {
-  length = 16
+  length  = 16
+  special = false
 }
 
 resource "aws_secretsmanager_secret" "ldap_password" {
