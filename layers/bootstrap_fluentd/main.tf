@@ -109,6 +109,11 @@ locals {
   syslog_audit_archive_bucket = "${local.formatted_env_name}-syslog-audit-archive"
 
   fluentd_lb_name = "${local.formatted_env_name}-fluentd-lb"
+
+  director_role_id    = data.terraform_remote_state.paperwork.outputs.director_role_id
+  isse_role_id        = data.terraform_remote_state.paperwork.outputs.isse_role_id
+  super_user_ids      = data.terraform_remote_state.paperwork.outputs.super_user_ids
+  super_user_role_ids = data.terraform_remote_state.paperwork.outputs.super_user_role_ids
 }
 
 data "aws_subnet" "private_subnets" {
@@ -116,6 +121,9 @@ data "aws_subnet" "private_subnets" {
   id    = local.private_subnets[count.index]
 }
 
+data "aws_iam_role" "fluentd" {
+  name = data.terraform_remote_state.paperwork.outputs.fluentd_role_name
+}
 
 resource "aws_s3_bucket" "syslog_archive" {
   bucket        = local.syslog_archive_bucket
@@ -137,6 +145,20 @@ resource "aws_s3_bucket" "syslog_archive" {
   }
 }
 
+module "syslog_archive_bucket_policy" {
+  source              = "../../modules/bucket/policy/generic"
+  bucket_arn          = aws_s3_bucket.syslog_archive.arn
+  read_write_role_ids = [data.aws_iam_role.fluentd.unique_id]
+  read_only_role_ids  = [local.isse_role_id]
+  super_user_ids      = local.super_user_ids
+  super_user_role_ids = concat(local.super_user_role_ids, [local.director_role_id])
+}
+
+resource "aws_s3_bucket_policy" "syslog_archive_bucket_policy_attachment" {
+  bucket = aws_s3_bucket.syslog_archive.bucket
+  policy = module.syslog_archive_bucket_policy.json
+}
+
 resource "aws_s3_bucket" "syslog_audit_archive" {
   bucket        = local.syslog_audit_archive_bucket
   acl           = "private"
@@ -155,6 +177,20 @@ resource "aws_s3_bucket" "syslog_audit_archive" {
     target_bucket = local.s3_logs_bucket
     target_prefix = "log/"
   }
+}
+
+module "syslog_audit_archive_bucket_policy" {
+  source              = "../../modules/bucket/policy/generic"
+  bucket_arn          = aws_s3_bucket.syslog_audit_archive.arn
+  read_write_role_ids = [data.aws_iam_role.fluentd.unique_id]
+  read_only_role_ids  = [local.isse_role_id]
+  super_user_ids      = local.super_user_ids
+  super_user_role_ids = concat(local.super_user_role_ids, [local.director_role_id])
+}
+
+resource "aws_s3_bucket_policy" "syslog_audit_archive_bucket_policy_attachment" {
+  bucket = aws_s3_bucket.syslog_audit_archive.bucket
+  policy = module.syslog_audit_archive_bucket_policy.json
 }
 
 resource "aws_cloudwatch_log_group" "fluentd_syslog_group" {

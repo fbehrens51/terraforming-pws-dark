@@ -1,6 +1,9 @@
 variable "bucket_arn" { type = string }
-variable "director_role_id" { type = string }
 variable "read_only_role_ids" {
+  type    = list(string)
+  default = []
+}
+variable "read_write_role_ids" {
   type    = list(string)
   default = []
 }
@@ -12,6 +15,7 @@ variable "super_user_role_ids" {
   type    = list(string)
   default = []
 }
+//TODO: another statement to support bucket management and not read/write instead of *
 
 locals {
   #anyone with assume role permissions to the give role_ids
@@ -24,12 +28,17 @@ locals {
     for num in var.super_user_role_ids :
     "${num}:*"
   ]
+  read_write_role_wildcards = [
+    for num in var.read_write_role_ids :
+    "${num}:*"
+  ]
 }
 
 data "aws_iam_policy_document" "bucket_policy" {
+  //Read Only statement
   statement {
     effect  = "Allow"
-    actions = ["s3:GetObject", "s3:ListBucket"]
+    actions = ["s3:Get*", "s3:List*"]
 
     principals {
       type        = "AWS"
@@ -38,7 +47,7 @@ data "aws_iam_policy_document" "bucket_policy" {
     condition {
       test     = "StringLike"
       variable = "aws:userid"
-      values   = local.read_only_role_wildcards
+      values   = concat(local.read_write_role_wildcards, local.read_only_role_wildcards)
 
     }
     resources = [var.bucket_arn, "${var.bucket_arn}/*"]
@@ -46,6 +55,24 @@ data "aws_iam_policy_document" "bucket_policy" {
 
   statement {
     effect  = "Allow"
+    actions = ["s3:Put*", "s3:PutObjectAcl"]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    condition {
+      test     = "StringLike"
+      variable = "aws:userid"
+      values   = concat(local.read_write_role_wildcards)
+    }
+    resources = [var.bucket_arn, "${var.bucket_arn}/*"]
+  }
+
+  statement {
+    effect = "Allow"
+    //    TODO: more fine grain access?
+    //    actions = ["s3:CreateBucket","s3:ListAllMyBuckets","s3:GetBucketLocation"]
     actions = ["s3:*"]
 
     principals {
@@ -55,7 +82,7 @@ data "aws_iam_policy_document" "bucket_policy" {
     condition {
       test     = "StringLike"
       variable = "aws:userid"
-      values   = concat(["${var.director_role_id}:*"], var.super_user_ids, local.super_user_role_wildcards)
+      values   = concat(var.super_user_ids, local.super_user_role_wildcards)
     }
     resources = [var.bucket_arn, "${var.bucket_arn}/*"]
   }
@@ -71,7 +98,7 @@ data "aws_iam_policy_document" "bucket_policy" {
     condition {
       test     = "StringNotLike"
       variable = "aws:userid"
-      values   = concat(["${var.director_role_id}:*"], local.read_only_role_wildcards, var.super_user_ids, local.super_user_role_wildcards)
+      values   = concat(local.read_write_role_wildcards, local.read_only_role_wildcards, var.super_user_ids, local.super_user_role_wildcards)
     }
     resources = [var.bucket_arn, "${var.bucket_arn}/*"]
   }
