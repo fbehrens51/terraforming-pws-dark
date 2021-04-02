@@ -3,8 +3,10 @@ terraform {
 }
 
 module "providers" {
-  source = "../dark_providers"
+  source = "../../dark_providers"
 }
+
+variable "eagle-openldap-image" {}
 
 locals {
   // We use 443 here in order to escape the corporate firewall
@@ -12,21 +14,15 @@ locals {
   internal_ldap_port  = 1389
 }
 
-resource random_string ldap_password {
-  length = 16
-}
 
-resource "aws_secretsmanager_secret" "ldap_password" {
-  name_prefix = "ldap_password"
-}
+data "terraform_remote_state" "infra" {
+  backend = "s3"
 
-resource "aws_secretsmanager_secret_version" "ldap_password" {
-  secret_id     = aws_secretsmanager_secret.ldap_password.id
-  secret_string = random_string.ldap_password.result
-}
-
-resource aws_ecs_cluster eagle {
-  name = "eagle"
+  config = {
+    bucket = "eagle-ci-blobs"
+    key    = "ldap-server/infra.tfstate"
+    region = "us-east-1"
+  }
 }
 
 resource aws_ecs_task_definition ldap {
@@ -35,7 +31,7 @@ resource aws_ecs_task_definition ldap {
   requires_compatibilities = ["FARGATE"]
   cpu                      = 256
   memory                   = 512
-  execution_role_arn       = aws_iam_role.ldap.arn
+  execution_role_arn       = data.terraform_remote_state.infra.outputs.ecs_execution_role
   container_definitions = jsonencode([
     {
       name      = "openldap"
@@ -47,7 +43,7 @@ resource aws_ecs_task_definition ldap {
         { containerPort = local.internal_ldap_port }
       ]
       secrets = [
-        { name = "LDAP_ADMIN_PASSWORD", valueFrom = aws_secretsmanager_secret.ldap_password.arn },
+        { name = "LDAP_ADMIN_PASSWORD", valueFrom = data.terraform_remote_state.infra.outputs.ldap_password_secret },
       ]
     },
   ])
@@ -56,19 +52,19 @@ resource aws_ecs_task_definition ldap {
 
 resource aws_ecs_service ldap {
   name            = "ldap"
-  cluster         = aws_ecs_cluster.eagle.id
+  cluster         = data.terraform_remote_state.infra.outputs.ecs_cluster_id
   task_definition = aws_ecs_task_definition.ldap.arn
   desired_count   = 1
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets          = aws_subnet.private.*.id
-    security_groups  = [aws_security_group.ldap.id]
+    subnets          = data.terraform_remote_state.infra.outputs.private_subnets
+    security_groups  = [data.terraform_remote_state.infra.outputs.ldap_security_group]
     assign_public_ip = false
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.ldap.arn
+    target_group_arn = data.terraform_remote_state.infra.outputs.ldap_target_group
     container_name   = "openldap"
     container_port   = local.internal_ldap_port
   }

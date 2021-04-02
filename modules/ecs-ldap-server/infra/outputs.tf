@@ -57,3 +57,27 @@ output "portal_end_to_end_test_application_cert_b" {
   }
 }
 
+output "ecs_execution_role" {
+  value = aws_iam_role.ldap.arn
+}
+
+output "ldap_password_secret" {
+  value = aws_secretsmanager_secret.ldap_password.arn
+}
+
+output "ecs_cluster_id" {
+  value = aws_ecs_cluster.eagle.id
+}
+
+output "ldap_security_group" {
+  value = aws_security_group.ldap.id
+}
+
+output "ldap_target_group" {
+  value = aws_lb_target_group.ldap.arn
+}
+
+output "private_subnets" {
+  value = aws_subnet.private.*.id
+}
+

@@ -226,7 +226,7 @@ data "terraform_remote_state" "ldap-server" {
 
   config = {
     bucket = "eagle-ci-blobs"
-    key    = "ldap-server.tfstate"
+    key    = "ldap-server/infra.tfstate"
     region = "us-east-1"
   }
 }
