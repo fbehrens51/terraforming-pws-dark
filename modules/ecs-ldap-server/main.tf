@@ -74,32 +74,3 @@ resource aws_ecs_service ldap {
   }
 }
 
-output "ldap_basedn" {
-  value = "dc=pcfeagle,dc=cf-app,dc=com"
-}
-
-output "ldap_dn" {
-  value = "cn=admin,dc=pcfeagle,dc=cf-app,dc=com"
-}
-
-output ldap_domain {
-  value = aws_lb.ldap.dns_name
-}
-
-output ldap_port {
-  value = tostring(local.external_ldaps_port)
-}
-
-output ldap_password {
-  value     = random_string.ldap_password.result
-  sensitive = true
-}
-
-output ldap_ca_cert {
-  value     = tls_self_signed_cert.root.cert_pem
-  sensitive = true
-}
-
-output user_ca_cert {
-  value = "${tls_self_signed_cert.root.cert_pem}\n${tls_locally_signed_cert.issuer.cert_pem}"
-}
