@@ -14,19 +14,19 @@ locals {
     portal_test_people = {
       common_name = "PortalEndToEndTestUser"
       ou          = "People"
-      roles       = []
+      roles       = ["POPULATED_BY_TESTS"]
     }
 
     portal_test_apps_a = {
       common_name = "PortalEndToEndTestUser"
       ou          = "Applications"
-      roles       = []
+      roles       = ["POPULATED_BY_TESTS"]
     }
 
     portal_test_apps_b = {
       common_name = "PortalEndToEndTestUser"
       ou          = "Applications"
-      roles       = []
+      roles       = ["POPULATED_BY_TESTS"]
     }
   }
 
