@@ -71,7 +71,6 @@ module "paperwork" {
 
   env_name    = var.env_name
   root_domain = var.root_domain
-  users       = var.users
 }
 
 data "aws_caller_identity" "current_user" {
@@ -213,15 +212,6 @@ variable "env_name" {
 
 variable "root_domain" {
   type = string
-}
-
-variable "users" {
-  type = list(object({
-    name     = string,
-    username = string,
-    ou       = string,
-    roles    = string
-  }))
 }
 
 resource "aws_s3_bucket_object" "cap_root_ca_cert" {
@@ -423,12 +413,9 @@ resource "aws_s3_bucket_object" "vanity_server_key" {
 }
 
 resource "aws_s3_bucket_object" "portal_smoke_test_cert" {
-  key    = local.portal_smoke_test_cert_s3_path
-  bucket = aws_s3_bucket.certs.bucket
-  content = element(
-    module.paperwork.user_certs,
-    index(module.paperwork.usernames, "smoke"),
-  )
+  key          = local.portal_smoke_test_cert_s3_path
+  bucket       = aws_s3_bucket.certs.bucket
+  content      = data.terraform_remote_state.ldap-server.outputs.portal_smoke_test_cert.cert_pem
   content_type = "text/plain"
 }
 
@@ -436,10 +423,7 @@ resource "aws_s3_bucket_object" "portal_smoke_test_key" {
   key          = local.portal_smoke_test_key_s3_path
   bucket       = aws_s3_bucket.certs.bucket
   content_type = "text/plain"
-  content = element(
-    module.paperwork.user_private_keys,
-    index(module.paperwork.usernames, "smoke"),
-  )
+  content      = data.terraform_remote_state.ldap-server.outputs.portal_smoke_test_cert.private_key_pem
 }
 
 resource "aws_s3_bucket_object" "ldap_password" {
@@ -468,57 +452,29 @@ EOF
 
 # The following outputs are used by the portal test suite and are not needed by the paperwork layer
 output "portal_end_to_end_test_user_cert_pem" {
-  value = module.paperwork.portal_end_to_end_test_user_cert_pem
+  value = data.terraform_remote_state.ldap-server.outputs.portal_end_to_end_test_user_cert.cert_pem
 }
 
 output "portal_end_to_end_test_user_private_key_pem" {
-  value     = module.paperwork.portal_end_to_end_test_user_private_key_pem
+  value     = data.terraform_remote_state.ldap-server.outputs.portal_end_to_end_test_user_cert.private_key_pem
   sensitive = true
 }
 
 output "portal_end_to_end_test_application_cert_pem" {
-  value = module.paperwork.portal_end_to_end_test_application_cert_pem
+  value = data.terraform_remote_state.ldap-server.outputs.portal_end_to_end_test_application_cert.cert_pem
 }
 
 output "portal_end_to_end_test_application_private_key_pem" {
-  value     = module.paperwork.portal_end_to_end_test_application_private_key_pem
+  value     = data.terraform_remote_state.ldap-server.outputs.portal_end_to_end_test_application_cert.private_key_pem
   sensitive = true
 }
 
 output "portal_end_to_end_test_application_cert_b_pem" {
-  value = module.paperwork.portal_end_to_end_test_application_cert_b_pem
+  value = data.terraform_remote_state.ldap-server.outputs.portal_end_to_end_test_application_cert_b.cert_pem
 }
 
 output "portal_end_to_end_test_application_private_key_b_pem" {
-  value     = module.paperwork.portal_end_to_end_test_application_private_key_b_pem
-  sensitive = true
-}
-
-
-# The following outputs are used by the ldap layer but are not needed by the
-# paperwork layer
-
-output "ldap_server_cert" {
-  value = module.paperwork.ldap_server_cert
-}
-
-output "ldap_server_key" {
-  value     = module.paperwork.ldap_server_key
-  sensitive = true
-}
-
-output "usernames" {
-  value     = module.paperwork.usernames
-  sensitive = true
-}
-
-output "user_private_keys" {
-  value     = module.paperwork.user_private_keys
-  sensitive = true
-}
-
-output "user_certs" {
-  value     = module.paperwork.user_certs
+  value     = data.terraform_remote_state.ldap-server.outputs.portal_end_to_end_test_application_cert_b.private_key_pem
   sensitive = true
 }
 

@@ -30,7 +30,3 @@ variable "root_domain" {
 variable "ldap_eip" {
 }
 
-variable "users" {
-  type = list(object({ name = string, username = string, ou = string, roles = string }))
-}
-

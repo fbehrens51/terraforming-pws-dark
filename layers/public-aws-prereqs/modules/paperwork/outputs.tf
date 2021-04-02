@@ -68,15 +68,6 @@ output "smtp_server_key" {
   sensitive = true
 }
 
-output "ldap_server_cert" {
-  value = module.ldap_server_cert.cert_pem
-}
-
-output "ldap_server_key" {
-  value     = module.ldap_server_cert.private_key_pem
-  sensitive = true
-}
-
 output "grafana_server_cert" {
   value = module.grafana_server_cert.cert_pem
 }
@@ -113,19 +104,6 @@ output "ldap_client_key" {
   sensitive = true
 }
 
-output "usernames" {
-  value = data.template_file.usernames.*.rendered
-}
-
-output "user_certs" {
-  value = tls_locally_signed_cert.user_pki_cert.*.cert_pem
-}
-
-output "user_private_keys" {
-  value     = tls_private_key.user_pki_cert_private_key.*.private_key_pem
-  sensitive = true
-}
-
 output "vanity_server_cert" {
   value = module.vanity_server_cert.cert_pem
 }
@@ -133,38 +111,6 @@ output "vanity_server_cert" {
 output "vanity_server_key" {
   value     = module.vanity_server_cert.private_key_pem
   sensitive = true
-}
-
-output "portal_end_to_end_test_user_cert_pem" {
-  value = module.portal_end_to_end_test_user_cert.cert_pem
-}
-
-output "portal_end_to_end_test_user_private_key_pem" {
-  value     = module.portal_end_to_end_test_user_cert.private_key_pem
-  sensitive = true
-}
-
-output "portal_end_to_end_test_application_cert_pem" {
-  value = module.portal_end_to_end_test_application_cert.cert_pem
-}
-
-output "portal_end_to_end_test_application_private_key_pem" {
-  value     = module.portal_end_to_end_test_application_cert.private_key_pem
-  sensitive = true
-}
-
-output "portal_end_to_end_test_application_cert_b_pem" {
-  value = module.portal_end_to_end_test_application_certB.cert_pem
-}
-
-output "portal_end_to_end_test_application_private_key_b_pem" {
-  value     = module.portal_end_to_end_test_application_certB.private_key_pem
-  sensitive = true
-}
-
-data "template_file" "usernames" {
-  count    = length(var.users)
-  template = var.users[count.index]["username"]
 }
 
 output "isolation_segment_vpc_1_id" {

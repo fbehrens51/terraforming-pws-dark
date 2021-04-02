@@ -37,36 +37,6 @@ module "smtp_server_cert" {
   domains            = [module.domains.smtp_fqdn]
 }
 
-module "portal_end_to_end_test_user_cert" {
-  source = "../client_cert"
-
-  env_name           = var.env_name
-  ca_cert_pem        = module.ca_cert.cert_pem
-  ca_private_key_pem = module.ca_cert.private_key_pem
-  common_name        = "PortalEndToEndTestUser"
-  ou                 = "People"
-}
-
-module "portal_end_to_end_test_application_cert" {
-  source = "../client_cert"
-
-  env_name           = var.env_name
-  ca_cert_pem        = module.ca_cert.cert_pem
-  ca_private_key_pem = module.ca_cert.private_key_pem
-  common_name        = "PortalEndToEndTestUser"
-  ou                 = "Applications"
-}
-
-module "portal_end_to_end_test_application_certB" {
-  source = "../client_cert"
-
-  env_name           = var.env_name
-  ca_cert_pem        = module.ca_cert.cert_pem
-  ca_private_key_pem = module.ca_cert.private_key_pem
-  common_name        = "PortalEndToEndTestUser"
-  ou                 = "Applications"
-}
-
 module "control_plane_star_server_cert" {
   source = "../server_cert"
 
@@ -87,16 +57,7 @@ module "om_server_cert" {
   domains            = [module.domains.om_fqdn]
 }
 
-module "ldap_server_cert" {
-  source = "../server_cert"
-
-  env_name           = var.env_name
-  ca_cert_pem        = module.ca_cert.cert_pem
-  ca_private_key_pem = module.ca_cert.private_key_pem
-  common_name        = "LDAP Server"
-  ips                = [var.ldap_eip]
-}
-
+// TODO[#177504576]: the new ldap server does not support client auth, do we want to keep this?
 module "ldap_client_cert" {
   source = "../client_cert"
 
