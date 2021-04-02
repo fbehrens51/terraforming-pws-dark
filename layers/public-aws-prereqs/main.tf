@@ -48,11 +48,6 @@ locals {
   admin  = "cn=admin,dc=${join(",dc=", split(".", var.root_domain))}"
 }
 
-resource "random_string" "ldap_password" {
-  length  = "16"
-  special = false
-}
-
 resource "aws_eip" "ldap_eip" {
   vpc = true
 }
@@ -122,10 +117,10 @@ data "template_file" "paperwork_variables" {
     iso_vpc_id                                  = module.paperwork.isolation_segment_vpc_1_id
     pas_vpc_dns                                 = module.paperwork.pas_vpc_dns
     control_plane_vpc_dns                       = module.paperwork.control_plane_vpc_dns
-    ldap_basedn                                 = local.basedn
-    ldap_dn                                     = local.admin
-    ldap_host                                   = aws_eip.ldap_eip.public_ip
-    ldap_port                                   = "636"
+    ldap_basedn                                 = data.terraform_remote_state.ldap-server.outputs.ldap_basedn
+    ldap_dn                                     = data.terraform_remote_state.ldap-server.outputs.ldap_dn
+    ldap_host                                   = data.terraform_remote_state.ldap-server.outputs.ldap_domain
+    ldap_port                                   = data.terraform_remote_state.ldap-server.outputs.ldap_port
     ldap_role_attr                              = "role"
     ldap_password_s3_path                       = local.ldap_password_s3_path
     cert_bucket                                 = aws_s3_bucket.certs.bucket
@@ -236,10 +231,20 @@ resource "aws_s3_bucket_object" "cap_root_ca_cert" {
   content_type = "text/plain"
 }
 
+data "terraform_remote_state" "ldap-server" {
+  backend = "s3"
+
+  config = {
+    bucket = "eagle-ci-blobs"
+    key    = "ldap-server.tfstate"
+    region = "us-east-1"
+  }
+}
+
 resource "aws_s3_bucket_object" "router_trusted_ca_certs" {
   key          = local.router_trusted_ca_certs_s3_path
   bucket       = aws_s3_bucket.certs.bucket
-  content      = module.paperwork.router_trusted_ca_certs
+  content      = data.terraform_remote_state.ldap-server.outputs.user_ca_cert
   content_type = "text/plain"
 }
 
@@ -441,7 +446,7 @@ resource "aws_s3_bucket_object" "ldap_password" {
   key          = local.ldap_password_s3_path
   bucket       = aws_s3_bucket.certs.bucket
   content_type = "text/plain"
-  content      = random_string.ldap_password.result
+  content      = data.terraform_remote_state.ldap-server.outputs.ldap_password
 }
 
 resource "local_file" "paperwork_variables" {

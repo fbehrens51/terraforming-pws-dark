@@ -74,6 +74,13 @@ resource aws_ecs_service ldap {
   }
 }
 
+output "ldap_basedn" {
+  value = "dc=pcfeagle,dc=cf-app,dc=com"
+}
+
+output "ldap_dn" {
+  value = "cn=admin,dc=pcfeagle,dc=cf-app,dc=com"
+}
 
 output ldap_domain {
   value = aws_lb.ldap.dns_name

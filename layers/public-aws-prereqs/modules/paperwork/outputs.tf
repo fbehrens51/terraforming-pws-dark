@@ -28,12 +28,6 @@ output "root_ca_cert" {
 
 # This output is duplicated here to allow operators to override the value on-site without changing consumers
 # (on-site it is not the same value for both router_trusted_ca_certs and trusted_ca_certs)
-output "router_trusted_ca_certs" {
-  value = module.ca_cert.cert_pem
-}
-
-# This output is duplicated here to allow operators to override the value on-site without changing consumers
-# (on-site it is not the same value for both router_trusted_ca_certs and trusted_ca_certs)
 output "trusted_ca_certs" {
   value = module.ca_cert.cert_pem
 }
