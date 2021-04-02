@@ -1,6 +1,18 @@
 
 locals {
-  default_users = {
+  smoke_test_users = {
+    smoke_test = {
+      common_name = "Smoke Test User"
+      ou          = "People"
+      roles = [
+        "TWS-C2S-DOS-MSN-ORG1-MISSION1-PROD-DEVELOPER",
+        "TWS-C2S-DOS-MSN-ORG1-MISSION2-all-DEVELOPER",
+        "TWS-C2S-DOS-MSN-ORG2-UNUSED-UNUSED-ORGMANAGER",
+      ]
+    }
+  }
+
+  test_users = {
     smoke_test = {
       common_name = "Smoke Test User"
       ou          = "People"
@@ -30,7 +42,10 @@ locals {
     }
   }
 
-  users = merge(local.default_users, var.users)
+  // Test users are not placed in LDAP ahead of time.
+  // Instead, the test suite will populate their LDAP entries. We just need to generate certs here.
+  users_with_certs        = merge(local.test_users, local.smoke_test_users, var.users)
+  users_with_ldap_entries = merge(local.smoke_test_users, var.users)
 }
 
 # Trusted issuer for all user certs
@@ -71,13 +86,13 @@ resource "tls_locally_signed_cert" "issuer" {
 # User certificates
 
 resource "tls_private_key" "user" {
-  for_each  = local.users
+  for_each  = local.users_with_certs
   algorithm = "RSA"
   rsa_bits  = "2048"
 }
 
 resource "tls_cert_request" "user" {
-  for_each        = local.users
+  for_each        = local.users_with_certs
   key_algorithm   = "RSA"
   private_key_pem = tls_private_key.user[each.key].private_key_pem
 
@@ -89,7 +104,7 @@ resource "tls_cert_request" "user" {
 }
 
 resource "tls_locally_signed_cert" "user" {
-  for_each           = local.users
+  for_each           = local.users_with_certs
   cert_request_pem   = tls_cert_request.user[each.key].cert_request_pem
   ca_key_algorithm   = "RSA"
   ca_private_key_pem = tls_private_key.issuer.private_key_pem
@@ -106,7 +121,7 @@ resource "tls_locally_signed_cert" "user" {
 }
 
 data "external" "pem-to-der" {
-  for_each = local.users
+  for_each = local.users_with_certs
   program  = ["bash", "${path.module}/pem-to-der.sh"]
 
   query = {
@@ -115,7 +130,7 @@ data "external" "pem-to-der" {
 }
 
 data "external" "create-p12" {
-  for_each = local.users
+  for_each = local.users_with_certs
   program  = ["bash", "${path.module}/create-p12.sh"]
 
   query = {
@@ -126,7 +141,7 @@ data "external" "create-p12" {
 }
 
 data "null_data_source" "ldifs" {
-  for_each = local.users
+  for_each = local.users_with_ldap_entries
   inputs = {
     ldif = templatefile("${path.module}/users.ldif.tpl", {
       user = each.value,
@@ -136,14 +151,14 @@ data "null_data_source" "ldifs" {
 }
 
 resource aws_s3_bucket_object user_p12 {
-  for_each       = local.users
+  for_each       = local.users_with_certs
   bucket         = "eagle-ci-blobs"
   key            = "ldap-user-keys/${each.key}.p12"
   content_base64 = data.external.create-p12[each.key].result.p12
 }
 
 output "user_ldifs" {
-  value = join("\n", [for key in keys(local.users) : data.null_data_source.ldifs[key].outputs.ldif])
+  value = join("\n", [for key in keys(local.users_with_ldap_entries) : data.null_data_source.ldifs[key].outputs.ldif])
 }
 
 
