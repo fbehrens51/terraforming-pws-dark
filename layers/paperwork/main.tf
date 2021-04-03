@@ -133,6 +133,20 @@ resource "aws_s3_bucket" "s3_logs_bucket" {
   }
 }
 
+module "s3_logs_bucket_policy" {
+  source              = "../../modules/bucket/policy/generic"
+  bucket_arn          = aws_s3_bucket.s3_logs_bucket.arn
+  read_write_role_ids = []
+  read_only_role_ids  = [data.aws_iam_role.isse_role.unique_id, data.aws_iam_role.director_role.unique_id]
+  super_user_ids      = data.aws_iam_user.super_users.*.user_id
+  super_user_role_ids = concat([data.aws_iam_role.director_role.unique_id], data.aws_iam_role.super_user_roles.*.unique_id)
+}
+
+resource "aws_s3_bucket_policy" "s3_logs_bucket_policy_attachment" {
+  bucket = aws_s3_bucket.s3_logs_bucket.bucket
+  policy = module.s3_logs_bucket_policy.json
+}
+
 resource "aws_s3_bucket" "reporting_bucket" {
   bucket_prefix = "${local.bucket_prefix}-reporting-bucket"
   force_destroy = var.force_destroy_buckets
