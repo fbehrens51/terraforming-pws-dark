@@ -27,6 +27,3 @@ variable "tsdb_role_name" {
 variable "root_domain" {
 }
 
-variable "ldap_eip" {
-}
-

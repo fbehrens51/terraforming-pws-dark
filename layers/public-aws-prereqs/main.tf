@@ -26,6 +26,7 @@ locals {
   router_server_key_s3_path                        = "router_server_key.pem"
   uaa_server_cert_s3_path                          = "uaa_server_cert.pem"
   uaa_server_key_s3_path                           = "uaa_server_key.pem"
+  ldap_ca_cert_s3_path                             = "ldap_ca_cert.pem"
   ldap_client_cert_s3_path                         = "ldap_client_cert.pem"
   ldap_client_key_s3_path                          = "ldap_client_key.pem"
   om_server_cert_s3_path                           = "om_server_cert.pem"
@@ -48,10 +49,6 @@ locals {
   admin  = "cn=admin,dc=${join(",dc=", split(".", var.root_domain))}"
 }
 
-resource "aws_eip" "ldap_eip" {
-  vpc = true
-}
-
 module "domains" {
   source = "../../modules/domains"
 
@@ -67,7 +64,6 @@ module "paperwork" {
   instance_tagger_role_name = var.instance_tagger_role_name
   tsdb_role_name            = var.tsdb_role_name
   isse_role_name            = var.isse_role_name
-  ldap_eip                  = aws_eip.ldap_eip.public_ip
 
   env_name    = var.env_name
   root_domain = var.root_domain
@@ -137,6 +133,7 @@ data "template_file" "paperwork_variables" {
     router_server_key_s3_path                   = local.router_server_key_s3_path
     uaa_server_cert_s3_path                     = local.uaa_server_cert_s3_path
     uaa_server_key_s3_path                      = local.uaa_server_key_s3_path
+    ldap_ca_cert_s3_path                        = local.ldap_ca_cert_s3_path
     ldap_client_cert_s3_path                    = local.ldap_client_cert_s3_path
     ldap_client_key_s3_path                     = local.ldap_client_key_s3_path
     om_server_cert_s3_path                      = local.om_server_cert_s3_path
@@ -382,6 +379,13 @@ resource "aws_s3_bucket_object" "smtp_server_key" {
   bucket       = aws_s3_bucket.certs.bucket
   content_type = "text/plain"
   content      = module.paperwork.smtp_server_key
+}
+
+resource "aws_s3_bucket_object" "ldap_ca_cert" {
+  key          = local.ldap_ca_cert_s3_path
+  bucket       = aws_s3_bucket.certs.bucket
+  content      = data.terraform_remote_state.ldap-server.outputs.ldap_ca_cert
+  content_type = "text/plain"
 }
 
 resource "aws_s3_bucket_object" "ldap_client_cert" {

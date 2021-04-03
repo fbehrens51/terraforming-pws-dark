@@ -499,6 +499,14 @@ data "aws_s3_bucket_object" "vanity_server_key" {
   key    = var.vanity_server_key_s3_path
 }
 
+variable "ldap_ca_cert_s3_path" {
+}
+
+data "aws_s3_bucket_object" "ldap_ca_cert" {
+  bucket = var.cert_bucket
+  key    = var.ldap_ca_cert_s3_path
+}
+
 variable "ldap_client_cert_s3_path" {
 }
 
@@ -778,6 +786,10 @@ output "vanity_server_cert" {
 output "vanity_server_key" {
   value     = data.aws_s3_bucket_object.vanity_server_key.body
   sensitive = true
+}
+
+output "ldap_ca_cert" {
+  value = data.aws_s3_bucket_object.ldap_ca_cert.body
 }
 
 output "ldap_client_cert" {

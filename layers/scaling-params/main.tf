@@ -31,7 +31,6 @@ locals {
     enterprise-services = {
       nat     = "t3.medium"
       bind    = "t3.medium"
-      ldap    = "t3.small"
       fluentd = "t3.medium"
       postfix = "t3.medium"
     }

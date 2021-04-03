@@ -259,7 +259,7 @@ module "om_config" {
   postgres_cw_username = local.postgres_username
   postgres_cw_password = local.postgres_password
 
-  ldap_tls_ca_cert       = data.terraform_remote_state.paperwork.outputs.root_ca_cert
+  ldap_tls_ca_cert       = data.terraform_remote_state.paperwork.outputs.ldap_ca_cert
   ldap_tls_client_cert   = data.terraform_remote_state.paperwork.outputs.ldap_client_cert
   ldap_tls_client_key    = data.terraform_remote_state.paperwork.outputs.ldap_client_key
   smoke_test_client_cert = data.terraform_remote_state.paperwork.outputs.portal_smoke_test_cert

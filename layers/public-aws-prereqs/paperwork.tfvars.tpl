@@ -74,6 +74,8 @@ uaa_server_cert_s3_path = "${uaa_server_cert_s3_path}"
 
 uaa_server_key_s3_path = "${uaa_server_key_s3_path}"
 
+ldap_ca_cert_s3_path = "${ldap_ca_cert_s3_path}"
+
 ldap_client_cert_s3_path = "${ldap_client_cert_s3_path}"
 
 ldap_client_key_s3_path = "${ldap_client_key_s3_path}"
