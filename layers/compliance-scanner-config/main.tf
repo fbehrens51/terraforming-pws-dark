@@ -73,14 +73,15 @@ module "syslog_ports" {
 }
 
 locals {
-  env_name            = var.global_vars.env_name
-  bucket_name         = "${replace(local.env_name, " ", "-")}-compliance-scans-pas"
-  root_domain         = data.terraform_remote_state.paperwork.outputs.root_domain
-  s3_logs_bucket      = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
-  director_role_id    = data.terraform_remote_state.paperwork.outputs.director_role_id
-  isse_role_id        = data.terraform_remote_state.paperwork.outputs.isse_role_id
-  super_user_ids      = data.terraform_remote_state.paperwork.outputs.super_user_ids
-  super_user_role_ids = data.terraform_remote_state.paperwork.outputs.super_user_role_ids
+  env_name              = var.global_vars.env_name
+  bucket_name           = "${replace(local.env_name, " ", "-")}-compliance-scans-pas"
+  root_domain           = data.terraform_remote_state.paperwork.outputs.root_domain
+  s3_logs_bucket        = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
+  director_role_id      = data.terraform_remote_state.paperwork.outputs.director_role_id
+  isse_role_id          = data.terraform_remote_state.paperwork.outputs.isse_role_id
+  super_user_ids        = data.terraform_remote_state.paperwork.outputs.super_user_ids
+  super_user_role_ids   = data.terraform_remote_state.paperwork.outputs.super_user_role_ids
+  oscap_store_role_name = data.terraform_remote_state.paperwork.outputs.bucket_role_name
 }
 
 module "compliance_scanner_config" {
@@ -110,7 +111,7 @@ resource "aws_s3_bucket" "compliance_scanner_bucket" {
 
   logging {
     target_bucket = local.s3_logs_bucket
-    target_prefix = "log/"
+    target_prefix = "log/${local.bucket_name}/"
   }
 
   tags = merge(
@@ -121,10 +122,14 @@ resource "aws_s3_bucket" "compliance_scanner_bucket" {
   )
 }
 
+data "aws_iam_role" "bucket_role" {
+  name = local.oscap_store_role_name
+}
+
 module "compliance_scanner_bucket_policy" {
   source              = "../../modules/bucket/policy/generic"
   bucket_arn          = aws_s3_bucket.compliance_scanner_bucket.arn
-  read_write_role_ids = [local.director_role_id]
+  read_write_role_ids = [data.aws_iam_role.bucket_role.unique_id]
   read_only_role_ids  = [local.isse_role_id]
   super_user_ids      = local.super_user_ids
   super_user_role_ids = concat(local.super_user_role_ids, [local.director_role_id])
