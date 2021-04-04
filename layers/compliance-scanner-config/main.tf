@@ -111,7 +111,7 @@ resource "aws_s3_bucket" "compliance_scanner_bucket" {
 
   logging {
     target_bucket = local.s3_logs_bucket
-    target_prefix = "log/${local.bucket_name}/"
+    target_prefix = "log/"
   }
 
   tags = merge(
