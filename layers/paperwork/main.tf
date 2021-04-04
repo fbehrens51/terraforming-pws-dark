@@ -14,11 +14,6 @@ data "aws_region" "current" {
 }
 
 locals {
-  super_user_role_wildcards = [
-    for num in data.aws_iam_role.super_user_roles.*.unique_id :
-    "${num}:*"
-  ]
-
   trusted_with_additional_ca_certs = "${data.aws_s3_bucket_object.trusted_ca_certs.body}${data.aws_s3_bucket_object.additional_trusted_ca_certs.body}"
   bucket_prefix                    = "${replace(local.env_name_prefix, " ", "-")}"
   s3_service_name                  = "com.amazonaws.${data.aws_region.current.name}.s3"
@@ -133,18 +128,29 @@ resource "aws_s3_bucket" "s3_logs_bucket" {
   }
 }
 
-module "s3_logs_bucket_policy" {
-  source              = "../../modules/bucket/policy/generic"
-  bucket_arn          = aws_s3_bucket.s3_logs_bucket.arn
-  read_write_role_ids = []
-  read_only_role_ids  = [data.aws_iam_role.isse_role.unique_id, data.aws_iam_role.director_role.unique_id]
-  super_user_ids      = data.aws_iam_user.super_users.*.user_id
-  super_user_role_ids = concat([data.aws_iam_role.director_role.unique_id], data.aws_iam_role.super_user_roles.*.unique_id)
+data "aws_iam_policy_document" "s3_logs_bucket_policy" {
+  //Read Only statement
+  statement {
+    effect  = "Allow"
+    actions = ["s3:Get*", "s3:List*"]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    condition {
+      test     = "StringLike"
+      variable = "aws:userid"
+      values   = ["${data.aws_iam_role.isse_role.unique_id}:*", "${data.aws_iam_role.director_role.unique_id}:*"]
+
+    }
+    resources = [aws_s3_bucket.s3_logs_bucket.arn, "${aws_s3_bucket.s3_logs_bucket.arn}/*"]
+  }
 }
 
 resource "aws_s3_bucket_policy" "s3_logs_bucket_policy_attachment" {
   bucket = aws_s3_bucket.s3_logs_bucket.bucket
-  policy = module.s3_logs_bucket_policy.json
+  policy = data.aws_iam_policy_document.s3_logs_bucket_policy.json
 }
 
 resource "aws_s3_bucket" "reporting_bucket" {
