@@ -132,12 +132,6 @@ data "template_cloudinit_config" "user_data" {
   gzip          = true
 
   part {
-    filename     = "syslog.cfg"
-    content      = module.syslog_config.user_data
-    content_type = "text/x-include-url"
-  }
-
-  part {
     filename     = "certs.cfg"
     content      = module.configuration.certs_user_data
     content_type = "text/x-include-url"
@@ -160,6 +154,14 @@ data "template_cloudinit_config" "user_data" {
     filename     = "clamav.cfg"
     content_type = "text/x-include-url"
     content      = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
+  }
+
+  // syslog has to come after clamav because it uses augtool, which is installed by clamav
+  // this only applies to this layer, since fluentd is the only one to setup local syslog forwarding
+  part {
+    filename     = "syslog.cfg"
+    content      = module.syslog_config.user_data
+    content_type = "text/x-include-url"
   }
 
   part {
@@ -208,13 +210,13 @@ module "fluentd_instance" {
 resource "aws_lb_target_group_attachment" "fluentd_syslog_attachment" {
   count            = length(data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_eni_ids)
   target_group_arn = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_lb_syslog_tg_arn
-  target_id        = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_eni_ips[count.index]
+  target_id        = module.fluentd_instance.instance_ids[count.index]
 }
 
 resource "aws_lb_target_group_attachment" "fluentd_apps_syslog_attachment" {
   count            = length(data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_eni_ids)
   target_group_arn = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_lb_apps_syslog_tg_arn
-  target_id        = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_eni_ips[count.index]
+  target_id        = module.fluentd_instance.instance_ids[count.index]
 }
 
 module "syslog_config" {
@@ -223,6 +225,7 @@ module "syslog_config" {
   syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
 
   role_name          = "fluentd"
+  forward_locally    = true
   public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url
 }

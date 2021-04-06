@@ -13,6 +13,11 @@ variable "public_bucket_url" {
 variable "role_name" {
 }
 
+variable "forward_locally" {
+  type    = bool
+  default = false
+}
+
 module "domains" {
   source = "../domains"
 
@@ -24,11 +29,9 @@ module "syslog_ports" {
 }
 
 locals {
-  bucket_key = "${var.role_name}-${md5(data.template_file.user_data.rendered)}-syslog-user-data.yml"
-}
+  bucket_key = "${var.role_name}-${md5(local.user_data)}-syslog-user-data.yml"
 
-data "template_file" "user_data" {
-  template = <<EOF
+  user_data = <<EOF
 #cloud-config
 merge_how:
  - name: list
@@ -81,6 +84,13 @@ rsyslog:
 runcmd:
   - |
     set -ex
+%{if var.forward_locally}
+    augtool <<AUG
+    set /files/etc/hosts/01/ipaddr 127.0.0.1
+    set /files/etc/hosts/01/canonical ${module.domains.fluentd_fqdn}
+    save
+    AUG
+%{endif}
     service auditd reload
     systemctl reload-or-restart rsyslog
 EOF
@@ -90,7 +100,7 @@ EOF
 resource "aws_s3_bucket_object" "user_data" {
   bucket  = var.public_bucket_name
   key     = local.bucket_key
-  content = data.template_file.user_data.rendered
+  content = local.user_data
 }
 
 output "user_data" {
