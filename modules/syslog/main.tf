@@ -13,6 +13,11 @@ variable "public_bucket_url" {
 variable "role_name" {
 }
 
+variable "forward_locally" {
+  type    = bool
+  default = false
+}
+
 module "domains" {
   source = "../domains"
 
@@ -24,11 +29,9 @@ module "syslog_ports" {
 }
 
 locals {
-  bucket_key = "${var.role_name}-${md5(data.template_file.user_data.rendered)}-syslog-user-data.yml"
-}
+  bucket_key = "${var.role_name}-${md5(local.user_data)}-syslog-user-data.yml"
 
-data "template_file" "user_data" {
-  template = <<EOF
+  user_data = <<EOF
 #cloud-config
 merge_how:
  - name: list
@@ -66,6 +69,17 @@ write_files:
     permissions: '0640'
     owner: root:root
 
+%{if var.forward_locally}
+  - content: |
+      127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+      ::1         localhost6 localhost6.localdomain6
+
+      127.0.0.1   ${module.domains.fluentd_fqdn}
+    path: /etc/hosts
+    permissions: '0644'
+    owner: root:root
+%{endif}
+
 rsyslog:
   remotes:
     fluentd: "@@${module.domains.fluentd_fqdn}:${module.syslog_ports.syslog_port}"
@@ -90,7 +104,7 @@ EOF
 resource "aws_s3_bucket_object" "user_data" {
   bucket  = var.public_bucket_name
   key     = local.bucket_key
-  content = data.template_file.user_data.rendered
+  content = local.user_data
 }
 
 output "user_data" {

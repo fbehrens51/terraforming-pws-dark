@@ -208,7 +208,7 @@ module "fluentd_instance" {
 resource "aws_lb_target_group_attachment" "fluentd_syslog_attachment" {
   count            = length(data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_eni_ids)
   target_group_arn = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_lb_syslog_tg_arn
-  target_id        = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_eni_ips[count.index]
+  target_id        = module.fluentd_instance.instance_ids[count.index]
 }
 
 resource "aws_lb_target_group_attachment" "fluentd_apps_syslog_attachment" {
@@ -223,6 +223,7 @@ module "syslog_config" {
   syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
 
   role_name          = "fluentd"
+  forward_locally    = true
   public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url
 }
