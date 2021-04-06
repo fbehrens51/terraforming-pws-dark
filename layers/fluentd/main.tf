@@ -216,7 +216,7 @@ resource "aws_lb_target_group_attachment" "fluentd_syslog_attachment" {
 resource "aws_lb_target_group_attachment" "fluentd_apps_syslog_attachment" {
   count            = length(data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_eni_ids)
   target_group_arn = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_lb_apps_syslog_tg_arn
-  target_id        = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_eni_ips[count.index]
+  target_id        = module.fluentd_instance.instance_ids[count.index]
 }
 
 module "syslog_config" {

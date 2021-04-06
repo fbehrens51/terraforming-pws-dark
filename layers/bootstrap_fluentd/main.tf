@@ -232,10 +232,18 @@ resource "aws_lb" "fluentd_lb" {
 }
 
 resource "aws_lb_target_group" "fluentd_nlb_syslog" {
-  name     = "${local.formatted_env_name}-fluentd${module.syslog_ports.syslog_port}"
-  port     = module.syslog_ports.syslog_port
-  protocol = "TCP"
-  vpc_id   = data.terraform_remote_state.paperwork.outputs.es_vpc_id
+  name_prefix = "syslog"
+  port        = module.syslog_ports.syslog_port
+  protocol    = "TCP"
+  vpc_id      = data.terraform_remote_state.paperwork.outputs.es_vpc_id
+
+  tags = {
+    Name = "${local.formatted_env_name}-fluentd${module.syslog_ports.syslog_port}"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 
   health_check {
     port     = 8888
@@ -244,11 +252,18 @@ resource "aws_lb_target_group" "fluentd_nlb_syslog" {
 }
 
 resource "aws_lb_target_group" "fluentd_nlb_apps_syslog" {
-  name        = "${local.formatted_env_name}-fluentd${module.syslog_ports.apps_syslog_port}"
+  name_prefix = "applog"
   port        = module.syslog_ports.apps_syslog_port
   protocol    = "TCP"
   vpc_id      = data.terraform_remote_state.paperwork.outputs.es_vpc_id
-  target_type = "ip"
+
+  tags = {
+    Name = "${local.formatted_env_name}-fluentd${module.syslog_ports.syslog_port}"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 
   health_check {
     port     = 8888
