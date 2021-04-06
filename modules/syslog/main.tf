@@ -69,17 +69,6 @@ write_files:
     permissions: '0640'
     owner: root:root
 
-%{if var.forward_locally}
-  - content: |
-      127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
-      ::1         localhost6 localhost6.localdomain6
-
-      127.0.0.1   ${module.domains.fluentd_fqdn}
-    path: /etc/hosts
-    permissions: '0644'
-    owner: root:root
-%{endif}
-
 rsyslog:
   remotes:
     fluentd: "@@${module.domains.fluentd_fqdn}:${module.syslog_ports.syslog_port}"
@@ -95,6 +84,13 @@ rsyslog:
 runcmd:
   - |
     set -ex
+%{if var.forward_locally}
+    augtool <<AUG
+    set /files/etc/hosts/01/ipaddr 127.0.0.1
+    set /files/etc/hosts/01/canonical ${module.domains.fluentd_fqdn}
+    save
+    AUG
+%{endif}
     service auditd reload
     systemctl reload-or-restart rsyslog
 EOF

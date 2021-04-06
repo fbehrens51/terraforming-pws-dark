@@ -132,12 +132,6 @@ data "template_cloudinit_config" "user_data" {
   gzip          = true
 
   part {
-    filename     = "syslog.cfg"
-    content      = module.syslog_config.user_data
-    content_type = "text/x-include-url"
-  }
-
-  part {
     filename     = "certs.cfg"
     content      = module.configuration.certs_user_data
     content_type = "text/x-include-url"
@@ -160,6 +154,14 @@ data "template_cloudinit_config" "user_data" {
     filename     = "clamav.cfg"
     content_type = "text/x-include-url"
     content      = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
+  }
+
+  // syslog has to come after clamav because it uses augtool, which is installed by clamav
+  // this only applies to this layer, since fluentd is the only one to setup local syslog forwarding
+  part {
+    filename     = "syslog.cfg"
+    content      = module.syslog_config.user_data
+    content_type = "text/x-include-url"
   }
 
   part {
