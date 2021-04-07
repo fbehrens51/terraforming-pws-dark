@@ -47,10 +47,12 @@ data "aws_iam_policy_document" "bucket_policy" {
   //Enterprise Tech Read
   statement {
     effect = "Allow"
-    actions = ["s3:GetBucketAcl",
+    actions = [
+      "s3:GetBucketAcl",
       "s3:GetBucketLogging",
       "s3:GetBucketPolicy",
-    "s3:GetBucketVersioning"]
+      "s3:GetBucketVersioning"
+    ]
 
     principals {
       type        = "AWS"
