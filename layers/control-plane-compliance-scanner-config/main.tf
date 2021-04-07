@@ -82,6 +82,7 @@ locals {
   super_user_ids        = data.terraform_remote_state.paperwork.outputs.super_user_ids
   super_user_role_ids   = data.terraform_remote_state.paperwork.outputs.super_user_role_ids
   oscap_store_role_name = data.terraform_remote_state.paperwork.outputs.bucket_role_name
+  ent_tech_read_role_id = data.terraform_remote_state.paperwork.outputs.ent_teach_read_role_id
 }
 
 module "compliance_scanner_config" {
@@ -133,6 +134,7 @@ module "compliance_scanner_bucket_policy" {
   read_only_role_ids  = [local.isse_role_id]
   super_user_ids      = local.super_user_ids
   super_user_role_ids = concat(local.super_user_role_ids, [local.director_role_id])
+  tech_read_role_ids  = [local.ent_tech_read_role_id]
 }
 
 resource "aws_s3_bucket_policy" "compliance_scanner_bucket_policy_attachment" {

@@ -167,6 +167,10 @@ data "aws_iam_role" "isse_role" {
   name = var.isse_role_name
 }
 
+data "aws_iam_role" "ent_tech_read_role" {
+  name = var.ent_tech_read_role_name
+}
+
 data "aws_iam_role" "director_role" {
   name = var.director_role_name
 }
@@ -189,6 +193,7 @@ module "reporting_bucket_policy" {
   read_only_role_ids  = [data.aws_iam_role.isse_role.unique_id]
   super_user_ids      = data.aws_iam_user.super_users.*.user_id
   super_user_role_ids = concat([data.aws_iam_role.director_role.unique_id], data.aws_iam_role.super_user_roles.*.unique_id)
+  tech_read_role_ids  = [data.aws_iam_role.ent_tech_read_role.unique_id]
 }
 
 resource "aws_s3_bucket_policy" "reporting_bucket_policy_attachment" {
@@ -336,6 +341,9 @@ variable "fluentd_role_name" {
 }
 
 variable "isse_role_name" {
+}
+
+variable "ent_tech_read_role_name" {
 }
 
 variable "instance_tagger_role_name" {
@@ -1011,6 +1019,10 @@ output "director_role_id" {
 
 output "isse_role_id" {
   value = data.aws_iam_role.isse_role.unique_id
+}
+
+output "ent_teach_read_role_id" {
+  value = data.aws_iam_role.ent_tech_read_role.unique_id
 }
 
 output "super_user_ids" {
