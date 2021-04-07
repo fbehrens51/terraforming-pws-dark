@@ -18,6 +18,8 @@ fluentd_role_name = "${fluentd_role_name}"
 
 isse_role_name = "${isse_role_name}"
 
+ent_tech_read_role_name = "${ent_tech_read_role_name}"
+
 instance_tagger_role_name = "${instance_tagger_role_name}"
 
 director_role_name = "${director_role_name}"

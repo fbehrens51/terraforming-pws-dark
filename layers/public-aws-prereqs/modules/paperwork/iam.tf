@@ -345,3 +345,36 @@ resource "aws_iam_instance_profile" "instance_tagger" {
   name = var.instance_tagger_role_name
   role = aws_iam_role.instance_tagger.name
 }
+
+//There are definitely more privileges than this on the corresponding role in C2S,
+//but this is a starting point to test the S3 bucket policies
+data "aws_iam_policy_document" "ent_tech_read" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "s3:List*",
+      "s3:GetObject*",
+      "s3:GetBucket*"
+    ]
+
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "ent_tech_read" {
+  name   = var.ent_tech_read_role_name
+  path   = "/"
+  policy = data.aws_iam_policy_document.ent_tech_read.json
+}
+
+resource "aws_iam_role" "ent_tech_read" {
+  name               = var.ent_tech_read_role_name
+  assume_role_policy = data.aws_iam_policy_document.user_assume_role_policy.json
+}
+
+resource "aws_iam_policy_attachment" "ent_tech_read" {
+  name       = var.instance_tagger_role_name
+  roles      = [aws_iam_role.ent_tech_read.name]
+  policy_arn = aws_iam_policy.ent_tech_read.arn
+}
