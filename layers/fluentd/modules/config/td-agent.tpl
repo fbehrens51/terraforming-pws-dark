@@ -51,6 +51,26 @@
   </match>
 </label>
 
+<label @loopback_logs>
+  <filter>
+    @type record_transformer
+    <record>
+      source_address "#{`hostname -I`.strip}"
+      host "#{`hostname -s`.strip}"
+    </record>
+  </filter>
+  <match **>
+    @type forward
+    send_timeout 60s
+    recover_wait 10s
+    hard_timeout 50s
+    <server>
+      name localhost
+      host 127.0.0.1
+    </server>
+  </match>
+</label>
+
 <label @app_logs>
   # Keep system application logs only
   <filter syslog.**>
@@ -224,7 +244,24 @@
 <source>
   @type syslog
   port 8090
-  bind 0.0.0.0
+  bind 127.0.0.1
+  tag syslog
+  @label @loopback_logs
+  emit_unmatched_lines true
+  <transport tls>
+    ca_path /etc/td-agent/ca.pem
+    cert_path /etc/td-agent/cert.pem
+    private_key_path /etc/td-agent/key.pem
+  </transport>
+  <parse>
+    message_format auto
+  </parse>
+</source>
+
+<source>
+  @type syslog
+  port 8090
+  bind "#{`hostname -I`.strip}"
   tag syslog
   @label @system_logs
   emit_unmatched_lines true
