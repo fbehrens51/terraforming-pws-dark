@@ -154,6 +154,7 @@ module "syslog_archive_bucket_policy" {
   super_user_ids      = local.super_user_ids
   super_user_role_ids = concat(local.super_user_role_ids, [local.director_role_id])
   tech_read_role_ids  = [local.ent_tech_read_role_id]
+  disable_delete      = true
 }
 
 resource "aws_s3_bucket_policy" "syslog_archive_bucket_policy_attachment" {
@@ -188,6 +189,7 @@ module "syslog_audit_archive_bucket_policy" {
   read_only_role_ids  = [local.isse_role_id]
   super_user_ids      = local.super_user_ids
   super_user_role_ids = concat(local.super_user_role_ids, [local.director_role_id])
+  disable_delete      = true
 }
 
 resource "aws_s3_bucket_policy" "syslog_audit_archive_bucket_policy_attachment" {

@@ -20,6 +20,11 @@ variable "tech_read_role_ids" {
   default = []
 }
 
+variable "disable_delete" {
+  type    = bool
+  default = false
+}
+
 //TODO: another statement to support bucket management and not read/write instead of *
 locals {
   #anyone with assume role permissions to the give role_ids
@@ -46,6 +51,7 @@ data "aws_iam_policy_document" "bucket_policy" {
 
   //Enterprise Tech Read
   statement {
+    sid    = "tech_read"
     effect = "Allow"
     actions = [
       "s3:GetBucketAcl",
@@ -69,6 +75,7 @@ data "aws_iam_policy_document" "bucket_policy" {
 
   //Read Only statement
   statement {
+    sid     = "read_only"
     effect  = "Allow"
     actions = ["s3:Get*", "s3:List*"]
 
@@ -86,6 +93,7 @@ data "aws_iam_policy_document" "bucket_policy" {
   }
 
   statement {
+    sid     = "write"
     effect  = "Allow"
     actions = ["s3:Put*", "s3:PutObjectAcl"]
 
@@ -102,6 +110,7 @@ data "aws_iam_policy_document" "bucket_policy" {
   }
 
   statement {
+    sid    = "super_user"
     effect = "Allow"
     //    TODO: more fine grain access?
     //    actions = ["s3:CreateBucket","s3:ListAllMyBuckets","s3:GetBucketLocation"]
@@ -120,6 +129,7 @@ data "aws_iam_policy_document" "bucket_policy" {
   }
 
   statement {
+    sid     = "bucket_deny_all_but"
     effect  = "Deny"
     actions = ["s3:*"]
 
@@ -136,6 +146,7 @@ data "aws_iam_policy_document" "bucket_policy" {
   }
 
   statement {
+    sid     = "objects_deny_all_but"
     effect  = "Deny"
     actions = ["s3:*"]
 
@@ -152,6 +163,55 @@ data "aws_iam_policy_document" "bucket_policy" {
   }
 }
 
+data "aws_iam_policy_document" "deletion_disabled" {
+  source_json = data.aws_iam_policy_document.bucket_policy.json
+  statement {
+    sid    = "deletion_disabled"
+    effect = "Deny"
+    actions = [
+      "s3:DeleteBucket",
+      "s3:DeleteObject",
+      "s3:DeleteObjectVersion"
+    ]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    resources = [var.bucket_arn, "${var.bucket_arn}/*"]
+  }
+  //  override_json = data.aws_iam_policy_document.super_but_not_write.json
+
+  //  TODO: once we get to aws provider version 3.x we can use the following approach to merge a list of policy documents
+  //  source_policy_documents = [
+  //    var.disable_delete ? module.disable_delete.json: "",
+  //    data.aws_iam_policy_document.bucket_policy.json
+  //  ]
+}
+
+data "aws_iam_policy_document" "super_but_not_write" {
+  statement {
+    sid    = "super_user"
+    effect = "Allow"
+    actions = [
+      "s3:Get*",
+      "s3:PutBucket*",
+      "s3:PutLifecycleConfiguration"
+    ]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    condition {
+      test     = "StringLike"
+      variable = "aws:userid"
+      values   = concat(var.super_user_ids, local.super_user_role_wildcards)
+    }
+    resources = [var.bucket_arn, "${var.bucket_arn}/*"]
+  }
+}
+
 output "json" {
-  value = data.aws_iam_policy_document.bucket_policy.json
+  value = var.disable_delete ? data.aws_iam_policy_document.deletion_disabled.json : data.aws_iam_policy_document.bucket_policy.json
 }
