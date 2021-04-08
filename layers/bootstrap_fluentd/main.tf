@@ -253,6 +253,11 @@ resource "aws_lb_target_group" "fluentd_nlb_syslog" {
     port     = 8888
     protocol = "TCP"
   }
+
+  stickiness {
+    enabled = false
+    type    = "lb_cookie"
+  }
 }
 
 resource "aws_lb_target_group" "fluentd_nlb_apps_syslog" {
@@ -272,6 +277,11 @@ resource "aws_lb_target_group" "fluentd_nlb_apps_syslog" {
   health_check {
     port     = 8888
     protocol = "TCP"
+  }
+
+  stickiness {
+    enabled = false
+    type    = "lb_cookie"
   }
 }
 
