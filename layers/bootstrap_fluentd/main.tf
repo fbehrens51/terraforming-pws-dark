@@ -186,9 +186,8 @@ module "syslog_audit_archive_bucket_policy" {
   source              = "../../modules/bucket/policy/generic"
   bucket_arn          = aws_s3_bucket.syslog_audit_archive.arn
   read_write_role_ids = [data.aws_iam_role.fluentd.unique_id]
-  read_only_role_ids  = [local.isse_role_id]
-  super_user_ids      = local.super_user_ids
-  super_user_role_ids = concat(local.super_user_role_ids, [local.director_role_id])
+  read_only_role_ids  = concat(local.super_user_role_ids, [local.director_role_id], [local.isse_role_id])
+  read_only_user_ids  = local.super_user_ids
   disable_delete      = true
 }
 

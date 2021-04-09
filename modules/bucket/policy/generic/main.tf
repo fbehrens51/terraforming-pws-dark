@@ -1,5 +1,16 @@
+//After a lot of modifications, the approach we're taking here is as follows:
+// The role & user variables are for cases where we want to restrict that action set to those users only
+//Why? See: https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html
+//In short, access to resources are done as follows and can be within the iam policy or the bucket policy:
+//1. If there is a Deny in the IAM policy or resource policy, the user is denied.
+//2. If no explicit Deny, it will look for an Allow in the IAM policy and resource policy, if one exists, the user's action is allowed
+
 variable "bucket_arn" { type = string }
 variable "read_only_role_ids" {
+  type    = list(string)
+  default = []
+}
+variable "read_only_user_ids" {
   type    = list(string)
   default = []
 }
@@ -7,131 +18,42 @@ variable "read_write_role_ids" {
   type    = list(string)
   default = []
 }
-variable "super_user_ids" {
+variable "read_write_user_ids" {
   type    = list(string)
   default = []
 }
-variable "super_user_role_ids" {
-  type    = list(string)
-  default = []
-}
-variable "tech_read_role_ids" {
-  type    = list(string)
-  default = []
-}
+
 
 variable "disable_delete" {
   type    = bool
   default = false
 }
 
-//TODO: another statement to support bucket management and not read/write instead of *
 locals {
   #anyone with assume role permissions to the give role_ids
   read_only_role_wildcards = [
     for num in var.read_only_role_ids :
     "${num}:*"
   ]
-
-  super_user_role_wildcards = [
-    for num in var.super_user_role_ids :
-    "${num}:*"
-  ]
   read_write_role_wildcards = [
     for num in var.read_write_role_ids :
     "${num}:*"
   ]
-  tech_read_wildcards = [
-    for num in var.tech_read_role_ids :
-    "${num}:*"
-  ]
 }
 
+//NOTE:Ensure we do not deny the following actions.  These are used by a enterprise role in our account to audit bucket configuration
+//      "s3:GetBucket*",
+//      "s3:GetBucketLogging",
+//      "s3:GetBucketPolicy",
+//      "s3:GetBucketVersioning"
 data "aws_iam_policy_document" "bucket_policy" {
 
-  //Enterprise Tech Read
-  statement {
-    sid    = "tech_read"
-    effect = "Allow"
-    actions = [
-      "s3:GetBucketAcl",
-      "s3:GetBucketLogging",
-      "s3:GetBucketPolicy",
-      "s3:GetBucketVersioning"
-    ]
-
-    principals {
-      type        = "AWS"
-      identifiers = ["*"]
-    }
-    condition {
-      test     = "StringLike"
-      variable = "aws:userid"
-      values   = concat(local.tech_read_wildcards)
-
-    }
-    resources = [var.bucket_arn]
-  }
-
   //Read Only statement
+  //Deny everyone except for read (& write) users to retrieve Objects
   statement {
-    sid     = "read_only"
-    effect  = "Allow"
-    actions = ["s3:Get*", "s3:List*"]
-
-    principals {
-      type        = "AWS"
-      identifiers = ["*"]
-    }
-    condition {
-      test     = "StringLike"
-      variable = "aws:userid"
-      values   = concat(local.read_write_role_wildcards, local.read_only_role_wildcards)
-
-    }
-    resources = [var.bucket_arn, "${var.bucket_arn}/*"]
-  }
-
-  statement {
-    sid     = "write"
-    effect  = "Allow"
-    actions = ["s3:Put*", "s3:PutObjectAcl"]
-
-    principals {
-      type        = "AWS"
-      identifiers = ["*"]
-    }
-    condition {
-      test     = "StringLike"
-      variable = "aws:userid"
-      values   = concat(local.read_write_role_wildcards)
-    }
-    resources = [var.bucket_arn, "${var.bucket_arn}/*"]
-  }
-
-  statement {
-    sid    = "super_user"
-    effect = "Allow"
-    //    TODO: more fine grain access?
-    //    actions = ["s3:CreateBucket","s3:ListAllMyBuckets","s3:GetBucketLocation"]
-    actions = ["s3:*"]
-
-    principals {
-      type        = "AWS"
-      identifiers = ["*"]
-    }
-    condition {
-      test     = "StringLike"
-      variable = "aws:userid"
-      values   = concat(var.super_user_ids, local.super_user_role_wildcards)
-    }
-    resources = [var.bucket_arn, "${var.bucket_arn}/*"]
-  }
-
-  statement {
-    sid     = "bucket_deny_all_but"
+    sid     = "read"
     effect  = "Deny"
-    actions = ["s3:*"]
+    actions = ["s3:GetObject*"]
 
     principals {
       type        = "AWS"
@@ -140,31 +62,36 @@ data "aws_iam_policy_document" "bucket_policy" {
     condition {
       test     = "StringNotLike"
       variable = "aws:userid"
-      values   = concat(local.read_write_role_wildcards, local.read_only_role_wildcards, var.super_user_ids, local.super_user_role_wildcards, local.tech_read_wildcards)
-    }
-    resources = [var.bucket_arn]
-  }
+      values   = concat(local.read_write_role_wildcards, var.read_write_user_ids, local.read_only_role_wildcards, var.read_only_user_ids)
 
-  statement {
-    sid     = "objects_deny_all_but"
-    effect  = "Deny"
-    actions = ["s3:*"]
-
-    principals {
-      type        = "AWS"
-      identifiers = ["*"]
-    }
-    condition {
-      test     = "StringNotLike"
-      variable = "aws:userid"
-      values   = concat(local.read_write_role_wildcards, local.read_only_role_wildcards, var.super_user_ids, local.super_user_role_wildcards)
     }
     resources = ["${var.bucket_arn}/*"]
+  }
+
+  //Write statement
+  //Deny everyone except write users.
+  statement {
+    sid     = "write"
+    effect  = "Deny"
+    actions = ["s3:PutObject*"]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    condition {
+      test     = "StringNotLike"
+      variable = "aws:userid"
+      values   = concat(local.read_write_role_wildcards, var.read_write_user_ids)
+    }
+    resources = [var.bucket_arn, "${var.bucket_arn}/*"]
   }
 }
 
 data "aws_iam_policy_document" "deletion_disabled" {
   source_json = data.aws_iam_policy_document.bucket_policy.json
+  //Deletion statement
+  //Deny everyone from deleting Objects or Bucket itself.
   statement {
     sid    = "deletion_disabled"
     effect = "Deny"
@@ -177,36 +104,6 @@ data "aws_iam_policy_document" "deletion_disabled" {
     principals {
       type        = "AWS"
       identifiers = ["*"]
-    }
-    resources = [var.bucket_arn, "${var.bucket_arn}/*"]
-  }
-  //  override_json = data.aws_iam_policy_document.super_but_not_write.json
-
-  //  TODO: once we get to aws provider version 3.x we can use the following approach to merge a list of policy documents
-  //  source_policy_documents = [
-  //    var.disable_delete ? module.disable_delete.json: "",
-  //    data.aws_iam_policy_document.bucket_policy.json
-  //  ]
-}
-
-data "aws_iam_policy_document" "super_but_not_write" {
-  statement {
-    sid    = "super_user"
-    effect = "Allow"
-    actions = [
-      "s3:Get*",
-      "s3:PutBucket*",
-      "s3:PutLifecycleConfiguration"
-    ]
-
-    principals {
-      type        = "AWS"
-      identifiers = ["*"]
-    }
-    condition {
-      test     = "StringLike"
-      variable = "aws:userid"
-      values   = concat(var.super_user_ids, local.super_user_role_wildcards)
     }
     resources = [var.bucket_arn, "${var.bucket_arn}/*"]
   }

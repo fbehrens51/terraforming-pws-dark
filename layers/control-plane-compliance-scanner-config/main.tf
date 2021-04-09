@@ -131,10 +131,8 @@ module "compliance_scanner_bucket_policy" {
   source              = "../../modules/bucket/policy/generic"
   bucket_arn          = aws_s3_bucket.compliance_scanner_bucket.arn
   read_write_role_ids = [data.aws_iam_role.bucket_role.unique_id]
-  read_only_role_ids  = [local.isse_role_id]
-  super_user_ids      = local.super_user_ids
-  super_user_role_ids = concat(local.super_user_role_ids, [local.director_role_id])
-  tech_read_role_ids  = [local.ent_tech_read_role_id]
+  read_only_role_ids  = concat(local.super_user_role_ids, [local.director_role_id], [local.isse_role_id])
+  read_only_user_ids  = local.super_user_ids
 }
 
 resource "aws_s3_bucket_policy" "compliance_scanner_bucket_policy_attachment" {
