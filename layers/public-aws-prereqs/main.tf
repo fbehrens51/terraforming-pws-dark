@@ -89,6 +89,13 @@ resource "aws_s3_bucket" "certs" {
       }
     }
   }
+  lifecycle {
+    ignore_changes = [
+      # logging will be added to this bucket later in the bootstrap process.
+      # this is to prevent the bucket from being replaced if this layer is reapplied.
+      logging,
+    ]
+  }
 }
 
 data "template_file" "paperwork_variables" {

@@ -163,6 +163,25 @@ resource "aws_s3_bucket" "reporting_bucket" {
   }
 }
 
+resource "null_resource" "secrets_logging" {
+  provisioner "local-exec" {
+    on_failure  = fail
+    interpreter = ["bash", "-c"]
+    environment = {
+      bucket = var.cert_bucket
+      bp = jsonencode({
+        "LoggingEnabled" = {
+          "TargetPrefix" = "${var.cert_bucket}/",
+          "TargetBucket" = aws_s3_bucket.s3_logs_bucket.bucket
+        }
+      })
+    }
+    command = <<-EOF
+      aws s3api put-bucket-logging --bucket $${bucket} --bucket-logging-status="$${bp}"
+    EOF
+  }
+}
+
 data "aws_iam_role" "isse_role" {
   name = var.isse_role_name
 }
