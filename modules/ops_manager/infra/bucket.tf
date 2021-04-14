@@ -1,14 +1,17 @@
 locals {
-  formatted_env_name = replace(var.env_name, " ", "-")
+  formatted_env_name           = replace(var.env_name, " ", "-")
+  om_bucket_name               = "${local.formatted_env_name}-ops-manager-bucket-${var.bucket_suffix}"
+  blobstore_bucket_name        = "${local.formatted_env_name}-director-blobstore-bucket-${var.bucket_suffix}"
+  backup_blobstore_bucket_name = "${local.formatted_env_name}-director-blobstore-bucket-backup-${var.bucket_suffix}"
 }
 
 resource "aws_s3_bucket" "ops_manager_bucket" {
-  bucket        = "${local.formatted_env_name}-ops-manager-bucket-${var.bucket_suffix}"
+  bucket        = local.om_bucket_name
   force_destroy = var.force_destroy_buckets
 
   logging {
     target_bucket = var.s3_logs_bucket
-    target_prefix = "log/"
+    target_prefix = "${local.om_bucket_name}/"
   }
 
   tags = merge(
@@ -20,7 +23,7 @@ resource "aws_s3_bucket" "ops_manager_bucket" {
 }
 
 resource "aws_s3_bucket" "director_blobstore_bucket" {
-  bucket        = "${local.formatted_env_name}-director-blobstore-bucket-${var.bucket_suffix}"
+  bucket        = local.blobstore_bucket_name
   force_destroy = var.force_destroy_buckets
 
   versioning {
@@ -29,7 +32,7 @@ resource "aws_s3_bucket" "director_blobstore_bucket" {
 
   logging {
     target_bucket = var.s3_logs_bucket
-    target_prefix = "log/"
+    target_prefix = "${local.blobstore_bucket_name}/"
   }
 
   tags = merge(
@@ -41,7 +44,7 @@ resource "aws_s3_bucket" "director_blobstore_bucket" {
 }
 
 resource "aws_s3_bucket" "director_blobstore_bucket_backup" {
-  bucket        = "${local.formatted_env_name}-director-blobstore-bucket-backup-${var.bucket_suffix}"
+  bucket        = local.backup_blobstore_bucket_name
   force_destroy = var.force_destroy_buckets
 
   versioning {
@@ -50,7 +53,7 @@ resource "aws_s3_bucket" "director_blobstore_bucket_backup" {
 
   logging {
     target_bucket = var.s3_logs_bucket
-    target_prefix = "log/"
+    target_prefix = "${local.backup_blobstore_bucket_name}/"
   }
 
   tags = merge(

@@ -149,12 +149,12 @@ resource "aws_security_group" "vms_security_group" {
 }
 
 resource "aws_s3_bucket" "import_bucket" {
-  bucket        = "${local.bucket_prefix}-import"
+  bucket        = local.import_bucket_name
   force_destroy = var.force_destroy_buckets
 
   logging {
     target_bucket = local.s3_logs_bucket
-    target_prefix = "log/"
+    target_prefix = "${local.import_bucket_name}/"
   }
 
   tags = merge(
@@ -167,7 +167,7 @@ resource "aws_s3_bucket" "import_bucket" {
 
 
 resource "aws_s3_bucket" "transfer_bucket" {
-  bucket        = "${local.bucket_prefix}-transfer"
+  bucket        = local.transfer_bucket_name
   force_destroy = var.force_destroy_buckets
   server_side_encryption_configuration {
     rule {
@@ -180,7 +180,7 @@ resource "aws_s3_bucket" "transfer_bucket" {
 
   logging {
     target_bucket = local.s3_logs_bucket
-    target_prefix = "log/"
+    target_prefix = "${local.transfer_bucket_name}/"
   }
 
 
@@ -214,12 +214,12 @@ resource "aws_s3_bucket_policy" "transfer_bucket_policy_attachement" {
 
 
 resource "aws_s3_bucket" "mirror_bucket" {
-  bucket        = "${local.bucket_prefix}-mirror"
+  bucket        = local.mirror_bucket_name
   force_destroy = var.force_destroy_buckets
 
   logging {
     target_bucket = local.s3_logs_bucket
-    target_prefix = "log/"
+    target_prefix = "${local.mirror_bucket_name}/"
   }
 
   tags = merge(
@@ -422,7 +422,10 @@ locals {
     },
   )
 
-  bucket_prefix = replace(local.env_name, " ", "-")
+  bucket_prefix        = replace(local.env_name, " ", "-")
+  import_bucket_name   = "${local.bucket_prefix}-import"
+  transfer_bucket_name = "${local.bucket_prefix}-transfer"
+  mirror_bucket_name   = "${local.bucket_prefix}-mirror"
 
   public_cidr_block  = cidrsubnet(data.aws_vpc.vpc.cidr_block, 1, 0)
   rds_cidr_block     = cidrsubnet(local.public_cidr_block, 2, 3)

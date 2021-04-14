@@ -16,8 +16,11 @@ data "aws_region" "current" {
 locals {
   trusted_with_additional_ca_certs = "${data.aws_s3_bucket_object.trusted_ca_certs.body}${data.aws_s3_bucket_object.additional_trusted_ca_certs.body}"
   bucket_prefix                    = "${replace(local.env_name_prefix, " ", "-")}"
-  s3_service_name                  = "com.amazonaws.${data.aws_region.current.name}.s3"
-  bot_user_data                    = <<DOC
+  reporting_bucket_name            = "${local.bucket_prefix}-reporting-bucket"
+  public_bucket_name               = "${local.bucket_prefix}-public-bucket"
+
+  s3_service_name = "com.amazonaws.${data.aws_region.current.name}.s3"
+  bot_user_data   = <<DOC
 #cloud-config
 merge_how:
   - name: list
@@ -154,12 +157,12 @@ resource "aws_s3_bucket_policy" "s3_logs_bucket_policy_attachment" {
 }
 
 resource "aws_s3_bucket" "reporting_bucket" {
-  bucket_prefix = "${local.bucket_prefix}-reporting-bucket"
+  bucket_prefix = local.reporting_bucket_name
   force_destroy = var.force_destroy_buckets
 
   logging {
     target_bucket = aws_s3_bucket.s3_logs_bucket.bucket
-    target_prefix = "log/"
+    target_prefix = "${local.reporting_bucket_name}/"
   }
 }
 
@@ -220,12 +223,12 @@ resource "aws_s3_bucket_policy" "reporting_bucket_policy_attachment" {
 
 
 resource "aws_s3_bucket" "public_bucket" {
-  bucket_prefix = "${local.bucket_prefix}-public-bucket"
+  bucket_prefix = local.public_bucket_name
   force_destroy = var.force_destroy_buckets
 
   logging {
     target_bucket = aws_s3_bucket.s3_logs_bucket.bucket
-    target_prefix = "log/"
+    target_prefix = "${local.public_bucket_name}/"
   }
 }
 

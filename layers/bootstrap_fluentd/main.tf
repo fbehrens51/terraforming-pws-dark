@@ -146,7 +146,7 @@ resource "aws_s3_bucket" "syslog_archive" {
 
   logging {
     target_bucket = local.s3_logs_bucket
-    target_prefix = "log/"
+    target_prefix = "${local.syslog_archive_bucket}/"
   }
 }
 
@@ -184,7 +184,7 @@ resource "aws_s3_bucket" "syslog_audit_archive" {
 
   logging {
     target_bucket = local.s3_logs_bucket
-    target_prefix = "log/"
+    target_prefix = "${local.syslog_audit_archive_bucket}/"
   }
 }
 
