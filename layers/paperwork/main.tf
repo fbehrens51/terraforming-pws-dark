@@ -683,7 +683,7 @@ variable "amzn_ami_id" {
 }
 
 data "aws_ami" "amzn_ami" {
-  owners = ["self"]
+  owners = ["self", "amazon"]
   filter {
     name   = "image-id"
     values = [var.amzn_ami_id]
