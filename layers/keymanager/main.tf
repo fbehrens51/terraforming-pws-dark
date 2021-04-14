@@ -124,7 +124,7 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
 }
 
 resource "aws_kms_key" "transfer_kms_key" {
-  policy      = "${data.aws_iam_policy_document.kms_key_policy_document.json}"
+  policy      = data.aws_iam_policy_document.kms_key_policy_document.json
   description = "TRANSFER_KMS_KEY"
 }
 

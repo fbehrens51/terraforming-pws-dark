@@ -15,7 +15,7 @@ data "aws_region" "current" {
 
 locals {
   trusted_with_additional_ca_certs = "${data.aws_s3_bucket_object.trusted_ca_certs.body}${data.aws_s3_bucket_object.additional_trusted_ca_certs.body}"
-  bucket_prefix                    = "${replace(local.env_name_prefix, " ", "-")}"
+  bucket_prefix                    = replace(local.env_name_prefix, " ", "-")
   reporting_bucket_name            = "${local.bucket_prefix}-reporting-bucket"
   public_bucket_name               = "${local.bucket_prefix}-public-bucket"
 

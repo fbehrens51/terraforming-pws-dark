@@ -20,7 +20,7 @@ variable "grafana_elb_dns" {}
 
 module "domains" {
   source      = "../../domains"
-  root_domain = "${var.zone_name}"
+  root_domain = var.zone_name
 }
 
 data "template_file" "named_conf_content" {

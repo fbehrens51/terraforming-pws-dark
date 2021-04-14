@@ -1,7 +1,7 @@
 terraform {
   # Version of Terraform to include in the bundle. An exact version number
   # is required.
-  version = "0.12.20"
+  version = "0.13.6"
 }
 
 # Define which provider plugins are to be included
