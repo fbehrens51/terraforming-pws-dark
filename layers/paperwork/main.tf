@@ -678,6 +678,22 @@ variable "account_super_user_role_names" {
   default = []
 }
 
+variable "amzn_ami_id" {
+  type = string
+}
+
+data "aws_ami" "amzn_ami" {
+  owners = ["self"]
+  filter {
+    name   = "image-id"
+    values = [var.amzn_ami_id]
+  }
+}
+
+output "amzn_ami_id" {
+  value = data.aws_ami.amzn_ami.image_id
+}
+
 data "aws_s3_bucket_object" "cap_root_ca" {
   bucket = var.cert_bucket
   key    = var.cap_root_ca_s3_path

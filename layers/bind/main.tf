@@ -87,17 +87,6 @@ data "terraform_remote_state" "bootstrap_bind" {
   }
 }
 
-data "terraform_remote_state" "encrypt_amis" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "encrypt_amis"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 locals {
   env_name      = var.global_vars.env_name
   modified_name = "${local.env_name} bind"
@@ -119,7 +108,7 @@ locals {
   private_ips = data.terraform_remote_state.bootstrap_bind.outputs.bind_eni_ips
   master_ips  = length(local.public_ips) > 0 ? local.public_ips : local.private_ips
 
-  encrypted_amazon2_ami_id = data.terraform_remote_state.encrypt_amis.outputs.encrypted_amazon2_ami_id
+  encrypted_amazon2_ami_id = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
 
   om_public_ip                        = data.terraform_remote_state.pas.outputs.ops_manager_ip
   control_plane_om_public_ip          = data.terraform_remote_state.bootstrap_control_plane.outputs.ops_manager_ip

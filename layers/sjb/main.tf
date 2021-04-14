@@ -59,17 +59,6 @@ data "terraform_remote_state" "bootstrap_control_plane" {
   }
 }
 
-data "terraform_remote_state" "encrypt_amis" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "encrypt_amis"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 locals {
   transfer_bucket_name  = data.terraform_remote_state.bootstrap_control_plane.outputs.transfer_bucket_name
   terraform_bucket_name = data.terraform_remote_state.bootstrap_control_plane.outputs.terraform_bucket_name
@@ -246,7 +235,7 @@ data "template_cloudinit_config" "user_data" {
 module "sjb" {
   instance_count       = 1
   source               = "../../modules/launch"
-  ami_id               = data.terraform_remote_state.encrypt_amis.outputs.encrypted_amazon2_ami_id
+  ami_id               = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
   user_data            = data.template_cloudinit_config.user_data.rendered
   eni_ids              = data.terraform_remote_state.bootstrap_control_plane.outputs.sjb_eni_ids
   iam_instance_profile = data.terraform_remote_state.paperwork.outputs.sjb_role_name

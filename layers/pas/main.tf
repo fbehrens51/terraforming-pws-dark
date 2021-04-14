@@ -43,17 +43,6 @@ data "terraform_remote_state" "routes" {
   }
 }
 
-data "terraform_remote_state" "encrypt_amis" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "encrypt_amis"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 data "terraform_remote_state" "bootstrap_control_plane" {
   backend = "s3"
 
@@ -103,7 +92,7 @@ data "template_cloudinit_config" "nat_user_data" {
 module "infra" {
   source = "../../modules/infra"
 
-  nat_ami_id = data.terraform_remote_state.encrypt_amis.outputs.encrypted_amazon2_ami_id
+  nat_ami_id = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
 
   env_name                      = var.global_vars.name_prefix
   availability_zones            = var.availability_zones

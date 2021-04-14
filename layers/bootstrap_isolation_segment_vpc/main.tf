@@ -57,17 +57,6 @@ data "terraform_remote_state" "routes" {
   }
 }
 
-data "terraform_remote_state" "encrypt_amis" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "encrypt_amis"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 data "aws_vpc" "vpc" {
   id = var.vpc_id
 }
@@ -308,7 +297,7 @@ module "isolation_segment_0" {
 
   root_domain                = data.terraform_remote_state.paperwork.outputs.root_domain
   syslog_ca_cert             = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
-  ami_id                     = data.terraform_remote_state.encrypt_amis.outputs.encrypted_amazon2_ami_id
+  ami_id                     = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
   public_bucket_name         = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url          = data.terraform_remote_state.paperwork.outputs.public_bucket_url
   default_instance_role_name = data.terraform_remote_state.paperwork.outputs.instance_tagger_role_name

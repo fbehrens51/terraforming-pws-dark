@@ -63,17 +63,6 @@ data "terraform_remote_state" "bootstrap_fluentd" {
   }
 }
 
-data "terraform_remote_state" "encrypt_amis" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "encrypt_amis"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 locals {
   env_name      = var.global_vars.env_name
   modified_name = "${local.env_name} fluentd"
@@ -90,7 +79,7 @@ locals {
   log_group_name  = data.terraform_remote_state.bootstrap_fluentd.outputs.log_group_name
   log_stream_name = "\"fluentd_syslog_#{ENV['AWSAZ']}\""
 
-  encrypted_amazon2_ami_id = data.terraform_remote_state.encrypt_amis.outputs.encrypted_amazon2_ami_id
+  encrypted_amazon2_ami_id = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
 
   root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
 

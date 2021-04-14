@@ -43,18 +43,6 @@ data "terraform_remote_state" "routes" {
   }
 }
 
-data "terraform_remote_state" "encrypt_amis" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "encrypt_amis"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
-
 data "terraform_remote_state" "bootstrap_control_plane" {
   backend = "s3"
 
@@ -167,7 +155,7 @@ data "template_cloudinit_config" "nat_user_data" {
 
 module "nat" {
   source                     = "../../modules/nat"
-  ami_id                     = data.terraform_remote_state.encrypt_amis.outputs.encrypted_amazon2_ami_id
+  ami_id                     = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
   private_route_table_ids    = data.terraform_remote_state.routes.outputs.es_private_vpc_route_table_ids
   ingress_cidr_blocks        = [data.aws_vpc.this_vpc.cidr_block]
   metrics_ingress_cidr_block = data.aws_vpc.pas_vpc.cidr_block
