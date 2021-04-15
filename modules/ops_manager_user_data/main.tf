@@ -59,6 +59,16 @@ data "template_cloudinit_config" "config" {
     content      = var.tag_completion_user_data
   }
 
+  part {
+    content_type = "text/cloud-config"
+    content      = <<CLOUDINIT
+bootcmd:
+  # Disable SSL in postgres.  Otherwise, postgres will fail to start since the
+  # snakeoil certificate is missing.  Note that OM connect to postgres over the
+  # unix socket.
+  - sed -i 's/^ssl = on/#ssl = on/' /etc/postgresql/*/main/postgresql.conf
+  CLOUDINIT
+  }
 }
 
 output "cloud_config" {
