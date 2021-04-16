@@ -114,7 +114,7 @@ module "infra" {
 
   user_data = data.template_cloudinit_config.nat_user_data.rendered
 
-  check_cloud_init = data.terraform_remote_state.paperwork.outputs.check_cloud_init
+  check_cloud_init = data.terraform_remote_state.paperwork.outputs.check_cloud_init == "false" ? false : true
 
   public_bucket_name         = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url          = data.terraform_remote_state.paperwork.outputs.public_bucket_url
