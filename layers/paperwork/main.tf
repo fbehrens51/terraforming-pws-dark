@@ -422,6 +422,10 @@ variable "ldap_password_s3_path" {
 variable "s3_endpoint" {
 }
 
+variable "check_cloud_init" {
+  default = true
+}
+
 data "aws_s3_bucket_object" "ldap_password" {
   bucket = var.cert_bucket
   key    = var.ldap_password_s3_path
@@ -1067,6 +1071,10 @@ output "super_user_ids" {
 
 output "super_user_role_ids" {
   value = data.aws_iam_role.super_user_roles.*.unique_id
+}
+
+output "check_cloud_init" {
+  value = var.check_cloud_init
 }
 
 

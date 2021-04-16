@@ -12,6 +12,7 @@ module "nat" {
   scale_vpc_key              = "pas"
   user_data                  = var.user_data
   bot_key_pem                = var.bot_key_pem
+  check_cloud_init           = var.check_cloud_init
 
   root_domain    = var.root_domain
   syslog_ca_cert = var.syslog_ca_cert

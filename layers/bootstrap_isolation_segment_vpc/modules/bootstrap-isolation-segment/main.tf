@@ -30,6 +30,9 @@ variable "syslog_ca_cert" {}
 variable "public_bucket_name" {}
 variable "public_bucket_url" {}
 variable "default_instance_role_name" {}
+variable "check_cloud_init" {
+  type = bool
+}
 
 locals {
   modified_tags = merge(
@@ -82,6 +85,7 @@ module "nat" {
   public_bucket_name         = var.public_bucket_name
   public_bucket_url          = var.public_bucket_url
   role_name                  = var.default_instance_role_name
+  check_cloud_init           = var.check_cloud_init
 
 }
 

@@ -114,6 +114,8 @@ module "infra" {
 
   user_data = data.template_cloudinit_config.nat_user_data.rendered
 
+  check_cloud_init = data.terraform_remote_state.paperwork.outputs.check_cloud_init
+
   public_bucket_name         = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url          = data.terraform_remote_state.paperwork.outputs.public_bucket_url
   default_instance_role_name = data.terraform_remote_state.paperwork.outputs.instance_tagger_role_name

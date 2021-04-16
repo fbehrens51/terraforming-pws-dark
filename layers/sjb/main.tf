@@ -252,5 +252,5 @@ module "sjb" {
 
   bot_key_pem = data.terraform_remote_state.paperwork.outputs.bot_private_key
 
-  check_cloud_init = true
+  check_cloud_init = data.terraform_remote_state.paperwork.outputs.check_cloud_init
 }

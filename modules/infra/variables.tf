@@ -43,6 +43,10 @@ variable "tags" {
 variable "internetless" {
 }
 
+variable "check_cloud_init" {
+  type = bool
+}
+
 //variable "nat_ami_map" {
 //  type = "map"
 //
