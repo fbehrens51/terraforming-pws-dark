@@ -16,6 +16,9 @@ variable "vpc_id" {
 variable "bucket_suffix" {
 }
 
+variable "bucket_suffix_name" {
+}
+
 variable "tags" {
   type = map(string)
 }

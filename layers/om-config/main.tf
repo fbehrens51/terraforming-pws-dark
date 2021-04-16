@@ -188,9 +188,8 @@ module "om_config" {
     data.terraform_remote_state.pas.outputs.pas_elb_id,
   ]
 
-  director_blobstore_bucket        = data.terraform_remote_state.pas.outputs.director_blobstore_bucket
-  director_blobstore_bucket_backup = data.terraform_remote_state.pas.outputs.director_blobstore_bucket_backup
-  director_blobstore_location      = var.director_blobstore_location
+  director_blobstore_bucket   = data.terraform_remote_state.pas.outputs.director_blobstore_bucket
+  director_blobstore_location = var.director_blobstore_location
 
   vanity_cert_enabled    = var.vanity_cert_enabled
   vanity_cert_pem        = data.terraform_remote_state.paperwork.outputs.vanity_server_cert

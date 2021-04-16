@@ -191,9 +191,6 @@ variable "director_blobstore_location" {
 variable "director_blobstore_bucket" {
 }
 
-variable "director_blobstore_bucket_backup" {
-}
-
 variable "secrets_bucket_name" {
 }
 

@@ -135,7 +135,6 @@ locals {
     isolation_segment_to_security_groups        = var.isolation_segment_to_security_groups,
     pas_vpc_dns                                 = var.pas_vpc_dns,
     director_blobstore_bucket                   = var.director_blobstore_bucket,
-    director_blobstore_bucket_backup            = var.director_blobstore_bucket_backup,
     director_blobstore_s3_endpoint              = "https://${var.s3_endpoint}",
     director_blobstore_location                 = var.director_blobstore_location, // s3 or local
   })

@@ -112,7 +112,6 @@ locals {
     syslog_ca_cert                              = var.syslog_ca_cert
     blobstore_instance_profile                  = var.blobstore_instance_profile,
     director_blobstore_bucket                   = var.director_blobstore_bucket,
-    director_blobstore_bucket_backup            = var.director_blobstore_bucket_backup,
     director_blobstore_s3_endpoint              = "https://${var.s3_endpoint}",
     director_blobstore_location                 = var.director_blobstore_location, // s3 or local
   })

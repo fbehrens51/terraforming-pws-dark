@@ -99,7 +99,7 @@ properties-configuration:
     retry_bosh_deploys: false
     %{~ if director_blobstore_location == "s3" ~}
     s3_blobstore_options:
-      backup_bucket_name: ${director_blobstore_bucket_backup}
+      backup_bucket_name:
       backup_bucket_region: ${director_blobstore_s3_endpoint}
       backup_strategy: use_versioned_bucket
       bucket_name: ${director_blobstore_bucket}

@@ -238,6 +238,7 @@ module "ops_manager" {
   source = "../../modules/ops_manager/infra"
 
   bucket_suffix         = local.bucket_suffix
+  bucket_suffix_name    = local.bucket_suffix_name
   env_name              = var.global_vars.name_prefix
   om_eip                = ! var.internetless
   private               = false
@@ -302,6 +303,7 @@ locals {
   vpc_id              = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
   route_table_id      = data.terraform_remote_state.routes.outputs.pas_public_vpc_route_table_id
   bucket_suffix       = random_integer.bucket.result
+  bucket_suffix_name  = "pas"
   root_domain         = data.terraform_remote_state.paperwork.outputs.root_domain
   om_key_name         = "${var.global_vars.name_prefix}-om"
   s3_logs_bucket      = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
@@ -398,10 +400,6 @@ output "rds_subnet_group_name" {
 
 output "ops_manager_bucket" {
   value = module.ops_manager.bucket
-}
-
-output "director_blobstore_bucket_backup" {
-  value = module.ops_manager.director_blobstore_bucket_backup
 }
 
 output "director_blobstore_bucket" {
