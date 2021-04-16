@@ -174,7 +174,7 @@ module "nat_host" {
   scale_vpc_key        = var.scale_vpc_key
   scale_service_key    = "nat"
   bot_key_pem          = var.bot_key_pem
-  check_cloud_init     = var.internetless ? false : var.check_cloud_init
+  check_cloud_init     = var.check_cloud_init
   iam_instance_profile = var.role_name
 }
 
