@@ -4,7 +4,7 @@ variable "hosts" {
 }
 
 data "external" "download-cert" {
-  program = ["bash", "${path.module}/download-cert.sh"]
+  program = ["go", "run", "${path.module}/main.go"]
 
   query = {
     hosts = join(",", var.hosts)
