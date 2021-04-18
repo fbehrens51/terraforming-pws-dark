@@ -1,7 +1,7 @@
 locals {
   formatted_env_name    = replace(var.env_name, " ", "-")
   om_bucket_name        = "${local.formatted_env_name}-ops-manager-bucket-${var.bucket_suffix_name}"
-  blobstore_bucket_name = "${local.formatted_env_name}-director-blobstore-bucket-${var.bucket_suffix}"
+  blobstore_bucket_name = "${local.formatted_env_name}-director-blobstore-bucket-${var.bucket_suffix_name}"
 }
 
 resource "aws_s3_bucket" "ops_manager_bucket" {

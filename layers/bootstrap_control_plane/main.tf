@@ -50,7 +50,6 @@ data "aws_vpc" "vpc" {
 module "ops_manager" {
   source = "../../modules/ops_manager/infra"
 
-  bucket_suffix         = local.bucket_suffix
   bucket_suffix_name    = local.bucket_suffix_name
   env_name              = local.env_name
   om_eip                = ! var.internetless
@@ -400,7 +399,6 @@ locals {
   bastion_vpc_id     = data.terraform_remote_state.paperwork.outputs.bastion_vpc_id
   vpc_id             = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
   s3_logs_bucket     = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
-  bucket_suffix      = random_integer.bucket.result
   bucket_suffix_name = "cp"
   om_key_name        = "${local.env_name}-cp-om"
   env_name           = var.global_vars.env_name

@@ -13,9 +13,6 @@ variable "subnet_id" {
 variable "vpc_id" {
 }
 
-variable "bucket_suffix" {
-}
-
 variable "bucket_suffix_name" {
 }
 

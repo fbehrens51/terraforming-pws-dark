@@ -239,7 +239,6 @@ data "aws_vpc" "pas_vpc" {
 module "ops_manager" {
   source = "../../modules/ops_manager/infra"
 
-  bucket_suffix         = local.bucket_suffix
   bucket_suffix_name    = local.bucket_suffix_name
   env_name              = var.global_vars.name_prefix
   om_eip                = ! var.internetless
