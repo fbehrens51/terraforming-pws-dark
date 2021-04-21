@@ -11,7 +11,7 @@
   "use_log_cache": false,
   "include_apps": true,
   "include_container_networking": true,
-  "credhub_mode": "assisted",
+  "credhub_mode": "",
   "credhub_client": "credhub_admin_client",
   "credhub_secret": "${credhub_password}",
   "include_deployments": true,
