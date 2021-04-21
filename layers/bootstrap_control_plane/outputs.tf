@@ -7,6 +7,10 @@ output "control_plane_public_cidrs" {
 }
 
 output "control_plane_subnet_cidrs" {
+  value = [data.aws_vpc.vpc.cidr_block]
+}
+
+output "control_plane_private_subnet_cidrs" {
   value = module.private_subnets.subnet_cidr_blocks
 }
 
@@ -157,4 +161,8 @@ output "terraform_region" {
 
 output "ec2_vpce_eni_ids" {
   value = aws_vpc_endpoint.cp_ec2.network_interface_ids
+}
+
+output "control_plane_public_subnet_ids" {
+  value = module.public_subnets.subnet_ids
 }

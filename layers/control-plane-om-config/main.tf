@@ -109,7 +109,7 @@ module "om_config" {
   vms_security_group_id                   = data.terraform_remote_state.bootstrap_control_plane.outputs.vms_security_group_id
   control_plane_subnet_availability_zones = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_availability_zones
   control_plane_subnet_gateways           = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_gateways
-  control_plane_subnet_cidrs              = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs
+  control_plane_subnet_cidrs              = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_private_subnet_cidrs
   control_plane_vpc_dns                   = data.terraform_remote_state.paperwork.outputs.control_plane_vpc_dns
   control_plane_additional_reserved_ips   = local.ec2_vpce_subnet_ip_map
 
@@ -261,16 +261,16 @@ locals {
   om_key_name     = "${local.env_name_prefix}-om"
   root_domain     = data.terraform_remote_state.paperwork.outputs.root_domain
 
-  control_plane_subnet_cidrs = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs
+  control_plane_private_subnet_cidrs = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_private_subnet_cidrs
 
   control_plane_public_cidrs   = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_public_cidrs
   sjb_cidrs                    = data.terraform_remote_state.bootstrap_control_plane.outputs.sjb_cidr_block
-  bosh_cidr                    = "${cidrhost(local.control_plane_subnet_cidrs[0], 5)}/32"
+  bosh_cidr                    = "${cidrhost(local.control_plane_private_subnet_cidrs[0], 5)}/32"
   enterprise_services_vpc_cidr = data.aws_vpc.es_vpc.cidr_block
   control_plane_vpc_cidr       = data.aws_vpc.cp_vpc.cidr_block
   bastion_vpc_cidr             = data.aws_vpc.bastion_vpc.cidr_block
 
-  ipsec_subnet_cidrs = local.control_plane_subnet_cidrs
+  ipsec_subnet_cidrs = local.control_plane_private_subnet_cidrs
   no_ipsec_subnet_cidrs = concat(
     local.control_plane_public_cidrs,
     [
