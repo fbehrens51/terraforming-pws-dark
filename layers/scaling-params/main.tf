@@ -17,6 +17,7 @@ locals {
       nat         = "t3.medium"
       sjb         = "m5.2xlarge"
       ops-manager = "m5.large"
+      scanner     = "t3.xlarge"
     }
 
     pas = {

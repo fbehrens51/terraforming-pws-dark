@@ -25,6 +25,11 @@ variable "source_dest_check" {
   default = "true"
 }
 
+variable "reserved_ips" {
+  type    = list(string)
+  default = []
+}
+
 data "aws_subnet" "first_subnet" {
   id = var.subnet_ids[0]
 }
@@ -38,7 +43,20 @@ module "security_group" {
 }
 
 resource "aws_network_interface" "eni" {
-  count             = var.eni_count
+  count             = length(var.reserved_ips) > 0 ? 0 : var.eni_count
+  subnet_id         = var.subnet_ids[count.index % length(var.subnet_ids)]
+  source_dest_check = var.source_dest_check
+
+  security_groups = [
+    module.security_group.security_group_id,
+  ]
+
+  tags = var.tags
+}
+
+resource "aws_network_interface" "eni_with_reserved_ip" {
+  count             = length(var.reserved_ips) > 0 ? var.eni_count : 0
+  private_ips       = [var.reserved_ips[count.index % length(var.reserved_ips)]]
   subnet_id         = var.subnet_ids[count.index % length(var.subnet_ids)]
   source_dest_check = var.source_dest_check
 
@@ -57,7 +75,7 @@ resource "aws_eip" "eip" {
 
 resource "aws_eip_association" "eip_association" {
   count                = var.create_eip ? var.eni_count : 0
-  network_interface_id = element(aws_network_interface.eni.*.id, count.index)
+  network_interface_id = length(var.reserved_ips) > 0 ? element(aws_network_interface.eni_with_reserved_ip.*.id, count.index) : element(aws_network_interface.eni.*.id, count.index)
   allocation_id        = element(aws_eip.eip.*.id, count.index)
   depends_on           = [aws_eip.eip, aws_network_interface.eni]
 }
@@ -71,10 +89,10 @@ output "public_ips" {
 # }
 
 output "eni_ids" {
-  value = aws_network_interface.eni.*.id
+  value = length(var.reserved_ips) > 0 ? aws_network_interface.eni_with_reserved_ip.*.id : aws_network_interface.eni.*.id
 }
 
 output "eni_ips" {
-  value = aws_network_interface.eni.*.private_ip
+  value = length(var.reserved_ips) > 0 ? aws_network_interface.eni_with_reserved_ip.*.private_ip : aws_network_interface.eni.*.private_ip
 }
 

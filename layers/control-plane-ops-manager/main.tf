@@ -57,7 +57,6 @@ locals {
       "job"        = "cp_ops_manager",
     },
   )
-  trusted_ca_certs           = data.terraform_remote_state.paperwork.outputs.trusted_with_additional_ca_certs
   om_user_accounts_user_data = data.terraform_remote_state.paperwork.outputs.om_user_accounts_user_data
 }
 
