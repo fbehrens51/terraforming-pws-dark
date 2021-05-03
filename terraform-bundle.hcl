@@ -41,6 +41,7 @@ providers {
   }
 
   grafana = {
+    source = "grafana/grafana"
     versions = ["~> 1.7.0"]
   }
 
