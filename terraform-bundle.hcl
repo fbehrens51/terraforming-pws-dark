@@ -8,22 +8,40 @@ terraform {
 providers {
 
   # Pin to a version that works on C2S
-  aws = ["2.49.0"]
+  aws = {
+    versions = ["2.49.0"]
+  }
 
-  tls = ["~> 2.1.1"]
+  tls = {
+    versions = ["~> 2.1.1"]
+  }
 
-  random = ["~> 2.1.0"]
+  random = {
+    versions = ["~> 2.1.0"]
+  }
 
-  template = ["~> 2.1.2"]
+  template = {
+    versions = ["~> 2.1.2"]
+  }
 
-  null = ["~> 2.1.2"]
+  null = {
+    versions = ["~> 2.1.2"]
+  }
 
-  external = ["~> 1.1.2"]
+  external = {
+    versions = ["~> 1.1.2"]
+  }
 
-  dns = ["~> 2.1.1"]
+  dns = {
+    versions = ["~> 2.1.1"]
+  }
 
-  local = ["~> 1.4.0"]
+  local = {
+    versions = ["~> 1.4.0"]
+  }
 
-  grafana = ["~> 1.7.0"]
+  grafana = {
+    versions = ["~> 1.7.0"]
+  }
 
 }
