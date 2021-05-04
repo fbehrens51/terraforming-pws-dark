@@ -21,9 +21,7 @@ variable "server_cert" {
 }
 
 locals {
-//  Temporarily revert bucket_key to debug pipeline
-//  bucket_key = "fluentd-${md5(data.template_file.certs_user_data.rendered)}-user-data.yml"
-  bucket_key = "fluentd-user-data.yml"
+  bucket_key = "fluentd-${md5(data.template_file.certs_user_data.rendered)}-user-data.yml"
 }
 
 module "ports" {
