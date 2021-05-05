@@ -126,9 +126,10 @@ runcmd:
     aws --region ${local.terraform_region} s3 cp s3://${local.terraform_bucket_name}/terraform-bundle/$latest . --no-progress
     unzip -q -d terraform $latest
     rm $latest
-    mkdir -p /home/ec2-user/.terraform.d/plugins/linux_amd64/ /root/.terraform.d/plugins/linux_amd64/
-    install -o ec2-user -g ec2-user terraform/terraform-provider* /home/ec2-user/.terraform.d/plugins/linux_amd64/.
-    install terraform/terraform-provider* /root/.terraform.d/plugins/linux_amd64/.
+    mkdir -p /home/ec2-user/terraform.d /root/terraform.d
+    cp -pr terraform/plugins ~ec2-user/terraform.d/
+    chown -R ec2-user:ec2-user ~ec2-user/terraform.d
+    cp -pr terraform/plugins /root/terraform.d/
     install terraform/terraform /usr/local/bin/
     rm -rf terraform
 EOF
