@@ -67,7 +67,7 @@
           "refId": "A"
         },
         {
-          "expr": "rate(fluentd_output_status_num_records_total[5m])",
+          "expr": "avg(rate(fluentd_output_status_emit_records{type=\"cloudwatch_logs\"}[5m])) by (instance)",
           "interval": "",
           "legendFormat": "Output",
           "refId": "B"

@@ -127,15 +127,6 @@
       auto_create_stream true
       json_handler yajl
     </store>
-
-    <store>
-      @type prometheus
-      <metric>
-        name fluentd_output_status_num_records_total
-        type counter
-        desc The total number of outgoing records
-      </metric>
-    </store>
   </match>
 </label>
 
