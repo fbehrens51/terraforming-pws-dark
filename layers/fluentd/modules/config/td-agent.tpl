@@ -8,14 +8,12 @@
     </record>
   </filter>
   <match **>
-    @type forward
-    send_timeout 60s
-    recover_wait 10s
-    hard_timeout 50s
-    <server>
-      name localhost
-      host 127.0.0.1
-    </server>
+    @type copy
+
+    <store>
+      @type relabel
+      @label @all_logs
+    </store>
   </match>
 </label>
 
@@ -28,15 +26,13 @@
       host "#{`hostname -s`.strip}"
     </record>
   </filter>
-  <match fluent.**>
-    @type forward
-    send_timeout 60s
-    recover_wait 10s
-    hard_timeout 50s
-    <server>
-      name localhost
-      host 127.0.0.1
-    </server>
+  <match **>
+    @type copy
+
+    <store>
+      @type relabel
+      @label @all_logs
+    </store>
   </match>
 </label>
 
@@ -60,14 +56,12 @@
     </record>
   </filter>
   <match **>
-    @type forward
-    send_timeout 60s
-    recover_wait 10s
-    hard_timeout 50s
-    <server>
-      name localhost
-      host 127.0.0.1
-    </server>
+    @type copy
+
+    <store>
+      @type relabel
+      @label @all_logs
+    </store>
   </match>
 </label>
 
@@ -231,14 +225,6 @@
 
 <source>
   @type prometheus_output_monitor
-</source>
-
-<source>
-  @type forward
-  port 24224
-  bind 127.0.0.1
-  @label @system_logs
-  add_tag_prefix syslog
 </source>
 
 <source>
