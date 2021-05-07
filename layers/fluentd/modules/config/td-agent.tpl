@@ -144,6 +144,22 @@
     </regexp>
   </filter>
 
+  <filter **>
+    @type parser
+    key_name message
+    reserve_data true
+    hash_value_field event
+    <parse>
+      @type multi_format
+      <pattern>
+        format json
+      </pattern>
+      <pattern>
+        format none
+      </pattern>
+    </parse>
+  </filter>
+
   <match **>
     @type copy
 
