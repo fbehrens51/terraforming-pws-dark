@@ -15,7 +15,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 1,
-  "id": 28,
+  "id": 36,
   "links": [],
   "panels": [
     {
@@ -56,9 +56,11 @@
           ],
           "fields": "",
           "values": false
-        }
+        },
+        "text": {},
+        "textMode": "auto"
       },
-      "pluginVersion": "7.0.3",
+      "pluginVersion": "7.4.2",
       "targets": [
         {
           "expr": "rate(fluentd_input_status_num_records_total[5m])",
@@ -87,7 +89,8 @@
       "description": "The number of chunks of data currently buffered due to downstream backpressure. Ideally, this is 0, but it may occasionally spike for a short period during high log volume or if a consumer slows down.",
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "custom": {},
+          "links": []
         },
         "overrides": []
       },
@@ -114,9 +117,10 @@
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.4.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -126,9 +130,9 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "fluentd_output_status_buffer_queue_length",
+          "expr": "sum(fluentd_output_status_buffer_queue_length) by (instance, type)",
           "interval": "",
-          "legendFormat": "{{type}}",
+          "legendFormat": "{{instance}}/{{type}}",
           "refId": "A"
         }
       ],
@@ -161,6 +165,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:144",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -191,7 +196,8 @@
       "description": "The number of retries for each output type. This should ideally be 0, but may occasionally spike during heavy load.",
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "custom": {},
+          "links": []
         },
         "overrides": []
       },
@@ -218,9 +224,10 @@
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.4.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -230,9 +237,9 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "fluentd_status_retry_count",
+          "expr": "sum(rate(fluentd_status_retry_count[1m])) by (instance, type)",
           "interval": "",
-          "legendFormat": "{{type}}",
+          "legendFormat": "{{instance}}/{{type}}",
           "refId": "A"
         }
       ],
@@ -256,6 +263,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:298",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -264,6 +272,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:299",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -286,7 +295,8 @@
       "description": "Size of each output buffer in bytes. The s3 buffer rotates every 1 GB, so it's normal to see it climb and fall every 1 GB.",
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "custom": {},
+          "links": []
         },
         "overrides": []
       },
@@ -313,9 +323,10 @@
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.4.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -325,9 +336,9 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "fluentd_output_status_buffer_total_bytes",
+          "expr": "sum(fluentd_output_status_buffer_total_bytes) by (instance, type)",
           "interval": "",
-          "legendFormat": "{{type}}",
+          "legendFormat": "{{instance}}/{{type}}",
           "refId": "A"
         }
       ],
@@ -351,6 +362,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:66",
           "format": "decbytes",
           "label": null,
           "logBase": 1,
@@ -359,6 +371,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:67",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -399,6 +412,6 @@
   },
   "timezone": "",
   "title": "Fluentd",
-  "uid": "y6y_paeZz",
-  "version": 4
+  "uid": "ofHejIQGz",
+  "version": 1
 }
