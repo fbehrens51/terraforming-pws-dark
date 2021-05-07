@@ -37,7 +37,7 @@
 </label>
 
 <label @prometheus>
-  <match syslog.**>
+  <match **>
   @type prometheus
   <metric>
     name fluentd_input_status_num_records_total
@@ -67,7 +67,7 @@
 
 <label @app_logs>
   # Keep system application logs only
-  <filter syslog.**>
+  <filter **>
     @type grep
     <regexp>
       key host
@@ -75,7 +75,7 @@
     </regexp>
   </filter>
 
-  <match syslog.**>
+  <match **>
     @type copy
 
     <store>
@@ -86,7 +86,7 @@
 </label>
 
 <label @system_logs>
-  <match syslog.**>
+  <match **>
     @type copy
 
     <store>
@@ -107,7 +107,7 @@
 </label>
 
 <label @all_logs>
-  <match syslog.**>
+  <match **>
     @type copy
 
     <store>
@@ -151,7 +151,7 @@
 </label>
 
 <label @clamav_infections>
-  <filter syslog.**>
+  <filter **>
     @type grep
     <regexp>
       key ident
@@ -163,7 +163,7 @@
     </regexp>
   </filter>
 
-  <filter syslog.**>
+  <filter **>
     @type parser
     key_name message
     reserve_data true
@@ -174,7 +174,7 @@
     </parse>
   </filter>
 
-  <match syslog.**>
+  <match **>
     @type prometheus
     <metric>
       name fluentd_clamav_infected_files
@@ -189,7 +189,7 @@
 </label>
 
 <label @audispd>
-  <filter syslog.**>
+  <filter **>
     @type grep
     <regexp>
       key ident
@@ -197,7 +197,7 @@
     </regexp>
   </filter>
 
-  <match syslog.**>
+  <match **>
     @type s3
     s3_bucket ${s3_audit_logs_bucket}
     s3_region ${region}
