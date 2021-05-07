@@ -85,7 +85,7 @@
   </match>
 </label>
 
-<label @system_logs>
+<label @all_logs>
   <match **>
     @type copy
 
@@ -98,17 +98,6 @@
       @type relabel
       @label @clamav_infections
     </store>
-
-    <store>
-      @type relabel
-      @label @all_logs
-    </store>
-  </match>
-</label>
-
-<label @all_logs>
-  <match **>
-    @type copy
 
     <store>
       @type relabel
@@ -249,7 +238,7 @@
   port 8090
   bind "#{`hostname -I`.strip}"
   tag syslog
-  @label @system_logs
+  @label @all_logs
   emit_unmatched_lines true
   source_address_key source_address
   <transport tls>
