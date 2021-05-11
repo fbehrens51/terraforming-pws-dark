@@ -1,4 +1,4 @@
-FROM golang:alpine AS terraform-bundler-build
+FROM harbor-repo.vmware.com/dockerhub-proxy-cache/library/golang:alpine AS terraform-bundler-build
 
 RUN apk --no-cache add git unzip && \
     git clone https://github.com/hashicorp/terraform && \
