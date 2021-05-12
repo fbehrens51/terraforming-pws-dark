@@ -213,7 +213,7 @@ module "grafana_elb" {
   egress_cidrs      = module.pas.pas_subnet_cidrs
   short_name        = "grafana"
   port              = 443
-  health_check      = "SSL:443"
+  health_check      = "HTTPS:443/api/healthcheck"
 }
 
 module "pas_elb" {
