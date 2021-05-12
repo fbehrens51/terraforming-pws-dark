@@ -212,6 +212,11 @@
 
     <store>
       @type relabel
+      @label @cf_events
+    </store>
+
+    <store>
+      @type relabel
       @label @prometheus
     </store>
   </match>
@@ -277,6 +282,28 @@
       key infections
       <labels>
         source_address $.source_address
+      </labels>
+    </metric>
+  </match>
+</label>
+
+<label @cf_events>
+  <filter **>
+    @type grep
+    <regexp>
+      key $.event.guid
+      pattern /./
+    </regexp>
+  </filter>
+
+  <match **>
+    @type prometheus
+    <metric>
+      name fluentd_cf_events
+      type counter
+      desc Cloud Foundry Audit Event Counter
+      <labels>
+        type $.event.type
       </labels>
     </metric>
   </match>
