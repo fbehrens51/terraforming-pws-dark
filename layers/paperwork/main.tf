@@ -38,6 +38,24 @@ users:
       - ${module.bot_host_key_pair.public_key_openssh}
 DOC
 
+  scanner_username  = "security_scanner"
+  scanner_user_data = <<DOC
+#cloud-config
+merge_how:
+  - name: list
+    settings: [append]
+  - name: dict
+    settings: [no_replace, recurse_list]
+
+users:
+  - name: ${local.scanner_username}
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: bosh_sshers
+    shell: /bin/bash
+    lock_passwd: true
+    ssh_authorized_keys:
+      - ${tls_private_key.scanner_private_key.public_key_openssh}
+DOC
 }
 
 resource "aws_vpc_endpoint" "iso_s3" {
@@ -237,6 +255,13 @@ resource "aws_s3_bucket_policy" "public_bucket_policy_attachement" {
   policy = data.aws_iam_policy_document.public_bucket_policy.json
 }
 
+
+resource "tls_private_key" "scanner_private_key" {
+  algorithm = "RSA"
+  rsa_bits  = "4096"
+}
+
+
 module "bot_host_key_pair" {
   source   = "../../modules/key_pair"
   key_name = "${local.env_name_prefix}-bot"
@@ -275,23 +300,16 @@ module "custom_banner_config" {
   public_bucket_url  = local.public_bucket_url
 }
 
-module "user_accounts_config" {
-  source                  = "../../modules/cloud_init/user_accounts"
-  user_accounts_user_data = [file("user_data.yml")]
-  public_bucket_name      = aws_s3_bucket.public_bucket.bucket
-  public_bucket_url       = local.public_bucket_url
-}
-
 module "om_user_accounts_config" {
   source                  = "../../modules/cloud_init/user_accounts"
-  user_accounts_user_data = [file("om_user_data.yml"), local.bot_user_data]
+  user_accounts_user_data = [file("om_user_data.yml"), local.bot_user_data, local.scanner_user_data]
   public_bucket_name      = aws_s3_bucket.public_bucket.bucket
   public_bucket_url       = local.public_bucket_url
 }
 
 module "bot_user_accounts_config" {
   source                  = "../../modules/cloud_init/user_accounts"
-  user_accounts_user_data = [file("user_data.yml"), local.bot_user_data]
+  user_accounts_user_data = [file("user_data.yml"), local.bot_user_data, local.scanner_user_data]
   public_bucket_name      = aws_s3_bucket.public_bucket.bucket
   public_bucket_url       = local.public_bucket_url
 }
@@ -686,6 +704,18 @@ variable "amzn_ami_id" {
   type = string
 }
 
+
+variable "extra_users" {
+  description = "extra users to add to all bosh managed vms"
+  default     = []
+  type = list(object({
+    username       = string
+    public_ssh_key = string
+    sudo_priv      = bool
+  }))
+}
+
+
 data "aws_ami" "amzn_ami" {
   owners = ["self", "amazon"]
   filter {
@@ -1016,10 +1046,6 @@ output "custom_banner_user_data" {
   value = module.custom_banner_config.custom_banner_user_data
 }
 
-output "user_accounts_user_data" {
-  value = module.user_accounts_config.user_accounts_user_data
-}
-
 output "om_user_accounts_user_data" {
   value = module.om_user_accounts_config.user_accounts_user_data
 }
@@ -1077,5 +1103,22 @@ output "check_cloud_init" {
   value = var.check_cloud_init
 }
 
+output "scanner_private_key" {
+  sensitive = true
+  value     = tls_private_key.scanner_private_key.private_key_pem
+}
 
 
+locals {
+  extra_bosh_users = [
+    {
+      username       = local.scanner_username
+      public_ssh_key = tls_private_key.scanner_private_key.public_key_openssh
+      sudo_priv      = true
+    }
+  ]
+}
+
+output "extra_bosh_users" {
+  value = concat(local.extra_bosh_users, var.extra_users)
+}

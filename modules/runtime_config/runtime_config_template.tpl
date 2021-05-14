@@ -27,10 +27,10 @@ product-properties:
       ${indent(6, ssh_banner)}
   .properties.stop_timeout:
     value: 30
-%{if extra_user_name != ""}
   .properties.users_to_add:
     value:
-    - name: ${extra_user_name}
-      public_key: ${extra_user_public_key}
-      sudo: ${extra_user_sudo ? true: false}
-%{endif}
+%{ for user in extra_users ~}
+    - name: ${user.username}
+      public_key: ${user.public_ssh_key}
+      sudo: ${user.sudo_priv}
+%{ endfor ~}

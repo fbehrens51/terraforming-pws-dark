@@ -223,9 +223,7 @@ module "runtime_config_config" {
   s3_endpoint = var.s3_endpoint
   region      = var.region
 
-  extra_user_name       = var.extra_user_name
-  extra_user_public_key = var.extra_user_public_key
-  extra_user_sudo       = var.extra_user_sudo
+  extra_users = data.terraform_remote_state.paperwork.outputs.extra_bosh_users
 
   vpc_dns = local.vpc_dns
 }

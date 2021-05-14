@@ -32,10 +32,10 @@ locals {
   vpc_dns_subnet              = "${var.vpc_dns}/32"
 }
 
-data "template_file" "runtime_config_template" {
-  template = file("${path.module}/runtime_config_template.tpl")
-
-  vars = {
+resource "aws_s3_bucket_object" "runtime_config_template" {
+  bucket = var.secrets_bucket_name
+  key    = var.runtime_config
+  content = templatefile("${path.module}/runtime_config_template.tpl", {
     runtime_config     = var.runtime_config
     ipsec_log_level    = var.ipsec_log_level
     ipsec_subnet_cidrs = join(",", var.ipsec_subnet_cidrs)
@@ -43,17 +43,9 @@ data "template_file" "runtime_config_template" {
       ",",
       concat(var.no_ipsec_subnet_cidrs, [local.vpc_dns_subnet]),
     )
-    ssh_banner            = var.custom_ssh_banner
-    extra_user_name       = var.extra_user_name
-    extra_user_public_key = var.extra_user_public_key
-    extra_user_sudo       = var.extra_user_sudo
-  }
-}
-
-resource "aws_s3_bucket_object" "runtime_config_template" {
-  bucket  = var.secrets_bucket_name
-  key     = var.runtime_config
-  content = data.template_file.runtime_config_template.rendered
+    ssh_banner  = var.custom_ssh_banner
+    extra_users = var.extra_users
+  })
 }
 
 variable "secrets_bucket_name" {
@@ -61,18 +53,12 @@ variable "secrets_bucket_name" {
   type        = string
 }
 
-variable "extra_user_name" {
-  description = "The username of the extra user that will be added to all bosh managed VMs"
-  default     = ""
-}
-
-variable "extra_user_public_key" {
-  description = "The SSH public key of the extra user that will be added to all bosh managed VMs"
-  default     = ""
-}
-
-variable "extra_user_sudo" {
-  description = "Whether to grant sudo acces to the extra user"
-  default     = false
+variable "extra_users" {
+  description = "extra users to add to all bosh managed vms"
+  type = list(object({
+    username       = string
+    public_ssh_key = string
+    sudo_priv      = bool
+  }))
 }
 

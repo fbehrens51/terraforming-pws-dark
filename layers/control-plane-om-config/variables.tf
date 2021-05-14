@@ -57,21 +57,6 @@ variable "clamav_external_mirrors" {
   type        = list(string)
 }
 
-variable "extra_user_name" {
-  description = "The username of the extra user that will be added to all bosh managed VMs"
-  default     = ""
-}
-
-variable "extra_user_public_key" {
-  description = "The SSH public key of the extra user that will be added to all bosh managed VMs"
-  default     = ""
-}
-
-variable "extra_user_sudo" {
-  description = "Whether to grant sudo acces to the extra user"
-  default     = false
-}
-
 variable "admin_users" {
   description = "List of usernames that will be given admin privileges."
   type        = list(string)
