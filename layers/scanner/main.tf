@@ -134,6 +134,26 @@ EOF
   }
 }
 
+//if we can use the rpm instead of the AMI...
+//data "template_file" "setup_io_scanner" {
+//  template = <<EOF
+//runcmd:
+//  - |
+//    wget --no-check-certificate "$${package_url}"
+//    yum install *.rpm -y
+//    systemctl start nessusd
+//    sleep 30
+//    echo 1 > /proc/sys/net/ipv4/ip_forward
+//    echo -e "\nnet.ipv4.ip_forward = 1" >>/etc/sysctl.conf
+//    iptables -t nat -A PREROUTING --source 0/0 --destination 0/0 -p tcp --dport 443 -j REDIRECT --to-ports 8834
+//    iptables-save > /etc/sysconfig/iptables
+//EOF
+//
+//  vars = {
+//    package_url = var.scanner_package_url
+//  }
+//}
+
 data "template_cloudinit_config" "user_data" {
   base64_encode = true
   gzip          = true

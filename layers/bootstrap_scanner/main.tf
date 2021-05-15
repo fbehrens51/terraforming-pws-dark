@@ -34,6 +34,11 @@ variable "scanner_subnet_id" {
   default = ""
 }
 
+variable "commercial_scanner" {
+  type    = bool
+  default = false
+}
+
 data "terraform_remote_state" "paperwork" {
   backend = "s3"
 
@@ -58,6 +63,38 @@ data "terraform_remote_state" "bootstrap_control_plane" {
 
 data "aws_vpc" "pas_vpc" {
   id = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
+}
+
+resource "aws_iam_role" "infosec_scanner" {
+  count              = var.commercial_scanner == true ? 1 : 0
+  name               = "${replace(local.env_name, " ", "-")}-InfosecVulnScanRole"
+  assume_role_policy = data.aws_iam_policy_document.role_policy.*.json[0]
+}
+
+resource "aws_iam_policy_attachment" "infosec_scanner" {
+  count      = var.commercial_scanner == true ? 1 : 0
+  name       = "${replace(local.env_name, " ", "-")}-InfosecVulnScanRole"
+  roles      = aws_iam_role.infosec_scanner.*.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess"
+}
+
+resource "aws_iam_instance_profile" "infosec_scanner" {
+  count = var.commercial_scanner == true ? 1 : 0
+  name  = "${replace(local.env_name, " ", "-")}-InfosecVulnScanRole"
+  role  = aws_iam_role.infosec_scanner.*.name[0]
+}
+
+data "aws_iam_policy_document" "role_policy" {
+  count = var.commercial_scanner == true ? 1 : 0
+  statement {
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      identifiers = ["ec2.amazonaws.com"]
+      type        = "Service"
+    }
+  }
 }
 
 locals {
@@ -131,4 +168,8 @@ module "scanner_eni" {
 
 output "scanner_eni_ids" {
   value = module.scanner_eni.eni_ids
+}
+
+output "commercial_scanner_instance_profile_name" {
+  value = var.commercial_scanner == true ? aws_iam_instance_profile.infosec_scanner.*.name[0] : "N/A"
 }
