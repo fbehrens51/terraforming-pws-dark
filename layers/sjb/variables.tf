@@ -18,3 +18,5 @@ variable "pypi_host_secure" {
   default = true
 }
 
+variable "singleton_availability_zone" {
+}

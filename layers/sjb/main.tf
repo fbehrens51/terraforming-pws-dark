@@ -167,6 +167,25 @@ EOF
 
 }
 
+#
+# Force the mount to occur during the "bootcmd".
+# else the user directories are created before the fs is mounted, and nobody can login.
+#
+data "template_file" "home_directory" {
+  template = <<EOF
+bootcmd:
+  - |
+    set -ex
+    while [ ! -e /dev/sdf ] ; do echo "Waiting for device /dev/sdf"; sleep 1 ; done
+    if [ "$(file -b -s -L /dev/sdf)" == "data" ]; then mkfs -t ext4 /dev/sdf; fi
+    mount -t ext4 -o 'defaults,nofail,comment=cloudconfig' /dev/sdf /home
+
+mounts:
+  - [ "/dev/sdf", "/home", "ext4", "defaults,nofail", "0", "2" ]
+
+EOF
+}
+
 module "syslog_config" {
   source = "../../modules/syslog"
 
@@ -181,6 +200,13 @@ module "syslog_config" {
 data "template_cloudinit_config" "user_data" {
   base64_encode = true
   gzip          = true
+
+  part {
+    filename     = "config.cfg"
+    content_type = "text/cloud-config"
+    content      = data.template_file.home_directory.rendered
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
 
   part {
     filename     = "syslog.cfg"
@@ -255,25 +281,26 @@ data "template_cloudinit_config" "user_data" {
   }
 }
 
+resource "aws_ebs_volume" "sjb_home" {
+  availability_zone = var.singleton_availability_zone
+  size              = 60
+  encrypted         = true
+  kms_key_id        = data.terraform_remote_state.paperwork.outputs.kms_key_arn
+}
+
 module "sjb" {
   instance_count       = 1
   source               = "../../modules/launch"
+  availability_zone    = var.singleton_availability_zone
   ami_id               = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
   user_data            = data.template_cloudinit_config.user_data.rendered
   eni_ids              = data.terraform_remote_state.bootstrap_control_plane.outputs.sjb_eni_ids
   iam_instance_profile = data.terraform_remote_state.paperwork.outputs.sjb_role_name
   instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
+  volume_ids           = [aws_ebs_volume.sjb_home.id]
   scale_vpc_key        = "control-plane"
   scale_service_key    = "sjb"
-
-  tags = local.modified_tags
-
-  root_block_device = {
-    volume_type = "gp2"
-    volume_size = 64
-  }
-
-  bot_key_pem = data.terraform_remote_state.paperwork.outputs.bot_private_key
-
-  check_cloud_init = data.terraform_remote_state.paperwork.outputs.check_cloud_init == "false" ? false : true
+  tags                 = local.modified_tags
+  bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
+  check_cloud_init     = false
 }

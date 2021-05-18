@@ -89,6 +89,10 @@ variable "root_block_device" {
   default = {}
 }
 
+variable "availability_zone" {
+  default = null
+}
+
 // pas_nats, enterprise_nats, iso_seg_nats, postfix, bind, ldap, ops-manager, control-plane-ops-manager
 
 resource "aws_instance" "instance" {
@@ -159,6 +163,7 @@ resource "aws_instance" "unchecked_instance" {
   }
 
   ami                  = var.ami_id
+  availability_zone    = var.availability_zone
   instance_type        = local.instance_type
   user_data            = var.user_data
   iam_instance_profile = var.iam_instance_profile
