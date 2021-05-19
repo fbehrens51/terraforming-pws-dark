@@ -26,6 +26,18 @@ variable "worker_role_name" {
 variable "tsdb_role_name" {
 }
 
+variable "bosh_role_name" {
+}
+
+variable "om_role_name" {
+}
+
+variable "sjb_role_name" {
+}
+
+variable "concourse_role_name" {
+}
+
 variable "root_domain" {
 }
 

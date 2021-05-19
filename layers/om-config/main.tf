@@ -210,7 +210,7 @@ module "om_config" {
   smtp_enabled    = var.smtp_enabled
 
   iaas_configuration_endpoints_ca_cert    = var.iaas_configuration_endpoints_ca_cert
-  iaas_configuration_iam_instance_profile = data.terraform_remote_state.paperwork.outputs.director_role_name
+  iaas_configuration_iam_instance_profile = data.terraform_remote_state.paperwork.outputs.om_role_name
   blobstore_instance_profile              = data.terraform_remote_state.paperwork.outputs.bucket_role_name
 
   uaa_service_provider_key_credentials_cert_pem        = data.terraform_remote_state.paperwork.outputs.uaa_server_cert
