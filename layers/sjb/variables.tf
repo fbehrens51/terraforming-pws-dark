@@ -20,3 +20,13 @@ variable "pypi_host_secure" {
 
 variable "singleton_availability_zone" {
 }
+
+variable "source_artifacts" {
+  type    = list
+  default = ["pcf-eagle-automation", "terraforming-pws-dark"]
+}
+
+variable "cp_target_name" {
+  type    = string
+  default = "set_this_in_sjb_layer"
+}

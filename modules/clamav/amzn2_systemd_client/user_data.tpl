@@ -21,7 +21,7 @@ runcmd:
     set -ex
     mkdir pkg
     cd pkg
-    wget --no-check-certificate -O - "${clamav_rpms_pkg_object_url}" | tar xzf -
+    wget -q --no-check-certificate -O - "${clamav_rpms_pkg_object_url}" | tar xzf -
     yum localinstall * -y
     rm -f *.rpm
     augtool set /files/etc/freshclam.conf/LogSyslog yes

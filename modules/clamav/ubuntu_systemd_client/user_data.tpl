@@ -15,7 +15,7 @@ runcmd:
     set -ex
     mkdir pkg
     cd pkg
-    wget --no-check-certificate -O - "${deb_tgz_location}" | tar xzf -
+    wget -q --no-check-certificate -O - "${deb_tgz_location}" | tar xzf -
     dpkg -i *.deb
     rm -f *.deb
     augtool set /files/etc/clamav/freshclam.conf/LogSyslog yes

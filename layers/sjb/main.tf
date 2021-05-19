@@ -60,40 +60,30 @@ data "terraform_remote_state" "bootstrap_control_plane" {
 }
 
 locals {
+  secrets_bucket_name   = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
   transfer_bucket_name  = data.terraform_remote_state.bootstrap_control_plane.outputs.transfer_bucket_name
   terraform_bucket_name = data.terraform_remote_state.bootstrap_control_plane.outputs.terraform_bucket_name
   terraform_region      = data.terraform_remote_state.bootstrap_control_plane.outputs.terraform_region
-}
+  system_domain         = data.terraform_remote_state.paperwork.outputs.root_domain
+  # the six spaces after the "\n" is the required indent for the yaml 'write_files: -> content:' section
+  get_source = join("\n      ", [for artifact in var.source_artifacts : "get_source ${artifact}"])
 
-data "template_file" "setup_source_zip" {
-  template = <<EOF
-runcmd:
-  - |
-    echo "Downloading and extracting source.zip"
-    mkdir /home/ec2-user/workspace
-    cd /home/ec2-user/workspace
-    latest=$(aws --region ${var.region} s3 ls s3://${local.transfer_bucket_name}/pcf-eagle-automation/ | awk '/ pcf-eagle-automation.*\.zip$/ {print $4}' | sort -n | tail -1)
-    aws --region ${var.region} s3 cp --no-progress s3://${local.transfer_bucket_name}/pcf-eagle-automation/$latest . --no-progress
-    mkdir -p pcf-eagle-automation
-    unzip -q -d ./pcf-eagle-automation $latest
-    rm $latest
-    latest=$(aws --region ${var.region} s3 ls s3://${local.transfer_bucket_name}/terraforming-pws-dark/ | awk '/ terraforming-pws-dark.*\.zip$/ {print $4}' | sort -n | tail -1)
-    aws --region ${var.region} s3 cp --no-progress s3://${local.transfer_bucket_name}/terraforming-pws-dark/$latest . --no-progress
-    mkdir -p terraforming-pws-dark
-    unzip -q -d ./terraforming-pws-dark $latest
-    rm $latest
-EOF
-
+  ldap_dn          = data.terraform_remote_state.paperwork.outputs.ldap_dn
+  ldap_port        = data.terraform_remote_state.paperwork.outputs.ldap_port
+  ldap_host        = data.terraform_remote_state.paperwork.outputs.ldap_host
+  ldap_basedn      = data.terraform_remote_state.paperwork.outputs.ldap_basedn
+  ldap_ca_cert     = data.terraform_remote_state.paperwork.outputs.ldap_ca_cert_s3_path
+  ldap_client_cert = data.terraform_remote_state.paperwork.outputs.ldap_client_cert_s3_path
+  ldap_client_key  = data.terraform_remote_state.paperwork.outputs.ldap_client_key_s3_path
 }
 
 data "template_file" "setup_system_tools" {
   template = <<EOF
 runcmd:
   - echo "Installing up system tools and utilities"
-  - yum install jq git python-pip python3 -y
+  - yum install jq git python-pip python3 openldap-clients -y
   - pip3 install yq --index-url=$${pypi_host_protocol}://$${pypi_host}/simple --trusted-host=$${pypi_host}
 EOF
-
 
   vars = {
     pypi_host          = var.pypi_host
@@ -101,70 +91,117 @@ EOF
   }
 }
 
-data "template_file" "setup_tools_zip" {
+data "template_file" "setup_scripts" {
   template = <<EOF
 runcmd:
   - |
-    echo "Downloading and extracting tools.zip"
-    latest=$(aws --region ${var.region} s3 ls s3://${local.transfer_bucket_name}/cli-tools/ | awk '/ tools.*\.zip$/ {print $4}' | sort -n | tail -1)
-    aws --region ${var.region} s3 cp s3://${local.transfer_bucket_name}/cli-tools/$latest . --no-progress
-    unzip -q $latest
-    rm $latest
-    install tools/* /usr/local/bin/
-    rm -rf tools
-EOF
-
-}
-
-data "template_file" "setup_terraform_zip" {
-  template = <<EOF
-runcmd:
-  - |
-    echo "Downloading and extracting terraform.zip"
-    mkdir terraform
-    latest=$(aws --region ${local.terraform_region} s3 ls s3://${local.terraform_bucket_name}/terraform-bundle/ | awk '/ terraform-bundle.*\.zip$/ {print $4}' | sort -n | tail -1)
-    aws --region ${local.terraform_region} s3 cp s3://${local.terraform_bucket_name}/terraform-bundle/$latest . --no-progress
-    unzip -q -d terraform $latest
-    rm $latest
-    mkdir -p /home/ec2-user/.terraform.d /root/.terraform.d
-    cp -pr terraform/plugins ~ec2-user/.terraform.d/
-    chown -R ec2-user:ec2-user ~ec2-user/.terraform.d
-    cp -pr terraform/plugins /root/.terraform.d/
-    install terraform/terraform /usr/local/bin/
-    rm -rf terraform
-
 write_files:
-  - content: |
-      disable_checkpoint = true
-      provider_installation {
-        filesystem_mirror {
-          path    = "/home/ec2-user/.terraform.d/plugins"
-        }
-      }
-    path: /home/ec2-user/.terraformrc
-    permissions: '0644'
-    owner: ec2-user:ec2-user
-  - content: |
-      disable_checkpoint = true
-      provider_installation {
-        filesystem_mirror {
-          path    = "/root/.terraform.d/plugins"
-        }
-      }
-    path: /root/.terraformrc
-    permissions: '0644'
+  - path: /etc/skel/bin/write_ldaprc.sh
+    permissions: '0755'
     owner: root:root
+    content: |
+      #!/usr/bin/env bash
+      set -eo pipefail
+
+      certs="$HOME/certs"
+      ldaprc="$HOME/.ldaprc"
+
+      [[ ! -d $certs ]] && mkdir "$certs"
+      aws --region ${var.region} s3 ls s3://${local.secrets_bucket_name} | awk '/ldap.*pem/ { print $4}' | xargs --no-run-if-empty -I{} aws --region ${var.region} s3 cp s3://${local.secrets_bucket_name}/{} "$certs"
+
+      echo -e "URI ldaps://${local.ldap_host}:${local.ldap_port}\nBASE ${local.ldap_basedn}\nBINDDN ${local.ldap_dn}\nDEREF never\nSASL_MECH EXTERNAL\nTLS_CACERT $certs/${local.ldap_ca_cert}\nTLS_CERT $certs/${local.ldap_client_cert}\nTLS_KEY $certs/${local.ldap_client_key}" > "$ldaprc"
+
+  - path: /etc/skel/bin/write_flyrc.sh
+    permissions: '0755'
+    owner: root:root
+    content: |
+      #!/usr/bin/env bash
+
+      flyrc="$HOME/.flyrc"
+      [ ! -e $flyrc ] && echo -e "targets:\n  ${var.cp_target_name}:\n    api: https://plane.ci.${local.system_domain}\n    insecure: true\n    team: main" > "$flyrc"
+
+  - path: /etc/skel/bin/write_terraformrc.sh
+    permissions: '0755'
+    owner: root:root
+    content: |
+      #!/usr/bin/env bash
+
+      terraformrc="$HOME/.terraformrc"
+      plugin_dir="$HOME/.terraform.d"
+      [ ! -d $plugin_dir ] && mkdir "$plugin_dir"
+      [ ! -e $terraformrc ] && echo -e "disable_checkpoint = true\nprovider_installation {\n  filesystem_mirror {\n    path = \"$plugin_dir\"\n  }\n}" > "$terraformrc"
+
+  - path: /etc/skel/bin/install-cli-tools.sh
+    permissions: '0755'
+    owner: root:root
+    content: |
+      #!/usr/bin/env bash
+      set -eo pipefail
+      [[ $(id -nu ) != root ]] && INSTALL="sudo install" || INSTALL="install"
+
+      echo "Downloading and extracting tools.zip"
+
+      latest=$(aws --region ${var.region} s3 ls s3://${local.transfer_bucket_name}/cli-tools/ | awk '/ tools.*\.zip$/ {print $4}' | sort -n | tail -1)
+      aws --region ${var.region} s3 cp s3://${local.transfer_bucket_name}/cli-tools/$latest . --no-progress
+
+      unzip -q $latest
+      $INSTALL tools/* /usr/local/bin/
+      rm -rf $latest tools
+
+  - path: /etc/skel/bin/install-terraform.sh
+    permissions: '0755'
+    owner: root:root
+    content: |
+      #!/usr/bin/env bash
+      set -eo pipefail
+      [[ $(id -nu ) != root ]] && INSTALL="sudo install" || INSTALL="install"
+
+      echo "Downloading and extracting terraform.zip"
+      TF="$HOME/terraform"
+      mkdir $TF
+
+      latest=$(aws --region ${local.terraform_region} s3 ls s3://${local.terraform_bucket_name}/terraform-bundle/ | awk '/ terraform-bundle.*\.zip$/ {print $4}' | sort -n | tail -1)
+      aws --region ${local.terraform_region} s3 cp s3://${local.terraform_bucket_name}/terraform-bundle/$latest . --no-progress
+
+      unzip -q -d "$TF" $latest
+      plugin_dir="$HOME/.terraform.d"
+
+      [ ! -d $plugin_dir ] && mkdir "$plugin_dir"
+
+      cp -pr "$TF/plugins" "$HOME/.terraform.d/"
+      $INSTALL "$TF/terraform" /usr/local/bin/
+
+      rm -rf "$latest" "$TF"
+
+  - path: /etc/skel/bin/install-source.sh
+    permissions: '0755'
+    owner: root:root
+    content: |
+      #!/usr/bin/env bash
+      set -eo pipefail
+
+      echo "Downloading and extracting sources"
+
+      workspace="$HOME/workspace"
+      [ ! -d $workspace ] && mkdir -p "$workspace"
+
+      function get_source() {
+        artifact=$1
+        artifact_dir="$workspace/$artifact"
+        # regex matches a valid semver - from semver.org
+        latest=$(aws --region us-east-2 s3 ls s3://${local.transfer_bucket_name}/$artifact/ \
+                 | grep -Po "($artifact-(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?\.zip)$" \
+                 | sort -V \
+                 | tail -n 1 \
+                )
+        aws --region us-east-2 s3 cp --no-progress s3://${local.transfer_bucket_name}/$artifact/$latest . --no-progress
+        [ ! -d $artifact_dir ] && mkdir -p "$artifact_dir"
+        unzip -q -d "$artifact_dir" "$latest"
+        rm "$latest"
+      }
+
+      ${local.get_source}
 EOF
-
-}
-
-data "template_file" "chown_home_directory" {
-  template = <<EOF
-runcmd:
-  - echo "Chowning ~/ec2-user"
-  - chown -R ec2-user:ec2-user ~ec2-user/
-EOF
-
 }
 
 #
@@ -214,25 +251,10 @@ data "template_cloudinit_config" "user_data" {
     content_type = "text/x-include-url"
   }
 
-  # source.zip
-  part {
-    filename     = "source_code_zip.cfg"
-    content_type = "text/cloud-config"
-    content      = data.template_file.setup_source_zip.rendered
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
-  }
-
   part {
     filename     = "terraform_zip.cfg"
     content_type = "text/cloud-config"
-    content      = data.template_file.setup_terraform_zip.rendered
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
-  }
-
-  part {
-    filename     = "tools_zip.cfg"
-    content_type = "text/cloud-config"
-    content      = data.template_file.setup_tools_zip.rendered
+    content      = data.template_file.setup_scripts.rendered
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
@@ -240,13 +262,6 @@ data "template_cloudinit_config" "user_data" {
     filename     = "system_tools.cfg"
     content_type = "text/cloud-config"
     content      = data.template_file.setup_system_tools.rendered
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
-  }
-
-  part {
-    filename     = "chown_home_dir.cfg"
-    content_type = "text/cloud-config"
-    content      = data.template_file.chown_home_directory.rendered
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
