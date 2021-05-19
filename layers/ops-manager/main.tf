@@ -44,14 +44,13 @@ data "terraform_remote_state" "pas" {
 }
 
 locals {
-  director_role_name    = data.terraform_remote_state.paperwork.outputs.director_role_name
+  om_role_name          = data.terraform_remote_state.paperwork.outputs.om_role_name
   director_role_id      = data.terraform_remote_state.paperwork.outputs.director_role_id
   super_user_role_ids   = data.terraform_remote_state.paperwork.outputs.super_user_role_ids
   isse_role_id          = data.terraform_remote_state.paperwork.outputs.isse_role_id
   ent_tech_read_role_id = data.terraform_remote_state.paperwork.outputs.ent_tech_read_role_id
   super_user_id         = data.terraform_remote_state.paperwork.outputs.super_user_ids
-
-  om_eni_id = data.terraform_remote_state.pas.outputs.om_eni_id
+  om_eni_id             = data.terraform_remote_state.pas.outputs.om_eni_id
 
   env_name      = var.global_vars.env_name
   modified_name = "${var.global_vars.name_prefix} ops-manager"
@@ -102,7 +101,7 @@ module "ops_manager" {
 
   source               = "../../modules/launch"
   ami_id               = var.om_ami_id
-  iam_instance_profile = local.director_role_name
+  iam_instance_profile = local.om_role_name
   instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
   scale_vpc_key        = "pas"
   scale_service_key    = "ops-manager"

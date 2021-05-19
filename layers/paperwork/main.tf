@@ -231,6 +231,22 @@ data "aws_iam_role" "director_role" {
   name = var.director_role_name
 }
 
+data "aws_iam_role" "om_role" {
+  name = var.om_role_name
+}
+
+data "aws_iam_role" "bosh_role" {
+  name = var.bosh_role_name
+}
+
+data "aws_iam_role" "sjb_role" {
+  name = var.sjb_role_name
+}
+
+data "aws_iam_role" "concourse_role" {
+  name = var.concourse_role_name
+}
+
 data "aws_iam_user" "super_users" {
   count     = length(var.account_super_user_names)
   user_name = element(var.account_super_user_names, count.index)
@@ -246,7 +262,13 @@ module "reporting_bucket_policy" {
   source              = "../../modules/bucket/policy/generic"
   bucket_arn          = aws_s3_bucket.reporting_bucket.arn
   read_write_role_ids = [data.aws_iam_role.director_role.unique_id]
-  read_only_role_ids  = concat([data.aws_iam_role.director_role.unique_id], data.aws_iam_role.super_user_roles.*.unique_id, [data.aws_iam_role.isse_role.unique_id])
+  read_only_role_ids  = concat([
+    data.aws_iam_role.director_role.unique_id,
+    data.aws_iam_role.bosh_role.unique_id,
+    data.aws_iam_role.om_role.unique_id,
+    data.aws_iam_role.sjb_role.unique_id,
+    data.aws_iam_role.concourse_role.unique_id
+  ], data.aws_iam_role.super_user_roles.*.unique_id, [data.aws_iam_role.isse_role.unique_id])
   read_only_user_ids  = data.aws_iam_user.super_users.*.user_id
 }
 
@@ -422,7 +444,16 @@ variable "instance_tagger_role_name" {
 variable "director_role_name" {
 }
 
+variable "om_role_name" {
+}
+
+variable "bosh_role_name" {
+}
+
 variable "sjb_role_name" {
+}
+
+variable "concourse_role_name" {
 }
 
 variable "transfer_key_arn" {}
@@ -838,6 +869,18 @@ output "director_role_name" {
   value = var.director_role_name
 }
 
+output "bosh_role_name" {
+  value = var.bosh_role_name
+}
+
+output "om_role_name" {
+  value = var.om_role_name
+}
+
+output "concourse_role_name" {
+  value = var.concourse_role_name
+}
+
 output "kms_key_id" {
   value = var.kms_key_id
 }
@@ -1131,8 +1174,24 @@ output "director_role_id" {
   value = data.aws_iam_role.director_role.unique_id
 }
 
+output "bosh_role_id" {
+  value = data.aws_iam_role.bosh_role.unique_id
+}
+
+output "om_role_id" {
+  value = data.aws_iam_role.bosh_role.unique_id
+}
+
 output "isse_role_id" {
   value = data.aws_iam_role.isse_role.unique_id
+}
+
+output "sjb_role_id" {
+  value = data.aws_iam_role.sjb_role.unique_id
+}
+
+output "concourse_role_id" {
+  value = data.aws_iam_role.concourse_role.unique_id
 }
 
 output "ent_tech_read_role_id" {
