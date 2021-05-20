@@ -57,9 +57,6 @@ data "terraform_remote_state" "bootstrap_scanner" {
 
 locals {
 
-  terraform_bucket_name = data.terraform_remote_state.bootstrap_control_plane.outputs.terraform_bucket_name
-  terraform_region      = data.terraform_remote_state.bootstrap_control_plane.outputs.terraform_region
-
   env_name        = var.global_vars.env_name
   modified_name   = "${local.env_name} scanner-commercial"
   env_name_suffix = upper(element(split(" ", local.env_name), length(split(" ", local.env_name)) - 1))
@@ -90,7 +87,7 @@ data "aws_region" "current" {
 }
 
 module "scanner" {
-  instance_count = 1
+  instance_count = var.disable_scanner ? 0 : 1
   source         = "../../modules/launch"
   ami_id         = data.aws_ami.scanner_ami.image_id
   //AWS_<region>_<JIRA Project Prefix>_<ENV>

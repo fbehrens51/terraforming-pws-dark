@@ -25,5 +25,9 @@ variable "internetless" {
   type = bool
 }
 
+variable "disable_scanner" {
+  type    = bool
+  default = false
+}
 
 
