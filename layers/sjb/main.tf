@@ -95,7 +95,14 @@ data "template_file" "setup_scripts" {
   template = <<EOF
 runcmd:
   - |
+    # set the home dirs to proper owners - users are recreated every time the vm is created, and the home dirs are persisted.
+    # If a user is added or deleted, that will break ownership of home dirs
+    awk -F: '$3 ~ /1[0-9]{3,3}/{ print "chown -R " $3 ":" $4 " " $6}' /etc/passwd | xargs --no-run-if-empty -0 sh -c
 write_files:
+  - path: /etc/skel/.hushlogin
+    permissions: '0755'
+    owner: root:root
+
   - path: /etc/skel/bin/write_ldaprc.sh
     permissions: '0755'
     owner: root:root
