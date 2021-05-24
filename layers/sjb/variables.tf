@@ -21,12 +21,18 @@ variable "pypi_host_secure" {
 variable "singleton_availability_zone" {
 }
 
-variable "source_artifacts" {
-  type    = list
-  default = ["pcf-eagle-automation", "terraforming-pws-dark"]
+variable "cp_target_name" {
+  type = string
 }
 
-variable "cp_target_name" {
-  type    = string
-  default = "set_this_in_sjb_layer"
+variable "git_host" {
+  type = string
+}
+
+variable "env_repo_name" {
+  type = string
+}
+
+variable "credhub_vars_name" {
+  type = string
 }

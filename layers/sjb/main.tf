@@ -60,21 +60,17 @@ data "terraform_remote_state" "bootstrap_control_plane" {
 }
 
 locals {
-  secrets_bucket_name   = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
+  secret_bucket_name    = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
   transfer_bucket_name  = data.terraform_remote_state.bootstrap_control_plane.outputs.transfer_bucket_name
   terraform_bucket_name = data.terraform_remote_state.bootstrap_control_plane.outputs.terraform_bucket_name
-  terraform_region      = data.terraform_remote_state.bootstrap_control_plane.outputs.terraform_region
   system_domain         = data.terraform_remote_state.paperwork.outputs.root_domain
-  # the six spaces after the "\n" is the required indent for the yaml 'write_files: -> content:' section
-  get_source = join("\n      ", [for artifact in var.source_artifacts : "get_source ${artifact}"])
-
-  ldap_dn          = data.terraform_remote_state.paperwork.outputs.ldap_dn
-  ldap_port        = data.terraform_remote_state.paperwork.outputs.ldap_port
-  ldap_host        = data.terraform_remote_state.paperwork.outputs.ldap_host
-  ldap_basedn      = data.terraform_remote_state.paperwork.outputs.ldap_basedn
-  ldap_ca_cert     = data.terraform_remote_state.paperwork.outputs.ldap_ca_cert_s3_path
-  ldap_client_cert = data.terraform_remote_state.paperwork.outputs.ldap_client_cert_s3_path
-  ldap_client_key  = data.terraform_remote_state.paperwork.outputs.ldap_client_key_s3_path
+  ldap_dn               = data.terraform_remote_state.paperwork.outputs.ldap_dn
+  ldap_port             = data.terraform_remote_state.paperwork.outputs.ldap_port
+  ldap_host             = data.terraform_remote_state.paperwork.outputs.ldap_host
+  ldap_basedn           = data.terraform_remote_state.paperwork.outputs.ldap_basedn
+  ldap_ca_cert          = data.terraform_remote_state.paperwork.outputs.ldap_ca_cert_s3_path
+  ldap_client_cert      = data.terraform_remote_state.paperwork.outputs.ldap_client_cert_s3_path
+  ldap_client_key       = data.terraform_remote_state.paperwork.outputs.ldap_client_key_s3_path
 }
 
 data "template_file" "setup_system_tools" {
@@ -93,121 +89,71 @@ EOF
 
 data "template_file" "setup_scripts" {
   template = <<EOF
-runcmd:
-  - |
-    # set the home dirs to proper owners - users are recreated every time the vm is created, and the home dirs are persisted.
-    # If a user is added or deleted, that will break ownership of home dirs
-    awk -F: '$3 ~ /1[0-9]{3,3}/{ print "chown -R " $3 ":" $4 " " $6}' /etc/passwd | xargs --no-run-if-empty -0 sh -c
 write_files:
-  - path: /etc/skel/.hushlogin
-    permissions: '0755'
-    owner: root:root
-
-  - path: /etc/skel/bin/write_ldaprc.sh
+  - path: /etc/skel/bin/install-pcf-eagle-automation.sh
     permissions: '0755'
     owner: root:root
     content: |
       #!/usr/bin/env bash
       set -eo pipefail
 
-      certs="$HOME/certs"
-      ldaprc="$HOME/.ldaprc"
-
-      [[ ! -d $certs ]] && mkdir "$certs"
-      aws --region ${var.region} s3 ls s3://${local.secrets_bucket_name} | awk '/ldap.*pem/ { print $4}' | xargs --no-run-if-empty -I{} aws --region ${var.region} s3 cp s3://${local.secrets_bucket_name}/{} "$certs"
-
-      echo -e "URI ldaps://${local.ldap_host}:${local.ldap_port}\nBASE ${local.ldap_basedn}\nBINDDN ${local.ldap_dn}\nDEREF never\nSASL_MECH EXTERNAL\nTLS_CACERT $certs/${local.ldap_ca_cert}\nTLS_CERT $certs/${local.ldap_client_cert}\nTLS_KEY $certs/${local.ldap_client_key}" > "$ldaprc"
-
-  - path: /etc/skel/bin/write_flyrc.sh
-    permissions: '0755'
-    owner: root:root
-    content: |
-      #!/usr/bin/env bash
-
-      flyrc="$HOME/.flyrc"
-      [ ! -e $flyrc ] && echo -e "targets:\n  ${var.cp_target_name}:\n    api: https://plane.ci.${local.system_domain}\n    insecure: true\n    team: main" > "$flyrc"
-
-  - path: /etc/skel/bin/write_terraformrc.sh
-    permissions: '0755'
-    owner: root:root
-    content: |
-      #!/usr/bin/env bash
-
-      terraformrc="$HOME/.terraformrc"
-      plugin_dir="$HOME/.terraform.d"
-      [ ! -d $plugin_dir ] && mkdir "$plugin_dir"
-      [ ! -e $terraformrc ] && echo -e "disable_checkpoint = true\nprovider_installation {\n  filesystem_mirror {\n    path = \"$plugin_dir\"\n  }\n}" > "$terraformrc"
-
-  - path: /etc/skel/bin/install-cli-tools.sh
-    permissions: '0755'
-    owner: root:root
-    content: |
-      #!/usr/bin/env bash
-      set -eo pipefail
-      [[ $(id -nu ) != root ]] && INSTALL="sudo install" || INSTALL="install"
-
-      echo "Downloading and extracting tools.zip"
-
-      latest=$(aws --region ${var.region} s3 ls s3://${local.transfer_bucket_name}/cli-tools/ | awk '/ tools.*\.zip$/ {print $4}' | sort -n | tail -1)
-      aws --region ${var.region} s3 cp s3://${local.transfer_bucket_name}/cli-tools/$latest . --no-progress
-
-      unzip -q $latest
-      $INSTALL tools/* /usr/local/bin/
-      rm -rf $latest tools
-
-  - path: /etc/skel/bin/install-terraform.sh
-    permissions: '0755'
-    owner: root:root
-    content: |
-      #!/usr/bin/env bash
-      set -eo pipefail
-      [[ $(id -nu ) != root ]] && INSTALL="sudo install" || INSTALL="install"
-
-      echo "Downloading and extracting terraform.zip"
-      TF="$HOME/terraform"
-      mkdir $TF
-
-      latest=$(aws --region ${local.terraform_region} s3 ls s3://${local.terraform_bucket_name}/terraform-bundle/ | awk '/ terraform-bundle.*\.zip$/ {print $4}' | sort -n | tail -1)
-      aws --region ${local.terraform_region} s3 cp s3://${local.terraform_bucket_name}/terraform-bundle/$latest . --no-progress
-
-      unzip -q -d "$TF" $latest
-      plugin_dir="$HOME/.terraform.d"
-
-      [ ! -d $plugin_dir ] && mkdir "$plugin_dir"
-
-      cp -pr "$TF/plugins" "$HOME/.terraform.d/"
-      $INSTALL "$TF/terraform" /usr/local/bin/
-
-      rm -rf "$latest" "$TF"
-
-  - path: /etc/skel/bin/install-source.sh
-    permissions: '0755'
-    owner: root:root
-    content: |
-      #!/usr/bin/env bash
-      set -eo pipefail
-
-      echo "Downloading and extracting sources"
+      transfer=$transfer_bucket_name
 
       workspace="$HOME/workspace"
       [ ! -d $workspace ] && mkdir -p "$workspace"
+
+      region="$( aws s3api get-bucket-location --output=text --bucket $transfer 2> /dev/null )"
+      [[ $region == null ]] && region='us-east-1'
 
       function get_source() {
         artifact=$1
         artifact_dir="$workspace/$artifact"
         # regex matches a valid semver - from semver.org
-        latest=$(aws --region us-east-2 s3 ls s3://${local.transfer_bucket_name}/$artifact/ \
+        latest=$(aws --region $region s3 ls s3://$transfer/$artifact/ \
                  | grep -Po "($artifact-(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?\.zip)$" \
                  | sort -V \
                  | tail -n 1 \
                 )
-        aws --region us-east-2 s3 cp --no-progress s3://${local.transfer_bucket_name}/$artifact/$latest . --no-progress
+        aws --region $region s3 cp --no-progress s3://$transfer/$artifact/$latest . --no-progress
         [ ! -d $artifact_dir ] && mkdir -p "$artifact_dir"
         unzip -q -d "$artifact_dir" "$latest"
         rm "$latest"
       }
 
-      ${local.get_source}
+      get_source "pcf-eagle-automation"
+
+  - path: /etd/profile.d/tws_env.sh
+    permissions: '0644'
+    owner: root:root
+    content: |
+      # File contents are created via terraform, do not edit manually.
+      #export terraform_bucket_name="${local.terraform_bucket_name}"
+      #export transfer_bucket_name="${local.transfer_bucket_name}"
+      #export secret_bucket_name="${local.secret_bucket_name}"
+      #export git_host="${var.git_host}"
+      #export credhub_vars_name="${var.credhub_vars_name}"
+      export env_repo_name="${var.env_repo_name}"
+      #export root_domain="${local.root_domain}"
+      #export cp_target_name="${var.cp_target_name}"
+      #export ldap_dn="${local.ldap_dn}"
+      #export ldap_port="${local.ldap_port}"
+      #export ldap_host="${local.ldap_host}"
+      #export ldap_basedn="${local.ldap_basedn}"
+      #export ldap_ca_cert="${local.ldap_ca_cert}"
+      #export ldap_client_cert="${local.ldap_client_cert}"
+      #export ldap_client_key="${local.ldap_client_key}"
+      #export AWS_DEFAULT_REGION="${var.region}"
+
+runcmd:
+  - |
+    # set the home dirs to proper owners - users are recreated every time the vm is created, and the home dirs are persisted.
+    # If a user is added or deleted, that will break ownership of home dirs
+    awk -F: '$3 ~ /1[0-9]{3,3}/{ print "chown -R " $3 ":" $4 " " $6}' /etc/passwd | xargs --no-run-if-empty -0 sh -c
+    export SJB="$HOME/workspace/pcf-eagle-automation/scripts/sjb"
+    transfer_bucket_name="${local.transfer_bucket_name}"   /etc/skel/bin/install-pcf-eagle-automation.sh
+    transfer_bucket_name="${local.transfer_bucket_name}"   $SJB/install-cli-tools.sh
+    terraform_bucket_name="${local.terraform_bucket_name}" $SJB/install-terraform.sh
+    root_domain="${local.root_domain}"                     $SJB/install-fly.sh
 EOF
 }
 
@@ -223,6 +169,7 @@ bootcmd:
     while [ ! -e /dev/sdf ] ; do echo "Waiting for device /dev/sdf"; sleep 1 ; done
     if [ "$(file -b -s -L /dev/sdf)" == "data" ]; then mkfs -t ext4 /dev/sdf; fi
     mount -t ext4 -o 'defaults,nofail,comment=cloudconfig' /dev/sdf /home
+    install -m 755 -d /etc/skel/bin
 
 mounts:
   - [ "/dev/sdf", "/home", "ext4", "defaults,nofail", "0", "2" ]
