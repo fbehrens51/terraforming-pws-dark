@@ -99,7 +99,7 @@ write_files:
 
       transfer=$transfer_bucket_name
 
-      [[ -n $HOME ]] && HOME=root # HOME is not set during system boot.
+      [[ ! -n $HOME ]] && HOME=root # HOME is not set during system boot.
 
       workspace="$HOME/workspace"
       [ ! -d $workspace ] && mkdir -p "$workspace"
