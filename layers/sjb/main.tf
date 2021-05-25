@@ -99,6 +99,8 @@ write_files:
 
       transfer=$transfer_bucket_name
 
+      [[ -n $HOME ]] && HOME=root # HOME is not set during system boot.
+
       workspace="$HOME/workspace"
       [ ! -d $workspace ] && mkdir -p "$workspace"
 
@@ -127,33 +129,32 @@ write_files:
     owner: root:root
     content: |
       # File contents are created via terraform, do not edit manually.
-      #export terraform_bucket_name="${local.terraform_bucket_name}"
-      #export transfer_bucket_name="${local.transfer_bucket_name}"
-      #export secret_bucket_name="${local.secret_bucket_name}"
-      #export git_host="${var.git_host}"
-      #export credhub_vars_name="${var.credhub_vars_name}"
+      export terraform_bucket_name="${local.terraform_bucket_name}"
+      export transfer_bucket_name="${local.transfer_bucket_name}"
+      export secret_bucket_name="${local.secret_bucket_name}"
+      export git_host="${var.git_host}"
+      export credhub_vars_name="${var.credhub_vars_name}"
       export env_repo_name="${var.env_repo_name}"
-      #export root_domain="${local.root_domain}"
-      #export cp_target_name="${var.cp_target_name}"
-      #export ldap_dn="${local.ldap_dn}"
-      #export ldap_port="${local.ldap_port}"
-      #export ldap_host="${local.ldap_host}"
-      #export ldap_basedn="${local.ldap_basedn}"
-      #export ldap_ca_cert="${local.ldap_ca_cert}"
-      #export ldap_client_cert="${local.ldap_client_cert}"
-      #export ldap_client_key="${local.ldap_client_key}"
-      #export AWS_DEFAULT_REGION="${var.region}"
+      export root_domain="${local.root_domain}"
+      export cp_target_name="${var.cp_target_name}"
+      export ldap_dn="${local.ldap_dn}"
+      export ldap_port="${local.ldap_port}"
+      export ldap_host="${local.ldap_host}"
+      export ldap_basedn="${local.ldap_basedn}"
+      export ldap_ca_cert="${local.ldap_ca_cert}"
+      export ldap_client_cert="${local.ldap_client_cert}"
+      export ldap_client_key="${local.ldap_client_key}"
+      export AWS_DEFAULT_REGION="${var.region}"
 
 runcmd:
   - |
     # set the home dirs to proper owners - users are recreated every time the vm is created, and the home dirs are persisted.
     # If a user is added or deleted, that will break ownership of home dirs
     awk -F: '$3 ~ /1[0-9]{3,3}/{ print "chown -R " $3 ":" $4 " " $6}' /etc/passwd | xargs --no-run-if-empty -0 sh -c
-    export SJB="$HOME/workspace/pcf-eagle-automation/scripts/sjb"
     transfer_bucket_name="${local.transfer_bucket_name}"   /etc/skel/bin/install-pcf-eagle-automation.sh
-    transfer_bucket_name="${local.transfer_bucket_name}"   $SJB/install-cli-tools.sh
-    terraform_bucket_name="${local.terraform_bucket_name}" $SJB/install-terraform.sh
-    root_domain="${local.root_domain}"                     $SJB/install-fly.sh
+    transfer_bucket_name="${local.transfer_bucket_name}"   /root/workspace/pcf-eagle-automation/scripts/sjb/install-cli-tools.sh
+    terraform_bucket_name="${local.terraform_bucket_name}" /root/workspace/pcf-eagle-automation/scripts/sjb/install-terraform.sh
+    root_domain="${local.root_domain}"                     /root/workspace/pcf-eagle-automation/scripts/sjb/install-fly.sh
 EOF
 }
 
