@@ -124,7 +124,7 @@ write_files:
 
       get_source "pcf-eagle-automation"
 
-  - path: /etd/profile.d/tws_env.sh
+  - path: /etc/profile.d/tws_env.sh
     permissions: '0644'
     owner: root:root
     content: |
