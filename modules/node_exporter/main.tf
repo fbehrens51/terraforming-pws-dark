@@ -29,6 +29,7 @@ merge_how:
 users:
 - name: node_exporter
   system: true
+  shell: /sbin/nologin
 
 write_files:
   - content: |
@@ -75,10 +76,9 @@ write_files:
 runcmd:
   - |
     set -ex
-    mkdir node_exporter
-    cd node_exporter
-    wget --quiet --no-check-certificate -O - "${var.node_exporter_location}" | tar xzf - --strip-components=1
-    mv node_exporter /usr/sbin/node_exporter
+    wget --quiet --no-check-certificate -O - "${var.node_exporter_location}" | tar --strip-components=1 --wildcards -xzf - '*/node_exporter'
+    install -o root -g root -m 755 node_exporter /usr/sbin
+    rm node_exporter
     systemctl daemon-reload
     systemctl start node_exporter
     systemctl enable node_exporter.service
