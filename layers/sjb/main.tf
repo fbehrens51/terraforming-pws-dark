@@ -63,7 +63,6 @@ locals {
   secret_bucket_name    = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
   transfer_bucket_name  = data.terraform_remote_state.bootstrap_control_plane.outputs.transfer_bucket_name
   terraform_bucket_name = data.terraform_remote_state.bootstrap_control_plane.outputs.terraform_bucket_name
-  system_domain         = data.terraform_remote_state.paperwork.outputs.root_domain
   ldap_dn               = data.terraform_remote_state.paperwork.outputs.ldap_dn
   ldap_port             = data.terraform_remote_state.paperwork.outputs.ldap_port
   ldap_host             = data.terraform_remote_state.paperwork.outputs.ldap_host
@@ -71,20 +70,7 @@ locals {
   ldap_ca_cert          = data.terraform_remote_state.paperwork.outputs.ldap_ca_cert_s3_path
   ldap_client_cert      = data.terraform_remote_state.paperwork.outputs.ldap_client_cert_s3_path
   ldap_client_key       = data.terraform_remote_state.paperwork.outputs.ldap_client_key_s3_path
-}
-
-data "template_file" "setup_system_tools" {
-  template = <<EOF
-runcmd:
-  - echo "Installing up system tools and utilities"
-  - yum install jq git python-pip python3 openldap-clients -y
-  - pip3 install yq --index-url=$${pypi_host_protocol}://$${pypi_host}/simple --trusted-host=$${pypi_host}
-EOF
-
-  vars = {
-    pypi_host          = var.pypi_host
-    pypi_host_protocol = var.pypi_host_secure ? "https" : "http"
-  }
+  pypi_protocol         = var.pypi_host_secure ? "https" : "http"
 }
 
 data "template_file" "setup_scripts" {
@@ -148,6 +134,10 @@ write_files:
 
 runcmd:
   - |
+    # echo "Installing up system tools and utilities"
+    yum install jq git python-pip python3 openldap-clients -y
+    pip3 install yq --index-url=${local.pypi_protocol}://${var.pypi_host}/simple --trusted-host=${var.pypi_host}
+
     # set the home dirs to proper owners - users are recreated every time the vm is created, and the home dirs are persisted.
     # If a user is added or deleted, that will break ownership of home dirs
     awk -F: '$3 ~ /1[0-9]{3,3}/{ print "chown -R " $3 ":" $4 " " $6}' /etc/passwd | xargs --no-run-if-empty -0 sh -c
@@ -210,13 +200,6 @@ data "template_cloudinit_config" "user_data" {
     filename     = "terraform_zip.cfg"
     content_type = "text/cloud-config"
     content      = data.template_file.setup_scripts.rendered
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
-  }
-
-  part {
-    filename     = "system_tools.cfg"
-    content_type = "text/cloud-config"
-    content      = data.template_file.setup_system_tools.rendered
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
