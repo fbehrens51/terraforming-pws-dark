@@ -109,7 +109,14 @@ resource "aws_s3_bucket" "compliance_scanner_bucket" {
   versioning {
     enabled = false
   }
-
+  //  using account's default S3 encryption key
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "aws:kms"
+      }
+    }
+  }
   logging {
     target_bucket = local.s3_logs_bucket
     target_prefix = "${local.bucket_name}/"

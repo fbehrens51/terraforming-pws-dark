@@ -144,6 +144,7 @@ resource "aws_s3_bucket" "s3_logs_bucket" {
   acl           = "log-delivery-write"
   force_destroy = var.force_destroy_buckets
 
+
   tags = {
     "Name" = "${local.env_name_prefix} S3 Logs Bucket"
   }
@@ -177,7 +178,14 @@ resource "aws_s3_bucket_policy" "s3_logs_bucket_policy_attachment" {
 resource "aws_s3_bucket" "reporting_bucket" {
   bucket_prefix = local.reporting_bucket_name
   force_destroy = var.force_destroy_buckets
-
+  //  using account's default S3 encryption key
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "aws:kms"
+      }
+    }
+  }
   logging {
     target_bucket = aws_s3_bucket.s3_logs_bucket.bucket
     target_prefix = "${local.reporting_bucket_name}/"
