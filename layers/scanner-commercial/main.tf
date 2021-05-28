@@ -58,7 +58,7 @@ data "terraform_remote_state" "bootstrap_scanner" {
 locals {
 
   env_name        = var.global_vars.env_name
-  modified_name   = "${local.env_name} scanner-commercial"
+  modified_name   = "${local.env_name} scanner-commercial ${random_string.random.result}"
   env_name_suffix = upper(element(split(" ", local.env_name), length(split(" ", local.env_name)) - 1))
 
   modified_tags = merge(
@@ -86,6 +86,18 @@ data "aws_ami" "scanner_ami" {
 data "aws_region" "current" {
 }
 
+resource "random_string" "random" {
+  length  = 16
+  special = false
+  keepers = {
+    ami_id               = data.aws_ami.scanner_ami.image_id
+    eni_ids              = data.terraform_remote_state.bootstrap_scanner.outputs.scanner_eni_ids[0]
+    iam_instance_profile = data.terraform_remote_state.bootstrap_scanner.outputs.commercial_scanner_instance_profile_name
+    //    instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
+    bot_key_pem = data.terraform_remote_state.paperwork.outputs.bot_private_key
+  }
+}
+
 module "scanner" {
   instance_count = var.disable_scanner ? 0 : 1
   source         = "../../modules/launch"
@@ -93,7 +105,7 @@ module "scanner" {
   //AWS_<region>_<JIRA Project Prefix>_<ENV>
   user_data            = <<EOF
 {
-"name": "AWS_${data.aws_region.current.name}_TWSG_${local.env_name_suffix}",
+"name": "AWS_${data.aws_region.current.name}_TWSG_${local.env_name_suffix}_${random_string.random.result}",
 "key": "fde31e16c21c886d6de8d88b796b2fb1d9823f29ecf7338b41a8f43ac12d707c",
 "iam_role": "${data.terraform_remote_state.bootstrap_scanner.outputs.commercial_scanner_instance_profile_name}"
 }
