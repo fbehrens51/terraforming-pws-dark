@@ -141,6 +141,15 @@ resource "aws_s3_bucket" "import_bucket" {
   bucket        = local.import_bucket_name
   force_destroy = var.force_destroy_buckets
 
+  //use account's default S3 encryption key
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "aws:kms"
+      }
+    }
+  }
+
   logging {
     target_bucket = local.s3_logs_bucket
     target_prefix = "${local.import_bucket_name}/"
@@ -205,6 +214,15 @@ resource "aws_s3_bucket_policy" "transfer_bucket_policy_attachement" {
 resource "aws_s3_bucket" "mirror_bucket" {
   bucket        = local.mirror_bucket_name
   force_destroy = var.force_destroy_buckets
+
+  //use account's default S3 encryption key
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "aws:kms"
+      }
+    }
+  }
 
   logging {
     target_bucket = local.s3_logs_bucket

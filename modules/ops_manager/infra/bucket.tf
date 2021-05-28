@@ -8,6 +8,15 @@ resource "aws_s3_bucket" "ops_manager_bucket" {
   bucket        = local.om_bucket_name
   force_destroy = var.force_destroy_buckets
 
+  //use account's default S3 encryption key
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "aws:kms"
+      }
+    }
+  }
+
   logging {
     target_bucket = var.s3_logs_bucket
     target_prefix = "${local.om_bucket_name}/"
