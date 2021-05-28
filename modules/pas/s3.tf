@@ -4,6 +4,15 @@ resource "aws_s3_bucket" "buildpacks_bucket" {
   bucket        = local.buildpacks_bucket_name
   force_destroy = var.force_destroy_buckets
 
+  //use account's default S3 encryption key
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "aws:kms"
+      }
+    }
+  }
+
   versioning {
     enabled = var.create_versioned_pas_buckets
   }
@@ -26,6 +35,15 @@ resource "aws_s3_bucket" "droplets_bucket" {
 
   bucket        = local.droplets_bucket_name
   force_destroy = var.force_destroy_buckets
+
+  //use account's default S3 encryption key
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "aws:kms"
+      }
+    }
+  }
 
   versioning {
     enabled = var.create_versioned_pas_buckets
@@ -50,6 +68,16 @@ resource "aws_s3_bucket" "packages_bucket" {
   bucket        = local.packages_bucket_name
   force_destroy = var.force_destroy_buckets
 
+
+  //use account's default S3 encryption key
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "aws:kms"
+      }
+    }
+  }
+
   versioning {
     enabled = var.create_versioned_pas_buckets
   }
@@ -72,6 +100,16 @@ resource "aws_s3_bucket" "resources_bucket" {
 
   bucket        = local.resources_bucket_name
   force_destroy = var.force_destroy_buckets
+
+
+  //use account's default S3 encryption key
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "aws:kms"
+      }
+    }
+  }
 
   versioning {
     enabled = var.create_versioned_pas_buckets
@@ -99,6 +137,16 @@ resource "aws_s3_bucket" "buildpacks_backup_bucket" {
 
   count = var.create_backup_pas_buckets ? 1 : 0
 
+
+  //use account's default S3 encryption key
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "aws:kms"
+      }
+    }
+  }
+
   logging {
     target_bucket = var.s3_logs_bucket
     target_prefix = "${local.buildpacks_backup_bucket_name}/"
@@ -117,6 +165,16 @@ resource "aws_s3_bucket" "droplets_backup_bucket" {
   force_destroy = var.force_destroy_buckets
 
   count = var.create_backup_pas_buckets ? 1 : 0
+
+
+  //use account's default S3 encryption key
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "aws:kms"
+      }
+    }
+  }
 
   logging {
     target_bucket = var.s3_logs_bucket
@@ -137,6 +195,16 @@ resource "aws_s3_bucket" "packages_backup_bucket" {
 
   count = var.create_backup_pas_buckets ? 1 : 0
 
+
+  //use account's default S3 encryption key
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "aws:kms"
+      }
+    }
+  }
+
   logging {
     target_bucket = var.s3_logs_bucket
     target_prefix = "${local.packages_backup_bucket_name}/"
@@ -155,6 +223,16 @@ resource "aws_s3_bucket" "resources_backup_bucket" {
   force_destroy = var.force_destroy_buckets
 
   count = var.create_backup_pas_buckets ? 1 : 0
+
+
+  //use account's default S3 encryption key
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "aws:kms"
+      }
+    }
+  }
 
   logging {
     target_bucket = var.s3_logs_bucket

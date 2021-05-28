@@ -34,6 +34,14 @@ resource "aws_s3_bucket" "director_blobstore_bucket" {
   bucket        = local.blobstore_bucket_name
   force_destroy = var.force_destroy_buckets
 
+  //use account's default S3 encryption key
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "aws:kms"
+      }
+    }
+  }
   versioning {
     enabled = true
   }
