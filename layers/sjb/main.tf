@@ -143,7 +143,7 @@ runcmd:
     awk -F: '$3 ~ /1[0-9]{3,3}/{ print "chown -R " $3 ":" $4 " " $6}' /etc/passwd | xargs --no-run-if-empty -0 sh -c
     transfer_bucket_name="${local.transfer_bucket_name}"   /etc/skel/bin/install-pcf-eagle-automation.sh
     transfer_bucket_name="${local.transfer_bucket_name}"   /root/workspace/pcf-eagle-automation/scripts/sjb/install-cli-tools.sh
-    terraform_bucket_name="${local.terraform_bucket_name}" /root/workspace/pcf-eagle-automation/scripts/sjb/install-terraform.sh
+    terraform_bucket_name="${local.terraform_bucket_name}" HOME="/root" /root/workspace/pcf-eagle-automation/scripts/sjb/install-terraform.sh
     root_domain="${local.root_domain}"                     /root/workspace/pcf-eagle-automation/scripts/sjb/install-fly.sh
 EOF
 }
