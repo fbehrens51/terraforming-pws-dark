@@ -72,6 +72,8 @@
     ca_path /etc/td-agent/ca.pem
     cert_path /etc/td-agent/cert.pem
     private_key_path /etc/td-agent/key.pem
+    version TLSv1_2
+    ciphers "EECDH+AESGCM:EDH+AESGCM"
   </transport>
   <parse>
     message_format auto
@@ -90,6 +92,8 @@
     ca_path /etc/td-agent/ca.pem
     cert_path /etc/td-agent/cert.pem
     private_key_path /etc/td-agent/key.pem
+    version TLSv1_2
+    ciphers "EECDH+AESGCM:EDH+AESGCM"
   </transport>
   <parse>
     message_format auto
@@ -128,6 +132,8 @@
     ca_path /etc/td-agent/ca.pem
     cert_path /etc/td-agent/cert.pem
     private_key_path /etc/td-agent/key.pem
+    version TLSv1_2
+    ciphers "EECDH+AESGCM:EDH+AESGCM"
   </transport>
   <parse>
     message_format auto

@@ -35,7 +35,12 @@ runcmd:
       'smtpd_tls_key_file = /etc/postfix/smtpd_server_key.pem'\
       'smtpd_enforce_tls = yes' \
       'smtpd_tls_auth_only = yes' \
+      'tls_preempt_cipherlist = yes' \
+      'smtpd_tls_mandatory_ciphers = high' \
       'smtpd_tls_mandatory_protocols=TLSv1.2' \
+      'tls_high_cipherlist = ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384' \
+      'smtpd_tls_mandatory_exclude_ciphers = MD5, DES, ADH, RC4, PSD, SRP, 3DES, eNULL, aNULL' \
+      'smtpd_tls_exclude_ciphers = MD5, DES, ADH, RC4, PSD, SRP, 3DES, eNULL, aNULL' \
       'smtpd_tls_protocols=TLSv1.2' \
       'smtpd_tls_loglevel = 1' \
       'smtpd_tls_session_cache_database = btree:/var/lib/postfix/smtpd_tls_session_cache' \
