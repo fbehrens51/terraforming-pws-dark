@@ -10,7 +10,10 @@ runcmd:
   - |
     # password "set date" is yesterday so we'll pass a compliance scan the same day the servers were rebuilt
     awk -F: '$3 >= 1000 && $1 != "nfsnobody" {print $1}' /etc/passwd | xargs --no-run-if-empty -I{} chage --lastday $( date -d yesterday '+%F' ) {}
+    # chown and chmod all user directories after they've been created
     awk -F: '$3 >= 1000 && $1 != "nfsnobody" {print "chown -R " $3 ":" $4 " " $6 "\nchmod 700 " $6}' /etc/passwd | xargs --no-run-if-empty -0 sh -c
+    # defer setting umask until after all of the yum installs have completed.
+    sed -i -E -e '/umask (002|022)/s/(002|022)/027/' /etc/profile /etc/bashrc
 EOF
 
 }
