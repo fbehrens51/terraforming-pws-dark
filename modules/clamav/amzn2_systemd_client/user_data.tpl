@@ -18,12 +18,12 @@ write_files:
 runcmd:
   - |
     set -ex
-    set -ex
     mkdir pkg
-    cd pkg
+    pushd pkg
     wget -q --no-check-certificate -O - "${clamav_rpms_pkg_object_url}" | tar xzf -
     yum localinstall * -y
-    rm -f *.rpm
+    popd
+    rm -rf pkg
     augtool set /files/etc/freshclam.conf/LogSyslog yes
     augtool rm /files/etc/freshclam.conf/DatabaseMirror
     augtool set /files/etc/freshclam.conf/PrivateMirror ${clam_database_mirror}
