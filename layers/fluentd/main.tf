@@ -172,6 +172,12 @@ data "template_cloudinit_config" "user_data" {
   }
 
   part {
+    filename     = "hardening.cfg"
+    content_type = "text/x-include-url"
+    content      = data.terraform_remote_state.paperwork.outputs.server_hardening_user_data
+  }
+
+  part {
     filename     = "tag_completion.cfg"
     content_type = "text/x-include-url"
     content      = data.terraform_remote_state.paperwork.outputs.completion_tag_user_data

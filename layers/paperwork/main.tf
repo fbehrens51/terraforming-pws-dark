@@ -309,6 +309,12 @@ module "amazon2_system_certs_user_data" {
   public_bucket_url  = local.public_bucket_url
 }
 
+module "server_hardening_config" {
+  source             = "../../modules/cloud_init/server_hardening"
+  public_bucket_name = aws_s3_bucket.public_bucket.bucket
+  public_bucket_url  = local.public_bucket_url
+}
+
 module "custom_banner_config" {
   source             = "../../modules/cloud_init/custom_banner"
   ssh_banner         = file(var.custom_ssh_banner_file)
@@ -1068,6 +1074,10 @@ output "amazon2_system_certs_user_data" {
 
 output "amazon2_clamav_user_data" {
   value = module.amazon2_clam_av_client_config.amazon2_clamav_user_data
+}
+
+output "server_hardening_user_data" {
+  value = module.server_hardening_config.server_hardening_user_data
 }
 
 output "custom_banner_user_data" {

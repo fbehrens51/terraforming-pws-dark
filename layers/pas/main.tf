@@ -77,6 +77,12 @@ data "template_cloudinit_config" "nat_user_data" {
   }
 
   part {
+    filename     = "hardening.cfg"
+    content_type = "text/x-include-url"
+    content      = data.terraform_remote_state.paperwork.outputs.server_hardening_user_data
+  }
+
+  part {
     filename     = "bot_user_accounts_user_data.cfg"
     content_type = "text/x-include-url"
     content      = data.terraform_remote_state.paperwork.outputs.bot_user_accounts_user_data
