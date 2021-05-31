@@ -48,6 +48,12 @@ write_files:
       tls_server_config:
         cert_file: /etc/node_exporter/cert.pem
         key_file: /etc/node_exporter/key.pem
+        cipher_suites:
+          - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+          - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+          - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+          - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+
     path: /etc/node_exporter/web-config.yml
     permissions: '0644'
     owner: root:root
