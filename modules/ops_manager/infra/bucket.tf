@@ -58,3 +58,4 @@ resource "aws_s3_bucket" "director_blobstore_bucket" {
     },
   )
 }
+
