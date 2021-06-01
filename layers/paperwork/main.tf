@@ -260,6 +260,16 @@ resource "aws_s3_bucket" "public_bucket" {
   bucket_prefix = local.public_bucket_name
   force_destroy = var.force_destroy_buckets
 
+
+  //use sse-s3 instead of KMS for public bucket to allow https call to continue to work
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+
   logging {
     target_bucket = aws_s3_bucket.s3_logs_bucket.bucket
     target_prefix = "${local.public_bucket_name}/"
