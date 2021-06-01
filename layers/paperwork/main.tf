@@ -1125,7 +1125,7 @@ output "isse_role_id" {
   value = data.aws_iam_role.isse_role.unique_id
 }
 
-output "ent_teach_read_role_id" {
+output "ent_tech_read_role_id" {
   value = data.aws_iam_role.ent_tech_read_role.unique_id
 }
 
