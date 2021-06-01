@@ -43,10 +43,6 @@ data "terraform_remote_state" "pas" {
   }
 }
 
-data "terraform_remote_state" "ops_manager" {
-  backend = "s3"
-}
-
 locals {
   director_role_name    = data.terraform_remote_state.paperwork.outputs.director_role_name
   director_role_id      = data.terraform_remote_state.paperwork.outputs.director_role_id
