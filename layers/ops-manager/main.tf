@@ -128,6 +128,11 @@ module "ops_manager_backup_bucket_policy" {
   disable_delete      = false
 }
 
+resource "aws_s3_bucket_policy" "ops_manager_backup_bucket_policy_attachment" {
+  bucket = data.terraform_remote_state.pas.outputs.ops_manager_bucket
+  policy = module.ops_manager_backup_bucket_policy.json
+}
+
 output "ops_manager_private_ip" {
   value = module.ops_manager.private_ips[0]
 }
