@@ -44,18 +44,23 @@ data "terraform_remote_state" "bootstrap_control_plane" {
 }
 
 locals {
-  director_role_name = data.terraform_remote_state.paperwork.outputs.director_role_name
-  om_eni_id          = data.terraform_remote_state.bootstrap_control_plane.outputs.om_eni_id
-  env_name           = var.global_vars.env_name
-  modified_name      = "${var.global_vars.name_prefix} cp ops-manager"
-  modified_tags = merge(
-    var.global_vars["global_tags"],
-    var.global_vars["instance_tags"],
-    {
-      "Name"       = local.modified_name
-      "MetricsKey" = data.terraform_remote_state.paperwork.outputs.metrics_key,
-      "job"        = "cp_ops_manager",
-    },
+  director_role_name         = data.terraform_remote_state.paperwork.outputs.director_role_name
+  director_role_id           = data.terraform_remote_state.paperwork.outputs.director_role_id
+  super_user_role_ids        = data.terraform_remote_state.paperwork.outputs.super_user_role_ids
+  isse_role_id               = data.terraform_remote_state.paperwork.outputs.isse_role_id
+  ent_tech_read_role_id      = data.terraform_remote_state.paperwork.outputs.ent_tech_read_role_id
+  super_user_id              = data.terraform_remote_state.paperwork.outputs.super_user_ids
+  om_eni_id                  = data.terraform_remote_state.bootstrap_control_plane.outputs.om_eni_id
+  env_name                   = var.global_vars.env_name
+  modified_name              = "${var.global_vars.name_prefix} cp ops-manager"
+  modified_tags              = merge(
+  var.global_vars["global_tags"],
+  var.global_vars["instance_tags"],
+  {
+    "Name"       = local.modified_name
+    "MetricsKey" = data.terraform_remote_state.paperwork.outputs.metrics_key,
+    "job"        = "cp_ops_manager",
+  },
   )
   om_user_accounts_user_data = data.terraform_remote_state.paperwork.outputs.om_user_accounts_user_data
 }
@@ -108,9 +113,22 @@ module "ops_manager_user_data" {
   clamav_db_mirror          = var.clamav_db_mirror
   clamav_deb_pkg_object_url = var.clamav_deb_pkg_object_url
   tag_completion_user_data  = data.terraform_remote_state.paperwork.outputs.completion_tag_om_user_data
-
 }
 
+module "ops_manager_backup_bucket_policy" {
+  source     = "../../modules/bucket/policy/generic"
+  bucket_arn = data.terraform_remote_state.bootstrap_control_plane.outputs.ops_manager_bucket_arn
+
+  read_write_role_ids = concat(local.super_user_role_ids, [local.director_role_id])
+  read_write_user_ids = local.super_user_role_ids
+  read_only_role_ids  = [local.isse_role_id, local.ent_tech_read_role_id]
+  disable_delete      = false
+}
+
+resource "aws_s3_bucket_policy" "ops_manager_backup_bucket_policy_attachment" {
+  bucket = data.terraform_remote_state.bootstrap_control_plane.outputs.ops_manager_bucket_name
+  policy = module.ops_manager_backup_bucket_policy.json
+}
 
 output "ops_manager_private_ip" {
   value = module.ops_manager.private_ips[0]

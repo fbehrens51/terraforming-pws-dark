@@ -112,6 +112,10 @@ output "ops_manager_bucket_name" {
   value = module.ops_manager.bucket
 }
 
+output "ops_manager_bucket_arn" {
+  value = module.ops_manager.bucket_arn
+}
+
 output "director_blobstore_bucket" {
   value = module.ops_manager.director_blobstore_bucket
 }
