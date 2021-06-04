@@ -124,39 +124,19 @@ resource "tls_locally_signed_cert" "user" {
   early_renewal_hours = 4320 # 180 days
 }
 
-data "external" "pem-to-der" {
-  for_each = local.users_with_certs
-  program  = ["bash", "${path.module}/pem-to-der.sh"]
 
-  query = {
-    pem = tls_locally_signed_cert.user[each.key].cert_pem
+output "users_with_ldap_entries" {
+  value = local.users_with_ldap_entries
+}
+
+output "combined_users_with_certs" {
+  value = {
+    for key, value in local.users_with_certs : key => merge(value,
+      {
+        cert_pem        = tls_locally_signed_cert.user[key].cert_pem
+        private_key_pem = tls_private_key.user[key].private_key_pem
+      }
+    )
   }
+  sensitive = true
 }
-
-data "external" "create-p12" {
-  for_each = local.users_with_certs
-  program  = ["bash", "${path.module}/create-p12.sh"]
-
-  query = {
-    passphrase = each.value.common_name
-    pem        = tls_locally_signed_cert.user[each.key].cert_pem
-    key        = tls_private_key.user[each.key].private_key_pem
-  }
-}
-
-resource aws_s3_bucket_object user_p12 {
-  for_each       = local.users_with_certs
-  bucket         = "eagle-ci-blobs"
-  key            = "ldap-user-keys/${each.key}.p12"
-  content_base64 = data.external.create-p12[each.key].result.p12
-}
-
-output "user_ldifs" {
-  value = templatefile("${path.module}/users.ldif.tpl", {
-    users = { for key, value in local.users_with_ldap_entries : key => merge(value, {
-      der = data.external.pem-to-der[key].result.der
-    }) }
-  })
-}
-
-
