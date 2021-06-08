@@ -38,13 +38,14 @@ data "template_file" "td_agent_configuration" {
   template = file("${path.module}/td-agent.tpl")
 
   vars = {
-    syslog_port                = module.ports.syslog_port
-    s3_logs_bucket             = var.s3_logs_bucket
-    region                     = var.region
-    cloudwatch_log_group_name  = var.cloudwatch_log_group_name
-    cloudwatch_log_stream_name = var.cloudwatch_log_stream_name
-    s3_audit_logs_bucket       = var.s3_audit_logs_bucket
-    s3_path                    = var.s3_path
+    syslog_port                     = module.ports.syslog_port
+    s3_logs_bucket                  = var.s3_logs_bucket
+    region                          = var.region
+    cloudwatch_audit_log_group_name = var.cloudwatch_audit_log_group_name
+    cloudwatch_log_group_name       = var.cloudwatch_log_group_name
+    cloudwatch_log_stream_name      = var.cloudwatch_log_stream_name
+    s3_audit_logs_bucket            = var.s3_audit_logs_bucket
+    s3_path                         = var.s3_path
   }
 }
 

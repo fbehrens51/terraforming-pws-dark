@@ -302,16 +302,45 @@
     </regexp>
   </filter>
 
+  <filter **>
+    @type record_transformer
+    renew_record true
+    keep_keys event
+  </filter>
+
+  <filter **>
+    @type record_transformer
+    remove_keys $.event.actor_type,$.event.actor_username,$.event.actee_type,$.event.organization_guid,$.event.space_guid,$.event.metadata
+  </filter>
+
+  # Send to cloudwatch
   <match **>
-    @type prometheus
-    <metric>
-      name fluentd_cf_events
-      type counter
-      desc Cloud Foundry Audit Event Counter
-      <labels>
-        type $.event.type
-      </labels>
-    </metric>
+    @type copy
+
+    <store>
+      @type stdout
+    </store>
+
+    <store>
+      @type cloudwatch_logs
+      region ${region}
+      log_group_name ${cloudwatch_audit_log_group_name}
+      log_stream_name ${cloudwatch_log_stream_name}
+      auto_create_stream true
+      json_handler yajl
+    </store>
+
+    <store>
+      @type prometheus
+      <metric>
+        name fluentd_cf_events
+        type counter
+        desc Cloud Foundry Audit Event Counter
+        <labels>
+          type $.event.type
+        </labels>
+      </metric>
+    </store>
   </match>
 </label>
 

@@ -101,7 +101,8 @@ locals {
 
   formatted_env_name = replace(local.env_name, " ", "-")
 
-  log_group_name = "${replace(local.env_name, " ", "_")}_log_group"
+  audit_log_group_name = "${replace(local.env_name, " ", "_")}_audit_log_group"
+  log_group_name       = "${replace(local.env_name, " ", "_")}_log_group"
 
   s3_logs_bucket = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
 
@@ -200,6 +201,12 @@ module "syslog_audit_archive_bucket_policy" {
 resource "aws_s3_bucket_policy" "syslog_audit_archive_bucket_policy_attachment" {
   bucket = aws_s3_bucket.syslog_audit_archive.bucket
   policy = module.syslog_audit_archive_bucket_policy.json
+}
+
+resource "aws_cloudwatch_log_group" "fluentd_audit_syslog_group" {
+  name       = local.audit_log_group_name
+  kms_key_id = data.terraform_remote_state.paperwork.outputs.kms_key_arn
+  tags       = local.modified_tags
 }
 
 resource "aws_cloudwatch_log_group" "fluentd_syslog_group" {
@@ -339,6 +346,10 @@ output "fluentd_eni_ips" {
 
 output "volume_id" {
   value = aws_ebs_volume.fluentd_data.*.id
+}
+
+output "audit_log_group_name" {
+  value = aws_cloudwatch_log_group.fluentd_audit_syslog_group.name
 }
 
 output "log_group_name" {

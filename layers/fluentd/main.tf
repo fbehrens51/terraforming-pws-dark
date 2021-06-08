@@ -76,8 +76,9 @@ locals {
     },
   )
 
-  log_group_name  = data.terraform_remote_state.bootstrap_fluentd.outputs.log_group_name
-  log_stream_name = "\"fluentd_syslog_#{ENV['AWSAZ']}\""
+  audit_log_group_name = data.terraform_remote_state.bootstrap_fluentd.outputs.audit_log_group_name
+  log_group_name       = data.terraform_remote_state.bootstrap_fluentd.outputs.log_group_name
+  log_stream_name      = "\"fluentd_syslog_#{ENV['AWSAZ']}\""
 
   encrypted_amazon2_ami_id = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
 
@@ -108,12 +109,13 @@ module "configuration" {
 
   fluentd_bundle_key = var.fluentd_bundle_key
 
-  cloudwatch_log_group_name  = local.log_group_name
-  cloudwatch_log_stream_name = local.log_stream_name
-  s3_logs_bucket             = data.terraform_remote_state.bootstrap_fluentd.outputs.s3_bucket_syslog_archive
-  s3_audit_logs_bucket       = data.terraform_remote_state.bootstrap_fluentd.outputs.s3_bucket_syslog_audit_archive
-  region                     = var.region
-  s3_path                    = "logs/"
+  cloudwatch_audit_log_group_name = local.audit_log_group_name
+  cloudwatch_log_group_name       = local.log_group_name
+  cloudwatch_log_stream_name      = local.log_stream_name
+  s3_logs_bucket                  = data.terraform_remote_state.bootstrap_fluentd.outputs.s3_bucket_syslog_archive
+  s3_audit_logs_bucket            = data.terraform_remote_state.bootstrap_fluentd.outputs.s3_bucket_syslog_audit_archive
+  region                          = var.region
+  s3_path                         = "logs/"
 }
 
 data "template_cloudinit_config" "user_data" {
