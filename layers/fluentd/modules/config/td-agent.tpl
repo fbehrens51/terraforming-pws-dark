@@ -318,10 +318,6 @@
     @type copy
 
     <store>
-      @type stdout
-    </store>
-
-    <store>
       @type cloudwatch_logs
       region ${region}
       log_group_name ${cloudwatch_audit_log_group_name}
