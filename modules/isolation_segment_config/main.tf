@@ -31,6 +31,9 @@ variable "syslog_port" {
 variable "syslog_ca_cert" {
 }
 
+variable "env_name" {
+}
+
 variable "pas_subnet_availability_zones" {
   type = list(string)
 }
@@ -69,6 +72,7 @@ data "aws_subnet" "isolation_segment_subnets" {
 
   tags = {
     isolation_segment = var.iso_seg_name
+    env               = var.env_name
   }
 }
 

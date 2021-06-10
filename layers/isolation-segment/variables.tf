@@ -13,3 +13,7 @@ variable "singleton_availability_zone" {
 
 variable "vanity_cert_enabled" {
 }
+
+variable "global_vars" {
+  type = any
+}
