@@ -263,3 +263,38 @@ module "sjb" {
   bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
   check_cloud_init     = false
 }
+
+resource "null_resource" "sjb_status" {
+  count = 1
+  triggers = {
+    instance_id = module.sjb.instance_ids[count.index]
+  }
+
+  provisioner "local-exec" {
+    on_failure  = fail
+    interpreter = ["/bin/bash", "-c"]
+    command     = <<-EOF
+    #!/usr/bin/env bash
+    set -e
+    completed_tag="cloud_init_done"
+    poll_tags="aws ec2 describe-tags --filters Name=resource-id,Values=${module.sjb.instance_ids[count.index]} Name=key,Values=$completed_tag --output text --query Tags[*].Value"
+    echo "running $poll_tags"
+    tags="$($poll_tags)"
+    COUNTER=0
+    LOOP_LIMIT=30
+    while [[ "$tags" == "" ]] ; do
+      if [[ $COUNTER -eq $LOOP_LIMIT ]]; then
+        echo "timed out waiting for $completed_tag to be set"
+        exit 1
+      fi
+      if [[ $COUNTER -gt 0 ]]; then
+        echo "$completed_tag not set, sleeping for 10s"
+        sleep 10s
+      fi
+      tags="$($poll_tags)"
+      let COUNTER=COUNTER+1
+    done
+    echo "$completed_tag = $tags"
+    EOF
+  }
+}
