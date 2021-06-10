@@ -91,7 +91,7 @@ write_files:
       [ ! -d $workspace ] && mkdir -p "$workspace"
 
       region="$( aws s3api get-bucket-location --output=text --bucket $transfer 2> /dev/null )"
-      [[ $region == null ]] && region='us-east-1'
+      [[ $region == None ]] && region='us-east-1'
 
       function get_source() {
         artifact=$1
