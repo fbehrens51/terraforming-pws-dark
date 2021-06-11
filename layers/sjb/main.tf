@@ -159,7 +159,11 @@ bootcmd:
     set -ex
     while [ ! -e /dev/sdf ] ; do echo "Waiting for device /dev/sdf"; sleep 1 ; done
     if [ "$(file -b -s -L /dev/sdf)" == "data" ]; then mkfs -t ext4 /dev/sdf; fi
-    mount -t ext4 -o 'defaults,nofail,comment=cloudconfig' /dev/sdf /home
+    if mountpoint -q /home; then
+      umount /home
+      sed -i '/^\/dev\/vg0\/home/d' /etc/fstab
+    fi
+    mount -t ext4 -o 'defaults,nofail,comment=TF_user_data' /dev/sdf /home
     install -m 755 -d /etc/skel/bin
 
 mounts:
