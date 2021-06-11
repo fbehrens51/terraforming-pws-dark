@@ -110,7 +110,7 @@ module "om_config" {
   control_plane_subnet_availability_zones = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_availability_zones
   control_plane_subnet_gateways           = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_gateways
   control_plane_subnet_cidrs              = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_private_subnet_cidrs
-  control_plane_vpc_dns                   = data.terraform_remote_state.paperwork.outputs.control_plane_vpc_dns
+  control_plane_vpc_dns                   = join(", ", data.terraform_remote_state.bootstrap_control_plane.outputs.cp_bind_eni_ips)
   control_plane_additional_reserved_ips   = local.ec2_vpce_subnet_ip_map
 
   volume_encryption_kms_key_arn = data.terraform_remote_state.paperwork.outputs.kms_key_arn

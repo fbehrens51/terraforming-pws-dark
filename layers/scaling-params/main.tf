@@ -18,6 +18,7 @@ locals {
       sjb         = "m5.2xlarge"
       ops-manager = "m5.large"
       scanner     = "t3.xlarge"
+      bind        = "t3.medium"
     }
 
     pas = {
