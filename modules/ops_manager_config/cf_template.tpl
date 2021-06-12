@@ -126,9 +126,6 @@ product-properties:
     value: false
   .properties.enable_tls_to_internal_pxc:
     value: false
-  .properties.experimental_dynamic_egress_enforcement:
-    value: false
-
   .properties.garden_disk_cleanup:
     selected_option: reserved
     value: reserved
@@ -152,9 +149,6 @@ product-properties:
     value: 16384
   .properties.haproxy_ssl_ciphers:
     value: DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384
-  .properties.istio:
-    selected_option: disable
-    value: disable
   .properties.locket_database_max_open_connections:
     value: 200
   .properties.log_cache_max_per_source:
