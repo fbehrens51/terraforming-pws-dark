@@ -103,8 +103,6 @@ product-properties:
   .properties.routing_table_sharding_mode:
     selected_option: isolation_segment_only
     value: isolation_segment_only
-  .properties.skip_cert_verify:
-    value: false
   .properties.system_logging:
     selected_option: enabled
     value: enabled
