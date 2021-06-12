@@ -47,14 +47,19 @@ product-properties:
     value: fake@email.com
   .mysql_monitor.write_read_delay:
     value: 20
+  .mysql_proxy.enable_inactive_mysql_port:
+    value: false
   .mysql_proxy.shutdown_delay:
     value: 30
   .mysql_proxy.startup_delay:
     value: 0
-  .mysql_proxy.enable_inactive_mysql_port:
-    value: false
   .nfs_server.blobstore_internal_access_rules:
     value: allow 10.0.0.0/8;,allow 172.16.0.0/12;,allow 192.168.0.0/16;
+  .properties.app_graceful_shutdown_period_in_seconds:
+    value: 10
+  .properties.app_log_rate_limiting:
+    selected_option: disable
+    value: disable
   .properties.autoscale_api_disable_connection_pooling:
     value: false
   .properties.autoscale_api_instance_count:
@@ -84,7 +89,9 @@ product-properties:
     value: true
   .properties.cf_networking_internal_domains:
     value:
-    -  name: apps.internal
+    - name: apps.internal
+  .properties.cloud_controller_audit_events_cutoff_age_in_days:
+    value: 31
   .properties.cloud_controller_completed_tasks_cutoff_age_in_days:
     value: 31
   .properties.cloud_controller_default_health_check_timeout:
@@ -112,6 +119,10 @@ product-properties:
   .properties.credhub_database:
     selected_option: internal_mysql
     value: internal_mysql
+  .properties.credhub_hsm_provider_client_certificate:
+    value: {}
+  .properties.credhub_hsm_provider_partition_password:
+    value: {}
   .properties.credhub_internal_provider_keys:
     value:
     - key:
@@ -122,18 +133,23 @@ product-properties:
     value: 100
   .properties.disable_logs_in_firehose:
     value: false
+  .properties.enable_garden_containerd_mode:
+    value: true
+  .properties.enable_log_cache_syslog_ingestion:
+    value: false
   .properties.enable_smb_volume_driver:
     value: false
   .properties.enable_tls_to_internal_pxc:
     value: false
+  .properties.enable_v1_firehose:
+    value: true
+  .properties.enable_v2_firehose:
+    value: true
   .properties.garden_disk_cleanup:
     selected_option: reserved
     value: reserved
-  .properties.enable_garden_containerd_mode:
-    value: true
   .properties.garden_disk_cleanup.reserved.reserved_space_for_other_jobs_in_mb:
     value: 15360
-
   .properties.gorouter_ssl_ciphers:
     value: ECDHE-RSA-AES128-GCM-SHA256:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
   .properties.haproxy_client_cert_validation:
@@ -190,26 +206,42 @@ product-properties:
   .properties.nfs_volume_driver:
     selected_option: disable
     value: disable
-  .properties.push_apps_manager_nav_links:
-    value:
-    - name: Marketplace
-      href: /marketplace
-    - name: Docs
-      href: ${apps_manager_docs_url}
-    - name: About
-      href: ${apps_manager_about_url}
-    - name: Tools
-      href: ${apps_manager_tools_url}
   .properties.push_apps_manager_app_poll_interval:
     value: 10
+  .properties.push_apps_manager_buildpack:
+    value: staticfile_buildpack
   .properties.push_apps_manager_currency_lookup:
     value: '{ "usd": "$", "eur": "€" }'
   .properties.push_apps_manager_display_plan_prices:
     value: false
   .properties.push_apps_manager_enable_invitations:
     value: false
+  .properties.push_apps_manager_global_wrapper_bg_color:
+    value: '#FFFF00'
+  .properties.push_apps_manager_global_wrapper_footer_content:
+    value: classification footer
+  .properties.push_apps_manager_global_wrapper_header_content:
+    value: classification header
+  .properties.push_apps_manager_global_wrapper_text_color:
+    value: '#000000'
+  .properties.push_apps_manager_invitations_buildpack:
+    value: nodejs_buildpack
+  .properties.push_apps_manager_nav_links:
+    value:
+    - href: ${apps_manager_docs_url}
+      name: Docs
+    - href: ${apps_manager_tools_url}
+      name: Tools
+    - href: /marketplace
+      name: Marketplace
+    - href: ${apps_manager_about_url}
+      name: About
   .properties.push_apps_manager_poll_interval:
     value: 30
+  .properties.push_apps_manager_search_server_buildpack:
+    value: nodejs_buildpack
+  .properties.push_usage_service_cutoff_age_in_days:
+    value: 365
   .properties.route_integrity:
     selected_option: mutual_tls_verify
     value: mutual_tls_verify
@@ -256,6 +288,8 @@ product-properties:
     value: true
   .properties.security_acknowledgement:
     value: X
+  .properties.service_discovery_controller_staleness_threshold:
+    value: 600
   .properties.silk_database_max_open_connections:
     value: 200
   .properties.smoke_tests:
@@ -317,20 +351,12 @@ product-properties:
   .properties.system_blobstore:
     selected_option: external
     value: external
+  .properties.system_blobstore.external.backup_region:
+    value: ${region}
   .properties.system_blobstore.external.buildpacks_bucket:
     value: ${pas_buildpacks_bucket}
   .properties.system_blobstore.external.droplets_bucket:
     value: ${pas_droplets_bucket}
-  .properties.system_blobstore.external.packages_bucket:
-    value: ${pas_packages_bucket}
-  .properties.system_blobstore.external.resources_bucket:
-    value: ${pas_resources_bucket}
-  .properties.system_blobstore.external.buildpacks_backup_bucket:
-    value: ${pas_buildpacks_backup_bucket}
-  .properties.system_blobstore.external.droplets_backup_bucket:
-    value: ${pas_droplets_backup_bucket}
-  .properties.system_blobstore.external.packages_backup_bucket:
-    value: ${pas_packages_backup_bucket}
   .properties.system_blobstore.external.encryption:
     value: true
   .properties.system_blobstore.external.encryption_kms_key_id:
@@ -339,14 +365,25 @@ product-properties:
     value: ${s3_endpoint}
   .properties.system_blobstore.external.iam_instance_profile_authentication:
     value: true
+  .properties.system_blobstore.external.packages_bucket:
+    value: ${pas_packages_bucket}
   .properties.system_blobstore.external.region:
     value: ${region}
-  .properties.system_blobstore.external.backup_region:
-    value: ${region}
+  .properties.system_blobstore.external.resources_bucket:
+    value: ${pas_resources_bucket}
+  .properties.system_blobstore.external.buildpacks_backup_bucket:
+    value: ${pas_buildpacks_backup_bucket}
+  .properties.system_blobstore.external.droplets_backup_bucket:
+    value: ${pas_droplets_backup_bucket}
+  .properties.system_blobstore.external.packages_backup_bucket:
+    value: ${pas_packages_backup_bucket}
   .properties.system_blobstore.external.signature_version:
     value: "4"
   .properties.system_blobstore.external.versioning:
     value: true
+  .properties.system_blobstore_backup_level:
+    selected_option: all
+    value: all
   .properties.system_blobstore_ccdroplet_max_staged_droplets_stored:
     value: 2
   .properties.system_blobstore_ccpackage_max_valid_packages_stored:
@@ -354,9 +391,6 @@ product-properties:
   .properties.system_database:
     selected_option: external
     value: external
-  .properties.system_database.external.ca_cert:
-    value: |
-      ${indent(6, rds_ca_cert)}
   .properties.system_database.external.account_password:
     value:
       secret: ${rds_password}
@@ -372,6 +406,9 @@ product-properties:
       secret: ${rds_password}
   .properties.system_database.external.autoscale_username:
     value: ${rds_username}
+  .properties.system_database.external.ca_cert:
+    value: |
+      ${indent(6, rds_ca_cert)}
   .properties.system_database.external.ccdb_password:
     value:
       secret: ${rds_password}
@@ -399,6 +436,8 @@ product-properties:
       secret: ${rds_password}
   .properties.system_database.external.networkpolicyserver_username:
     value: ${rds_username}
+  .properties.system_database.external.nfsvolume_password:
+    value: {}
   .properties.system_database.external.notifications_password:
     value:
       secret: ${rds_password}
@@ -421,6 +460,10 @@ product-properties:
       secret: ${rds_password}
   .properties.system_database.external.uaa_username:
     value: ${rds_username}
+  .properties.system_database.external.validate_hostname:
+    value: true
+  .properties.system_metrics_scraper_scrape_interval:
+    value: 1m
   .properties.tcp_routing:
     selected_option: disable
     value: disable
@@ -450,6 +493,8 @@ product-properties:
     value: 1800
   .router.disable_insecure_cookies:
     value: false
+  .router.drain_timeout:
+    value: 900
   .router.drain_wait:
     value: 20
   .router.enable_isolated_routing:
@@ -474,6 +519,8 @@ product-properties:
     value: Password
   .uaa.customize_username_label:
     value: Email
+  .uaa.enable_uri_encoding_compatibility_mode:
+    value: true
   .uaa.proxy_ips_regex:
     value: 10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|169\.254\.\d{1,3}\.\d{1,3}|127\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.1[6-9]{1}\.\d{1,3}\.\d{1,3}|172\.2[0-9]{1}\.\d{1,3}\.\d{1,3}|172\.3[0-1]{1}\.\d{1,3}\.\d{1,3}
   .uaa.service_provider_key_credentials:
@@ -482,28 +529,8 @@ product-properties:
         ${indent(8, uaa_service_provider_key_credentials_cert_pem)}
       private_key_pem: |
         ${indent(8, uaa_service_provider_key_credentials_private_key_pem)}
-
-  .properties.push_apps_manager_global_wrapper_footer_content:
-    ${apps_manager_global_wrapper_footer_content}
-  .properties.push_apps_manager_global_wrapper_header_content:
-    ${apps_manager_global_wrapper_header_content}
-  .properties.push_apps_manager_footer_text:
-    value: ""
-  .properties.push_apps_manager_accent_color:
-    value: ""
-  .properties.push_apps_manager_global_wrapper_text_color:
-    value: '#000000'
-  .properties.push_apps_manager_company_name:
-    value: ""
-  .properties.push_apps_manager_global_wrapper_bg_color:
-    value: '#FFFF00'
-  .properties.push_apps_manager_favicon:
-    value: ""
-  .properties.push_apps_manager_square_logo:
-    value: ""
-  .properties.push_apps_manager_logo:
-    value: ""
-
+  .uaa.service_provider_key_password:
+    value: {}
 network-properties:
   network:
     name: pas
@@ -513,197 +540,208 @@ network-properties:
     name: ${singleton_availability_zone}
 resource-config:
   backup_restore:
-    swap_as_percent_of_memory_size: automatic
+    max_in_flight: 1
     additional_networks: []
-    additional_vm_extensions: []
-    instances: automatic
-    persistent_disk:
-      size_mb: automatic
+    additional_vm_extensions:
+    - s3_instance_profile
+    elb_names: []
     instance_type:
       id: ${scale.backup_restore}
+    instances: automatic
     internet_connected: false
-    additional_vm_extensions:
-    - s3_instance_profile
-  clock_global:
+    persistent_disk:
+      size_mb: automatic
     swap_as_percent_of_memory_size: automatic
+  clock_global:
+    max_in_flight: 1
     additional_networks: []
     additional_vm_extensions: []
-    instances: automatic
+    elb_names: []
     instance_type:
       id: ${scale.clock_global}
-    internet_connected: false
-  cloud_controller:
-    swap_as_percent_of_memory_size: automatic
-    additional_networks: []
     instances: automatic
+    internet_connected: false
+    swap_as_percent_of_memory_size: automatic
+  cloud_controller:
+    max_in_flight: 1
+    additional_networks: []
+    additional_vm_extensions:
+    - s3_instance_profile
+    elb_names: []
     instance_type:
       id: ${scale.cloud_controller}
+    instances: automatic
     internet_connected: false
+    swap_as_percent_of_memory_size: automatic
+  cloud_controller_worker:
+    max_in_flight: 1
+    additional_networks: []
     additional_vm_extensions:
     - s3_instance_profile
-  cloud_controller_worker:
-    swap_as_percent_of_memory_size: automatic
-    additional_networks: []
-    instances: automatic
+    elb_names: []
     instance_type:
       id: ${scale.cloud_controller_worker}
+    instances: automatic
     internet_connected: false
-    additional_vm_extensions:
-    - s3_instance_profile
-  credhub:
     swap_as_percent_of_memory_size: automatic
+  credhub:
+    max_in_flight: 1
     additional_networks: []
     additional_vm_extensions: []
-    instances: automatic
+    elb_names: []
     instance_type:
       id: ${scale.credhub}
+    instances: automatic
     internet_connected: false
-  diego_brain:
     swap_as_percent_of_memory_size: automatic
+  diego_brain:
+    max_in_flight: 1
     additional_networks: []
     additional_vm_extensions: []
-    instances: automatic
+    elb_names: []
     instance_type:
       id: ${scale.diego_brain}
+    instances: automatic
     internet_connected: false
-  diego_cell:
     swap_as_percent_of_memory_size: automatic
+  diego_cell:
+    max_in_flight: 4%
     additional_networks: []
     additional_vm_extensions: []
-    max_in_flight: 4%
+    elb_names: []
+    instance_type:
+      id: ${scale.diego_cell}
     # 4 r5.large instances is our standard 'Isolation segment' capacity @ 16
     # GB per instance, this value should also be updated in the isolation segment config
     instances: 4
-    instance_type:
-      id: ${scale.diego_cell}
     internet_connected: false
-  diego_database:
     swap_as_percent_of_memory_size: automatic
+  diego_database:
+    max_in_flight: 1
     additional_networks: []
     additional_vm_extensions: []
-    instances: automatic
+    elb_names: []
     instance_type:
       id: ${scale.diego_database}
+    instances: automatic
     internet_connected: false
-  doppler:
     swap_as_percent_of_memory_size: automatic
+  doppler:
+    max_in_flight: 1
     additional_networks: []
     additional_vm_extensions: []
-    instances: automatic
+    elb_names: []
     instance_type:
       id: ${scale.doppler}
+    instances: automatic
     internet_connected: false
+    swap_as_percent_of_memory_size: automatic
   ha_proxy:
-    swap_as_percent_of_memory_size: automatic
+    max_in_flight: 1
     additional_networks: []
     additional_vm_extensions: []
+    elb_names: []
+    instance_type:
+      id: automatic
     instances: automatic
-    instance_type:
-      id: automatic
     internet_connected: false
-  istio_control:
     swap_as_percent_of_memory_size: automatic
-    additional_networks: []
-    additional_vm_extensions: []
-    instances: 0
-    instance_type:
-      id: automatic
-    internet_connected: false
-  istio_router:
-    swap_as_percent_of_memory_size: automatic
-    additional_networks: []
-    additional_vm_extensions: []
-    instances: 0
-    instance_type:
-      id: automatic
-    internet_connected: false
   loggregator_trafficcontroller:
-    swap_as_percent_of_memory_size: automatic
+    max_in_flight: 1
     additional_networks: []
     additional_vm_extensions: []
-    instances: automatic
+    elb_names: []
     instance_type:
       id: ${scale.loggregator_trafficcontroller}
+    instances: automatic
     internet_connected: false
-  mysql:
     swap_as_percent_of_memory_size: automatic
+  mysql:
+    max_in_flight: 1
     additional_networks: []
     additional_vm_extensions: []
+    elb_names: []
+    instance_type:
+      id: automatic
     instances: 0
+    internet_connected: false
     persistent_disk:
       size_mb: automatic
-    instance_type:
-      id: automatic
-    internet_connected: false
+    swap_as_percent_of_memory_size: automatic
   mysql_monitor:
-    swap_as_percent_of_memory_size: automatic
+    max_in_flight: 1
     additional_networks: []
     additional_vm_extensions: []
-    instances: 0
+    elb_names: []
     instance_type:
       id: automatic
+    instances: 0
     internet_connected: false
+    swap_as_percent_of_memory_size: automatic
   mysql_proxy:
-    swap_as_percent_of_memory_size: automatic
+    max_in_flight: 1
     additional_networks: []
     additional_vm_extensions: []
-    instances: 0
+    elb_names: []
     instance_type:
       id: automatic
+    instances: 0
     internet_connected: false
-  nats:
     swap_as_percent_of_memory_size: automatic
+  nats:
+    max_in_flight: 1
     additional_networks: []
     additional_vm_extensions: []
-    instances: automatic
+    elb_names: []
     instance_type:
       id: ${scale.nats}
+    instances: automatic
     internet_connected: false
-  nfs_server:
     swap_as_percent_of_memory_size: automatic
+  nfs_server:
+    max_in_flight: 1
     additional_networks: []
     additional_vm_extensions: []
-    instances: 0
-    persistent_disk:
-      size_mb: automatic
+    elb_names: []
     instance_type:
       id: automatic
+    instances: 0
     internet_connected: false
-  router:
+    persistent_disk:
+      size_mb: automatic
     swap_as_percent_of_memory_size: automatic
+  router:
+    max_in_flight: 1
     additional_networks: []
     additional_vm_extensions: []
-    instances: automatic
+    elb_names: ${router_elb_names}
     instance_type:
       id: ${scale.router}
+    instances: automatic
     internet_connected: false
-    elb_names: ${router_elb_names}
-  tcp_router:
     swap_as_percent_of_memory_size: automatic
+  tcp_router:
+    max_in_flight: 1
     additional_networks: []
     additional_vm_extensions: []
+    elb_names: []
+    instance_type:
+      id: automatic
     instances: 0
+    internet_connected: false
     persistent_disk:
       size_mb: automatic
-    instance_type:
-      id: automatic
-    internet_connected: false
-  route_syncer:
     swap_as_percent_of_memory_size: automatic
-    additional_networks: []
-    additional_vm_extensions: []
-    instances: 0
-    instance_type:
-      id: automatic
-    internet_connected: false
   uaa:
-    swap_as_percent_of_memory_size: automatic
+    max_in_flight: 1
     additional_networks: []
     additional_vm_extensions: []
-    instances: automatic
+    elb_names: []
     instance_type:
       id: ${scale.uaa}
+    instances: automatic
     internet_connected: false
+    swap_as_percent_of_memory_size: automatic
 errand-config:
   deploy-autoscaler:
     post-deploy-state: ${errands_deploy_autoscaler}
@@ -719,6 +757,8 @@ errand-config:
     post-deploy-state: ${errands_push_apps_manager}
   push-usage-service:
     post-deploy-state: ${errands_push_usage_service}
+  rotate_cc_database_key:
+    post-deploy-state: false
   smbbrokerpush:
     post-deploy-state: ${errands_smbbrokerpush}
   smoke_tests:
