@@ -33,8 +33,6 @@ product-properties:
     value: ${system_domain}
   .diego_brain.starting_container_count_maximum:
     value: 200
-  .ha_proxy.skip_cert_verify:
-    value: false
   .mysql.cli_history:
     value: true
   .mysql.max_connections:
