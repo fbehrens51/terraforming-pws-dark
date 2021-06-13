@@ -167,7 +167,7 @@ bootcmd:
     install -m 755 -d /etc/skel/bin
 
 mounts:
-  - [ "/dev/sdf", "/home", "ext4", "defaults,nofail", "0", "2" ]
+  - [ "/dev/sdf", "/home", "ext4", "defaults,nofail,nodev", "0", "2" ]
 
 EOF
 }
