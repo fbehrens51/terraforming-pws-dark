@@ -154,6 +154,7 @@ locals {
     errands_push_apps_manager                            = var.errands_push_apps_manager
     errands_push_usage_service                           = var.errands_push_usage_service
     errands_smbbrokerpush                                = var.errands_smbbrokerpush
+    errands_rotate_cc_database_key                       = var.errands_rotate_cc_database_key
     errands_smoke_tests                                  = var.errands_smoke_tests
     errands_test_autoscaling                             = var.errands_test_autoscaling
     system_domain                                        = var.system_domain
