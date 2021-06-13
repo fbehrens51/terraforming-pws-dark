@@ -1,12 +1,9 @@
 product-name: p-isolation-segment-${iso_seg_tile_suffix}
 product-properties:
-  .properties.compute_isolation:
-    selected_option: enabled
-    value: enabled
-  .properties.compute_isolation.enabled.isolation_segment_name:
-    value: ${iso_seg_tile_suffix}
   .isolated_router_${iso_seg_tile_suffix_underscore}.disable_insecure_cookies:
     value: false
+  .isolated_router_${iso_seg_tile_suffix_underscore}.drain_timeout:
+    value: 900
   .isolated_router_${iso_seg_tile_suffix_underscore}.drain_wait:
     value: 20
   .isolated_router_${iso_seg_tile_suffix_underscore}.enable_write_access_logs:
@@ -17,6 +14,16 @@ product-properties:
     value: 20
   .isolated_router_${iso_seg_tile_suffix_underscore}.request_timeout_in_seconds:
     value: 900
+  .properties.app_graceful_shutdown_period_in_seconds:
+    value: 10
+  .properties.app_log_rate_limiting:
+    selected_option: disable
+    value: disable
+  .properties.compute_isolation:
+    selected_option: enabled
+    value: enabled
+  .properties.compute_isolation.enabled.isolation_segment_name:
+    value: ${iso_seg_tile_suffix}
   .properties.container_networking:
     selected_option: enable
     value: enable
@@ -86,6 +93,12 @@ product-properties:
   .properties.router_keepalive_connections:
     selected_option: enable
     value: enable
+  .properties.router_only_trust_client_ca_certs:
+    selected_option: disable
+    value: disable
+  .properties.router_sticky_session_cookie_names:
+    value:
+    - name: JSESSIONID
   .properties.routing_custom_ca_certificates:
     value: |
       ${indent(6, router_trusted_ca_certificates)}
@@ -97,12 +110,15 @@ product-properties:
   .properties.routing_minimum_tls_version:
     selected_option: tls_v1_2
     value: tls_v1_2
-  .properties.routing_tls_termination:
-    selected_option: router
-    value: router
   .properties.routing_table_sharding_mode:
     selected_option: isolation_segment_only
     value: isolation_segment_only
+  .properties.routing_tls_termination:
+    selected_option: router
+    value: router
+  .properties.smoke_tests_isolation:
+    selected_option: on_demand
+    value: on_demand
   .properties.system_logging:
     selected_option: enabled
     value: enabled
@@ -164,3 +180,7 @@ resource-config:
     instances: 0
     internet_connected: false
     swap_as_percent_of_memory_size: automatic
+errand-config:
+  smoke_tests_isolation:
+    post-deploy-state: true
+
