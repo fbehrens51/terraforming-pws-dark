@@ -758,7 +758,7 @@ errand-config:
   push-usage-service:
     post-deploy-state: ${errands_push_usage_service}
   rotate_cc_database_key:
-    post-deploy-state: false
+    post-deploy-state: ${errands_rotate_cc_database_key}
   smbbrokerpush:
     post-deploy-state: ${errands_smbbrokerpush}
   smoke_tests:

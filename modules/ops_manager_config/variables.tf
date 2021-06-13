@@ -255,6 +255,9 @@ variable "errands_smbbrokerpush" {
   type = string
 }
 
+variable "errands_rotate_cc_database_key" {
+  type = string
+}
 variable "errands_smoke_tests" {
   type = string
 }

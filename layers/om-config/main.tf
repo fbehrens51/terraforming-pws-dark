@@ -164,6 +164,7 @@ module "om_config" {
   errands_push_apps_manager           = "true"
   errands_push_usage_service          = "true"
   errands_smbbrokerpush               = "false"
+  errands_rotate_cc_database_key      = "false"
   errands_smoke_tests                 = "true"
   errands_test_autoscaling            = "true"
   singleton_availability_zone         = var.singleton_availability_zone
