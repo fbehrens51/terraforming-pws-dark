@@ -26,9 +26,6 @@ variable "worker_role_name" {
 variable "tsdb_role_name" {
 }
 
-variable "bosh_role_name" {
-}
-
 variable "om_role_name" {
 }
 

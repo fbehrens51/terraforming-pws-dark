@@ -235,10 +235,6 @@ data "aws_iam_role" "om_role" {
   name = var.om_role_name
 }
 
-data "aws_iam_role" "bosh_role" {
-  name = var.bosh_role_name
-}
-
 data "aws_iam_role" "sjb_role" {
   name = var.sjb_role_name
 }
@@ -264,7 +260,6 @@ module "reporting_bucket_policy" {
   read_write_role_ids = [data.aws_iam_role.director_role.unique_id]
   read_only_role_ids  = concat([
     data.aws_iam_role.director_role.unique_id,
-    data.aws_iam_role.bosh_role.unique_id,
     data.aws_iam_role.om_role.unique_id,
     data.aws_iam_role.sjb_role.unique_id,
     data.aws_iam_role.concourse_role.unique_id
@@ -445,9 +440,6 @@ variable "director_role_name" {
 }
 
 variable "om_role_name" {
-}
-
-variable "bosh_role_name" {
 }
 
 variable "sjb_role_name" {
@@ -869,10 +861,6 @@ output "director_role_name" {
   value = var.director_role_name
 }
 
-output "bosh_role_name" {
-  value = var.bosh_role_name
-}
-
 output "om_role_name" {
   value = var.om_role_name
 }
@@ -1174,12 +1162,8 @@ output "director_role_id" {
   value = data.aws_iam_role.director_role.unique_id
 }
 
-output "bosh_role_id" {
-  value = data.aws_iam_role.bosh_role.unique_id
-}
-
 output "om_role_id" {
-  value = data.aws_iam_role.bosh_role.unique_id
+  value = data.aws_iam_role.om_role.unique_id
 }
 
 output "isse_role_id" {
