@@ -16,7 +16,7 @@ runcmd:
     sed -i -E -e '/umask 002/s/002/027/' /etc/profile /etc/bashrc
     sed -i -E -e '/umask 022/s/022/077/' /etc/profile /etc/bashrc
     # TODO: Move these to server hardening if this passes the audit
-    sed -i -E -e 's/OPTIONS=""/OPTIONS="-u chrony"/' /etc/sysconfig/chronyd
+    sed -i -E -e 's/OPTIONS=""/OPTIONS="-4 -u chrony"/' /etc/sysconfig/chronyd
 EOF
 
 }
