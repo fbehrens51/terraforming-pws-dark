@@ -24,6 +24,7 @@ runcmd:
     yum localinstall * -y
     popd
     rm -rf pkg
+    augtool set /files/etc/logrotate.d/clamav-update/rule/create/mode 640
     augtool set /files/etc/freshclam.conf/LogSyslog yes
     augtool rm /files/etc/freshclam.conf/DatabaseMirror
     augtool set /files/etc/freshclam.conf/PrivateMirror ${clam_database_mirror}
