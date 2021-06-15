@@ -258,13 +258,13 @@ module "reporting_bucket_policy" {
   source              = "../../modules/bucket/policy/generic"
   bucket_arn          = aws_s3_bucket.reporting_bucket.arn
   read_write_role_ids = [data.aws_iam_role.director_role.unique_id]
-  read_only_role_ids  = concat([
+  read_only_role_ids = concat([
     data.aws_iam_role.director_role.unique_id,
     data.aws_iam_role.om_role.unique_id,
     data.aws_iam_role.sjb_role.unique_id,
     data.aws_iam_role.concourse_role.unique_id
   ], data.aws_iam_role.super_user_roles.*.unique_id, [data.aws_iam_role.isse_role.unique_id])
-  read_only_user_ids  = data.aws_iam_user.super_users.*.user_id
+  read_only_user_ids = data.aws_iam_user.super_users.*.user_id
 }
 
 resource "aws_s3_bucket_policy" "reporting_bucket_policy_attachment" {
@@ -1199,6 +1199,10 @@ output "scanner_private_key" {
   value     = tls_private_key.scanner_private_key.private_key_pem
 }
 
+output "scanner_public_key" {
+  sensitive = true
+  value     = tls_private_key.scanner_private_key.public_key_openssh
+}
 
 locals {
   extra_bosh_users = [
