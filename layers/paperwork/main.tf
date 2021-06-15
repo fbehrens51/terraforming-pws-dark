@@ -889,6 +889,14 @@ output "root_ca_cert" {
   value = data.aws_s3_bucket_object.root_ca_cert.body
 }
 
+output "root_ca_cert_path" {
+  value = data.aws_s3_bucket_object.root_ca_cert.key
+}
+
+output "additional_trusted_ca_certs_path" {
+  value = data.aws_s3_bucket_object.additional_trusted_ca_certs.key
+}
+
 output "router_trusted_ca_certs" {
   value = data.aws_s3_bucket_object.router_trusted_ca_certs.body
 }
@@ -1216,4 +1224,16 @@ locals {
 
 output "extra_bosh_users" {
   value = concat(local.extra_bosh_users, var.extra_users)
+}
+
+output "env_name" {
+  value = var.global_vars.name_prefix
+}
+
+output "region" {
+  value = data.aws_region.current.name
+}
+
+output "s3_endpoint" {
+  value = var.s3_endpoint
 }
