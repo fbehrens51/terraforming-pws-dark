@@ -183,6 +183,7 @@ resource "aws_iam_role" "isse" {
 resource "aws_iam_policy_attachment" "isse" {
   name       = var.isse_role_name
   roles      = [aws_iam_role.isse.name]
+  groups     = ["tws-isses"] // this group created manually and assigned to the ISSEs on the team
   policy_arn = aws_iam_policy.isse.arn
 }
 
