@@ -60,22 +60,49 @@ data "terraform_remote_state" "bootstrap_control_plane" {
 }
 
 locals {
-  secret_bucket_name    = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
-  transfer_bucket_name  = data.terraform_remote_state.bootstrap_control_plane.outputs.transfer_bucket_name
-  terraform_bucket_name = data.terraform_remote_state.bootstrap_control_plane.outputs.terraform_bucket_name
-  ldap_dn               = data.terraform_remote_state.paperwork.outputs.ldap_dn
-  ldap_port             = data.terraform_remote_state.paperwork.outputs.ldap_port
-  ldap_host             = data.terraform_remote_state.paperwork.outputs.ldap_host
-  ldap_basedn           = data.terraform_remote_state.paperwork.outputs.ldap_basedn
-  ldap_ca_cert          = data.terraform_remote_state.paperwork.outputs.ldap_ca_cert_s3_path
-  ldap_client_cert      = data.terraform_remote_state.paperwork.outputs.ldap_client_cert_s3_path
-  ldap_client_key       = data.terraform_remote_state.paperwork.outputs.ldap_client_key_s3_path
-  pypi_protocol         = var.pypi_host_secure ? "https" : "http"
+  release_channel           = data.terraform_remote_state.paperwork.outputs.release_channel
+  secret_bucket_name        = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
+  artifact_repo_bucket_name = data.terraform_remote_state.paperwork.outputs.artifact_repo_bucket_name
+  terraform_bucket_name     = data.terraform_remote_state.bootstrap_control_plane.outputs.terraform_bucket_name
+  ldap_dn                   = data.terraform_remote_state.paperwork.outputs.ldap_dn
+  ldap_port                 = data.terraform_remote_state.paperwork.outputs.ldap_port
+  ldap_host                 = data.terraform_remote_state.paperwork.outputs.ldap_host
+  ldap_basedn               = data.terraform_remote_state.paperwork.outputs.ldap_basedn
+  ldap_ca_cert              = data.terraform_remote_state.paperwork.outputs.ldap_ca_cert_s3_path
+  ldap_client_cert          = data.terraform_remote_state.paperwork.outputs.ldap_client_cert_s3_path
+  ldap_client_key           = data.terraform_remote_state.paperwork.outputs.ldap_client_key_s3_path
+  pypi_protocol             = var.pypi_host_secure ? "https" : "http"
 }
 
 data "template_file" "setup_scripts" {
   template = <<EOF
 write_files:
+  - path: /etc/skel/bin/install-pwsd.sh
+    permissions: '0755'
+    owner: root:root
+    content: |
+      #!/usr/bin/env bash
+      set -eo pipefail
+
+      [[ ! -n $HOME ]] && HOME=root # HOME is not set during system boot.
+
+      bucket="${local.artifact_repo_bucket_name}"
+      user="$(id -nu)"
+
+      [[ $user != root ]] && INSTALL="sudo install" || INSTALL="install"
+
+      echo "Downloading and extracting tools.zip"
+
+      region="$( aws s3api get-bucket-location --output=text --bucket $bucket 2> /dev/null )"
+      [[ $region == None ]] && region='us-east-1'
+
+      latest="$(aws --region $region s3 ls s3://$bucket/cli-tools/ | awk '/ tools.*\.zip$/ {print $4}' | sort -n | tail -1)"
+      aws --region "$region" s3 cp "s3://$bucket/cli-tools/$latest" . --no-progress
+
+      unzip -q "$latest" tools/pwsd
+      $INSTALL tools/* /usr/local/bin/
+      rm -rf "$latest" tools
+
   - path: /etc/skel/bin/install-pcf-eagle-automation.sh
     permissions: '0755'
     owner: root:root
@@ -83,29 +110,22 @@ write_files:
       #!/usr/bin/env bash
       set -eo pipefail
 
-      transfer=$transfer_bucket_name
-
       [[ ! -n $HOME ]] && HOME=root # HOME is not set during system boot.
 
       workspace="$HOME/workspace"
       [ ! -d $workspace ] && mkdir -p "$workspace"
 
-      region="$( aws s3api get-bucket-location --output=text --bucket $transfer 2> /dev/null )"
-      [[ $region == None ]] && region='us-east-1'
-
       function get_source() {
         artifact=$1
+        local_repo="$workspace/artifacts"
         artifact_dir="$workspace/$artifact"
-        # regex matches a valid semver - from semver.org
-        latest=$(aws --region $region s3 ls s3://$transfer/$artifact/ \
-                 | grep -Po "($artifact-(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?\.zip)$" \
-                 | sort -V \
-                 | tail -n 1 \
-                )
-        aws --region $region s3 cp --no-progress s3://$transfer/$artifact/$latest . --no-progress
+
         [ ! -d $artifact_dir ] && mkdir -p "$artifact_dir"
-        unzip -q -d "$artifact_dir" "$latest"
-        rm "$latest"
+
+        pwsd release download --components "$artifact" --output "$local_repo"
+        unzip -q -d "$artifact_dir" "$local_repo/$artifact/*.zip"
+
+        rm -r "$local_repo"
       }
 
       get_source "pcf-eagle-automation"
@@ -116,7 +136,8 @@ write_files:
     content: |
       # File contents are created via terraform, do not edit manually.
       export terraform_bucket_name="${local.terraform_bucket_name}"
-      export transfer_bucket_name="${local.transfer_bucket_name}"
+      export PWSD_ARTIFACT_REPO="s3://${local.artifact_repo_bucket_name}"
+      export PWSD_CHANNEL_NAME="${local.release_channel}"
       export secret_bucket_name="${local.secret_bucket_name}"
       export git_host="${var.git_host}"
       export credhub_vars_name="${var.credhub_vars_name}"
@@ -130,6 +151,7 @@ write_files:
       export ldap_ca_cert="${local.ldap_ca_cert}"
       export ldap_client_cert="${local.ldap_client_cert}"
       export ldap_client_key="${local.ldap_client_key}"
+      export AWS_REGION="${var.region}"
       export AWS_DEFAULT_REGION="${var.region}"
 
 runcmd:
@@ -141,9 +163,15 @@ runcmd:
     # set the home dirs to proper owners - users are recreated every time the vm is created, and the home dirs are persisted.
     # If a user is added or deleted, that will break ownership of home dirs
     awk -F: '$3 ~ /1[0-9]{3,3}/{ print "chown -R " $3 ":" $4 " " $6}' /etc/passwd | xargs --no-run-if-empty -0 sh -c
-    transfer_bucket_name="${local.transfer_bucket_name}"   /etc/skel/bin/install-pcf-eagle-automation.sh
-    transfer_bucket_name="${local.transfer_bucket_name}"   /root/workspace/pcf-eagle-automation/scripts/sjb/install-cli-tools.sh
-    terraform_bucket_name="${local.terraform_bucket_name}" HOME="/root" /root/workspace/pcf-eagle-automation/scripts/sjb/install-terraform.sh
+
+    export AWS_REGION=${var.region}
+    export PWSD_ARTIFACT_REPO="s3://${local.artifact_repo_bucket_name}"
+    export PWSD_CHANNEL_NAME="${local.release_channel}"
+    /etc/skel/bin/install-pwsd.sh
+    /etc/skel/bin/install-pcf-eagle-automation.sh
+    /root/workspace/pcf-eagle-automation/scripts/sjb/install-cli-tools.sh
+    HOME="/root" /root/workspace/pcf-eagle-automation/scripts/sjb/install-terraform.sh
+
     root_domain="${local.root_domain}"                     /root/workspace/pcf-eagle-automation/scripts/sjb/install-fly.sh
 EOF
 }
@@ -252,12 +280,12 @@ resource "aws_ebs_volume" "sjb_home" {
 }
 
 module "sjb" {
-  instance_count       = 1
-  source               = "../../modules/launch"
-  availability_zone    = var.singleton_availability_zone
-  ami_id               = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
-  user_data            = data.template_cloudinit_config.user_data.rendered
-  eni_ids              = data.terraform_remote_state.bootstrap_control_plane.outputs.sjb_eni_ids
+  instance_count    = 1
+  source            = "../../modules/launch"
+  availability_zone = var.singleton_availability_zone
+  ami_id            = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
+  user_data         = data.template_cloudinit_config.user_data.rendered
+  eni_ids           = data.terraform_remote_state.bootstrap_control_plane.outputs.sjb_eni_ids
   // TODO: change to sjb_role_name
   iam_instance_profile = data.terraform_remote_state.paperwork.outputs.sjb_role_name
   instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
