@@ -13,11 +13,11 @@ variable "singleton_availability_zone" {
 }
 
 variable "metrics_config" {
-  default = "pas/metrics_config.yml"
+  default = "pas/metrics_tile_config.yml"
 }
 
 variable "metrics_store_config" {
-  default = "pas/metrics_store_config.yml"
+  default = "pas/metrics_store_tile_config.yml"
 }
 
 terraform {

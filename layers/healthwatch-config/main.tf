@@ -32,11 +32,11 @@ variable "region" {
 }
 
 variable "healthwatch_config" {
-  default = "pas/healthwatch_config.yml"
+  default = "pas/healthwatch_tile_config.yml"
 }
 
 variable "healthwatch_pas_exporter_config" {
-  default = "pas/healthwatch_pas_exporter_config.yml"
+  default = "pas/healthwatch_pas_exporter_tile_config.yml"
 }
 
 variable "grafana_additional_cipher_suites" {
