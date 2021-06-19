@@ -117,12 +117,12 @@ variable "portal_config" {
 
 variable "runtime_config" {
   description = "runtime configuration file"
-  default     = "pas/runtime_config_config.yml"
+  default     = "pas/runtime_config_tile_config.yml"
 }
 
 variable "clamav_addon_config" {
   description = "clamav addon configuration file"
-  default     = "pas/clamav_addon_config.yml"
+  default     = "pas/clamav_addon_tile_config.yml"
 }
 
 variable "clamav_mirror_config" {
