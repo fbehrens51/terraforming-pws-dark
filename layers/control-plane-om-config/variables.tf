@@ -99,12 +99,12 @@ variable "concourse_config" {
 
 variable "runtime_config" {
   description = "runtime configuration file"
-  default     = "control_plane/runtime_config_config.yml"
+  default     = "control_plane/runtime_config_tile_config.yml"
 }
 
 variable "clamav_addon_config" {
   description = "clamav addon configuration file"
-  default     = "control_plane/clamav_addon_config.yml"
+  default     = "control_plane/clamav_addon_tile_config.yml"
 }
 
 variable "clamav_mirror_config" {
