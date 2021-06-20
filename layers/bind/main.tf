@@ -191,7 +191,7 @@ data "template_cloudinit_config" "master_bind_conf_userdata" {
 module "iptables_rules" {
   source = "../../modules/iptables"
   // block the DNS Amplification Attacks
-  internet_only_rules = var.internet = false ? [] : [
+  internet_only_rules = var.internet == false ? [] : [
     "# ref: https://forums.centos.org/viewtopic.php?f=51&t=62148&sid=3687bf227875a582ba08964fca178dd2",
     "iptables -A INPUT -p udp --dport 53 -m string --hex-string \"|0000FF0001|\" --algo bm --from 40 -j DROP",
     "iptables -A INPUT -p tcp --dport 53 -m string --hex-string \"|0000FF0001|\" --algo bm --from 52 -j DROP"
