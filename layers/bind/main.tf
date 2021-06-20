@@ -179,6 +179,28 @@ data "template_cloudinit_config" "master_bind_conf_userdata" {
     content_type = "text/x-include-url"
     content      = data.terraform_remote_state.paperwork.outputs.completion_tag_user_data
   }
+
+  part {
+    filename     = "iptables.cfg"
+    content_type = "text/cloud-config"
+    content      = module.iptables_rules.iptables_user_data
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+}
+
+module "iptables_rules" {
+  source = "../../modules/iptables"
+  // block the DNS Amplification Attacks
+  internet_only_rules = [
+    "# ref: https://forums.centos.org/viewtopic.php?f=51&t=62148&sid=3687bf227875a582ba08964fca178dd2",
+    "iptables -A INPUT -p udp --dport 53 -m string --hex-string \"|0000FF0001|\" --algo bm --from 40 -j DROP",
+    "iptables -A INPUT -p tcp --dport 53 -m string --hex-string \"|0000FF0001|\" --algo bm --from 52 -j DROP"
+  ]
+  personality_rules = [
+    "iptables -A INPUT -p tcp --dport 53 -m state --state NEW -j ACCEPT",
+    "iptables -A INPUT -p udp --dport 53 -m state --state NEW -j ACCEPT"
+  ]
+  control_plane_subnet_cidrs = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs
 }
 
 module "bind_master_user_data" {
@@ -236,6 +258,11 @@ variable "client_cidr" {
 }
 
 variable "internetless" {
+}
+
+variable "internet" {
+  default     = false
+  description = "if true, applies extra rules to iptables on the bind servers to prevent participation in distributed DNS amplification attacks"
 }
 
 output "master_ips" {

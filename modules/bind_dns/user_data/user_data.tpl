@@ -10,8 +10,6 @@ runcmd:
     mv /run/${zone_file_name} /var/named/data/${zone_file_name}
     sudo yum clean all; sudo yum install bind bind-utils -y
     sudo chkconfig --level 345 named on
-    sudo iptables -A INPUT -s 0.0.0.0/0 -p tcp -m state --state NEW --dport 53 -j ACCEPT
-    sudo iptables -A INPUT -s 0.0.0.0/0 -p udp -m state --state NEW --dport 53 -j ACCEPT
     sudo mkdir /var/log/named
     sudo chown named:named /var/log/named
     sudo chmod 0700 /var/log/named
