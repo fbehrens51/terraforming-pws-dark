@@ -305,6 +305,12 @@ resource "tls_private_key" "scanner_private_key" {
 }
 
 
+resource "aws_s3_bucket_object" "scanner_public_key" {
+  bucket  = var.cert_bucket
+  key     = "scanner_public_key"
+  content = tls_private_key.scanner_private_key.public_key_openssh
+}
+
 module "bot_host_key_pair" {
   source   = "../../modules/key_pair"
   key_name = "${local.env_name_prefix}-bot"
