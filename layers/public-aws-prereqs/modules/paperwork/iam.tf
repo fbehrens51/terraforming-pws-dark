@@ -589,7 +589,8 @@ data "aws_iam_policy_document" "om" {
     sid     = "RequiredForTWS"
     effect  = "Allow"
     actions = [
-      "iam:GetInstanceProfile"
+      "iam:GetInstanceProfile",
+      "iam:PassRole"
     ]
     resources = [
       "*"
