@@ -63,6 +63,7 @@ module "paperwork" {
   sjb_role_name             = var.sjb_role_name
   concourse_role_name       = var.concourse_role_name
   om_role_name              = var.om_role_name
+  bosh_role_name            = var.bosh_role_name
   fluentd_role_name         = var.fluentd_role_name
   instance_tagger_role_name = var.instance_tagger_role_name
   tsdb_role_name            = var.tsdb_role_name
@@ -119,6 +120,7 @@ data "template_file" "paperwork_variables" {
     sjb_role_name                               = var.sjb_role_name
     concourse_role_name                         = var.concourse_role_name
     om_role_name                                = var.om_role_name
+    bosh_role_name                              = var.bosh_role_name
     cp_vpc_id                                   = module.paperwork.cp_vpc_id
     es_vpc_id                                   = module.paperwork.es_vpc_id
     bastion_vpc_id                              = module.paperwork.bastion_vpc_id
@@ -230,6 +232,10 @@ variable "concourse_role_name" {
 }
 
 variable "om_role_name" {
+  type = string
+}
+
+variable "bosh_role_name" {
   type = string
 }
 

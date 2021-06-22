@@ -26,6 +26,8 @@ director_role_name = "${director_role_name}"
 
 om_role_name = "${om_role_name}"
 
+bosh_role_name = "${bosh_role_name}"
+
 sjb_role_name = "${sjb_role_name}"
 
 concourse_role_name = "${concourse_role_name}"

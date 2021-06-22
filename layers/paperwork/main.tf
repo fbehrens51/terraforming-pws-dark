@@ -243,6 +243,10 @@ data "aws_iam_role" "concourse_role" {
   name = var.concourse_role_name
 }
 
+data "aws_iam_role" "bosh_role" {
+  name = var.bosh_role_name
+}
+
 data "aws_iam_user" "super_users" {
   count     = length(var.account_super_user_names)
   user_name = element(var.account_super_user_names, count.index)
@@ -446,6 +450,9 @@ variable "director_role_name" {
 }
 
 variable "om_role_name" {
+}
+
+variable "bosh_role_name" {
 }
 
 variable "sjb_role_name" {
@@ -871,6 +878,10 @@ output "om_role_name" {
   value = var.om_role_name
 }
 
+output "bosh_role_name" {
+  value = var.bosh_role_name
+}
+
 output "concourse_role_name" {
   value = var.concourse_role_name
 }
@@ -1190,6 +1201,10 @@ output "sjb_role_id" {
 
 output "concourse_role_id" {
   value = data.aws_iam_role.concourse_role.unique_id
+}
+
+output "bosh_role_id" {
+  value = data.aws_iam_role.bosh_role.unique_id
 }
 
 output "ent_tech_read_role_id" {

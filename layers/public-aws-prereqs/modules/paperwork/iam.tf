@@ -325,6 +325,10 @@ output "om_role_arn" {
   value = aws_iam_role.om.arn
 }
 
+output "bosh_role_arn" {
+  value = aws_iam_role.bosh.arn
+}
+
 output "pas_bucket_role_arn" {
   value = aws_iam_role.bucket.arn
 }
@@ -391,7 +395,6 @@ resource "aws_iam_role" "ent_tech_read" {
 }
 
 data "aws_iam_policy_document" "om" {
-  // -- From OM docs --
   version = "2012-10-17"
 
   statement {
@@ -527,7 +530,6 @@ data "aws_iam_policy_document" "om" {
       "kms:DescribeKey*"
     ]
 
-    //"((kms_key_arn))"
     resources = [
       "*"
     ]
@@ -582,7 +584,44 @@ data "aws_iam_policy_document" "om" {
     ]
   }
 
-  // --- For BOSH; Suggested from BOSH docs ---
+  // -- Added to work with TWS --
+  statement {
+    sid     = "RequiredForTWS"
+    effect  = "Allow"
+    actions = [
+      "iam:GetInstanceProfile"
+    ]
+    resources = [
+      "*"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "om" {
+  name   = var.om_role_name
+  path   = "/"
+  policy = data.aws_iam_policy_document.om.json
+}
+
+resource "aws_iam_role" "om" {
+  name               = var.om_role_name
+  assume_role_policy = data.aws_iam_policy_document.role_policy.json
+}
+
+resource "aws_iam_policy_attachment" "om" {
+  name       = var.instance_tagger_role_name
+  roles      = [
+    aws_iam_role.om.name
+  ]
+  policy_arn = aws_iam_policy.om.arn
+}
+
+resource "aws_iam_instance_profile" "om" {
+  name = var.om_role_name
+  role = aws_iam_role.om.name
+}
+
+data "aws_iam_policy_document" "bosh" {
   statement {
     sid = "BaselinePolicy"
 
@@ -676,29 +715,28 @@ data "aws_iam_policy_document" "om" {
   }
 }
 
-
-resource "aws_iam_policy" "om" {
-  name   = var.om_role_name
+resource "aws_iam_policy" "bosh" {
+  name   = var.bosh_role_name
   path   = "/"
-  policy = data.aws_iam_policy_document.om.json
+  policy = data.aws_iam_policy_document.bosh.json
 }
 
-resource "aws_iam_role" "om" {
-  name               = var.om_role_name
+resource "aws_iam_role" "bosh" {
+  name               = var.bosh_role_name
   assume_role_policy = data.aws_iam_policy_document.role_policy.json
 }
 
-resource "aws_iam_policy_attachment" "om" {
+resource "aws_iam_policy_attachment" "bosh" {
   name       = var.instance_tagger_role_name
   roles      = [
-    aws_iam_role.om.name
+    aws_iam_role.bosh.name
   ]
-  policy_arn = aws_iam_policy.om.arn
+  policy_arn = aws_iam_policy.bosh.arn
 }
 
-resource "aws_iam_instance_profile" "om" {
-  name = var.om_role_name
-  role = aws_iam_role.om.name
+resource "aws_iam_instance_profile" "bosh" {
+  name = var.bosh_role_name
+  role = aws_iam_role.bosh.name
 }
 
 // Policy document copied from Director
