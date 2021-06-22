@@ -265,6 +265,7 @@ module "reporting_bucket_policy" {
   read_only_role_ids = concat([
     data.aws_iam_role.director_role.unique_id,
     data.aws_iam_role.om_role.unique_id,
+    data.aws_iam_role.bosh_role.unique_id,
     data.aws_iam_role.sjb_role.unique_id,
     data.aws_iam_role.concourse_role.unique_id
   ], data.aws_iam_role.super_user_roles.*.unique_id, [data.aws_iam_role.isse_role.unique_id])

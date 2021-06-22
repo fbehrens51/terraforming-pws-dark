@@ -37,6 +37,7 @@ module "keys" {
   sjb_role_arn                       = var.sjb_role_arn
   concourse_role_arn                 = var.concourse_role_arn
   om_role_arn                        = var.om_role_arn
+  bosh_role_arn                      = var.bosh_role_arn
   deletion_window                    = "7"
   additional_bootstrap_principal_arn = data.aws_caller_identity.my_account.arn
   logs_service_name                  = var.logs_service_name
@@ -57,6 +58,7 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
         var.sjb_role_arn,
         var.concourse_role_arn,
         var.om_role_arn,
+        var.bosh_role_arn,
       ]
     }
 
@@ -82,6 +84,7 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
         var.sjb_role_arn,
         var.concourse_role_arn,
         var.om_role_arn,
+        var.bosh_role_arn,
         var.promoter_role_arn
       ]
     }
@@ -142,6 +145,7 @@ variable "pas_bucket_role_arn" {}
 variable "sjb_role_arn" {}
 variable "concourse_role_arn" {}
 variable "om_role_arn" {}
+variable "bosh_role_arn" {}
 variable "pas_kms_key_name" {}
 variable "keymanager_file_output_path" {}
 variable "logs_service_name" {

@@ -37,10 +37,10 @@ locals {
   env_name      = var.global_vars.env_name
   modified_name = "${local.env_name} fluentd"
   modified_tags = merge(
-    var.global_vars["global_tags"],
-    {
-      "Name" = local.modified_name
-    },
+  var.global_vars["global_tags"],
+  {
+    "Name" = local.modified_name
+  },
   )
 
   subnets = data.terraform_remote_state.enterprise-services.outputs.private_subnet_ids
@@ -97,7 +97,7 @@ locals {
       cidr_blocks = "0.0.0.0/0"
     },
   ]
-  private_subnets = data.terraform_remote_state.enterprise-services.outputs.private_subnet_ids
+  private_subnets      = data.terraform_remote_state.enterprise-services.outputs.private_subnet_ids
 
   formatted_env_name = replace(local.env_name, " ", "-")
 
@@ -115,6 +115,7 @@ locals {
   om_role_id            = data.terraform_remote_state.paperwork.outputs.om_role_id
   sjb_role_id           = data.terraform_remote_state.paperwork.outputs.sjb_role_id
   concourse_role_id     = data.terraform_remote_state.paperwork.outputs.concourse_role_id
+  bosh_role_id          = data.terraform_remote_state.paperwork.outputs.bosh_role_id
   isse_role_id          = data.terraform_remote_state.paperwork.outputs.isse_role_id
   super_user_ids        = data.terraform_remote_state.paperwork.outputs.super_user_ids
   super_user_role_ids   = data.terraform_remote_state.paperwork.outputs.super_user_role_ids
@@ -161,6 +162,7 @@ module "syslog_archive_bucket_policy" {
   read_only_role_ids  = concat(local.super_user_role_ids, [
     local.director_role_id,
     local.om_role_id,
+    local.bosh_role_id,
     local.sjb_role_id,
     local.concourse_role_id
   ], [local.isse_role_id])
@@ -204,6 +206,7 @@ module "syslog_audit_archive_bucket_policy" {
   read_only_role_ids  = concat(local.super_user_role_ids, [
     local.director_role_id,
     local.om_role_id,
+    local.bosh_role_id,
     local.sjb_role_id,
     local.concourse_role_id
   ], [local.isse_role_id])
@@ -252,11 +255,11 @@ resource "aws_lb" "fluentd_lb" {
   load_balancer_type               = "network"
   subnets                          = data.terraform_remote_state.enterprise-services.outputs.public_subnet_ids
   enable_cross_zone_load_balancing = true
-  tags = merge(
-    local.modified_tags,
-    {
-      "Name" = local.fluentd_lb_name
-    },
+  tags                             = merge(
+  local.modified_tags,
+  {
+    "Name" = local.fluentd_lb_name
+  },
   )
 }
 

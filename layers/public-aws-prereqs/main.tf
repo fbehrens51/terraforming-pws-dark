@@ -175,6 +175,7 @@ data "template_file" "keymanager_variables" {
     sjb_role_arn        = module.paperwork.sjb_role_arn
     concourse_role_arn  = module.paperwork.concourse_role_arn
     om_role_arn         = module.paperwork.om_role_arn
+    bosh_role_arn       = module.paperwork.bosh_role_arn
   }
 }
 

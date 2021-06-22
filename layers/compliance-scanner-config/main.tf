@@ -79,6 +79,7 @@ locals {
   s3_logs_bucket        = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
   director_role_id      = data.terraform_remote_state.paperwork.outputs.director_role_id
   om_role_id            = data.terraform_remote_state.paperwork.outputs.om_role_id
+  bosh_role_id            = data.terraform_remote_state.paperwork.outputs.bosh_role_id
   sjb_role_id           = data.terraform_remote_state.paperwork.outputs.sjb_role_id
   concourse_role_id     = data.terraform_remote_state.paperwork.outputs.concourse_role_id
   isse_role_id          = data.terraform_remote_state.paperwork.outputs.isse_role_id
@@ -144,6 +145,7 @@ module "compliance_scanner_bucket_policy" {
   read_only_role_ids  = concat(local.super_user_role_ids, [
     local.director_role_id,
     local.om_role_id,
+    local.bosh_role_id,
     local.sjb_role_id,
     local.concourse_role_id
   ], [local.isse_role_id])
