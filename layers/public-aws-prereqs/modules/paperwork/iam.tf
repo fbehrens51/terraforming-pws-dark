@@ -154,7 +154,7 @@ data "aws_iam_policy_document" "isse" {
   statement {
     effect = "Allow"
 
-    actions   = [
+    actions = [
       "s3:Get*",
       "s3:List*",
       "logs:Describe*",
@@ -586,8 +586,8 @@ data "aws_iam_policy_document" "om" {
 
   // -- Added to work with TWS --
   statement {
-    sid     = "RequiredForTWS"
-    effect  = "Allow"
+    sid    = "RequiredForTWS"
+    effect = "Allow"
     actions = [
       "iam:GetInstanceProfile",
       "iam:PassRole"
@@ -610,8 +610,8 @@ resource "aws_iam_role" "om" {
 }
 
 resource "aws_iam_policy_attachment" "om" {
-  name       = var.instance_tagger_role_name
-  roles      = [
+  name = var.instance_tagger_role_name
+  roles = [
     aws_iam_role.om.name
   ]
   policy_arn = aws_iam_policy.om.arn
@@ -642,60 +642,61 @@ data "aws_iam_policy_document" "bosh" {
       "ec2:DescribeVolumes",
       "ec2:DetachVolume",
       "ec2:RunInstances",
-      "ec2:TerminateInstances"
+      "ec2:TerminateInstances",
+      "s3:*",
     ]
 
     resources = [
-      "*"]
+    "*"]
   }
 
   statement {
-    sid       = "RequiredIfUsingSnapshotsFeature"
-    effect    = "Allow"
-    actions   = [
+    sid    = "RequiredIfUsingSnapshotsFeature"
+    effect = "Allow"
+    actions = [
       "ec2:CreateSnapshot",
       "ec2:DeleteSnapshot",
-      "ec2:DescribeSnapshots"]
+    "ec2:DescribeSnapshots"]
     resources = [
-      "*"]
+    "*"]
   }
 
   statement {
-    sid       = "RequiredIfUsingElasticIPs"
-    effect    = "Allow"
-    actions   = [
+    sid    = "RequiredIfUsingElasticIPs"
+    effect = "Allow"
+    actions = [
       "ec2:AssociateAddress",
       "ec2:DescribeAddresses"
     ]
     resources = [
-      "*"]
+    "*"]
   }
 
   statement {
-    sid       = "RequiredIfUsingSourceDestCheckCloudProperties"
-    effect    = "Allow"
-    actions   = [
+    sid    = "RequiredIfUsingSourceDestCheckCloudProperties"
+    effect = "Allow"
+    actions = [
       "ec2:ModifyInstanceAttribute"
     ]
     resources = [
-      "*"]
+    "*"]
   }
 
   statement {
-    sid       = "RequiredIfUsingELBCloudProperties"
-    effect    = "Allow"
-    actions   = [
+    sid    = "RequiredIfUsingELBCloudProperties"
+    effect = "Allow"
+    actions = [
       "elasticloadbalancing:DescribeLoadBalancers",
       "elasticloadbalancing:RegisterInstancesWithLoadBalancer"
     ]
     resources = [
-      "*"]
+    "*"]
   }
 
   statement {
-    sid       = "RequiredIfUsingIAMInstanceProfileCloudProperty"
-    effect    = "Allow"
-    actions   = [
+    sid    = "RequiredIfUsingIAMInstanceProfileCloudProperty"
+    effect = "Allow"
+    actions = [
       "iam:PassRole"
     ]
     resources = [
@@ -705,8 +706,8 @@ data "aws_iam_policy_document" "bosh" {
 
   // -- Added to work with TWS --
   statement {
-    sid     = "RequiredForTWS"
-    effect  = "Allow"
+    sid    = "RequiredForTWS"
+    effect = "Allow"
     actions = [
       "iam:GetInstanceProfile"
     ]
@@ -728,8 +729,8 @@ resource "aws_iam_role" "bosh" {
 }
 
 resource "aws_iam_policy_attachment" "bosh" {
-  name       = var.instance_tagger_role_name
-  roles      = [
+  name = var.instance_tagger_role_name
+  roles = [
     aws_iam_role.bosh.name
   ]
   policy_arn = aws_iam_policy.bosh.arn
