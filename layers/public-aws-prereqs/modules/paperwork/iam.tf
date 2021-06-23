@@ -709,7 +709,8 @@ data "aws_iam_policy_document" "bosh" {
     sid    = "RequiredForTWS"
     effect = "Allow"
     actions = [
-      "iam:GetInstanceProfile"
+      "iam:GetInstanceProfile",
+      "s3:GetBucketVersioning"
     ]
     resources = [
       "*"
