@@ -79,6 +79,8 @@ locals {
   transfer_bucket_name = "${local.bucket_prefix}-transfer"
   mirror_bucket_name   = "${local.bucket_prefix}-mirror"
 
+  om_key_name = "${local.env_name}-cp-om"
+
   om_ingress_rules = [
     {
       description = "Allow ssh/22 from cp_vpc"
@@ -315,3 +317,7 @@ module "credhub_elb" {
   health_check      = "TCP:8844"
 }
 
+module "om_key_pair" {
+  source   = "../../modules/key_pair"
+  key_name = local.om_key_name
+}

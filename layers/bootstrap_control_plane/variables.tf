@@ -4,9 +4,6 @@ variable "remote_state_bucket" {
 variable "remote_state_region" {
 }
 
-variable "terraform_bucket_name" {
-}
-
 variable "terraform_region" {
 }
 

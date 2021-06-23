@@ -5,3 +5,7 @@ output "sjb_private_ip" {
 output "sjb_eni_ids" {
   value = module.sjb_bootstrap.eni_ids
 }
+
+output "terraform_bucket_name" {
+  value = var.terraform_bucket_name
+}

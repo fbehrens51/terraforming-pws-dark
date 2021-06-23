@@ -59,10 +59,32 @@ data "terraform_remote_state" "bootstrap_control_plane" {
   }
 }
 
+data "terraform_remote_state" "bootstrap_sjb" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bootstrap_sjb"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
+data "terraform_remote_state" "bootstrap_control_plane_foundation" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bootstrap_control_plane_foundation"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 locals {
   secret_bucket_name    = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
-  transfer_bucket_name  = data.terraform_remote_state.bootstrap_control_plane.outputs.transfer_bucket_name
-  terraform_bucket_name = data.terraform_remote_state.bootstrap_control_plane.outputs.terraform_bucket_name
+  transfer_bucket_name  = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.transfer_bucket_name
+  terraform_bucket_name = data.terraform_remote_state.bootstrap_sjb.outputs.terraform_bucket_name
   ldap_dn               = data.terraform_remote_state.paperwork.outputs.ldap_dn
   ldap_port             = data.terraform_remote_state.paperwork.outputs.ldap_port
   ldap_host             = data.terraform_remote_state.paperwork.outputs.ldap_host
@@ -269,7 +291,7 @@ module "sjb" {
   availability_zone = var.singleton_availability_zone
   ami_id            = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
   user_data         = data.template_cloudinit_config.user_data.rendered
-  eni_ids           = data.terraform_remote_state.bootstrap_control_plane.outputs.sjb_eni_ids
+  eni_ids           = data.terraform_remote_state.bootstrap_sjb.outputs.sjb_eni_ids
   // TODO: change to sjb_role_name
   iam_instance_profile = data.terraform_remote_state.paperwork.outputs.sjb_role_name
   instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types

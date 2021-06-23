@@ -31,10 +31,6 @@ output "sjb_cidr_block" {
   value = local.sjb_cidr_block
 }
 
-output "terraform_bucket_name" {
-  value = var.terraform_bucket_name
-}
-
 output "terraform_region" {
   value = var.terraform_region
 }

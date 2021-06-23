@@ -103,14 +103,15 @@ output "plane_elb_dns" {
 output "concourse_lb_security_group_id" {
   value = [
     module.concourse_nlb.concourse_nlb_security_group_id,
-    aws_security_group.vms_security_group[0].id
+    data.terraform_remote_state.bootstrap_control_plane.outputs.vms_security_group_id
   ]
-}
-
-output "terraform_bucket_name" {
-  value = var.terraform_bucket_name
 }
 
 output "terraform_region" {
   value = var.terraform_region
+}
+
+output "om_private_key_pem" {
+  value     = module.om_key_pair.private_key_pem
+  sensitive = true
 }

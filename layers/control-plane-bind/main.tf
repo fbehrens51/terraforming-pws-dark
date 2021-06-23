@@ -185,6 +185,19 @@ data "template_cloudinit_config" "master_cp_bind_conf_userdata" {
     content_type = "text/x-include-url"
     content      = data.terraform_remote_state.paperwork.outputs.completion_tag_user_data
   }
+  //  part {
+  //    filename     = "iptables.cfg"
+  //    content_type = "text/cloud-config"
+  //    content      = module.iptables_rules.iptables_user_data
+  //    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  //  }
+
+}
+
+module "iptables_rules" {
+  source                     = "../../modules/iptables"
+  nat                        = false
+  control_plane_subnet_cidrs = [data.aws_vpc.vpc.cidr_block]
 }
 
 module "cp_bind_master_host" {
