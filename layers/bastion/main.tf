@@ -137,16 +137,34 @@ module "bastion_host" {
   instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
   scale_vpc_key        = "bastion"
   scale_service_key    = "bastion"
-  ami_id               = var.ami_id == "" ? data.terraform_remote_state.paperwork.outputs.amzn_ami_id : var.ami_id
+  ami_id               = local.ami_filter_provided ? data.aws_ami.bastion_ami.0.image_id : data.terraform_remote_state.paperwork.outputs.amzn_ami_id
   user_data            = var.add_bot_user_to_user_data ? data.template_cloudinit_config.bot_user_data.rendered : data.template_cloudinit_config.user_data.rendered
   eni_ids              = [module.bootstrap_bastion.eni_id]
   tags                 = local.instance_tags
-  iam_instance_profile = var.ami_id == "" ? data.terraform_remote_state.paperwork.outputs.instance_tagger_role_name : ""
+  iam_instance_profile = local.ami_filter_provided ? "" : data.terraform_remote_state.paperwork.outputs.instance_tagger_role_name
 }
 
-variable "ami_id" {
-  description = "The AMI id for the bastion host.  If left blank the most recent `amzn-ami-hvm` AMI will be used."
-  default     = ""
+variable "ami_filter" {
+  type    = object({ owners = list(string), name_regex = string, filters = map(list(string)) })
+  default = { owners = null, name_regex = null, filters = null }
+}
+
+locals {
+  ami_filter_provided = var.ami_filter.owners == null ? false : true
+}
+
+data "aws_ami" "bastion_ami" {
+  count       = local.ami_filter_provided ? 1 : 0
+  owners      = var.ami_filter.owners
+  name_regex  = var.ami_filter.name_regex
+  most_recent = true
+  dynamic "filter" {
+    for_each = var.ami_filter.filters
+    content {
+      name   = filter.key
+      values = filter.value
+    }
+  }
 }
 
 variable "remote_state_region" {
