@@ -710,7 +710,6 @@ data "aws_iam_policy_document" "bosh" {
     effect = "Allow"
     actions = [
       "iam:GetInstanceProfile",
-      "s3:GetBucketVersioning"
     ]
     resources = [
       "*"
