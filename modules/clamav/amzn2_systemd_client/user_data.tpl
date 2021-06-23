@@ -24,6 +24,9 @@ runcmd:
     yum localinstall * -y
     popd
     rm -rf pkg
+    # Next two lines fix the perms as installed by the rpm, and then during logrotation
+    chmod 660 /var/log/freshclam.log
+    augtool set /files/etc/logrotate.d/clamav-update/rule/create/mode 660
     augtool set /files/etc/freshclam.conf/LogSyslog yes
     augtool rm /files/etc/freshclam.conf/DatabaseMirror
     augtool set /files/etc/freshclam.conf/PrivateMirror ${clam_database_mirror}

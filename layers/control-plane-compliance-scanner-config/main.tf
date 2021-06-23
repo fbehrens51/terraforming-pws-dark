@@ -83,6 +83,10 @@ locals {
   super_user_role_ids   = data.terraform_remote_state.paperwork.outputs.super_user_role_ids
   oscap_store_role_name = data.terraform_remote_state.paperwork.outputs.bucket_role_name
   ent_tech_read_role_id = data.terraform_remote_state.paperwork.outputs.ent_tech_read_role_id
+  om_role_id            = data.terraform_remote_state.paperwork.outputs.om_role_id
+  bosh_role_id          = data.terraform_remote_state.paperwork.outputs.bosh_role_id
+  sjb_role_id           = data.terraform_remote_state.paperwork.outputs.sjb_role_id
+  concourse_role_id     = data.terraform_remote_state.paperwork.outputs.concourse_role_id
 }
 
 module "compliance_scanner_config" {
@@ -123,10 +127,10 @@ resource "aws_s3_bucket" "compliance_scanner_bucket" {
   }
 
   tags = merge(
-    var.global_vars["global_tags"],
-    {
-      "Name" = "Compliance Scanner Results Bucket"
-    },
+  var.global_vars["global_tags"],
+  {
+    "Name" = "Compliance Scanner Results Bucket"
+  },
   )
 }
 
@@ -138,7 +142,13 @@ module "compliance_scanner_bucket_policy" {
   source              = "../../modules/bucket/policy/generic"
   bucket_arn          = aws_s3_bucket.compliance_scanner_bucket.arn
   read_write_role_ids = [data.aws_iam_role.bucket_role.unique_id]
-  read_only_role_ids  = concat(local.super_user_role_ids, [local.director_role_id], [local.isse_role_id])
+  read_only_role_ids  = concat(local.super_user_role_ids, [
+    local.director_role_id,
+    local.om_role_id,
+    local.bosh_role_id,
+    local.sjb_role_id,
+    local.concourse_role_id,
+  ], [local.isse_role_id])
   read_only_user_ids  = local.super_user_ids
 }
 

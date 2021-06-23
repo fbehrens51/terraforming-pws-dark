@@ -43,6 +43,17 @@ data "terraform_remote_state" "bootstrap_postfix" {
   }
 }
 
+data "terraform_remote_state" "bootstrap_control_plane" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bootstrap_control_plane"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 locals {
   env_name      = var.global_vars.env_name
   modified_name = "${local.env_name} postfix"
@@ -155,6 +166,21 @@ data "template_cloudinit_config" "user_data" {
     content_type = "text/x-include-url"
     content      = data.terraform_remote_state.paperwork.outputs.completion_tag_user_data
   }
+
+  part {
+    filename     = "iptables.cfg"
+    content_type = "text/cloud-config"
+    content      = module.iptables_rules.iptables_user_data
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+}
+
+module "iptables_rules" {
+  source = "../../modules/iptables"
+  personality_rules = [
+    "iptables -A INPUT -p tcp --dport 25                  -m state --state NEW -j ACCEPT"
+  ]
+  control_plane_subnet_cidrs = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs
 }
 
 module "postfix_master_host" {

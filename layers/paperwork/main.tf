@@ -231,6 +231,22 @@ data "aws_iam_role" "director_role" {
   name = var.director_role_name
 }
 
+data "aws_iam_role" "om_role" {
+  name = var.om_role_name
+}
+
+data "aws_iam_role" "sjb_role" {
+  name = var.sjb_role_name
+}
+
+data "aws_iam_role" "concourse_role" {
+  name = var.concourse_role_name
+}
+
+data "aws_iam_role" "bosh_role" {
+  name = var.bosh_role_name
+}
+
 data "aws_iam_user" "super_users" {
   count     = length(var.account_super_user_names)
   user_name = element(var.account_super_user_names, count.index)
@@ -246,8 +262,14 @@ module "reporting_bucket_policy" {
   source              = "../../modules/bucket/policy/generic"
   bucket_arn          = aws_s3_bucket.reporting_bucket.arn
   read_write_role_ids = [data.aws_iam_role.director_role.unique_id]
-  read_only_role_ids  = concat([data.aws_iam_role.director_role.unique_id], data.aws_iam_role.super_user_roles.*.unique_id, [data.aws_iam_role.isse_role.unique_id])
-  read_only_user_ids  = data.aws_iam_user.super_users.*.user_id
+  read_only_role_ids = concat([
+    data.aws_iam_role.director_role.unique_id,
+    data.aws_iam_role.om_role.unique_id,
+    data.aws_iam_role.bosh_role.unique_id,
+    data.aws_iam_role.sjb_role.unique_id,
+    data.aws_iam_role.concourse_role.unique_id
+  ], data.aws_iam_role.super_user_roles.*.unique_id, [data.aws_iam_role.isse_role.unique_id])
+  read_only_user_ids = data.aws_iam_user.super_users.*.user_id
 }
 
 resource "aws_s3_bucket_policy" "reporting_bucket_policy_attachment" {
@@ -287,6 +309,12 @@ resource "tls_private_key" "scanner_private_key" {
   rsa_bits  = "4096"
 }
 
+
+resource "aws_s3_bucket_object" "scanner_public_key" {
+  bucket  = var.cert_bucket
+  key     = "scanner_public_key"
+  content = tls_private_key.scanner_private_key.public_key_openssh
+}
 
 module "bot_host_key_pair" {
   source   = "../../modules/key_pair"
@@ -422,7 +450,16 @@ variable "instance_tagger_role_name" {
 variable "director_role_name" {
 }
 
+variable "om_role_name" {
+}
+
+variable "bosh_role_name" {
+}
+
 variable "sjb_role_name" {
+}
+
+variable "concourse_role_name" {
 }
 
 variable "transfer_key_arn" {}
@@ -838,6 +875,18 @@ output "director_role_name" {
   value = var.director_role_name
 }
 
+output "om_role_name" {
+  value = var.om_role_name
+}
+
+output "bosh_role_name" {
+  value = var.bosh_role_name
+}
+
+output "concourse_role_name" {
+  value = var.concourse_role_name
+}
+
 output "kms_key_id" {
   value = var.kms_key_id
 }
@@ -856,6 +905,14 @@ output "tsdb_role_name" {
 
 output "root_ca_cert" {
   value = data.aws_s3_bucket_object.root_ca_cert.body
+}
+
+output "root_ca_cert_path" {
+  value = data.aws_s3_bucket_object.root_ca_cert.key
+}
+
+output "additional_trusted_ca_certs_path" {
+  value = data.aws_s3_bucket_object.additional_trusted_ca_certs.key
 }
 
 output "router_trusted_ca_certs" {
@@ -1131,8 +1188,24 @@ output "director_role_id" {
   value = data.aws_iam_role.director_role.unique_id
 }
 
+output "om_role_id" {
+  value = data.aws_iam_role.om_role.unique_id
+}
+
 output "isse_role_id" {
   value = data.aws_iam_role.isse_role.unique_id
+}
+
+output "sjb_role_id" {
+  value = data.aws_iam_role.sjb_role.unique_id
+}
+
+output "concourse_role_id" {
+  value = data.aws_iam_role.concourse_role.unique_id
+}
+
+output "bosh_role_id" {
+  value = data.aws_iam_role.bosh_role.unique_id
 }
 
 output "ent_tech_read_role_id" {
@@ -1156,6 +1229,10 @@ output "scanner_private_key" {
   value     = tls_private_key.scanner_private_key.private_key_pem
 }
 
+output "scanner_public_key" {
+  sensitive = true
+  value     = tls_private_key.scanner_private_key.public_key_openssh
+}
 
 locals {
   extra_bosh_users = [
@@ -1169,4 +1246,16 @@ locals {
 
 output "extra_bosh_users" {
   value = concat(local.extra_bosh_users, var.extra_users)
+}
+
+output "env_name" {
+  value = var.global_vars.name_prefix
+}
+
+output "region" {
+  value = data.aws_region.current.name
+}
+
+output "s3_endpoint" {
+  value = var.s3_endpoint
 }

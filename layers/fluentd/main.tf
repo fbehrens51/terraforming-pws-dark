@@ -63,6 +63,17 @@ data "terraform_remote_state" "bootstrap_fluentd" {
   }
 }
 
+data "terraform_remote_state" "bootstrap_control_plane" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bootstrap_control_plane"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 locals {
   env_name      = var.global_vars.env_name
   modified_name = "${local.env_name} fluentd"
@@ -93,7 +104,6 @@ data "aws_vpc" "es_vpc" {
 data "aws_vpc" "pas_vpc" {
   id = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
 }
-
 
 module "configuration" {
   source = "./modules/config"
@@ -184,6 +194,24 @@ data "template_cloudinit_config" "user_data" {
     content_type = "text/x-include-url"
     content      = data.terraform_remote_state.paperwork.outputs.completion_tag_user_data
   }
+
+  part {
+    filename     = "iptables.cfg"
+    content_type = "text/cloud-config"
+    content      = module.iptables_rules.iptables_user_data
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+}
+
+module "iptables_rules" {
+  source = "../../modules/iptables"
+  personality_rules = [
+    "iptables -A INPUT -p tcp --dport 8090                -m state --state NEW -j ACCEPT",
+    "iptables -A INPUT -p tcp --dport 8091                -m state --state NEW -j ACCEPT",
+    "iptables -A INPUT -p tcp --dport 8888                -m state --state NEW -j ACCEPT",
+    "iptables -A INPUT -p tcp --dport 9200                -m state --state NEW -j ACCEPT"
+  ]
+  control_plane_subnet_cidrs = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs
 }
 
 module "fluentd_instance" {
@@ -200,9 +228,7 @@ module "fluentd_instance" {
   bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
   iam_instance_profile = data.terraform_remote_state.paperwork.outputs.fluentd_role_name
   volume_ids           = data.terraform_remote_state.bootstrap_fluentd.outputs.volume_id
-
 }
-
 
 resource "aws_lb_target_group_attachment" "fluentd_syslog_attachment" {
   count            = length(data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_eni_ids)

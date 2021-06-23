@@ -167,7 +167,7 @@ bootcmd:
     install -m 755 -d /etc/skel/bin
 
 mounts:
-  - [ "/dev/sdf", "/home", "ext4", "defaults,nofail", "0", "2" ]
+  - [ "/dev/sdf", "/home", "ext4", "defaults,nofail,nodev", "0", "2" ]
 
 EOF
 }
@@ -242,6 +242,18 @@ data "template_cloudinit_config" "user_data" {
     content_type = "text/x-include-url"
     content      = data.terraform_remote_state.paperwork.outputs.completion_tag_user_data
   }
+
+  part {
+    filename     = "iptables.cfg"
+    content_type = "text/cloud-config"
+    content      = module.iptables_rules.iptables_user_data
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+}
+
+module "iptables_rules" {
+  source                     = "../../modules/iptables"
+  control_plane_subnet_cidrs = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs
 }
 
 resource "aws_ebs_volume" "sjb_home" {
@@ -252,12 +264,13 @@ resource "aws_ebs_volume" "sjb_home" {
 }
 
 module "sjb" {
-  instance_count       = 1
-  source               = "../../modules/launch"
-  availability_zone    = var.singleton_availability_zone
-  ami_id               = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
-  user_data            = data.template_cloudinit_config.user_data.rendered
-  eni_ids              = data.terraform_remote_state.bootstrap_control_plane.outputs.sjb_eni_ids
+  instance_count    = 1
+  source            = "../../modules/launch"
+  availability_zone = var.singleton_availability_zone
+  ami_id            = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
+  user_data         = data.template_cloudinit_config.user_data.rendered
+  eni_ids           = data.terraform_remote_state.bootstrap_control_plane.outputs.sjb_eni_ids
+  // TODO: change to sjb_role_name
   iam_instance_profile = data.terraform_remote_state.paperwork.outputs.sjb_role_name
   instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
   volume_ids           = [aws_ebs_volume.sjb_home.id]

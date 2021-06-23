@@ -23,17 +23,11 @@ module "domains" {
   root_domain = var.zone_name
 }
 
-data "template_file" "named_conf_content" {
-  template = file("${path.module}/named.conf.tpl")
-
-  vars = {
+output "named_conf_content" {
+  value = templatefile("${path.module}/named.conf.tpl", {
     client_cidr = var.client_cidr
     zone_name   = var.zone_name
-  }
-}
-
-output "named_conf_content" {
-  value = data.template_file.named_conf_content.rendered
+  })
 }
 
 output "zone_content" {

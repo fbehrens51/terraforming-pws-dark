@@ -13,9 +13,11 @@ runcmd:
     # chown and chmod all user directories after they've been created
     awk -F: '$3 >= 1000 && $1 != "nfsnobody" {print "chown -R " $3 ":" $4 " " $6 "\nchmod 700 " $6}' /etc/passwd | xargs --no-run-if-empty -0 sh -c
     # defer setting umask until after all of the yum installs have completed.
-    sed -i -E -e '/umask (002|022)/s/(002|022)/027/' /etc/profile /etc/bashrc
+    sed -i -E -e '/umask 002/s/002/027/' /etc/profile /etc/bashrc
+    sed -i -E -e '/umask 022/s/022/077/' /etc/profile /etc/bashrc
     # TODO: Move these to server hardening if this passes the audit
-    sed -i -E -e 's/OPTIONS=""/OPTIONS="-u chrony"/' /etc/sysconfig/chronyd
+    sed -i -E -e 's/OPTIONS=""/OPTIONS="-4 -u chrony"/' /etc/sysconfig/chronyd
+    systemctl restart chronyd.service
 EOF
 
 }

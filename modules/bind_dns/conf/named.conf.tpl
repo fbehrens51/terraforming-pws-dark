@@ -68,4 +68,5 @@ zone "." IN {
 zone "${zone_name}" {
 	type master;
 	file "data/db.${zone_name}";
+	allow-transfer { "none"; };
 };

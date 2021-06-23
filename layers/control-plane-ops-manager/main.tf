@@ -44,6 +44,8 @@ data "terraform_remote_state" "bootstrap_control_plane" {
 }
 
 locals {
+  om_role_name               = data.terraform_remote_state.paperwork.outputs.om_role_name
+  om_role_id                 = data.terraform_remote_state.paperwork.outputs.om_role_id
   director_role_name         = data.terraform_remote_state.paperwork.outputs.director_role_name
   director_role_id           = data.terraform_remote_state.paperwork.outputs.director_role_id
   super_user_role_ids        = data.terraform_remote_state.paperwork.outputs.super_user_role_ids
@@ -89,7 +91,7 @@ module "ops_manager" {
 
   source               = "../../modules/launch"
   ami_id               = var.om_ami_id
-  iam_instance_profile = local.director_role_name
+  iam_instance_profile = local.om_role_name
   instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
   scale_vpc_key        = "control-plane"
   scale_service_key    = "ops-manager"
@@ -119,7 +121,7 @@ module "ops_manager_backup_bucket_policy" {
   source     = "../../modules/bucket/policy/generic"
   bucket_arn = data.terraform_remote_state.bootstrap_control_plane.outputs.ops_manager_bucket_arn
 
-  read_write_role_ids = concat(local.super_user_role_ids, [local.director_role_id])
+  read_write_role_ids = concat(local.super_user_role_ids, [local.director_role_id, local.om_role_id])
   read_write_user_ids = local.super_user_role_ids
   read_only_role_ids  = [local.isse_role_id, local.ent_tech_read_role_id]
   disable_delete      = false
