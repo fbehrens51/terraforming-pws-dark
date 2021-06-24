@@ -687,7 +687,8 @@ data "aws_iam_policy_document" "bosh" {
     effect = "Allow"
     actions = [
       "elasticloadbalancing:DescribeLoadBalancers",
-      "elasticloadbalancing:RegisterInstancesWithLoadBalancer"
+      "elasticloadbalancing:RegisterInstancesWithLoadBalancer",
+      "elasticloadbalancing:DescribeTargetGroups"
     ]
     resources = [
     "*"]
