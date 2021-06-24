@@ -122,7 +122,7 @@ module "cp_dns_forwarder" {
     },
     {
       domain        = ""
-      forwarder_ips = split(",", data.terraform_remote_state.paperwork.outputs.control_plane_vpc_dns)
+      forwarder_ips = data.terraform_remote_state.paperwork.outputs.control_plane_vpc_dns
     }
   ]
 }
@@ -132,16 +132,16 @@ data "template_cloudinit_config" "master_cp_bind_conf_userdata" {
   gzip          = true
 
   part {
-    filename     = "syslog.cfg"
-    content      = module.syslog_config.user_data
-    content_type = "text/x-include-url"
-  }
-
-  part {
     filename     = "cp_master_bind_conf.cfg"
     content_type = "text/cloud-config"
     content      = module.cp_dns_forwarder.user_data
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+
+  part {
+    filename     = "syslog.cfg"
+    content      = module.syslog_config.user_data
+    content_type = "text/x-include-url"
   }
 
   part {
@@ -225,7 +225,7 @@ module "syslog_config" {
 }
 
 resource "aws_vpc_dhcp_options" "cp_dhcp_options" {
-  domain_name_servers = module.bind_eni.eni_ips
+  domain_name_servers = data.terraform_remote_state.paperwork.outputs.control_plane_vpc_dns
   //  ntp_servers = []
   tags = {
     name = "CP DHCP Options"

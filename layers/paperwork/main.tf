@@ -424,6 +424,7 @@ variable "pas_vpc_dns" {
 }
 
 variable "control_plane_vpc_dns" {
+  type = list(string)
 }
 
 variable "bastion_vpc_id" {

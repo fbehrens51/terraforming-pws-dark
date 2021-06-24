@@ -3,14 +3,6 @@ users:
   - default
   - name: named
 
-bootcmd:
-  - |
-    set -ex
-    sudo truncate -s0 /etc/resolv.conf
-    %{for server in remote_dns}
-    echo -e "nameserver ${server}\n" >> /etc/resolv.conf
-    %{endfor}
-
 runcmd:
   - |
     set -ex
