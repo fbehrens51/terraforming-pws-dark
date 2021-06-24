@@ -26,7 +26,6 @@ jobs:
           INITIAL_VERSION: 0.0.0
           DRY_RUN: true
           PRERELEASE_SUFFIX: "${{ steps.extract_branch.outputs.branch }}"
-          TAG_CONTEXT: branch
 
       - name: Zip Source
         id: zip_source
