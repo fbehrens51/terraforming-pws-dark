@@ -271,6 +271,32 @@ data "template_cloudinit_config" "user_data" {
     content      = module.iptables_rules.iptables_user_data
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
+
+  part {
+    filename     = "dnsmasq.cfg"
+    content_type = "text/cloud-config"
+    content      = module.dnsmasq.dnsmasq_user_data
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+
+}
+
+data "aws_vpc" "vpc" {
+  id = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
+}
+
+module "dnsmasq" {
+  source         = "../../modules/dnsmasq"
+  enterprise_dns = data.terraform_remote_state.paperwork.outputs.control_plane_vpc_dns
+  forwarders = [{
+    domain        = var.endpoint_domain
+    forwarder_ips = [cidrhost(data.aws_vpc.vpc.cidr_block, 2)]
+    },
+    {
+      domain        = ""
+      forwarder_ips = data.terraform_remote_state.paperwork.outputs.control_plane_vpc_dns
+    }
+  ]
 }
 
 module "iptables_rules" {

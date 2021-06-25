@@ -10,3 +10,7 @@ variable "global_vars" {
 
 variable "internetless" {
 }
+
+variable "endpoint_domain" {
+  type = string
+}

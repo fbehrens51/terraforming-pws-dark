@@ -117,7 +117,7 @@ module "cp_dns_forwarder" {
   client_cidr = data.aws_vpc.vpc.cidr_block
   master_ips  = module.bind_eni.eni_ips
   forwarders = [{
-    domain        = "amazonaws.com"
+    domain        = var.endpoint_domain
     forwarder_ips = [cidrhost(data.aws_vpc.vpc.cidr_block, 2)]
     },
     {
