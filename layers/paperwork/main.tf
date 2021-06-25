@@ -1249,7 +1249,7 @@ output "extra_bosh_users" {
 }
 
 output "env_name" {
-  value = var.global_vars.name_prefix
+  value = var.global_vars.env_name
 }
 
 output "region" {
