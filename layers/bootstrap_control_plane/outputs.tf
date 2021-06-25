@@ -124,10 +124,6 @@ output "mirror_bucket_name" {
   value = aws_s3_bucket.mirror_bucket.bucket
 }
 
-output "transfer_bucket_name" {
-  value = aws_s3_bucket.transfer_bucket.bucket
-}
-
 output "import_bucket_name" {
   value = aws_s3_bucket.import_bucket.bucket
 }
