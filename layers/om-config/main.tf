@@ -143,7 +143,7 @@ module "om_config" {
   om_ssl_config               = var.om_ssl_config
   om_ssh_banner_config        = var.om_ssh_banner_config
   pas_vpc_dns                 = local.vpc_dns
-  env_name                    = local.env_name_prefix
+  env_name                    = var.global_vars.env_name
   region                      = data.aws_region.current.name
   s3_endpoint                 = var.s3_endpoint
   ec2_endpoint                = var.ec2_endpoint
