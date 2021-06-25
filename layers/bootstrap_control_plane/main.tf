@@ -106,7 +106,6 @@ resource "aws_security_group" "vms_security_group" {
   )
 }
 
-
 data "aws_vpc" "pas_vpc" {
   id = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
 }
