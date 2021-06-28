@@ -47,3 +47,11 @@ variable "force_destroy_buckets" {
   type    = bool
   default = false
 }
+
+variable "control_plane_db_engine" {
+  default = "mariadb"
+}
+
+variable "control_plane_db_engine_version" {
+  default = "10.2"
+}
