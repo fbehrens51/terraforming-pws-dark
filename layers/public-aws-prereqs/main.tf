@@ -60,11 +60,7 @@ module "paperwork" {
   bucket_role_name          = var.pas_bucket_role_name
   worker_role_name          = var.platform_automation_engine_worker_role_name
   bootstrap_role_name       = var.bootstrap_role_name
-  director_role_name        = var.director_role_name
-  sjb_role_name             = var.sjb_role_name
-  concourse_role_name       = var.concourse_role_name
-  om_role_name              = var.om_role_name
-  bosh_role_name            = var.bosh_role_name
+  foundation_role_name      = var.foundation_role_name
   fluentd_role_name         = var.fluentd_role_name
   instance_tagger_role_name = var.instance_tagger_role_name
   tsdb_role_name            = var.tsdb_role_name
@@ -73,6 +69,14 @@ module "paperwork" {
 
   env_name    = var.env_name
   root_domain = var.root_domain
+
+  director_role_name                          = var.director_role_name
+  platform_automation_engine_worker_role_name = var.platform_automation_engine_worker_role_name
+  concourse_role_name                         = var.concourse_role_name
+  sjb_role_name                               = var.sjb_role_name
+  om_role_name                                = var.om_role_name
+  bosh_role_name                              = var.bosh_role_name
+
 }
 
 data "aws_caller_identity" "current_user" {
@@ -111,15 +115,16 @@ data "template_file" "paperwork_variables" {
     apps_domain                                 = module.domains.apps_fqdn
     system_domain                               = module.domains.system_fqdn
     bucket_role_name                            = var.pas_bucket_role_name
-    platform_automation_engine_worker_role_name = var.platform_automation_engine_worker_role_name
     tsdb_role_name                              = var.tsdb_role_name
     fluentd_role_name                           = var.fluentd_role_name
     isse_role_name                              = var.isse_role_name
     ent_tech_read_role_name                     = var.ent_tech_read_role_name
     instance_tagger_role_name                   = var.instance_tagger_role_name
+    bootstrap_role_name                         = var.bootstrap_role_name
+    foundation_role_name                        = var.foundation_role_name
     director_role_name                          = var.director_role_name
+    platform_automation_engine_worker_role_name = var.platform_automation_engine_worker_role_name
     sjb_role_name                               = var.sjb_role_name
-    concourse_role_name                         = var.concourse_role_name
     om_role_name                                = var.om_role_name
     bosh_role_name                              = var.bosh_role_name
     cp_vpc_id                                   = module.paperwork.cp_vpc_id
@@ -171,11 +176,13 @@ data "template_file" "keymanager_variables" {
   template = file("${path.module}/keymanager.tfvars.tpl")
   vars     = {
     pas_bucket_role_arn = module.paperwork.pas_bucket_role_arn
-    director_role_arn   = module.paperwork.director_role_arn
-    sjb_role_arn        = module.paperwork.sjb_role_arn
-    concourse_role_arn  = module.paperwork.concourse_role_arn
-    om_role_arn         = module.paperwork.om_role_arn
-    bosh_role_arn       = module.paperwork.bosh_role_arn
+    bootstrap_role_arn  = module.paperwork.bootstrap_role_arn
+    foundation_role_arn = module.paperwork.foundation_role_arn
+
+    director_role_arn = module.paperwork.director_role_arn
+    sjb_role_arn      = module.paperwork.sjb_role_arn
+    om_role_arn       = module.paperwork.om_role_arn
+    bosh_role_arn     = module.paperwork.bosh_role_arn
   }
 }
 
@@ -193,14 +200,6 @@ variable "keymanager_variable_output_path" {
 }
 
 variable "bootstrap_isolation_segment_vpc_variable_output_path" {
-  type = string
-}
-
-variable "platform_automation_engine_worker_role_name" {
-  type = string
-}
-
-variable "bootstrap_role_name" {
   type = string
 }
 
@@ -224,15 +223,23 @@ variable "instance_tagger_role_name" {
   type = string
 }
 
+variable "bootstrap_role_name" {
+  type = string
+}
+
+variable "foundation_role_name" {
+  type = string
+}
+
 variable "director_role_name" {
   type = string
 }
 
-variable "sjb_role_name" {
+variable "platform_automation_engine_worker_role_name" {
   type = string
 }
 
-variable "concourse_role_name" {
+variable "sjb_role_name" {
   type = string
 }
 
@@ -244,6 +251,9 @@ variable "bosh_role_name" {
   type = string
 }
 
+variable "concourse_role_name" {
+  type = string
+}
 variable "tsdb_role_name" {
 }
 
