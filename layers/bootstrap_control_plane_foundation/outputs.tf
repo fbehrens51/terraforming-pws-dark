@@ -60,6 +60,10 @@ output "mysql_rds_password" {
   sensitive = true
 }
 
+output "mysql_rds_subnet_group_name" {
+  value = module.rds_subnet_group.subnet_group_name
+}
+
 output "ops_manager_bucket_name" {
   value = module.ops_manager.bucket
 }

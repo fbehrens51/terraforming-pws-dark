@@ -252,12 +252,12 @@ module "mysql" {
   rds_db_username    = var.rds_db_username
   rds_instance_class = var.rds_instance_class
 
-  engine = "mariadb"
+  engine = var.control_plane_db_engine
 
   # RDS decided to upgrade the mysql patch version automatically from 10.1.31 to
   # 10.1.34, which makes terraform see this as a change. Use a prefix version to
   # prevent this from happening with postgres.
-  engine_version = "10.2"
+  engine_version = var.control_plane_db_engine_version
 
   db_port      = 3306
   sg_rule_desc = "mysql/3306"
