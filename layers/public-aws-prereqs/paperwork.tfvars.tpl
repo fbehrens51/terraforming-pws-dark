@@ -22,21 +22,13 @@ ent_tech_read_role_name = "${ent_tech_read_role_name}"
 
 instance_tagger_role_name = "${instance_tagger_role_name}"
 
-director_role_name = "${director_role_name}"
+bootstrap_role_name = "${bootstrap_role_name}"
 
-om_role_name = "${om_role_name}"
-
-bosh_role_name = "${bosh_role_name}"
-
-sjb_role_name = "${sjb_role_name}"
-
-concourse_role_name = "${concourse_role_name}"
+foundation_role_name = "${foundation_role_name}"
 
 tsdb_role_name = "${tsdb_role_name}"
 
 bucket_role_name = "${bucket_role_name}"
-
-platform_automation_engine_worker_role_name = "${platform_automation_engine_worker_role_name}"
 
 system_domain = "${system_domain}"
 
