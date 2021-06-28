@@ -645,12 +645,16 @@ data "aws_iam_policy_document" "bosh" {
       "ec2:DetachVolume",
       "ec2:RunInstances",
       "ec2:TerminateInstances",
+      "ec2:RegisterImage",
+      "ec2:DeregisterImage",
       "s3:*",
     ]
 
     resources = [
     "*"]
   }
+
+
 
   statement {
     sid    = "RequiredIfUsingSnapshotsFeature"
