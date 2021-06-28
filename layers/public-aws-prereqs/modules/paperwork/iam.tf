@@ -630,6 +630,8 @@ data "aws_iam_policy_document" "bosh" {
 
     actions = [
       "ec2:AttachVolume",
+      "ec2:CopyImage",
+      "ec2:CopySnapshot",
       "ec2:CreateTags",
       "ec2:CreateVolume",
       "ec2:DeleteVolume",
