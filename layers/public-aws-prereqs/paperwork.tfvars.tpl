@@ -2,8 +2,6 @@ root_domain = "${root_domain}"
 
 pas_vpc_dns = "${pas_vpc_dns}"
 
-control_plane_vpc_dns = "${control_plane_vpc_dns}"
-
 pas_vpc_id = "${pas_vpc_id}"
 
 bastion_vpc_id = "${bastion_vpc_id}"

@@ -43,6 +43,18 @@ data "terraform_remote_state" "bootstrap_control_plane" {
   }
 }
 
+data "terraform_remote_state" "bootstrap_control_plane_foundation" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bootstrap_control_plane_foundation"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
+
 data "terraform_remote_state" "pas" {
   backend = "s3"
 
@@ -111,14 +123,14 @@ locals {
   encrypted_amazon2_ami_id = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
 
   om_public_ip                        = data.terraform_remote_state.pas.outputs.ops_manager_ip
-  control_plane_om_public_ip          = data.terraform_remote_state.bootstrap_control_plane.outputs.ops_manager_ip
-  control_plane_plane_elb_dns         = data.terraform_remote_state.bootstrap_control_plane.outputs.plane_elb_dns
+  control_plane_om_public_ip          = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.ops_manager_ip
+  control_plane_plane_elb_dns         = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.plane_elb_dns
   pas_elb_dns                         = data.terraform_remote_state.pas.outputs.pas_elb_dns_name
   postfix_private_ip                  = data.terraform_remote_state.bootstrap_postfix.outputs.postfix_eni_ips[0]
   fluentd_dns_name                    = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_lb_dns_name
   grafana_elb_dns                     = data.terraform_remote_state.pas.outputs.grafana_elb_dns_name
-  control_plane_plane_uaa_elb_dns     = data.terraform_remote_state.bootstrap_control_plane.outputs.uaa_elb_dns
-  control_plane_plane_credhub_elb_dns = data.terraform_remote_state.bootstrap_control_plane.outputs.credhub_elb_dns
+  control_plane_plane_uaa_elb_dns     = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.uaa_elb_dns
+  control_plane_plane_credhub_elb_dns = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.credhub_elb_dns
 }
 
 data "template_cloudinit_config" "master_bind_conf_userdata" {

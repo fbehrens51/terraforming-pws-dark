@@ -36,3 +36,7 @@ variable "env_repo_name" {
 variable "credhub_vars_name" {
   type = string
 }
+
+variable "endpoint_domain" {
+  type = string
+}

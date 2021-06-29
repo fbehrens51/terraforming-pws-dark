@@ -40,6 +40,29 @@ data "terraform_remote_state" "bootstrap_control_plane" {
   }
 }
 
+
+data "terraform_remote_state" "control-plane-bind" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "control-plane-bind"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
+data "terraform_remote_state" "bootstrap_control_plane_foundation" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bootstrap_control_plane_foundation"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "bootstrap_postfix" {
   backend = "s3"
 
@@ -110,7 +133,7 @@ module "om_config" {
   control_plane_subnet_availability_zones = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_availability_zones
   control_plane_subnet_gateways           = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_gateways
   control_plane_subnet_cidrs              = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_private_subnet_cidrs
-  control_plane_vpc_dns                   = data.terraform_remote_state.paperwork.outputs.control_plane_vpc_dns
+  control_plane_vpc_dns                   = join(", ", data.terraform_remote_state.control-plane-bind.outputs.cp_bind_eni_ips)
   control_plane_additional_reserved_ips   = local.ec2_vpce_subnet_ip_map
 
   volume_encryption_kms_key_arn = data.terraform_remote_state.paperwork.outputs.kms_key_arn
@@ -138,11 +161,11 @@ module "om_config" {
 
   root_domain = local.root_domain
 
-  web_tg_names                   = data.terraform_remote_state.bootstrap_control_plane.outputs.web_tg_ids
-  uaa_elb_names                  = [data.terraform_remote_state.bootstrap_control_plane.outputs.uaa_elb_id]
-  credhub_elb_names              = [data.terraform_remote_state.bootstrap_control_plane.outputs.credhub_elb_id]
-  credhub_tg_names               = data.terraform_remote_state.bootstrap_control_plane.outputs.credhub_tg_ids
-  concourse_lb_security_group_id = data.terraform_remote_state.bootstrap_control_plane.outputs.concourse_lb_security_group_id
+  web_tg_names                   = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.web_tg_ids
+  uaa_elb_names                  = [data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.uaa_elb_id]
+  credhub_elb_names              = [data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.credhub_elb_id]
+  credhub_tg_names               = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.credhub_tg_ids
+  concourse_lb_security_group_id = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.concourse_lb_security_group_id
 
   smtp_host       = local.smtp_host
   smtp_user       = local.smtp_user
@@ -164,42 +187,42 @@ module "om_config" {
   custom_ssh_banner                           = data.terraform_remote_state.paperwork.outputs.custom_ssh_banner
   security_configuration_trusted_certificates = data.terraform_remote_state.paperwork.outputs.trusted_with_additional_ca_certs
 
-  director_blobstore_bucket   = data.terraform_remote_state.bootstrap_control_plane.outputs.director_blobstore_bucket
+  director_blobstore_bucket   = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.director_blobstore_bucket
   director_blobstore_location = var.director_blobstore_location
 
-  # director_rds_address  = "${data.terraform_remote_state.bootstrap_control_plane.director_rds_address}"
-  # director_rds_password = "${data.terraform_remote_state.bootstrap_control_plane.director_rds_password}"
-  # director_rds_port     = "${data.terraform_remote_state.bootstrap_control_plane.director_rds_port}"
-  # director_rds_username = "${data.terraform_remote_state.bootstrap_control_plane.director_rds_username}"
+  # director_rds_address  = "${data.terraform_remote_state.bootstrap_control_plane_foundation.director_rds_address}"
+  # director_rds_password = "${data.terraform_remote_state.bootstrap_control_plane_foundation.director_rds_password}"
+  # director_rds_port     = "${data.terraform_remote_state.bootstrap_control_plane_foundation.director_rds_port}"
+  # director_rds_username = "${data.terraform_remote_state.bootstrap_control_plane_foundation.director_rds_username}"
 
   # BOSH director database variables
   mysql_db_name  = "director"
   mysql_ca_cert  = data.terraform_remote_state.paperwork.outputs.rds_ca_cert
-  mysql_host     = data.terraform_remote_state.bootstrap_control_plane.outputs.mysql_rds_address
-  mysql_port     = data.terraform_remote_state.bootstrap_control_plane.outputs.mysql_rds_port
-  mysql_username = data.terraform_remote_state.bootstrap_control_plane.outputs.mysql_rds_username
-  mysql_password = data.terraform_remote_state.bootstrap_control_plane.outputs.mysql_rds_password
+  mysql_host     = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.mysql_rds_address
+  mysql_port     = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.mysql_rds_port
+  mysql_username = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.mysql_rds_username
+  mysql_password = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.mysql_rds_password
 
   # Concourse database variables
   postgres_db_name      = "concourse"
   postgres_uaa_db_name  = "uaa"
-  postgres_uaa_username = data.terraform_remote_state.bootstrap_control_plane.outputs.postgres_rds_username
-  postgres_uaa_password = data.terraform_remote_state.bootstrap_control_plane.outputs.postgres_rds_password
+  postgres_uaa_username = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.postgres_rds_username
+  postgres_uaa_password = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.postgres_rds_password
   postgres_ca_cert      = data.terraform_remote_state.paperwork.outputs.rds_ca_cert
-  postgres_host         = data.terraform_remote_state.bootstrap_control_plane.outputs.postgres_rds_address
-  postgres_port         = data.terraform_remote_state.bootstrap_control_plane.outputs.postgres_rds_port
-  postgres_username     = data.terraform_remote_state.bootstrap_control_plane.outputs.postgres_rds_username
-  postgres_password     = data.terraform_remote_state.bootstrap_control_plane.outputs.postgres_rds_password
+  postgres_host         = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.postgres_rds_address
+  postgres_port         = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.postgres_rds_port
+  postgres_username     = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.postgres_rds_username
+  postgres_password     = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.postgres_rds_password
 
   # Credhub database variables
   postgres_credhub_db_name  = "credhub"
-  postgres_credhub_username = data.terraform_remote_state.bootstrap_control_plane.outputs.postgres_rds_username
-  postgres_credhub_password = data.terraform_remote_state.bootstrap_control_plane.outputs.postgres_rds_password
+  postgres_credhub_username = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.postgres_rds_username
+  postgres_credhub_password = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.postgres_rds_password
 
   # rds_ca_cert_pem = "${data.terraform_remote_state.paperwork.rds_ca_cert_pem}"
 
   ops_manager_ssh_public_key_name = local.om_key_name
-  ops_manager_ssh_private_key     = data.terraform_remote_state.bootstrap_control_plane.outputs.om_private_key_pem
+  ops_manager_ssh_private_key     = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.om_private_key_pem
 
   # Used by the download config
 

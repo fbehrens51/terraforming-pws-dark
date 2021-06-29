@@ -127,7 +127,6 @@ data "template_file" "paperwork_variables" {
     pas_vpc_id                                  = module.paperwork.pas_vpc_id
     iso_vpc_id                                  = module.paperwork.isolation_segment_vpc_1_id
     pas_vpc_dns                                 = module.paperwork.pas_vpc_dns
-    control_plane_vpc_dns                       = module.paperwork.control_plane_vpc_dns
     ldap_basedn                                 = data.terraform_remote_state.ldap-server.outputs.ldap_basedn
     ldap_dn                                     = data.terraform_remote_state.ldap-server.outputs.ldap_dn
     ldap_host                                   = data.terraform_remote_state.ldap-server.outputs.ldap_domain
@@ -169,7 +168,7 @@ data "template_file" "paperwork_variables" {
 
 data "template_file" "keymanager_variables" {
   template = file("${path.module}/keymanager.tfvars.tpl")
-  vars     = {
+  vars = {
     pas_bucket_role_arn = module.paperwork.pas_bucket_role_arn
     director_role_arn   = module.paperwork.director_role_arn
     sjb_role_arn        = module.paperwork.sjb_role_arn
