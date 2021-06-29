@@ -109,11 +109,11 @@ resource "aws_db_instance" "rds" {
   tags = local.tags
 }
 
-resource "aws_db_parameter_group" "mariabdb-read-only" {
-  name        = "mariadb-read-only"
-  family      = "mariadb10.2"
-  description = "MariaDB read only"
-}
+//resource "aws_db_parameter_group" "mariabdb-read-only" {
+//  name        = "mariadb-read-only"
+//  family      = "mariadb10.2"
+//  description = "MariaDB read only"
+//}
 
 output "rds_mariadb_identifier" {
   value = local.identifier
