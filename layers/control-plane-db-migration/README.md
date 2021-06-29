@@ -1,5 +1,17 @@
 - Pause the pipeline
-- run this layer to create the new parameter group (potentially could still exist from PAS DB migration from a while back) and new DB
+- create the appropriate folder in the env (do not committ) and run this layer to create the new parameter group (potentially could still exist from PAS DB migration from a while back) and new DB
+  ```hcl
+  include {
+    path = "${find_in_parent_folders()}"
+  }
+  
+  dependencies {
+  paths = ["../bootstrap_control_plane_foundation"]
+  }
+  
+  inputs = {
+  }
+  ```
 - log on to the cp bosh director
 ```bash
 sudo -i
