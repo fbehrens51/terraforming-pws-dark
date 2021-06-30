@@ -163,6 +163,7 @@ runcmd:
     # set the home dirs to proper owners - users are recreated every time the vm is created, and the home dirs are persisted.
     # If a user is added or deleted, that will break ownership of home dirs
     awk -F: '$3 ~ /1[0-9]{3,3}/{ print "chown -R " $3 ":" $4 " " $6}' /etc/passwd | xargs --no-run-if-empty -0 sh -c
+    export AWS_DEFAULT_REGION="${var.region}"
     transfer_bucket_name="${local.transfer_bucket_name}"   /etc/skel/bin/install-pcf-eagle-automation.sh
     transfer_bucket_name="${local.transfer_bucket_name}"   /root/workspace/pcf-eagle-automation/scripts/sjb/install-cli-tools.sh
     terraform_bucket_name="${local.terraform_bucket_name}" HOME="/root" /root/workspace/pcf-eagle-automation/scripts/sjb/install-terraform.sh
