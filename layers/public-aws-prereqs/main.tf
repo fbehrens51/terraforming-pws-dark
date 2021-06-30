@@ -58,7 +58,6 @@ module "domains" {
 module "paperwork" {
   source                    = "./modules/paperwork"
   bucket_role_name          = var.pas_bucket_role_name
-  worker_role_name          = var.bootstrap_role_name
   bootstrap_role_name       = var.bootstrap_role_name
   foundation_role_name      = var.foundation_role_name
   fluentd_role_name         = var.fluentd_role_name
