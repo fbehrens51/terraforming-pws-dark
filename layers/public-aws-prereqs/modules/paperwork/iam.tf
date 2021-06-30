@@ -140,11 +140,6 @@ data "aws_iam_policy_document" "user_assume_role_policy" {
   }
 }
 
-resource "aws_iam_instance_profile" "worker" {
-  name = var.worker_role_name
-  role = aws_iam_role.bootstrap.name
-}
-
 resource "aws_iam_instance_profile" "bucket" {
   name = var.bucket_role_name
   role = aws_iam_role.bucket.name

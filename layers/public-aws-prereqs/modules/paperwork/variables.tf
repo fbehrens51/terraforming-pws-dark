@@ -17,9 +17,6 @@ variable "instance_tagger_role_name" {
 variable "bucket_role_name" {
 }
 
-variable "worker_role_name" {
-}
-
 variable "tsdb_role_name" {
 }
 
