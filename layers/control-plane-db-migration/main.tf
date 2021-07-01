@@ -55,7 +55,7 @@ variable "database_name" {
 }
 
 locals {
-  env_name      = var.global_vars.name_prefix
+  env_name      = var.global_vars.env_name
   modified_name = "${local.env_name} control plane"
   modified_tags = merge(
     var.global_vars["global_tags"],
@@ -109,11 +109,11 @@ resource "aws_db_instance" "rds" {
   tags = local.tags
 }
 
-//resource "aws_db_parameter_group" "mariabdb-read-only" {
-//  name        = "mariadb-read-only"
-//  family      = "mariadb10.2"
-//  description = "MariaDB read only"
-//}
+resource "aws_db_parameter_group" "mariabdb-read-only" {
+  name        = "mariadb-read-only"
+  family      = "mariadb10.2"
+  description = "MariaDB read only"
+}
 
 output "rds_mariadb_identifier" {
   value = local.identifier
