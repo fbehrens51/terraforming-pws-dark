@@ -236,6 +236,8 @@ product-properties:
       name: Marketplace
     - href: ${apps_manager_about_url}
       name: About
+    - href: ${apps_manager_docs_url}/support/
+      name: Support
   .properties.push_apps_manager_poll_interval:
     value: 30
   .properties.push_apps_manager_search_server_buildpack:
