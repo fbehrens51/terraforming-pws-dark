@@ -24,6 +24,18 @@ bootstrap_role_name = "${bootstrap_role_name}"
 
 foundation_role_name = "${foundation_role_name}"
 
+// TODO: -- Delete --
+director_role_name = "${director_role_name}"
+
+platform_automation_engine_worker_role_name = "${platform_automation_engine_worker_role_name}"
+
+sjb_role_name = "${sjb_role_name}"
+
+bosh_role_name = "${bosh_role_name}"
+
+om_role_name = "${om_role_name}"
+// TODO: -- End --
+
 tsdb_role_name = "${tsdb_role_name}"
 
 bucket_role_name = "${bucket_role_name}"

@@ -313,6 +313,23 @@ output "foundation_role_arn" {
   value = aws_iam_role.foundation.arn
 }
 
+// TODO: Delete
+output "director_role_arn" {
+  value = aws_iam_role.director.arn
+}
+
+output "sjb_role_arn" {
+  value = aws_iam_role.sjb.arn
+}
+
+output "om_role_arn" {
+  value = aws_iam_role.om.arn
+}
+
+output "bosh_role_arn" {
+  value = aws_iam_role.bosh.arn
+}
+
 output "pas_bucket_role_arn" {
   value = aws_iam_role.bucket.arn
 }
@@ -591,4 +608,90 @@ resource "aws_iam_policy_attachment" "foundation" {
 resource "aws_iam_instance_profile" "foundation" {
   name = var.foundation_role_name
   role = aws_iam_role.foundation.name
+}
+
+
+// TODO: Delete
+resource "aws_iam_role" "director" {
+  name               = var.director_role_name
+  assume_role_policy = data.aws_iam_policy_document.role_policy.json
+}
+
+resource "aws_iam_policy_attachment" "director" {
+  name       = var.director_role_name
+  roles      = [aws_iam_role.director.name]
+  policy_arn = aws_iam_policy.bootstrap.arn
+}
+
+resource "aws_iam_role_policy_attachment" "director_ecr" {
+  role       = aws_iam_role.director.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
+}
+
+resource "aws_iam_instance_profile" "director" {
+  name = var.director_role_name
+  role = aws_iam_role.director.name
+}
+
+resource "aws_iam_role" "sjb" {
+  name               = var.sjb_role_name
+  assume_role_policy = data.aws_iam_policy_document.role_policy.json
+}
+
+resource "aws_iam_policy_attachment" "sjb" {
+  name       = var.sjb_role_name
+  roles      = [aws_iam_role.sjb.name]
+  policy_arn = aws_iam_policy.bootstrap.arn
+}
+
+resource "aws_iam_role_policy_attachment" "sjb_ecr" {
+  role       = aws_iam_role.sjb.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
+}
+
+resource "aws_iam_instance_profile" "sjb" {
+  name = var.sjb_role_name
+  role = aws_iam_role.sjb.name
+}
+
+resource "aws_iam_role" "om" {
+  name               = var.om_role_name
+  assume_role_policy = data.aws_iam_policy_document.role_policy.json
+}
+
+resource "aws_iam_policy_attachment" "om" {
+  name       = var.om_role_name
+  roles      = [aws_iam_role.om.name]
+  policy_arn = aws_iam_policy.bootstrap.arn
+}
+
+resource "aws_iam_role_policy_attachment" "om_ecr" {
+  role       = aws_iam_role.om.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
+}
+
+resource "aws_iam_instance_profile" "om" {
+  name = var.om_role_name
+  role = aws_iam_role.om.name
+}
+
+resource "aws_iam_role" "bosh" {
+  name               = var.bosh_role_name
+  assume_role_policy = data.aws_iam_policy_document.role_policy.json
+}
+
+resource "aws_iam_policy_attachment" "bosh" {
+  name       = var.bosh_role_name
+  roles      = [aws_iam_role.bosh.name]
+  policy_arn = aws_iam_policy.bootstrap.arn
+}
+
+resource "aws_iam_role_policy_attachment" "bosh_ecr" {
+  role       = aws_iam_role.bosh.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
+}
+
+resource "aws_iam_instance_profile" "bosh" {
+  name = var.bosh_role_name
+  role = aws_iam_role.bosh.name
 }
