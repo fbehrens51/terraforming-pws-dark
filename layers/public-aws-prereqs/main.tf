@@ -59,6 +59,7 @@ module "paperwork" {
   source                    = "./modules/paperwork"
   bucket_role_name          = var.pas_bucket_role_name
   worker_role_name          = var.platform_automation_engine_worker_role_name
+  bootstrap_role_name       = var.bootstrap_role_name
   director_role_name        = var.director_role_name
   sjb_role_name             = var.sjb_role_name
   concourse_role_name       = var.concourse_role_name
@@ -168,7 +169,7 @@ data "template_file" "paperwork_variables" {
 
 data "template_file" "keymanager_variables" {
   template = file("${path.module}/keymanager.tfvars.tpl")
-  vars = {
+  vars     = {
     pas_bucket_role_arn = module.paperwork.pas_bucket_role_arn
     director_role_arn   = module.paperwork.director_role_arn
     sjb_role_arn        = module.paperwork.sjb_role_arn
@@ -196,6 +197,10 @@ variable "bootstrap_isolation_segment_vpc_variable_output_path" {
 }
 
 variable "platform_automation_engine_worker_role_name" {
+  type = string
+}
+
+variable "bootstrap_role_name" {
   type = string
 }
 

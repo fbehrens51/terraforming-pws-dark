@@ -145,6 +145,11 @@ resource "aws_iam_instance_profile" "worker" {
   role = aws_iam_role.director.name
 }
 
+resource "aws_iam_instance_profile" "bootstrap" {
+  name = var.bootstrap_role_name
+  role = aws_iam_role.director.name
+}
+
 resource "aws_iam_instance_profile" "bucket" {
   name = var.bucket_role_name
   role = aws_iam_role.bucket.name
