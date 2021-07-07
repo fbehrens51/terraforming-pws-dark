@@ -74,10 +74,9 @@ locals {
     },
   )
 
-  bucket_prefix        = replace(local.env_name, " ", "-")
-  import_bucket_name   = "${local.bucket_prefix}-import"
-  transfer_bucket_name = "${local.bucket_prefix}-transfer"
-  mirror_bucket_name   = "${local.bucket_prefix}-mirror"
+  bucket_prefix      = replace(local.env_name, " ", "-")
+  import_bucket_name = "${local.bucket_prefix}-import"
+  mirror_bucket_name = "${local.bucket_prefix}-mirror"
 
   om_key_name = "${local.env_name}-cp-om"
 
@@ -101,8 +100,6 @@ locals {
       cidr_blocks = data.aws_vpc.pas_vpc.cidr_block
     },
   ]
-
-  transfer_kms_key_arn = data.terraform_remote_state.paperwork.outputs.transfer_key_arn
 
 }
 
@@ -146,54 +143,6 @@ resource "aws_s3_bucket" "import_bucket" {
     },
   )
 }
-
-
-resource "aws_s3_bucket" "transfer_bucket" {
-  bucket        = local.transfer_bucket_name
-  force_destroy = var.force_destroy_buckets
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        kms_master_key_id = local.transfer_kms_key_arn
-        sse_algorithm     = "aws:kms"
-      }
-    }
-  }
-
-  logging {
-    target_bucket = local.s3_logs_bucket
-    target_prefix = "${local.transfer_bucket_name}/"
-  }
-
-
-  tags = merge(
-    var.global_vars["global_tags"],
-    {
-      "Name" = "${local.env_name} Transfer Bucket"
-    },
-  )
-}
-
-
-data "aws_iam_policy_document" "transfer_bucket_policy" {
-  statement {
-    effect  = "Allow"
-    actions = ["s3:GetObject", "s3:ListBucket", "s3:PutObject", "s3:PutObjectAcl"]
-
-    principals {
-      type        = "AWS"
-      identifiers = [var.promoter_role_arn]
-    }
-
-    resources = [aws_s3_bucket.transfer_bucket.arn, "${aws_s3_bucket.transfer_bucket.arn}/*"]
-  }
-}
-
-resource "aws_s3_bucket_policy" "transfer_bucket_policy_attachement" {
-  bucket = aws_s3_bucket.transfer_bucket.bucket
-  policy = data.aws_iam_policy_document.transfer_bucket_policy.json
-}
-
 
 resource "aws_s3_bucket" "mirror_bucket" {
   bucket        = local.mirror_bucket_name
