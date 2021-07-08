@@ -633,9 +633,10 @@ resource "aws_iam_instance_profile" "director" {
   role = aws_iam_role.director.name
 }
 
+// TODO: Should this be director or bootstrap?
 resource "aws_iam_instance_profile" "worker" {
   name = var.worker_role_name
-  role = aws_iam_role.director.name
+  role = aws_iam_role.bootstrap.name
 }
 
 resource "aws_iam_role" "sjb" {
