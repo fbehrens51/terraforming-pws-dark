@@ -35,6 +35,7 @@ module "keys" {
   pas_bucket_role_arn                = var.pas_bucket_role_arn
   bootstrap_role_arn                 = var.bootstrap_role_arn
   foundation_role_arn                = var.foundation_role_arn
+  director_role_arn                  = var.director_role_arn
   deletion_window                    = "7"
   additional_bootstrap_principal_arn = data.aws_caller_identity.my_account.arn
   logs_service_name                  = var.logs_service_name
@@ -53,6 +54,7 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
       identifiers = [
         var.bootstrap_role_arn,
         var.foundation_role_arn,
+        var.director_role_arn
       ]
     }
 
@@ -76,6 +78,7 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
       identifiers = [
         var.bootstrap_role_arn,
         var.foundation_role_arn,
+        var.director_role_arn,
         var.promoter_role_arn
       ]
     }
@@ -134,6 +137,7 @@ variable "promoter_role_arn" {}
 variable "pas_bucket_role_arn" {}
 variable "bootstrap_role_arn" {}
 variable "foundation_role_arn" {}
+variable "director_role_arn" {}
 variable "pas_kms_key_name" {}
 variable "keymanager_file_output_path" {}
 variable "logs_service_name" {
