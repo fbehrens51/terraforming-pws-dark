@@ -633,6 +633,11 @@ resource "aws_iam_instance_profile" "director" {
   role = aws_iam_role.director.name
 }
 
+resource "aws_iam_instance_profile" "worker" {
+  name = var.worker_role_name
+  role = aws_iam_role.director.name
+}
+
 resource "aws_iam_role" "sjb" {
   name               = var.sjb_role_name
   assume_role_policy = data.aws_iam_policy_document.role_policy.json
