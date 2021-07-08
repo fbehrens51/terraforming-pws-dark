@@ -105,7 +105,7 @@ echo "db $db_identifier $status"
   ```
     - can check on status via (will get an error until rename occurs:
   ```bash
-  aws rds describe-db-instances --db-instance-identifier "${db_identifier}-mariadb" |jq -r .DBInstances[].DBInstanceStatus
+  aws rds describe-db-instances --db-instance-identifier "${db_identifier}" |jq -r .DBInstances[].DBInstanceStatus
   ```
 
     - CD
