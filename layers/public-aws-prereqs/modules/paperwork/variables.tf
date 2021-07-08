@@ -23,13 +23,10 @@ variable "worker_role_name" {
 variable "bootstrap_role_name" {
 }
 
-variable "tsdb_role_name" {
-}
-
 variable "foundation_role_name" {
 }
 
-variable "bootstrap_role_name" {
+variable "tsdb_role_name" {
 }
 
 variable "root_domain" {
