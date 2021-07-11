@@ -141,12 +141,6 @@ data "template_cloudinit_config" "nat_user_data" {
   }
 
   part {
-    filename     = "hardening.cfg"
-    content_type = "text/x-include-url"
-    content      = data.terraform_remote_state.paperwork.outputs.server_hardening_user_data
-  }
-
-  part {
     filename     = "bot_user_accounts_user_data.cfg"
     content_type = "text/x-include-url"
     content      = data.terraform_remote_state.paperwork.outputs.bot_user_accounts_user_data
@@ -163,6 +157,13 @@ data "template_cloudinit_config" "nat_user_data" {
     content_type = "text/cloud-config"
     content      = module.iptables_rules.iptables_user_data
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+
+  # This must be last - updates the AIDE DB after all installations/configurations are complete.
+  part {
+    filename     = "hardening.cfg"
+    content_type = "text/x-include-url"
+    content      = data.terraform_remote_state.paperwork.outputs.server_hardening_user_data
   }
 }
 

@@ -175,12 +175,6 @@ data "template_cloudinit_config" "master_cp_bind_conf_userdata" {
   }
 
   part {
-    filename     = "hardening.cfg"
-    content_type = "text/x-include-url"
-    content      = data.terraform_remote_state.paperwork.outputs.server_hardening_user_data
-  }
-
-  part {
     filename     = "tag_completion.cfg"
     content_type = "text/x-include-url"
     content      = data.terraform_remote_state.paperwork.outputs.completion_tag_user_data
@@ -192,6 +186,12 @@ data "template_cloudinit_config" "master_cp_bind_conf_userdata" {
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
+  # This must be last - updates the AIDE DB after all installations/configurations are complete.
+  part {
+    filename     = "hardening.cfg"
+    content_type = "text/x-include-url"
+    content      = data.terraform_remote_state.paperwork.outputs.server_hardening_user_data
+  }
 }
 
 module "iptables_rules" {

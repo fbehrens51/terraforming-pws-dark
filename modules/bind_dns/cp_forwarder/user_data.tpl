@@ -21,5 +21,3 @@ write_files:
     content: ${named_conf_content}
     path: /etc/named.conf
     permissions: '0644'
-
-

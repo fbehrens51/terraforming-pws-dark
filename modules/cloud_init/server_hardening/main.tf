@@ -2,10 +2,10 @@ data "template_file" "server_hardening_user_data_part" {
   template = <<EOF
 #cloud-config
 merge_how:
- - name: list
-   settings: [append]
- - name: dict
-   settings: [no_replace, recurse_list]
+  - name: list
+    settings: [append]
+  - name: dict
+    settings: [no_replace, recurse_list]
 runcmd:
   - |
     # password "set date" is yesterday so we'll pass a compliance scan the same day the servers were rebuilt
@@ -14,10 +14,18 @@ runcmd:
     awk -F: '$3 >= 1000 && $1 != "nfsnobody" {print "chown -R " $3 ":" $4 " " $6 "\nchmod 700 " $6}' /etc/passwd | xargs --no-run-if-empty -0 sh -c
     # defer setting umask until after all of the yum installs have completed.
     sed -i -E -e '/umask 002/s/002/027/' /etc/profile /etc/bashrc
-    sed -i -E -e '/umask 022/s/022/077/' /etc/profile /etc/bashrc
+     sed -i -E -e '/umask 022/s/022/077/' /etc/profile /etc/bashrc
     # TODO: Move these to server hardening if this passes the audit
     sed -i -E -e 's/OPTIONS=""/OPTIONS="-4 -u chrony"/' /etc/sysconfig/chronyd
     systemctl restart chronyd.service
+    # Packer creates the DB during VM hardening, now update after installing instance specific s/w, users, configs, etc.
+    if ! output="$(aide --update 2>&1)"; then
+      mv /var/lib/aide/aide.db.gz /var/lib/aide/aide.db.packer.gz
+      mv /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz
+    else
+      echo "aide --update failed to detect any changes, please investigate"
+      echo "it should detect the changes in this file at a minimum"
+    fi
 EOF
 
 }
