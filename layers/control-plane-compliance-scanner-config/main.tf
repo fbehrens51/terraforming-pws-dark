@@ -87,6 +87,9 @@ locals {
   bosh_role_id          = data.terraform_remote_state.paperwork.outputs.bosh_role_id
   sjb_role_id           = data.terraform_remote_state.paperwork.outputs.sjb_role_id
   concourse_role_id     = data.terraform_remote_state.paperwork.outputs.concourse_role_id
+
+  bootstrap_role_id  = data.terraform_remote_state.paperwork.outputs.bootstrap_role_id
+  foundation_role_id = data.terraform_remote_state.paperwork.outputs.foundation_role_id
 }
 
 module "compliance_scanner_config" {
@@ -148,6 +151,8 @@ module "compliance_scanner_bucket_policy" {
     local.bosh_role_id,
     local.sjb_role_id,
     local.concourse_role_id,
+    local.bootstrap_role_id,
+    local.foundation_role_id,
   ], [local.isse_role_id])
   read_only_user_ids = local.super_user_ids
 }

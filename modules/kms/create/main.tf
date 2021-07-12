@@ -22,7 +22,9 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
         var.om_role_arn,
         var.concourse_role_arn,
         var.sjb_role_arn,
-        var.bosh_role_arn
+        var.bosh_role_arn,
+        var.bootstrap_role_arn,
+        var.foundation_role_arn,
       ]
     }
 
@@ -51,6 +53,8 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
         var.bosh_role_arn,
         var.pas_bucket_role_arn,
         var.additional_bootstrap_principal_arn,
+        var.bootstrap_role_arn,
+        var.foundation_role_arn
       ]
     }
 
@@ -146,6 +150,10 @@ variable "bosh_role_arn" {}
 variable "sjb_role_arn" {}
 
 variable "concourse_role_arn" {}
+
+variable "bootstrap_role_arn" {}
+
+variable "foundation_role_arn" {}
 
 variable "additional_bootstrap_principal_arn" {
   default = ""
