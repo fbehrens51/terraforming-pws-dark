@@ -177,7 +177,7 @@ module "om_config" {
   smtp_domain     = var.smtp_domain
   smtp_enabled    = var.smtp_enabled
 
-  concourse_worker_role_name = data.terraform_remote_state.paperwork.outputs.platform_automation_engine_worker_role_name
+  concourse_worker_role_name = data.terraform_remote_state.paperwork.outputs.bootstrap_role_name
 
   iaas_configuration_endpoints_ca_cert    = var.iaas_configuration_endpoints_ca_cert
   iaas_configuration_iam_instance_profile = data.terraform_remote_state.paperwork.outputs.foundation_role_name
