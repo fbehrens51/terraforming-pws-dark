@@ -120,6 +120,9 @@ locals {
   super_user_ids        = data.terraform_remote_state.paperwork.outputs.super_user_ids
   super_user_role_ids   = data.terraform_remote_state.paperwork.outputs.super_user_role_ids
   ent_tech_read_role_id = data.terraform_remote_state.paperwork.outputs.ent_tech_read_role_id
+
+  bootstrap_role_id  = data.terraform_remote_state.paperwork.outputs.bootstrap_role_id
+  foundation_role_id = data.terraform_remote_state.paperwork.outputs.foundation_role_id
 }
 
 data "aws_subnet" "private_subnets" {
@@ -164,7 +167,9 @@ module "syslog_archive_bucket_policy" {
     local.om_role_id,
     local.bosh_role_id,
     local.sjb_role_id,
-    local.concourse_role_id
+    local.concourse_role_id,
+    local.bootstrap_role_id,
+    local.foundation_role_id
   ], [local.isse_role_id])
   read_only_user_ids  = local.super_user_ids
   disable_delete      = true
@@ -208,7 +213,9 @@ module "syslog_audit_archive_bucket_policy" {
     local.om_role_id,
     local.bosh_role_id,
     local.sjb_role_id,
-    local.concourse_role_id
+    local.concourse_role_id,
+    local.bootstrap_role_id,
+    local.foundation_role_id
   ], [local.isse_role_id])
   read_only_user_ids  = local.super_user_ids
   disable_delete      = true

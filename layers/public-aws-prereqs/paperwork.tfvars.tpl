@@ -30,6 +30,10 @@ sjb_role_name = "${sjb_role_name}"
 
 concourse_role_name = "${concourse_role_name}"
 
+bootstrap_role_name = "${bootstrap_role_name}"
+
+foundation_role_name = "${foundation_role_name}"
+
 tsdb_role_name = "${tsdb_role_name}"
 
 bucket_role_name = "${bucket_role_name}"
