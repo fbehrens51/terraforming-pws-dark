@@ -171,7 +171,8 @@ data "aws_iam_policy_document" "s3_logs_bucket_policy" {
     condition {
       test     = "StringLike"
       variable = "aws:userid"
-      values   = ["${data.aws_iam_role.isse_role.unique_id}:*", "${data.aws_iam_role.director_role.unique_id}:*"]
+      values = ["${data.aws_iam_role.isse_role.unique_id}:*", "${data.aws_iam_role.director_role.unique_id}:*",
+        "${data.aws_iam_role.bootstrap_role.unique_id}:*", "${data.aws_iam_role.foundation_role.unique_id}:*"]
 
     }
     resources = [aws_s3_bucket.s3_logs_bucket.arn, "${aws_s3_bucket.s3_logs_bucket.arn}/*"]
@@ -231,6 +232,14 @@ data "aws_iam_role" "director_role" {
   name = var.director_role_name
 }
 
+data "aws_iam_role" "bootstrap_role" {
+  name = var.bootstrap_role_name
+}
+
+data "aws_iam_role" "foundation_role" {
+  name = var.foundation_role_name
+}
+
 data "aws_iam_role" "om_role" {
   name = var.om_role_name
 }
@@ -261,9 +270,12 @@ data "aws_iam_role" "super_user_roles" {
 module "reporting_bucket_policy" {
   source              = "../../modules/bucket/policy/generic"
   bucket_arn          = aws_s3_bucket.reporting_bucket.arn
-  read_write_role_ids = [data.aws_iam_role.director_role.unique_id]
+  read_write_role_ids = [data.aws_iam_role.director_role.unique_id, data.aws_iam_role.bootstrap_role.unique_id,
+    data.aws_iam_role.foundation_role.unique_id]
   read_only_role_ids = concat([
     data.aws_iam_role.director_role.unique_id,
+    data.aws_iam_role.bootstrap_role.unique_id,
+    data.aws_iam_role.foundation_role.unique_id,
     data.aws_iam_role.om_role.unique_id,
     data.aws_iam_role.bosh_role.unique_id,
     data.aws_iam_role.sjb_role.unique_id,
@@ -460,6 +472,12 @@ variable "instance_tagger_role_name" {
 }
 
 variable "director_role_name" {
+}
+
+variable "bootstrap_role_name" {
+}
+
+variable "foundation_role_name" {
 }
 
 variable "om_role_name" {
@@ -890,6 +908,14 @@ output "director_role_name" {
   value = var.director_role_name
 }
 
+output "bootstrap_role_name" {
+  value = var.bootstrap_role_name
+}
+
+output "foundation_role_name" {
+  value = var.foundation_role_name
+}
+
 output "om_role_name" {
   value = var.om_role_name
 }
@@ -1217,6 +1243,14 @@ output "reporting_bucket" {
 
 output "director_role_id" {
   value = data.aws_iam_role.director_role.unique_id
+}
+
+output "bootstrap_role_id" {
+  value = data.aws_iam_role.bootstrap_role.unique_id
+}
+
+output "foundation_role_id" {
+  value = data.aws_iam_role.foundation_role.unique_id
 }
 
 output "om_role_id" {

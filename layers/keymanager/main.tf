@@ -41,6 +41,9 @@ module "keys" {
   deletion_window                    = "7"
   additional_bootstrap_principal_arn = data.aws_caller_identity.my_account.arn
   logs_service_name                  = var.logs_service_name
+
+  bootstrap_role_arn  = var.bootstrap_role_arn
+  foundation_role_arn = var.foundation_role_arn
 }
 
 data "aws_iam_policy_document" "kms_key_policy_document" {
@@ -59,6 +62,8 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
         var.concourse_role_arn,
         var.om_role_arn,
         var.bosh_role_arn,
+        var.bootstrap_role_arn,
+        var.foundation_role_arn,
       ]
     }
 
@@ -85,7 +90,9 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
         var.concourse_role_arn,
         var.om_role_arn,
         var.bosh_role_arn,
-        var.promoter_role_arn
+        var.promoter_role_arn,
+        var.bootstrap_role_arn,
+        var.foundation_role_arn,
       ]
     }
 
@@ -140,6 +147,8 @@ resource "aws_kms_key" "transfer_kms_key" {
 }
 
 variable "director_role_arn" {}
+variable "bootstrap_role_arn" {}
+variable "foundation_role_arn" {}
 variable "promoter_role_arn" {}
 variable "pas_bucket_role_arn" {}
 variable "sjb_role_arn" {}
