@@ -1,3 +1,106 @@
+data "aws_iam_policy_document" "bootstrap" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "iam:GetServerCertificate",
+      "iam:GetInstanceProfile",
+      "iam:GetRole",
+      "iam:GetUser",
+      "iam:GetPolicy",
+      "s3:*",
+      "iam:ListServerCertificates",
+      "iam:ListEntitiesForPolicy",
+      "rds:DescribeEngineDefaultParameters",
+      "elasticloadbalancing:*",
+      "rds:PurchaseReservedDBInstancesOffering",
+      "iam:UploadServerCertificate",
+      "iam:PassRole",
+      "rds:DescribeDBClusterSnapshots",
+      "rds:DescribeEngineDefaultClusterParameters",
+      "rds:DescribeDBInstances",
+      "rds:DescribeOrderableDBInstanceOptions",
+      "iam:DeleteServerCertificate",
+      "iam:DetachRolePolicy",
+      "iam:AttachRolePolicy",
+      "iam:ListRolePolicies",
+      "ec2:*",
+      "rds:DownloadCompleteDBLogFile",
+      "rds:DescribeCertificates",
+      "rds:DescribeEventCategories",
+      "rds:DescribeAccountAttributes",
+      "kms:*",
+      "elasticache:*",
+      "logs:*",
+      "cloudwatch:PutDashboard",
+      "cloudwatch:GetDashboard",
+      "cloudwatch:ListDashboards",
+      "cloudwatch:DeleteDashboards",
+    ]
+
+    resources = ["*"]
+  }
+
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "dynamodb:PutItem",
+      "dynamodb:DeleteItem",
+      "dynamodb:GetItem",
+      "dynamodb:DescribeTable",
+    ]
+
+    resources = ["*"]
+  }
+
+  statement {
+    effect  = "Allow"
+    actions = ["rds:*"]
+
+    resources = [
+      "arn:aws:rds:*:*:snapshot:*",
+      "arn:aws:rds:*:*:db:*",
+      "arn:aws:rds:*:*:secgrp:*",
+      "arn:aws:rds:*:*:cluster:*",
+      "arn:aws:rds:*:*:subgrp:*",
+      "arn:aws:rds:*:*:cluster-snapshot:*",
+      "arn:aws:rds:*:*:og:*",
+      "arn:aws:rds:*:*:ri:*",
+      "arn:aws:rds:*:*:pg:*",
+      "arn:aws:iam::*:role/*",
+      "arn:aws:rds:*:*:es:*",
+    ]
+  }
+}
+
+resource "aws_iam_policy" "bootstrap" {
+  name   = var.bootstrap_role_name
+  path   = "/"
+  policy = data.aws_iam_policy_document.bootstrap.json
+}
+
+resource "aws_iam_role" "bootstrap" {
+  name               = var.bootstrap_role_name
+  assume_role_policy = data.aws_iam_policy_document.role_policy.json
+}
+
+resource "aws_iam_policy_attachment" "bootstrap" {
+  name       = var.bootstrap_role_name
+  roles      = [aws_iam_role.bootstrap.name]
+  policy_arn = aws_iam_policy.bootstrap.arn
+}
+
+resource "aws_iam_role_policy_attachment" "bootstrap_ecr" {
+  role       = aws_iam_role.bootstrap.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
+}
+
+resource "aws_iam_instance_profile" "bootstrap" {
+  name = var.bootstrap_role_name
+  role = aws_iam_role.bootstrap.name
+}
+
 data "aws_iam_policy_document" "director" {
   statement {
     effect = "Allow"
@@ -142,11 +245,6 @@ resource "aws_iam_instance_profile" "director" {
 
 resource "aws_iam_instance_profile" "worker" {
   name = var.worker_role_name
-  role = aws_iam_role.director.name
-}
-
-resource "aws_iam_instance_profile" "bootstrap" {
-  name = var.bootstrap_role_name
   role = aws_iam_role.director.name
 }
 
@@ -344,6 +442,14 @@ output "bosh_role_arn" {
 
 output "pas_bucket_role_arn" {
   value = aws_iam_role.bucket.arn
+}
+
+output "bootstrap_role_arn" {
+  value = aws_iam_role.bootstrap.arn
+}
+
+output "foundation_role_arn" {
+  value = aws_iam_role.foundation.arn
 }
 
 data "aws_iam_policy_document" "instance_tagger" {
@@ -968,4 +1074,219 @@ resource "aws_iam_role_policy_attachment" "concourse_ecr" {
 resource "aws_iam_instance_profile" "concourse" {
   name = var.concourse_role_name
   role = aws_iam_role.concourse.name
+}
+
+data "aws_iam_policy_document" "foundation" {
+  statement {
+    sid = "BoshBaselinePolicy"
+
+    effect = "Allow"
+
+    actions = [
+      "ec2:AttachVolume",
+      "ec2:CopyImage",
+      "ec2:CopySnapshot",
+      "ec2:CreateTags",
+      "ec2:CreateVolume",
+      "ec2:DeleteVolume",
+      "ec2:DescribeAvailabilityZones",
+      "ec2:DescribeImages",
+      "ec2:DescribeInstances",
+      "ec2:DescribeRegions",
+      "ec2:DescribeSecurityGroups",
+      "ec2:DescribeSubnets",
+      "ec2:DescribeVolumes",
+      "ec2:DetachVolume",
+      "ec2:RunInstances",
+      "ec2:TerminateInstances",
+      "ec2:RegisterImage",
+      "ec2:DeregisterImage",
+      "s3:*",
+    ]
+
+    resources = [
+      "*"]
+  }
+
+  statement {
+    sid = "OpsMgrInfrastructureIaasConfiguration"
+
+    effect = "Allow"
+
+    actions = [
+      "ec2:DescribeKeypairs",
+      "ec2:DescribeVpcs",
+      "ec2:DescribeSecurityGroups",
+      "ec2:DescribeAvailabilityZones",
+      "ec2:DescribeAccountAttributes"
+    ]
+
+    resources = [
+      "*"
+    ]
+  }
+
+  statement {
+    sid = "DeployMicroBosh"
+
+    effect = "Allow"
+
+    actions = [
+      "ec2:RebootInstances",
+      "elasticloadbalancing:DeregisterInstancesFromLoadBalancer",
+      "elasticloadbalancing:RegisterInstancesWithLoadBalancer",
+      "ec2:DisassociateAddress"
+    ]
+
+    resources = [
+      "*"
+    ]
+  }
+
+  statement {
+    sid       = "RequiredIfUsingElasticIPs"
+    effect    = "Allow"
+    actions   = [
+      "ec2:AssociateAddress",
+      "ec2:DescribeAddresses"
+    ]
+    resources = [
+      "*"]
+  }
+
+  statement {
+    sid     = "RequiredIfUsingSnapshotsFeature"
+    effect  = "Allow"
+    actions = [
+      "ec2:CreateSnapshot",
+      "ec2:DeleteSnapshot",
+      "ec2:DescribeSnapshots"
+    ]
+
+    resources = [
+      "*"
+    ]
+  }
+
+  statement {
+    sid = "RequiredIfUsingCustomKMSKeys"
+
+    effect = "Allow"
+
+    actions = [
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:CreateGrant",
+      "kms:DescribeKey*"
+    ]
+
+    resources = [
+      "*"
+    ]
+  }
+
+  statement {
+    sid = "RequiredIfUsingSpotBidPriceCloudProperties"
+
+    effect = "Allow"
+
+    actions = [
+      "ec2:CancelSpotInstanceRequests",
+      "ec2:DescribeSpotInstanceRequests",
+      "ec2:RequestSpotInstances"
+    ]
+
+    resources = [
+      "*"
+    ]
+  }
+
+  statement {
+    sid = "RequiredIfUsingAdvertisedRoutesCloudProperties"
+
+    effect = "Allow"
+
+    actions = [
+      "ec2:CreateRoute",
+      "ec2:DescribeRouteTables",
+      "ec2:ReplaceRoute"
+    ]
+
+    resources = [
+      "*"
+    ]
+  }
+
+  statement {
+    sid       = "RequiredIfUsingSourceDestCheckCloudProperties"
+    effect    = "Allow"
+    actions   = [
+      "ec2:ModifyInstanceAttribute"
+    ]
+    resources = [
+      "*"]
+  }
+
+  statement {
+    sid = "RequiredIfUsingLBTargetGroupCloudPropertiesOrELBCloudProperties"
+
+    effect = "Allow"
+
+    actions = [
+      "elasticloadbalancing:DescribeLoadBalancers",
+      "elasticloadbalancing:DescribeTargetGroups",
+      "elasticloadbalancing:DescribeTargetHealth",
+      "elasticloadbalancing:RegisterTargets"
+    ]
+
+    resources = [
+      "*"
+    ]
+  }
+
+  statement {
+    sid       = "RequiredIfUsingIAMInstanceProfileCloudProperty"
+    effect    = "Allow"
+    actions   = [
+      "iam:PassRole"
+    ]
+    resources = [
+      "*"
+    ]
+  }
+
+  statement {
+    sid       = "RequiredForTWS"
+    effect    = "Allow"
+    actions   = [
+      "iam:GetInstanceProfile"
+    ]
+    resources = [
+      "*"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "foundation" {
+  name   = var.foundation_role_name
+  path   = "/"
+  policy = data.aws_iam_policy_document.foundation.json
+}
+
+resource "aws_iam_role" "foundation" {
+  name               = var.foundation_role_name
+  assume_role_policy = data.aws_iam_policy_document.role_policy.json
+}
+
+resource "aws_iam_policy_attachment" "foundation" {
+  name       = var.instance_tagger_role_name
+  roles      = [
+    aws_iam_role.foundation.name
+  ]
+  policy_arn = aws_iam_policy.foundation.arn
+}
+
+resource "aws_iam_instance_profile" "foundation" {
+  name = var.foundation_role_name
+  role = aws_iam_role.foundation.name
 }
