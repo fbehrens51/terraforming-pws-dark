@@ -55,6 +55,7 @@ locals {
 
   bootstrap_role_id  = data.terraform_remote_state.paperwork.outputs.bootstrap_role_id
   foundation_role_id = data.terraform_remote_state.paperwork.outputs.foundation_role_id
+  foundation_role_name = data.terraform_remote_state.paperwork.outputs.foundation_role_name
 
   env_name      = var.global_vars.env_name
   modified_name = "${var.global_vars.name_prefix} ops-manager"
@@ -105,7 +106,7 @@ module "ops_manager" {
 
   source               = "../../modules/launch"
   ami_id               = var.om_ami_id
-  iam_instance_profile = local.om_role_name
+  iam_instance_profile = local.foundation_role_name
   instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
   scale_vpc_key        = "pas"
   scale_service_key    = "ops-manager"
