@@ -96,7 +96,7 @@ module "ops_manager" {
 
   source               = "../../modules/launch"
   ami_id               = var.om_ami_id
-  iam_instance_profile = local.om_role_name
+  iam_instance_profile = local.foundation_role_name
   instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
   scale_vpc_key        = "control-plane"
   scale_service_key    = "ops-manager"
