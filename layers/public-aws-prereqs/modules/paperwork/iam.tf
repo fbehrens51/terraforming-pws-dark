@@ -168,7 +168,15 @@ data "aws_iam_policy_document" "isse" {
       "logs:StartQuery",
       "logs:StopQuery",
       "logs:TestMetricFilter",
-      "logs:FilterLogEvents"
+      "logs:FilterLogEvents",
+
+      // AmazonEC2ReadOnlyAccess
+      "ec2:Describe*",
+      "elasticloadbalancing:Describe*",
+      "cloudwatch:ListMetrics",
+      "cloudwatch:GetMetricStatistics",
+      "cloudwatch:Describe*",
+      "autoscaling:Describe*",
     ]
     resources = ["*"]
   }
