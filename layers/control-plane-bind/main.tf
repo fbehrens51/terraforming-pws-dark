@@ -186,6 +186,12 @@ data "template_cloudinit_config" "master_cp_bind_conf_userdata" {
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
+  part {
+    filename     = "postfix_client.cfg"
+    content_type = "text/x-include-url"
+    content      = data.terraform_remote_state.paperwork.outputs.postfix_client_user_data
+  }
+
   # This must be last - updates the AIDE DB after all installations/configurations are complete.
   part {
     filename     = "hardening.cfg"

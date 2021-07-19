@@ -108,6 +108,8 @@ data "template_file" "paperwork_variables" {
 
   vars = {
     root_domain                                 = var.root_domain
+    smtp_from                                   = var.smtp_from
+    smtp_to                                     = var.smtp_to
     apps_domain                                 = module.domains.apps_fqdn
     system_domain                               = module.domains.system_fqdn
     bucket_role_name                            = var.pas_bucket_role_name
@@ -169,7 +171,7 @@ data "template_file" "paperwork_variables" {
 
 data "template_file" "keymanager_variables" {
   template = file("${path.module}/keymanager.tfvars.tpl")
-  vars     = {
+  vars = {
     pas_bucket_role_arn = module.paperwork.pas_bucket_role_arn
     director_role_arn   = module.paperwork.director_role_arn
     sjb_role_arn        = module.paperwork.sjb_role_arn
@@ -252,6 +254,14 @@ variable "env_name" {
 }
 
 variable "root_domain" {
+  type = string
+}
+
+variable "smtp_from" {
+  type = string
+}
+
+variable "smtp_to" {
   type = string
 }
 

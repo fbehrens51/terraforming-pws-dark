@@ -347,6 +347,14 @@ module "amazon2_system_certs_user_data" {
   public_bucket_url  = local.public_bucket_url
 }
 
+module "postfix_client_config" {
+  source             = "../../modules/postfix_client"
+  public_bucket_name = aws_s3_bucket.public_bucket.bucket
+  public_bucket_url  = local.public_bucket_url
+  root_domain        = var.root_domain
+  smtp_from          = var.smtp_from
+}
+
 module "server_hardening_config" {
   source             = "../../modules/cloud_init/server_hardening"
   public_bucket_name = aws_s3_bucket.public_bucket.bucket
@@ -408,6 +416,12 @@ variable "global_vars" {
 }
 
 variable "root_domain" {
+}
+
+variable "smtp_from" {
+}
+
+variable "smtp_to" {
 }
 
 variable "cert_bucket" {
@@ -1091,6 +1105,14 @@ output "root_domain" {
   value = var.root_domain
 }
 
+output "smtp_from" {
+  value = var.smtp_from
+}
+
+output "smtp_to" {
+  value = var.smtp_to
+}
+
 output "system_domain" {
   value = var.system_domain
 }
@@ -1142,6 +1164,10 @@ output "amazon2_system_certs_user_data" {
 
 output "amazon2_clamav_user_data" {
   value = module.amazon2_clam_av_client_config.amazon2_clamav_user_data
+}
+
+output "postfix_client_user_data" {
+  value = module.postfix_client_config.postfix_client_user_data
 }
 
 output "server_hardening_user_data" {

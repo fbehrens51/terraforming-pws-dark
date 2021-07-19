@@ -74,6 +74,14 @@ locals {
       protocol    = "tcp"
       cidr_blocks = "0.0.0.0/0"
     },
+    {
+      //smtp
+      description = "Allow all smtp/25 to postfix"
+      port        = 25
+      protocol    = "tcp"
+      //TODO: add variable for postfix subnet
+      cidr_blocks = data.aws_vpc.es_vpc.cidr_block
+    },
   ]
 
   bind_ingress_rules = [
@@ -103,6 +111,10 @@ locals {
       cidr_blocks = data.aws_vpc.pas_vpc.cidr_block
     },
   ]
+}
+
+data "aws_vpc" "es_vpc" {
+  id = data.terraform_remote_state.paperwork.outputs.es_vpc_id
 }
 
 data "aws_vpc" "cp_vpc" {

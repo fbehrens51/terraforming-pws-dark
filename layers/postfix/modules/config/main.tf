@@ -38,6 +38,17 @@ variable "smtp_pass" {
 variable "root_domain" {
 }
 
+variable "smtp_from" {
+}
+
+variable "smtp_to" {
+}
+
+module "domains" {
+  source      = "../../../../modules/domains"
+  root_domain = var.root_domain
+}
+
 locals {
   bucket_key = "postfix-user-data.yml"
 }
@@ -54,6 +65,9 @@ data "template_file" "config_user_data" {
     smtp_user           = var.smtp_user
     smtp_pass           = var.smtp_pass
     root_domain         = var.root_domain
+    smtp_fqdn           = module.domains.smtp_fqdn
+    smtp_from           = var.smtp_from
+    smtp_to             = var.smtp_to
   }
 }
 
@@ -85,4 +99,3 @@ ${var.public_bucket_url}/${local.bucket_key}
 EOF
 
 }
-

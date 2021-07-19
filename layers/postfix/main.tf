@@ -88,10 +88,13 @@ module "configuration" {
   smtp_relay_ca_cert  = data.terraform_remote_state.paperwork.outputs.smtp_relay_ca_cert
   smtpd_server_cert   = data.terraform_remote_state.paperwork.outputs.smtpd_server_cert
   smtpd_server_key    = data.terraform_remote_state.paperwork.outputs.smtpd_server_key
-  smtpd_cidr_blocks   = [data.aws_vpc.es_vpc.cidr_block, data.aws_vpc.pas_vpc.cidr_block]
+  smtpd_cidr_blocks   = [data.aws_vpc.es_vpc.cidr_block, data.aws_vpc.pas_vpc.cidr_block, data.aws_vpc.cp_vpc.cidr_block]
   smtp_user           = local.smtp_user
   smtp_pass           = local.smtp_pass
   root_domain         = local.root_domain
+  # smtp_to/from are used to foward local mail (postfix vm) and relayed mail (from other AL2 vms)
+  smtp_from = data.terraform_remote_state.paperwork.outputs.smtp_from
+  smtp_to   = data.terraform_remote_state.paperwork.outputs.smtp_to
 }
 
 data "aws_vpc" "es_vpc" {
@@ -100,6 +103,10 @@ data "aws_vpc" "es_vpc" {
 
 data "aws_vpc" "pas_vpc" {
   id = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
+}
+
+data "aws_vpc" "cp_vpc" {
+  id = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
 }
 
 data "template_cloudinit_config" "user_data" {
@@ -166,6 +173,12 @@ data "template_cloudinit_config" "user_data" {
     content_type = "text/cloud-config"
     content      = module.iptables_rules.iptables_user_data
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+
+  part {
+    filename     = "postfix_client.cfg"
+    content_type = "text/x-include-url"
+    content      = data.terraform_remote_state.paperwork.outputs.postfix_client_user_data
   }
 
   # This must be last - updates the AIDE DB after all installations/configurations are complete.
