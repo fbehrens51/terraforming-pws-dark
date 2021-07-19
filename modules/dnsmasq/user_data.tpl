@@ -9,6 +9,7 @@ users:
   - name: dnsmasq
     inactive: true
     system: true
+    shell: /sbin/nologin
     lock_passwd: true
 
 runcmd:
