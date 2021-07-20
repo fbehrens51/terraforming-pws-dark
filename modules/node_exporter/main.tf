@@ -59,12 +59,6 @@ write_files:
     owner: root:root
 
   - content: |
-      OPTIONS="--collector.systemd --web.config=\"/etc/node_exporter/web-config.yml\""
-    path: /etc/sysconfig/node_exporter
-    permissions: '0644'
-    owner: root:root
-
-  - content: |
       [Unit]
       Description=Node Exporter
 
@@ -85,6 +79,9 @@ runcmd:
     wget --quiet --no-check-certificate -O - "${var.node_exporter_location}" | tar --strip-components=1 --wildcards -xzf - '*/node_exporter'
     install -o root -g root -m 755 node_exporter /usr/sbin
     rm node_exporter
+    echo "--collector.systemd --web.config=/etc/node_exporter/web-config.yml --web.listen-address=$(ec2-metadata -o | cut -d' ' -f2):9100" > /etc/sysconfig/node_exporter
+    chmod 644 /etc/sysconfig/node_exporter
+    chown root:root /etc/sysconfig/node_exporter
     systemctl daemon-reload
     systemctl start node_exporter
     systemctl enable node_exporter.service
