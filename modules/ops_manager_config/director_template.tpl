@@ -1,12 +1,10 @@
 az-configuration:
   ${indent(2, chomp(pas_vpc_azs))}
 iaas-configurations:
-- additional_cloud_properties:${iaas_configuration_endpoints_ca_cert != "" ? <<EOF
+- additional_cloud_properties:
     connection_options:
       ca_cert: |
-        ${indent(8, iaas_configuration_endpoints_ca_cert)}
-EOF
-: "" }
+        ${indent(8, chomp(iaas_configuration_endpoints_ca_cert))}
     ec2_endpoint: ${ec2_endpoint}
     elb_endpoint: ${elb_endpoint}
   encrypted: true

@@ -22,9 +22,6 @@ variable "smtp_domain" {
 variable "smtp_enabled" {
 }
 
-variable "iaas_configuration_endpoints_ca_cert" {
-}
-
 variable "global_vars" {
   type = any
 }

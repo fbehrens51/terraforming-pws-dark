@@ -210,7 +210,7 @@ module "om_config" {
   smtp_domain     = var.smtp_domain
   smtp_enabled    = var.smtp_enabled
 
-  iaas_configuration_endpoints_ca_cert    = var.iaas_configuration_endpoints_ca_cert
+  iaas_configuration_endpoints_ca_cert    = data.terraform_remote_state.paperwork.outputs.additional_trusted_ca_certs
   iaas_configuration_iam_instance_profile = data.terraform_remote_state.paperwork.outputs.bosh_role_name
   blobstore_instance_profile              = data.terraform_remote_state.paperwork.outputs.bucket_role_name
 

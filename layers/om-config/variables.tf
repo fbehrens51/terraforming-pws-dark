@@ -31,9 +31,6 @@ variable "smtp_enabled" {
 variable "vanity_cert_enabled" {
 }
 
-variable "iaas_configuration_endpoints_ca_cert" {
-}
-
 variable "apps_manager_global_wrapper_footer_content" {
 }
 
