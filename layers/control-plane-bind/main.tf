@@ -215,47 +215,20 @@ module "iptables_rules" {
   control_plane_subnet_cidrs = [data.aws_vpc.vpc.cidr_block]
 }
 
-module "cp_bind_master_host_1" {
-  instance_count       = 1
+module "cp_bind_master_host" {
+  instance_count       = 3
   source               = "../../modules/launch"
   instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
   scale_vpc_key        = "control-plane"
   scale_service_key    = "bind"
   ami_id               = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
   user_data            = data.template_cloudinit_config.master_cp_bind_conf_userdata.rendered
-  eni_ids              = [module.bind_eni.eni_ids[0]]
+  eni_ids              = module.bind_eni.eni_ids
   tags                 = local.cp_bind_modified_tags
   bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
   iam_instance_profile = data.terraform_remote_state.paperwork.outputs.instance_tagger_role_name
 }
 
-module "cp_bind_master_host_2" {
-  instance_count       = 1
-  source               = "../../modules/launch"
-  instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
-  scale_vpc_key        = "control-plane"
-  scale_service_key    = "bind"
-  ami_id               = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
-  user_data            = data.template_cloudinit_config.master_cp_bind_conf_userdata.rendered
-  eni_ids              = [module.bind_eni.eni_ids[1]]
-  tags                 = local.cp_bind_modified_tags
-  bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  iam_instance_profile = data.terraform_remote_state.paperwork.outputs.instance_tagger_role_name
-}
-
-module "cp_bind_master_host_3" {
-  instance_count       = 1
-  source               = "../../modules/launch"
-  instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
-  scale_vpc_key        = "control-plane"
-  scale_service_key    = "bind"
-  ami_id               = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
-  user_data            = data.template_cloudinit_config.master_cp_bind_conf_userdata.rendered
-  eni_ids              = [module.bind_eni.eni_ids[2]]
-  tags                 = local.cp_bind_modified_tags
-  bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  iam_instance_profile = data.terraform_remote_state.paperwork.outputs.instance_tagger_role_name
-}
 
 module "syslog_config" {
   source         = "../../modules/syslog"
