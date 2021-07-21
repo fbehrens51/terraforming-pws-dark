@@ -82,18 +82,19 @@ data "terraform_remote_state" "bootstrap_control_plane_foundation" {
 }
 
 locals {
-  release_channel           = data.terraform_remote_state.paperwork.outputs.release_channel
-  secret_bucket_name        = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
-  artifact_repo_bucket_name = data.terraform_remote_state.paperwork.outputs.artifact_repo_bucket_name
-  terraform_bucket_name     = data.terraform_remote_state.bootstrap_sjb.outputs.terraform_bucket_name
-  ldap_dn                   = data.terraform_remote_state.paperwork.outputs.ldap_dn
-  ldap_port                 = data.terraform_remote_state.paperwork.outputs.ldap_port
-  ldap_host                 = data.terraform_remote_state.paperwork.outputs.ldap_host
-  ldap_basedn               = data.terraform_remote_state.paperwork.outputs.ldap_basedn
-  ldap_ca_cert              = data.terraform_remote_state.paperwork.outputs.ldap_ca_cert_s3_path
-  ldap_client_cert          = data.terraform_remote_state.paperwork.outputs.ldap_client_cert_s3_path
-  ldap_client_key           = data.terraform_remote_state.paperwork.outputs.ldap_client_key_s3_path
-  pypi_protocol             = var.pypi_host_secure ? "https" : "http"
+  release_channel             = data.terraform_remote_state.paperwork.outputs.release_channel
+  secret_bucket_name          = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
+  artifact_repo_bucket_name   = data.terraform_remote_state.paperwork.outputs.artifact_repo_bucket_name
+  artifact_repo_bucket_region = data.terraform_remote_state.paperwork.outputs.artifact_repo_bucket_region
+  terraform_bucket_name       = data.terraform_remote_state.bootstrap_sjb.outputs.terraform_bucket_name
+  ldap_dn                     = data.terraform_remote_state.paperwork.outputs.ldap_dn
+  ldap_port                   = data.terraform_remote_state.paperwork.outputs.ldap_port
+  ldap_host                   = data.terraform_remote_state.paperwork.outputs.ldap_host
+  ldap_basedn                 = data.terraform_remote_state.paperwork.outputs.ldap_basedn
+  ldap_ca_cert                = data.terraform_remote_state.paperwork.outputs.ldap_ca_cert_s3_path
+  ldap_client_cert            = data.terraform_remote_state.paperwork.outputs.ldap_client_cert_s3_path
+  ldap_client_key             = data.terraform_remote_state.paperwork.outputs.ldap_client_key_s3_path
+  pypi_protocol               = var.pypi_host_secure ? "https" : "http"
 }
 
 data "template_file" "setup_scripts" {
@@ -159,6 +160,7 @@ write_files:
       # File contents are created via terraform, do not edit manually.
       export terraform_bucket_name="${local.terraform_bucket_name}"
       export PWSD_ARTIFACT_REPO="s3://${local.artifact_repo_bucket_name}"
+      export PWSD_ARTIFACT_REPO_REGION="${local.artifact_repo_bucket_region}"
       export PWSD_CHANNEL_NAME="${local.release_channel}"
       export secret_bucket_name="${local.secret_bucket_name}"
       export git_host="${var.git_host}"
@@ -189,6 +191,7 @@ runcmd:
     export AWS_REGION=${var.region}
     export AWS_DEFAULT_REGION=${var.region}
     export PWSD_ARTIFACT_REPO="s3://${local.artifact_repo_bucket_name}"
+    export PWSD_ARTIFACT_REPO_REGION="${local.artifact_repo_bucket_region}"
     export PWSD_CHANNEL_NAME="${local.release_channel}"
     /etc/skel/bin/install-pwsd.sh
     /etc/skel/bin/install-pcf-eagle-automation.sh
