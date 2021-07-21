@@ -402,6 +402,10 @@ variable "artifact_repo_bucket_name" {
   type = string
 }
 
+variable "artifact_repo_bucket_region" {
+  type = string
+}
+
 variable "force_destroy_buckets" {
   type    = bool
   default = false
@@ -771,6 +775,10 @@ variable "log_forwarder_region" {
 
 output "artifact_repo_bucket_name" {
   value = var.artifact_repo_bucket_name
+}
+
+output "artifact_repo_bucket_region" {
+  value = var.artifact_repo_bucket_region
 }
 
 output "release_channel" {
