@@ -79,10 +79,16 @@ runcmd:
     wget --quiet --no-check-certificate -O - "${var.node_exporter_location}" | tar --strip-components=1 --wildcards -xzf - '*/node_exporter'
     install -o root -g root -m 755 node_exporter /usr/sbin
     rm node_exporter
-    METADATA=$(command -v ec2metadata || command -v ec2-metadata) # commands are named different on AL2 vs Xenial
-    echo "OPTIONS=--collector.systemd --web.config=/etc/node_exporter/web-config.yml --web.listen-address=$($METADATA -o | cut -d' ' -f2):9100" > /etc/sysconfig/node_exporter
-    chmod 644 /etc/sysconfig/node_exporter
-    chown root:root /etc/sysconfig/node_exporter
+
+    if   command -v ec2metadata  > /dev/null; then LOCAL_IP=$(ec2metadata --local-ipv4)
+    elif command -v ec2-metadata > /dev/null; then LOCAL_IP=$(ec2-metadata -o | cut -d' ' -f2)
+    else false
+    fi
+
+    echo "OPTIONS=--collector.systemd --web.config=/etc/node_exporter/web-config.yml --web.listen-address=$LOCAL_IP:9100" > node_exporter_config
+    install -m 644 -D node_exporter_config /etc/sysconfig/node_exporter
+    rm node_exporter_config
+
     systemctl daemon-reload
     systemctl start node_exporter
     systemctl enable node_exporter.service
