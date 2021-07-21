@@ -329,3 +329,10 @@ variable "control_plane_additional_reserved_ips" { type = map(string) }
 variable "scale" {
   type = map(map(string))
 }
+
+variable "forwarders" {
+  type = list(object({
+    domain        = string
+    forwarder_ips = list(string)
+  }))
+}

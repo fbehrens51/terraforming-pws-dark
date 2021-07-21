@@ -229,6 +229,11 @@ module "om_config" {
   syslog_host    = module.domains.fluentd_fqdn
   syslog_port    = module.syslog_ports.syslog_port
   syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+
+  forwarders = [{
+    domain        = var.endpoint_domain
+    forwarder_ips = [cidrhost(data.aws_vpc.cp_vpc.cidr_block, 2)]
+  }]
 }
 
 module "runtime_config_config" {

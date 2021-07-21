@@ -146,3 +146,17 @@ resource "aws_vpc_endpoint" "cp_ec2" {
   tags                = local.modified_tags
 }
 
+resource "aws_vpc_dhcp_options" "cp_dhcp_options" {
+  domain_name_servers = data.terraform_remote_state.paperwork.outputs.control_plane_vpc_dns
+  //  ntp_servers = []
+  tags = {
+    name = "CP DHCP Options"
+  }
+}
+
+resource "aws_vpc_dhcp_options_association" "cp_dhcp_options_assoc" {
+  dhcp_options_id = aws_vpc_dhcp_options.cp_dhcp_options.id
+  vpc_id          = data.aws_vpc.vpc.id
+  depends_on      = [aws_vpc_dhcp_options.cp_dhcp_options]
+}
+
