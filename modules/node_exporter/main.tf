@@ -79,7 +79,8 @@ runcmd:
     wget --quiet --no-check-certificate -O - "${var.node_exporter_location}" | tar --strip-components=1 --wildcards -xzf - '*/node_exporter'
     install -o root -g root -m 755 node_exporter /usr/sbin
     rm node_exporter
-    echo "OPTIONS=--collector.systemd --web.config=/etc/node_exporter/web-config.yml --web.listen-address=$(ec2-metadata -o | cut -d' ' -f2):9100" > /etc/sysconfig/node_exporter
+    METADATA=$(command -v ec2metadata || command -v ec2-metadata) # commands are named different on AL2 vs Xenial
+    echo "OPTIONS=--collector.systemd --web.config=/etc/node_exporter/web-config.yml --web.listen-address=$($METADATA -o | cut -d' ' -f2):9100" > /etc/sysconfig/node_exporter
     chmod 644 /etc/sysconfig/node_exporter
     chown root:root /etc/sysconfig/node_exporter
     systemctl daemon-reload
