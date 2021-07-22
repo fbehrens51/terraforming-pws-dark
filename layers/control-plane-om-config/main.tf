@@ -258,7 +258,7 @@ module "runtime_config_config" {
 
   extra_users = data.terraform_remote_state.paperwork.outputs.extra_bosh_users
 
-  vpc_dns = local.vpc_dns
+  vpc_dns = cidrhost(data.aws_vpc.cp_vpc.cidr_block, 2)
 }
 
 module "clamav_config" {
@@ -286,7 +286,6 @@ module "clamav_config" {
 }
 
 locals {
-  vpc_dns         = data.terraform_remote_state.paperwork.outputs.enterprise_dns
   vpc_id          = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
   env_name_prefix = var.global_vars.name_prefix
   om_key_name     = "${local.env_name_prefix}-om"

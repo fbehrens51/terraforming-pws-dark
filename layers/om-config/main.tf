@@ -157,7 +157,7 @@ module "om_config" {
   om_tokens_expiration_config = var.om_tokens_expiration_config
   om_ssl_config               = var.om_ssl_config
   om_ssh_banner_config        = var.om_ssh_banner_config
-  pas_vpc_dns                 = local.vpc_dns
+  pas_vpc_dns                 = data.terraform_remote_state.paperwork.outputs.enterprise_dns
   env_name                    = var.global_vars.env_name
   region                      = data.aws_region.current.name
   s3_endpoint                 = var.s3_endpoint
@@ -320,7 +320,7 @@ module "runtime_config_config" {
 
   extra_users = data.terraform_remote_state.paperwork.outputs.extra_bosh_users
 
-  vpc_dns = local.vpc_dns
+  vpc_dns = cidrhost(data.aws_vpc.pas_vpc.cidr_block, 2)
 }
 
 module "clamav_config" {
@@ -360,7 +360,6 @@ data "aws_vpc" "cp_vpc" {
 }
 
 locals {
-  vpc_dns = data.terraform_remote_state.paperwork.outputs.enterprise_dns
   default_apps_manager_tools_url = format(
     "https://%s.%s",
     "plugins",
