@@ -799,6 +799,9 @@ variable "extra_users" {
   }))
 }
 
+variable "endpoint_domain" {
+  type = "string"
+}
 
 data "aws_ami" "amzn_ami" {
   owners = ["self", "amazon"]
@@ -1289,4 +1292,8 @@ output "region" {
 
 output "s3_endpoint" {
   value = var.s3_endpoint
+}
+
+output "endpoint_domain" {
+  value = var.endpoint_domain
 }

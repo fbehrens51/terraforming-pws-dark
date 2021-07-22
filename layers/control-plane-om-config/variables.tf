@@ -121,7 +121,3 @@ variable "clamav_release_url" {
 variable "clamav_release_sha1" {
   description = "sha1 sum of clamav_release_url"
 }
-
-variable "endpoint_domain" {
-  type = string
-}

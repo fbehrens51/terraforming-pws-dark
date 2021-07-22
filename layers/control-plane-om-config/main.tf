@@ -62,6 +62,17 @@ data "terraform_remote_state" "bootstrap_postfix" {
   }
 }
 
+data "terraform_remote_state" "bind" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bind"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 data "aws_region" "current" {
 }
 
@@ -218,10 +229,16 @@ module "om_config" {
   syslog_port    = module.syslog_ports.syslog_port
   syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
 
-  forwarders = [{
-    domain        = var.endpoint_domain
-    forwarder_ips = [cidrhost(data.aws_vpc.cp_vpc.cidr_block, 2)]
-  }]
+  forwarders = [
+    {
+      domain        = data.terraform_remote_state.paperwork.outputs.endpoint_domain
+      forwarder_ips = [cidrhost(data.aws_vpc.cp_vpc.cidr_block, 2)]
+    },
+    {
+      domain        = data.terraform_remote_state.paperwork.outputs.root_domain
+      forwarder_ips = data.terraform_remote_state.bind.outputs.master_ips
+    }
+  ]
 }
 
 module "runtime_config_config" {
