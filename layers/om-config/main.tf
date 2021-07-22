@@ -157,7 +157,7 @@ module "om_config" {
   om_tokens_expiration_config = var.om_tokens_expiration_config
   om_ssl_config               = var.om_ssl_config
   om_ssh_banner_config        = var.om_ssh_banner_config
-  pas_vpc_dns                 = data.terraform_remote_state.paperwork.outputs.enterprise_dns
+  pas_vpc_dns                 = join(", ", data.terraform_remote_state.paperwork.outputs.enterprise_dns)
   env_name                    = var.global_vars.env_name
   region                      = data.aws_region.current.name
   s3_endpoint                 = var.s3_endpoint
