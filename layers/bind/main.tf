@@ -99,6 +99,10 @@ data "terraform_remote_state" "bootstrap_bind" {
   }
 }
 
+data "aws_vpc" "es_vpc" {
+  id = data.terraform_remote_state.paperwork.outputs.es_vpc_id
+}
+
 locals {
   env_name      = var.global_vars.env_name
   modified_name = "${local.env_name} bind"
@@ -194,6 +198,13 @@ data "template_cloudinit_config" "master_bind_conf_userdata" {
   }
 
   part {
+    filename     = "dnsmasq.cfg"
+    content_type = "text/cloud-config"
+    content      = module.dnsmasq.dnsmasq_user_data
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+
+  part {
     filename     = "postfix_client.cfg"
     content_type = "text/x-include-url"
     content      = data.terraform_remote_state.paperwork.outputs.postfix_client_user_data
@@ -205,6 +216,20 @@ data "template_cloudinit_config" "master_bind_conf_userdata" {
     content_type = "text/x-include-url"
     content      = data.terraform_remote_state.paperwork.outputs.server_hardening_user_data
   }
+}
+
+module "dnsmasq" {
+  source         = "../../modules/dnsmasq"
+  enterprise_dns = data.terraform_remote_state.paperwork.outputs.enterprise_dns
+  forwarders = [{
+    domain        = data.terraform_remote_state.paperwork.outputs.endpoint_domain
+    forwarder_ips = [cidrhost(data.aws_vpc.es_vpc.cidr_block, 2)]
+    },
+    {
+      domain        = ""
+      forwarder_ips = data.terraform_remote_state.paperwork.outputs.enterprise_dns
+    }
+  ]
 }
 
 module "iptables_rules" {
