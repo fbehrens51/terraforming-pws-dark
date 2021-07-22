@@ -75,13 +75,13 @@ packages:
 
 write_files:
   - content: |
-      "/From:.*/ REPLACE From: ${smtp_from}"
-      "/To:.*/ REPLACE To: ${smtp_to}"
+      /From:.*/ REPLACE From: ${smtp_from}
+      /To:.*/ REPLACE To: ${smtp_to}
     path: /etc/postfix/header_checks
     permissions: '0644'
     owner: root:root
   - content: |
-      "/From:.*/ REPLACE From: ${smtp_from}"
+      /From:.*/ REPLACE From: ${smtp_from}
     path: /etc/postfix/sender_canonical
     permissions: '0644'
     owner: root:root
