@@ -861,6 +861,10 @@ output "iso_s3_endpoint_ids" {
   }
 }
 
+output "iso_vpc_ids" {
+  value = var.iso_vpc_ids
+}
+
 output "pas_vpc_id" {
   value = var.pas_vpc_id
 }
