@@ -88,13 +88,18 @@ module "configuration" {
   smtp_relay_ca_cert  = data.terraform_remote_state.paperwork.outputs.smtp_relay_ca_cert
   smtpd_server_cert   = data.terraform_remote_state.paperwork.outputs.smtpd_server_cert
   smtpd_server_key    = data.terraform_remote_state.paperwork.outputs.smtpd_server_key
-  smtpd_cidr_blocks   = [data.aws_vpc.es_vpc.cidr_block, data.aws_vpc.pas_vpc.cidr_block, data.aws_vpc.cp_vpc.cidr_block]
+  smtpd_cidr_blocks   = concat([data.aws_vpc.es_vpc.cidr_block, data.aws_vpc.pas_vpc.cidr_block, data.aws_vpc.cp_vpc.cidr_block], [for vpc in data.aws_vpc.iso_vpcs : vpc.cidr_block])
   smtp_user           = local.smtp_user
   smtp_pass           = local.smtp_pass
   root_domain         = local.root_domain
   # smtp_to/from are used to foward local mail (postfix vm) and relayed mail (from other AL2 vms)
   smtp_from = data.terraform_remote_state.paperwork.outputs.smtp_from
   smtp_to   = data.terraform_remote_state.paperwork.outputs.smtp_to
+}
+
+data "aws_vpc" "iso_vpcs" {
+  for_each = toset(data.terraform_remote_state.paperwork.outputs.iso_vpc_ids)
+  id       = each.value
 }
 
 data "aws_vpc" "es_vpc" {
