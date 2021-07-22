@@ -4,8 +4,6 @@ smtp_from = "${smtp_from}"
 
 smtp_to = "${smtp_to}"
 
-pas_vpc_dns = "${pas_vpc_dns}"
-
 pas_vpc_id = "${pas_vpc_id}"
 
 bastion_vpc_id = "${bastion_vpc_id}"

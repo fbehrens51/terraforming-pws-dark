@@ -294,14 +294,14 @@ data "aws_vpc" "vpc" {
 
 module "dnsmasq" {
   source         = "../../modules/dnsmasq"
-  enterprise_dns = data.terraform_remote_state.paperwork.outputs.control_plane_vpc_dns
+  enterprise_dns = data.terraform_remote_state.paperwork.outputs.enterprise_dns
   forwarders = [{
     domain        = var.endpoint_domain
     forwarder_ips = [cidrhost(data.aws_vpc.vpc.cidr_block, 2)]
     },
     {
       domain        = ""
-      forwarder_ips = data.terraform_remote_state.paperwork.outputs.control_plane_vpc_dns
+      forwarder_ips = data.terraform_remote_state.paperwork.outputs.enterprise_dns
     }
   ]
 }

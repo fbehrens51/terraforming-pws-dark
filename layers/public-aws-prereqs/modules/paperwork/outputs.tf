@@ -1,7 +1,3 @@
-output "pas_vpc_dns" {
-  value = cidrhost(aws_vpc.pas_vpc.cidr_block, 2)
-}
-
 output "pas_vpc_id" {
   value = aws_vpc.pas_vpc.id
 }

@@ -129,7 +129,6 @@ data "template_file" "paperwork_variables" {
     bastion_vpc_id                              = module.paperwork.bastion_vpc_id
     pas_vpc_id                                  = module.paperwork.pas_vpc_id
     iso_vpc_id                                  = module.paperwork.isolation_segment_vpc_1_id
-    pas_vpc_dns                                 = module.paperwork.pas_vpc_dns
     ldap_basedn                                 = data.terraform_remote_state.ldap-server.outputs.ldap_basedn
     ldap_dn                                     = data.terraform_remote_state.ldap-server.outputs.ldap_dn
     ldap_host                                   = data.terraform_remote_state.ldap-server.outputs.ldap_domain

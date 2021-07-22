@@ -147,7 +147,7 @@ resource "aws_vpc_endpoint" "cp_ec2" {
 }
 
 resource "aws_vpc_dhcp_options" "cp_dhcp_options" {
-  domain_name_servers = data.terraform_remote_state.paperwork.outputs.control_plane_vpc_dns
+  domain_name_servers = data.terraform_remote_state.paperwork.outputs.enterprise_dns
   //  ntp_servers = []
   tags = {
     name = "CP DHCP Options"

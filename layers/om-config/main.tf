@@ -360,7 +360,7 @@ data "aws_vpc" "cp_vpc" {
 }
 
 locals {
-  vpc_dns = data.terraform_remote_state.paperwork.outputs.pas_vpc_dns
+  vpc_dns = data.terraform_remote_state.paperwork.outputs.enterprise_dns
   default_apps_manager_tools_url = format(
     "https://%s.%s",
     "plugins",

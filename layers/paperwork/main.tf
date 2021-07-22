@@ -434,10 +434,7 @@ variable "iso_vpc_ids" {
 variable "pas_vpc_id" {
 }
 
-variable "pas_vpc_dns" {
-}
-
-variable "control_plane_vpc_dns" {
+variable "enterprise_dns" {
   type = list(string)
 }
 
@@ -846,12 +843,8 @@ output "control_plane_subnet_network_name" {
   value = "control-plane-subnet"
 }
 
-output "pas_vpc_dns" {
-  value = var.pas_vpc_dns
-}
-
-output "control_plane_vpc_dns" {
-  value = var.control_plane_vpc_dns
+output "enterprise_dns" {
+  value = var.enterprise_dns
 }
 
 output "iso_s3_endpoint_ids" {
