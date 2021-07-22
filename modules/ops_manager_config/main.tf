@@ -137,6 +137,7 @@ locals {
     director_blobstore_bucket                   = var.director_blobstore_bucket,
     director_blobstore_s3_endpoint              = "https://${var.s3_endpoint}",
     director_blobstore_location                 = var.director_blobstore_location, // s3 or local
+    forwarders                                  = var.forwarders
   })
 }
 

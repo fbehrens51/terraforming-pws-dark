@@ -112,7 +112,18 @@ properties-configuration:
     system_metrics_runtime_enabled: true
   dns_configuration:
     excluded_recursors: []
-    handlers: []
+    handlers:
+    %{~ for forwarder in forwarders ~}
+    - cache:
+        enabled: true
+      domain: ${forwarder.domain}
+      source:
+        recursors:
+        %{~ for ip in forwarder.forwarder_ips ~}
+        - ${ip}
+        %{~ endfor ~}
+        type: dns
+    %{~ endfor ~}
   security_configuration:
     generate_vm_passwords: true
     opsmanager_root_ca_trusted_certs: true

@@ -32,6 +32,17 @@ data "terraform_remote_state" "scaling-params" {
   }
 }
 
+data "terraform_remote_state" "bind" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bind"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "bootstrap_control_plane" {
   backend = "s3"
 
@@ -125,6 +136,10 @@ locals {
 data "aws_subnet" "isolation_segment_subnets" {
   count = length(local.isolation_segment_subnet_ids)
   id    = local.isolation_segment_subnet_ids[count.index]
+}
+
+data "aws_vpc" "pas_vpc" {
+  id = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
 }
 
 module "om_config" {
@@ -275,6 +290,17 @@ module "om_config" {
   syslog_port      = module.syslog_ports.syslog_port
   apps_syslog_port = module.syslog_ports.apps_syslog_port
   syslog_ca_cert   = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+
+  forwarders = [
+    {
+      domain        = data.terraform_remote_state.paperwork.outputs.endpoint_domain
+      forwarder_ips = [cidrhost(data.aws_vpc.pas_vpc.cidr_block, 2)]
+    },
+    {
+      domain        = data.terraform_remote_state.paperwork.outputs.root_domain
+      forwarder_ips = data.terraform_remote_state.bind.outputs.master_ips
+    }
+  ]
 }
 
 module "runtime_config_config" {

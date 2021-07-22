@@ -531,3 +531,10 @@ variable "postgres_cw_password" {
 variable "scale" {
   type = map(map(string))
 }
+
+variable "forwarders" {
+  type = list(object({
+    domain        = string
+    forwarder_ips = list(string)
+  }))
+}
