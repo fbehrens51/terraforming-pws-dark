@@ -74,9 +74,10 @@ locals {
     },
   )
 
-  bucket_prefix      = replace(local.env_name, " ", "-")
-  import_bucket_name = "${local.bucket_prefix}-import"
-  mirror_bucket_name = "${local.bucket_prefix}-mirror"
+  bucket_prefix        = replace(local.env_name, " ", "-")
+  import_bucket_name   = "${local.bucket_prefix}-import"
+  transfer_bucket_name = "${local.bucket_prefix}-transfer"
+  mirror_bucket_name   = "${local.bucket_prefix}-mirror"
 
   om_key_name = "${local.env_name}-cp-om"
 
@@ -116,6 +117,32 @@ module "ops_manager" {
   ingress_rules         = local.om_ingress_rules
   s3_logs_bucket        = local.s3_logs_bucket
   force_destroy_buckets = var.force_destroy_buckets
+}
+
+resource "aws_s3_bucket" "transfer_bucket" {
+  bucket        = local.transfer_bucket_name
+  force_destroy = var.force_destroy_buckets
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        kms_master_key_id = local.transfer_kms_key_arn
+        sse_algorithm     = "aws:kms"
+      }
+    }
+  }
+
+  logging {
+    target_bucket = local.s3_logs_bucket
+    target_prefix = "${local.transfer_bucket_name}/"
+  }
+
+
+  tags = merge(
+    var.global_vars["global_tags"],
+    {
+      "Name" = "${local.env_name} Transfer Bucket"
+    },
+  )
 }
 
 resource "aws_s3_bucket" "import_bucket" {
