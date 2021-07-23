@@ -5,7 +5,7 @@ variable "remote_state_region" {
 }
 
 variable "fim_config" {
-  default = "control_plane/fim_addon_config.yml"
+  default = "control_plane/fim_addon_tile_config.yml"
 }
 
 terraform {
