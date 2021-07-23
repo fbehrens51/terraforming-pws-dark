@@ -797,7 +797,7 @@ variable "extra_users" {
 }
 
 variable "endpoint_domain" {
-  type = "string"
+  type = string
 }
 
 data "aws_ami" "amzn_ami" {
