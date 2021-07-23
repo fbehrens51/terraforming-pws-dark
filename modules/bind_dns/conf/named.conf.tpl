@@ -11,8 +11,11 @@ acl "clients" {
 };
 
 options {
-    #commented out following line to listen on all IPs
-	#listen-on port 53 { 127.0.0.1; 10.3.0.4; }; ## MASTER
+    #listen on all interfaces except loopback (as it's used by dnsmasq)
+    listen-on {
+            !127.0.0.1;
+            0.0.0.0/0;
+    };
 	listen-on-v6 { none; };
 	directory 	"/var/named";
 	dump-file 	"/var/named/data/cache_dump.db";
