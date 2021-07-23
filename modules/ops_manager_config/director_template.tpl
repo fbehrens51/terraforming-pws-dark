@@ -112,7 +112,7 @@ properties-configuration:
     system_metrics_runtime_enabled: true
   dns_configuration:
     excluded_recursors: []
-    handlers:
+    handlers: %{if length(forwarders)<1}[]%{endif}
     %{~ for forwarder in forwarders ~}
     - cache:
         enabled: true

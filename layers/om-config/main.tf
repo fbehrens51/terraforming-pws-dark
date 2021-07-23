@@ -280,12 +280,14 @@ module "om_config" {
   apps_syslog_port = module.syslog_ports.apps_syslog_port
   syslog_ca_cert   = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
 
-  forwarders = [
-    {
-      domain        = data.terraform_remote_state.paperwork.outputs.endpoint_domain
-      forwarder_ips = [cidrhost(data.aws_vpc.pas_vpc.cidr_block, 2)]
-    }
-  ]
+  //  forwarders = [
+  //    {
+  //      domain        = data.terraform_remote_state.paperwork.outputs.endpoint_domain
+  //      forwarder_ips = [cidrhost(data.aws_vpc.pas_vpc.cidr_block, 2)]
+  //    }
+  //  ]
+  forwarders = []
+
 }
 
 module "runtime_config_config" {
