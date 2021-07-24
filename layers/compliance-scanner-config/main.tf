@@ -21,7 +21,7 @@ variable "ntp_servers" {
 }
 
 variable "compliance_scanner_config" {
-  default = "pas/compliance_scanner_config.yml"
+  default = "pas/compliance_scanner_tile_config.yml"
 }
 
 variable "region" {
@@ -130,10 +130,10 @@ resource "aws_s3_bucket" "compliance_scanner_bucket" {
   }
 
   tags = merge(
-  var.global_vars["global_tags"],
-  {
-    "Name" = "Compliance Scanner Results Bucket"
-  },
+    var.global_vars["global_tags"],
+    {
+      "Name" = "Compliance Scanner Results Bucket"
+    },
   )
 }
 
@@ -145,7 +145,7 @@ module "compliance_scanner_bucket_policy" {
   source              = "../../modules/bucket/policy/generic"
   bucket_arn          = aws_s3_bucket.compliance_scanner_bucket.arn
   read_write_role_ids = [data.aws_iam_role.bucket_role.unique_id]
-  read_only_role_ids  = concat(local.super_user_role_ids, [
+  read_only_role_ids = concat(local.super_user_role_ids, [
     local.director_role_id,
     local.om_role_id,
     local.bosh_role_id,
@@ -154,7 +154,7 @@ module "compliance_scanner_bucket_policy" {
     local.bootstrap_role_id,
     local.foundation_role_id
   ], [local.isse_role_id])
-  read_only_user_ids  = local.super_user_ids
+  read_only_user_ids = local.super_user_ids
 }
 
 resource "aws_s3_bucket_policy" "compliance_scanner_bucket_policy_attachment" {

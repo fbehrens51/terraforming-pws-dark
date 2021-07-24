@@ -103,7 +103,6 @@ locals {
   ]
 
   transfer_kms_key_arn = data.terraform_remote_state.paperwork.outputs.transfer_key_arn
-
 }
 
 module "ops_manager" {
@@ -120,33 +119,6 @@ module "ops_manager" {
   s3_logs_bucket        = local.s3_logs_bucket
   force_destroy_buckets = var.force_destroy_buckets
 }
-
-resource "aws_s3_bucket" "import_bucket" {
-  bucket        = local.import_bucket_name
-  force_destroy = var.force_destroy_buckets
-
-  //use account's default S3 encryption key
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "aws:kms"
-      }
-    }
-  }
-
-  logging {
-    target_bucket = local.s3_logs_bucket
-    target_prefix = "${local.import_bucket_name}/"
-  }
-
-  tags = merge(
-    var.global_vars["global_tags"],
-    {
-      "Name" = "${local.env_name} Import Bucket"
-    },
-  )
-}
-
 
 resource "aws_s3_bucket" "transfer_bucket" {
   bucket        = local.transfer_bucket_name
@@ -174,26 +146,31 @@ resource "aws_s3_bucket" "transfer_bucket" {
   )
 }
 
+resource "aws_s3_bucket" "import_bucket" {
+  bucket        = local.import_bucket_name
+  force_destroy = var.force_destroy_buckets
 
-data "aws_iam_policy_document" "transfer_bucket_policy" {
-  statement {
-    effect  = "Allow"
-    actions = ["s3:GetObject", "s3:ListBucket", "s3:PutObject", "s3:PutObjectAcl"]
-
-    principals {
-      type        = "AWS"
-      identifiers = [var.promoter_role_arn]
+  //use account's default S3 encryption key
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "aws:kms"
+      }
     }
-
-    resources = [aws_s3_bucket.transfer_bucket.arn, "${aws_s3_bucket.transfer_bucket.arn}/*"]
   }
-}
 
-resource "aws_s3_bucket_policy" "transfer_bucket_policy_attachement" {
-  bucket = aws_s3_bucket.transfer_bucket.bucket
-  policy = data.aws_iam_policy_document.transfer_bucket_policy.json
-}
+  logging {
+    target_bucket = local.s3_logs_bucket
+    target_prefix = "${local.import_bucket_name}/"
+  }
 
+  tags = merge(
+    var.global_vars["global_tags"],
+    {
+      "Name" = "${local.env_name} Import Bucket"
+    },
+  )
+}
 
 resource "aws_s3_bucket" "mirror_bucket" {
   bucket        = local.mirror_bucket_name
