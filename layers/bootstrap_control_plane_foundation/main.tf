@@ -102,6 +102,7 @@ locals {
     },
   ]
 
+  transfer_kms_key_arn = data.terraform_remote_state.paperwork.outputs.transfer_key_arn
 }
 
 module "ops_manager" {
