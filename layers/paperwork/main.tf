@@ -223,10 +223,6 @@ data "aws_iam_role" "isse_role" {
   name = var.isse_role_name
 }
 
-data "aws_iam_role" "ent_tech_read_role" {
-  name = var.ent_tech_read_role_name
-}
-
 data "aws_iam_role" "director_role" {
   name = var.director_role_name
 }
@@ -463,9 +459,6 @@ variable "fluentd_role_name" {
 }
 
 variable "isse_role_name" {
-}
-
-variable "ent_tech_read_role_name" {
 }
 
 variable "instance_tagger_role_name" {
@@ -1261,10 +1254,6 @@ output "concourse_role_id" {
 
 output "bosh_role_id" {
   value = data.aws_iam_role.bosh_role.unique_id
-}
-
-output "ent_tech_read_role_id" {
-  value = data.aws_iam_role.ent_tech_read_role.unique_id
 }
 
 output "super_user_ids" {

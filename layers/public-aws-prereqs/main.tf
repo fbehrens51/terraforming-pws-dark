@@ -69,7 +69,6 @@ module "paperwork" {
   instance_tagger_role_name = var.instance_tagger_role_name
   tsdb_role_name            = var.tsdb_role_name
   isse_role_name            = var.isse_role_name
-  ent_tech_read_role_name   = var.ent_tech_read_role_name
 
   env_name    = var.env_name
   root_domain = var.root_domain
@@ -117,7 +116,6 @@ data "template_file" "paperwork_variables" {
     tsdb_role_name                              = var.tsdb_role_name
     fluentd_role_name                           = var.fluentd_role_name
     isse_role_name                              = var.isse_role_name
-    ent_tech_read_role_name                     = var.ent_tech_read_role_name
     instance_tagger_role_name                   = var.instance_tagger_role_name
     director_role_name                          = var.director_role_name
     sjb_role_name                               = var.sjb_role_name
@@ -214,10 +212,6 @@ variable "fluentd_role_name" {
 }
 
 variable "isse_role_name" {
-  type = string
-}
-
-variable "ent_tech_read_role_name" {
   type = string
 }
 

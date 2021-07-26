@@ -44,17 +44,16 @@ data "terraform_remote_state" "bootstrap_control_plane_foundation" {
 }
 
 locals {
-  om_role_name          = data.terraform_remote_state.paperwork.outputs.om_role_name
-  om_role_id            = data.terraform_remote_state.paperwork.outputs.om_role_id
-  director_role_name    = data.terraform_remote_state.paperwork.outputs.director_role_name
-  director_role_id      = data.terraform_remote_state.paperwork.outputs.director_role_id
-  super_user_role_ids   = data.terraform_remote_state.paperwork.outputs.super_user_role_ids
-  isse_role_id          = data.terraform_remote_state.paperwork.outputs.isse_role_id
-  ent_tech_read_role_id = data.terraform_remote_state.paperwork.outputs.ent_tech_read_role_id
-  super_user_id         = data.terraform_remote_state.paperwork.outputs.super_user_ids
-  om_eni_id             = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.om_eni_id
-  env_name              = var.global_vars.env_name
-  modified_name         = "${var.global_vars.name_prefix} cp ops-manager"
+  om_role_name        = data.terraform_remote_state.paperwork.outputs.om_role_name
+  om_role_id          = data.terraform_remote_state.paperwork.outputs.om_role_id
+  director_role_name  = data.terraform_remote_state.paperwork.outputs.director_role_name
+  director_role_id    = data.terraform_remote_state.paperwork.outputs.director_role_id
+  super_user_role_ids = data.terraform_remote_state.paperwork.outputs.super_user_role_ids
+  isse_role_id        = data.terraform_remote_state.paperwork.outputs.isse_role_id
+  super_user_id       = data.terraform_remote_state.paperwork.outputs.super_user_ids
+  om_eni_id           = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.om_eni_id
+  env_name            = var.global_vars.env_name
+  modified_name       = "${var.global_vars.name_prefix} cp ops-manager"
   modified_tags = merge(
     var.global_vars["global_tags"],
     var.global_vars["instance_tags"],
@@ -123,7 +122,7 @@ module "ops_manager_backup_bucket_policy" {
 
   read_write_role_ids = concat(local.super_user_role_ids, [local.director_role_id, local.om_role_id])
   read_write_user_ids = local.super_user_role_ids
-  read_only_role_ids  = [local.isse_role_id, local.ent_tech_read_role_id]
+  read_only_role_ids  = [local.isse_role_id]
   disable_delete      = false
 }
 

@@ -82,7 +82,6 @@ locals {
   super_user_ids        = data.terraform_remote_state.paperwork.outputs.super_user_ids
   super_user_role_ids   = data.terraform_remote_state.paperwork.outputs.super_user_role_ids
   oscap_store_role_name = data.terraform_remote_state.paperwork.outputs.bucket_role_name
-  ent_tech_read_role_id = data.terraform_remote_state.paperwork.outputs.ent_tech_read_role_id
   om_role_id            = data.terraform_remote_state.paperwork.outputs.om_role_id
   bosh_role_id          = data.terraform_remote_state.paperwork.outputs.bosh_role_id
   sjb_role_id           = data.terraform_remote_state.paperwork.outputs.sjb_role_id
@@ -127,10 +126,10 @@ resource "aws_s3_bucket" "compliance_scanner_bucket" {
   }
 
   tags = merge(
-  var.global_vars["global_tags"],
-  {
-    "Name" = "Compliance Scanner Results Bucket"
-  },
+    var.global_vars["global_tags"],
+    {
+      "Name" = "Compliance Scanner Results Bucket"
+    },
   )
 }
 

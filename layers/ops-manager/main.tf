@@ -44,25 +44,24 @@ data "terraform_remote_state" "pas" {
 }
 
 locals {
-  om_role_name          = data.terraform_remote_state.paperwork.outputs.om_role_name
-  director_role_id      = data.terraform_remote_state.paperwork.outputs.director_role_id
-  om_role_id            = data.terraform_remote_state.paperwork.outputs.om_role_id
-  super_user_role_ids   = data.terraform_remote_state.paperwork.outputs.super_user_role_ids
-  isse_role_id          = data.terraform_remote_state.paperwork.outputs.isse_role_id
-  ent_tech_read_role_id = data.terraform_remote_state.paperwork.outputs.ent_tech_read_role_id
-  super_user_id         = data.terraform_remote_state.paperwork.outputs.super_user_ids
-  om_eni_id             = data.terraform_remote_state.pas.outputs.om_eni_id
+  om_role_name        = data.terraform_remote_state.paperwork.outputs.om_role_name
+  director_role_id    = data.terraform_remote_state.paperwork.outputs.director_role_id
+  om_role_id          = data.terraform_remote_state.paperwork.outputs.om_role_id
+  super_user_role_ids = data.terraform_remote_state.paperwork.outputs.super_user_role_ids
+  isse_role_id        = data.terraform_remote_state.paperwork.outputs.isse_role_id
+  super_user_id       = data.terraform_remote_state.paperwork.outputs.super_user_ids
+  om_eni_id           = data.terraform_remote_state.pas.outputs.om_eni_id
 
   env_name      = var.global_vars.env_name
   modified_name = "${var.global_vars.name_prefix} ops-manager"
   modified_tags = merge(
-  var.global_vars["global_tags"],
-  var.global_vars["instance_tags"],
-  {
-    "Name"       = local.modified_name
-    "MetricsKey" = data.terraform_remote_state.paperwork.outputs.metrics_key,
-    "job"        = "ops_manager",
-  },
+    var.global_vars["global_tags"],
+    var.global_vars["instance_tags"],
+    {
+      "Name"       = local.modified_name
+      "MetricsKey" = data.terraform_remote_state.paperwork.outputs.metrics_key,
+      "job"        = "ops_manager",
+    },
   )
 
   om_user_accounts_user_data = data.terraform_remote_state.paperwork.outputs.om_user_accounts_user_data
@@ -124,7 +123,7 @@ module "ops_manager_backup_bucket_policy" {
 
   read_write_role_ids = concat(local.super_user_role_ids, [local.director_role_id, local.om_role_id])
   read_write_user_ids = local.super_user_role_ids
-  read_only_role_ids  = [local.isse_role_id, local.ent_tech_read_role_id]
+  read_only_role_ids  = [local.isse_role_id]
   disable_delete      = false
 }
 
