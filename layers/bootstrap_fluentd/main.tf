@@ -119,7 +119,6 @@ locals {
   isse_role_id          = data.terraform_remote_state.paperwork.outputs.isse_role_id
   super_user_ids        = data.terraform_remote_state.paperwork.outputs.super_user_ids
   super_user_role_ids   = data.terraform_remote_state.paperwork.outputs.super_user_role_ids
-  ent_tech_read_role_id = data.terraform_remote_state.paperwork.outputs.ent_tech_read_role_id
 
   bootstrap_role_id  = data.terraform_remote_state.paperwork.outputs.bootstrap_role_id
   foundation_role_id = data.terraform_remote_state.paperwork.outputs.foundation_role_id

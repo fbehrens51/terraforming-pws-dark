@@ -8,9 +8,6 @@ variable "fluentd_role_name" {
 variable "isse_role_name" {
 }
 
-variable "ent_tech_read_role_name" {
-}
-
 variable "instance_tagger_role_name" {
 }
 
