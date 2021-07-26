@@ -42,6 +42,16 @@ resource "aws_s3_bucket" "director_blobstore_bucket" {
       }
     }
   }
+
+  lifecycle_rule {
+    id      = "expire_old_nonconcurrent_versions"
+    prefix  = ""
+    enabled = true
+    noncurrent_version_expiration {
+      days = 120
+    }
+  }
+
   versioning {
     enabled = true
   }

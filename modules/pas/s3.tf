@@ -13,6 +13,15 @@ resource "aws_s3_bucket" "buildpacks_bucket" {
     }
   }
 
+  lifecycle_rule {
+    id      = "expire_old_nonconcurrent_versions"
+    prefix  = ""
+    enabled = true
+    noncurrent_version_expiration {
+      days = 120
+    }
+  }
+
   versioning {
     enabled = var.create_versioned_pas_buckets
   }
@@ -42,6 +51,15 @@ resource "aws_s3_bucket" "droplets_bucket" {
       apply_server_side_encryption_by_default {
         sse_algorithm = "aws:kms"
       }
+    }
+  }
+
+  lifecycle_rule {
+    id      = "expire_old_nonconcurrent_versions"
+    prefix  = ""
+    enabled = true
+    noncurrent_version_expiration {
+      days = 120
     }
   }
 
@@ -78,6 +96,15 @@ resource "aws_s3_bucket" "packages_bucket" {
     }
   }
 
+  lifecycle_rule {
+    id      = "expire_old_nonconcurrent_versions"
+    prefix  = ""
+    enabled = true
+    noncurrent_version_expiration {
+      days = 120
+    }
+  }
+
   versioning {
     enabled = var.create_versioned_pas_buckets
   }
@@ -108,6 +135,15 @@ resource "aws_s3_bucket" "resources_bucket" {
       apply_server_side_encryption_by_default {
         sse_algorithm = "aws:kms"
       }
+    }
+  }
+
+  lifecycle_rule {
+    id      = "expire_old_nonconcurrent_versions"
+    prefix  = ""
+    enabled = true
+    noncurrent_version_expiration {
+      days = 120
     }
   }
 
