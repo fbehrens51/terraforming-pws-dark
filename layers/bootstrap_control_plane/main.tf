@@ -89,6 +89,14 @@ resource "aws_security_group" "vms_security_group" {
     to_port     = 0
   }
 
+  ingress {
+    description = "Allow metrics scraping from Healthwatch"
+    cidr_blocks = [data.aws_vpc.pas_vpc.cidr_block]
+    protocol    = "tcp"
+    from_port   = 53035
+    to_port     = 53035
+  }
+
   egress {
     description = "Allow all portocols/ports to everywhere"
     cidr_blocks = ["0.0.0.0/0"]
