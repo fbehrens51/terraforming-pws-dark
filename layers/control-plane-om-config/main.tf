@@ -67,11 +67,6 @@ data "aws_region" "current" {
 
 locals {
   secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
-
-  smtp_host     = module.domains.smtp_fqdn
-  smtp_port     = data.terraform_remote_state.bootstrap_postfix.outputs.smtp_client_port
-  smtp_user     = data.terraform_remote_state.bootstrap_postfix.outputs.smtp_client_user
-  smtp_password = data.terraform_remote_state.bootstrap_postfix.outputs.smtp_client_password
 }
 
 data "aws_vpc" "bastion_vpc" {
@@ -155,10 +150,10 @@ module "om_config" {
   credhub_tg_names               = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.credhub_tg_ids
   concourse_lb_security_group_id = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.concourse_lb_security_group_id
 
-  smtp_host       = local.smtp_host
-  smtp_user       = local.smtp_user
-  smtp_password   = local.smtp_password
-  smtp_port       = local.smtp_port
+  smtp_host       = module.domains.smtp_fqdn
+  smtp_user       = data.terraform_remote_state.bootstrap_postfix.outputs.smtp_client_user
+  smtp_password   = data.terraform_remote_state.bootstrap_postfix.outputs.smtp_client_password
+  smtp_port       = data.terraform_remote_state.bootstrap_postfix.outputs.smtp_client_port
   smtp_tls        = "true"
   smtp_from       = var.smtp_from
   smtp_recipients = var.smtp_recipients

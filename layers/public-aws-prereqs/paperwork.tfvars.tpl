@@ -40,10 +40,6 @@ bucket_role_name = "${bucket_role_name}"
 
 platform_automation_engine_worker_role_name = "${platform_automation_engine_worker_role_name}"
 
-system_domain = "${system_domain}"
-
-apps_domain = "${apps_domain}"
-
 ldap_basedn = "${ldap_basedn}"
 
 ldap_dn = "${ldap_dn}"

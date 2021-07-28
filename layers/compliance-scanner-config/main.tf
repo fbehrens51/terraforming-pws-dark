@@ -65,7 +65,7 @@ data "terraform_remote_state" "scaling-params" {
 module "domains" {
   source = "../../modules/domains"
 
-  root_domain = local.root_domain
+  root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
 }
 
 module "syslog_ports" {
@@ -75,7 +75,6 @@ module "syslog_ports" {
 locals {
   env_name              = var.global_vars.env_name
   bucket_name           = "${replace(local.env_name, " ", "-")}-compliance-scans-pas"
-  root_domain           = data.terraform_remote_state.paperwork.outputs.root_domain
   s3_logs_bucket        = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
   director_role_id      = data.terraform_remote_state.paperwork.outputs.director_role_id
   om_role_id            = data.terraform_remote_state.paperwork.outputs.om_role_id

@@ -207,12 +207,6 @@ module "ldap_configure" {
   password = data.terraform_remote_state.paperwork.outputs.ldap_password
 }
 
-module "domains" {
-  source = "../../modules/domains"
-
-  root_domain = local.root_domain
-}
-
 variable "remote_state_region" {
 }
 

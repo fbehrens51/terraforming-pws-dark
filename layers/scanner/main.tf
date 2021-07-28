@@ -82,16 +82,13 @@ locals {
       "job"        = "scanner"
     },
   )
-
-  root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
-
 }
 
 
 module "syslog_config" {
   source = "../../modules/syslog"
 
-  root_domain    = local.root_domain
+  root_domain    = data.terraform_remote_state.paperwork.outputs.root_domain
   syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
 
   role_name          = "scanner"

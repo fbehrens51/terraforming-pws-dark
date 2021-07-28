@@ -1,6 +1,3 @@
-variable "root_domain" {
-}
-
 variable "public_bucket_name" {
 }
 
@@ -26,12 +23,6 @@ locals {
 
 module "ports" {
   source = "../../../../modules/syslog_ports"
-}
-
-module "domains" {
-  source = "../../../../modules/domains"
-
-  root_domain = var.root_domain
 }
 
 data "template_file" "td_agent_configuration" {

@@ -49,12 +49,6 @@ locals {
   admin  = "cn=admin,dc=${join(",dc=", split(".", var.root_domain))}"
 }
 
-module "domains" {
-  source = "../../modules/domains"
-
-  root_domain = var.root_domain
-}
-
 module "paperwork" {
   source                    = "./modules/paperwork"
   bucket_role_name          = var.pas_bucket_role_name
@@ -110,8 +104,6 @@ data "template_file" "paperwork_variables" {
     root_domain                                 = var.root_domain
     smtp_from                                   = var.smtp_from
     smtp_to                                     = var.smtp_to
-    apps_domain                                 = module.domains.apps_fqdn
-    system_domain                               = module.domains.system_fqdn
     bucket_role_name                            = var.pas_bucket_role_name
     platform_automation_engine_worker_role_name = var.platform_automation_engine_worker_role_name
     tsdb_role_name                              = var.tsdb_role_name

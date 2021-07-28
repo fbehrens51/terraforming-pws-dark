@@ -131,12 +131,6 @@ module "bootstrap" {
   tags          = local.modified_tags
 }
 
-module "domains" {
-  source = "../../modules/domains"
-
-  root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
-}
-
 variable "remote_state_region" {
 }
 

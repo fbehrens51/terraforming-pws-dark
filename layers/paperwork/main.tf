@@ -172,7 +172,7 @@ data "aws_iam_policy_document" "s3_logs_bucket_policy" {
       test     = "StringLike"
       variable = "aws:userid"
       values = ["${data.aws_iam_role.isse_role.unique_id}:*", "${data.aws_iam_role.director_role.unique_id}:*",
-        "${data.aws_iam_role.bootstrap_role.unique_id}:*", "${data.aws_iam_role.foundation_role.unique_id}:*"]
+      "${data.aws_iam_role.bootstrap_role.unique_id}:*", "${data.aws_iam_role.foundation_role.unique_id}:*"]
 
     }
     resources = [aws_s3_bucket.s3_logs_bucket.arn, "${aws_s3_bucket.s3_logs_bucket.arn}/*"]
@@ -264,10 +264,10 @@ data "aws_iam_role" "super_user_roles" {
 }
 
 module "reporting_bucket_policy" {
-  source              = "../../modules/bucket/policy/generic"
-  bucket_arn          = aws_s3_bucket.reporting_bucket.arn
+  source     = "../../modules/bucket/policy/generic"
+  bucket_arn = aws_s3_bucket.reporting_bucket.arn
   read_write_role_ids = [data.aws_iam_role.director_role.unique_id, data.aws_iam_role.bootstrap_role.unique_id,
-    data.aws_iam_role.foundation_role.unique_id]
+  data.aws_iam_role.foundation_role.unique_id]
   read_only_role_ids = concat([
     data.aws_iam_role.director_role.unique_id,
     data.aws_iam_role.bootstrap_role.unique_id,
@@ -361,6 +361,11 @@ module "postfix_client_config" {
   public_bucket_url  = local.public_bucket_url
   root_domain        = var.root_domain
   smtp_from          = var.smtp_from
+}
+
+module "domains" {
+  source      = "../../modules/domains"
+  root_domain = var.root_domain
 }
 
 module "server_hardening_config" {
@@ -530,12 +535,6 @@ variable "ldap_port" {
 }
 
 variable "ldap_role_attr" {
-}
-
-variable "system_domain" {
-}
-
-variable "apps_domain" {
 }
 
 variable "ldap_password_s3_path" {
@@ -1161,11 +1160,15 @@ output "smtp_to" {
 }
 
 output "system_domain" {
-  value = var.system_domain
+  value = module.domains.system_fqdn
 }
 
 output "apps_domain" {
-  value = var.apps_domain
+  value = module.domains.apps_fqdn
+}
+
+output "smtp_domain" {
+  value = module.domains.smtp_fqdn
 }
 
 output "custom_ssh_banner" {

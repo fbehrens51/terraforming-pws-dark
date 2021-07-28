@@ -154,7 +154,7 @@ module "healthwatch_config" {
   slack_webhook        = var.slack_webhook
   email_addresses      = var.email_addresses
   smtp_from            = var.smtp_from
-  smtp_host            = "smtp.${local.root_domain}"
+  smtp_host            = module.domains.smtp_fqdn
   smtp_client_password = data.terraform_remote_state.bootstrap_postfix.outputs.smtp_client_password
   smtp_client_port     = data.terraform_remote_state.bootstrap_postfix.outputs.smtp_client_port
   smtp_client_user     = "${local.smtp_client_user}@${local.root_domain}"
