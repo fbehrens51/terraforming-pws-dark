@@ -118,10 +118,38 @@ module "syslog_ports" {
   source = "../../modules/syslog_ports"
 }
 
+data aws_s3_bucket_objects control_plane_certs {
+  bucket = local.secrets_bucket_name
+  prefix = "control_plane_metrics/"
+}
+
+data aws_s3_bucket_object control_plane_metrics_ca_certificate {
+  count  = local.control_plane_metrics_enabled ? 1 : 0
+  bucket = local.secrets_bucket_name
+  key    = "control_plane_metrics/ca_certificate.pem"
+}
+
+data aws_s3_bucket_object control_plane_metrics_certificate {
+  count  = local.control_plane_metrics_enabled ? 1 : 0
+  bucket = local.secrets_bucket_name
+  key    = "control_plane_metrics/certificate.pem"
+}
+
+data aws_s3_bucket_object control_plane_metrics_private_key {
+  count  = local.control_plane_metrics_enabled ? 1 : 0
+  bucket = local.secrets_bucket_name
+  key    = "control_plane_metrics/private_key.pem"
+}
+
 locals {
   root_domain         = data.terraform_remote_state.paperwork.outputs.root_domain
   secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
   smtp_client_user    = data.terraform_remote_state.bootstrap_postfix.outputs.smtp_client_user
+
+  control_plane_metrics_ca_certificate = local.control_plane_metrics_enabled ? data.aws_s3_bucket_object.control_plane_metrics_ca_certificate[0].body : ""
+  control_plane_metrics_certificate    = local.control_plane_metrics_enabled ? data.aws_s3_bucket_object.control_plane_metrics_certificate[0].body : ""
+  control_plane_metrics_private_key    = local.control_plane_metrics_enabled ? data.aws_s3_bucket_object.control_plane_metrics_private_key[0].body : ""
+  control_plane_metrics_enabled        = length(data.aws_s3_bucket_objects.control_plane_certs.keys) == 3
 }
 
 module "healthwatch_config" {
@@ -158,6 +186,12 @@ module "healthwatch_config" {
   smtp_client_password = data.terraform_remote_state.bootstrap_postfix.outputs.smtp_client_password
   smtp_client_port     = data.terraform_remote_state.bootstrap_postfix.outputs.smtp_client_port
   smtp_client_user     = "${local.smtp_client_user}@${local.root_domain}"
+
+  control_plane_vpc_id                 = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
+  control_plane_metrics_ca_certificate = local.control_plane_metrics_ca_certificate
+  control_plane_metrics_certificate    = local.control_plane_metrics_certificate
+  control_plane_metrics_private_key    = local.control_plane_metrics_private_key
+  control_plane_metrics_enabled        = local.control_plane_metrics_enabled
 }
 
 resource "random_string" "healthwatch_client_credentials_secret" {

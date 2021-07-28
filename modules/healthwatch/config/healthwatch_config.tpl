@@ -113,6 +113,35 @@ product-properties:
             action: keep
       server_name: null
       tls_certificates: {}
+%{ if control_plane_metrics_enabled == true ~}
+    - ca: |-
+        ${indent(8, chomp(control_plane_metrics_ca_certificate))}
+      insecure_skip_verify: false
+      scrape_job: |+
+        job_name: 'concourse-deployment'
+        scheme: https
+        ec2_sd_configs:
+        - region: ${region}
+          port: 53035
+        relabel_configs:
+        # This finds all the vms in the control plane foundation
+        # If they were in the same BOSH foundation, we could use DNS instead
+        - source_labels: [__meta_ec2_vpc_id]
+          regex: ${control_plane_vpc_id}
+          action: keep
+        - source_labels: [__meta_ec2_tag_director]
+          regex: '.*bosh.*' # this matches either p-bosh (non-director) or bosh-init (director)
+          action: keep
+        - source_labels: [__meta_ec2_tag_env]
+          regex: ${env_tag_name}
+          action: keep
+      server_name: system-metrics
+      tls_certificates:
+        cert_pem: |
+          ${indent(10, chomp(control_plane_metrics_certificate))}
+        private_key_pem: |
+          ${indent(10, chomp(control_plane_metrics_private_key))}
+%{ endif ~}
   .properties.smtp:
 %{ if smtp_enabled != true ~}
     selected_option: disabled
