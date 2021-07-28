@@ -92,9 +92,6 @@ locals {
   log_stream_name      = "\"fluentd_syslog_#{ENV['AWSAZ']}\""
 
   encrypted_amazon2_ami_id = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
-
-  root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
-
 }
 
 data "aws_vpc" "es_vpc" {
@@ -107,8 +104,6 @@ data "aws_vpc" "pas_vpc" {
 
 module "configuration" {
   source = "./modules/config"
-
-  root_domain = local.root_domain
 
   public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url
@@ -272,7 +267,7 @@ resource "aws_lb_target_group_attachment" "fluentd_apps_syslog_attachment" {
 
 module "syslog_config" {
   source         = "../../modules/syslog"
-  root_domain    = local.root_domain
+  root_domain    = data.terraform_remote_state.paperwork.outputs.root_domain
   syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
 
   role_name          = "fluentd"
