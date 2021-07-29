@@ -1078,7 +1078,7 @@ data "aws_iam_policy_document" "foundation" {
     ]
 
     resources = [
-      "*"]
+    "*"]
   }
 
   statement {
@@ -1117,19 +1117,19 @@ data "aws_iam_policy_document" "foundation" {
   }
 
   statement {
-    sid       = "RequiredIfUsingElasticIPs"
-    effect    = "Allow"
-    actions   = [
+    sid    = "RequiredIfUsingElasticIPs"
+    effect = "Allow"
+    actions = [
       "ec2:AssociateAddress",
       "ec2:DescribeAddresses"
     ]
     resources = [
-      "*"]
+    "*"]
   }
 
   statement {
-    sid     = "RequiredIfUsingSnapshotsFeature"
-    effect  = "Allow"
+    sid    = "RequiredIfUsingSnapshotsFeature"
+    effect = "Allow"
     actions = [
       "ec2:CreateSnapshot",
       "ec2:DeleteSnapshot",
@@ -1191,13 +1191,13 @@ data "aws_iam_policy_document" "foundation" {
   }
 
   statement {
-    sid       = "RequiredIfUsingSourceDestCheckCloudProperties"
-    effect    = "Allow"
-    actions   = [
+    sid    = "RequiredIfUsingSourceDestCheckCloudProperties"
+    effect = "Allow"
+    actions = [
       "ec2:ModifyInstanceAttribute"
     ]
     resources = [
-      "*"]
+    "*"]
   }
 
   statement {
@@ -1218,9 +1218,9 @@ data "aws_iam_policy_document" "foundation" {
   }
 
   statement {
-    sid       = "RequiredIfUsingIAMInstanceProfileCloudProperty"
-    effect    = "Allow"
-    actions   = [
+    sid    = "RequiredIfUsingIAMInstanceProfileCloudProperty"
+    effect = "Allow"
+    actions = [
       "iam:PassRole"
     ]
     resources = [
@@ -1229,9 +1229,9 @@ data "aws_iam_policy_document" "foundation" {
   }
 
   statement {
-    sid       = "RequiredForTWS"
-    effect    = "Allow"
-    actions   = [
+    sid    = "RequiredForTWS"
+    effect = "Allow"
+    actions = [
       "iam:GetInstanceProfile"
     ]
     resources = [
@@ -1252,8 +1252,8 @@ resource "aws_iam_role" "foundation" {
 }
 
 resource "aws_iam_policy_attachment" "foundation" {
-  name       = var.instance_tagger_role_name
-  roles      = [
+  name = var.instance_tagger_role_name
+  roles = [
     aws_iam_role.foundation.name
   ]
   policy_arn = aws_iam_policy.foundation.arn

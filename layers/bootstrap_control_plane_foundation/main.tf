@@ -110,7 +110,7 @@ module "ops_manager" {
 
   bucket_suffix_name    = local.bucket_suffix_name
   env_name              = local.env_name
-  om_eip                = ! var.internetless
+  om_eip                = !var.internetless
   private               = false
   subnet_id             = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_public_subnet_ids[0]
   tags                  = local.modified_tags

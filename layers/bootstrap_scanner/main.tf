@@ -151,7 +151,7 @@ locals {
 
 module "scanner_eni" {
   source        = "../../modules/eni_per_subnet"
-  create_eip    = ! var.internetless
+  create_eip    = !var.internetless
   ingress_rules = local.scanner_ingress_rules
   egress_rules  = local.scanner_egress_rules
   tags = merge(

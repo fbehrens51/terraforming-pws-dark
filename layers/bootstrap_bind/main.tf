@@ -131,7 +131,7 @@ module "bootstrap" {
   egress_rules  = local.bind_egress_rules
   subnet_ids    = data.terraform_remote_state.enterprise-services.outputs.public_subnet_ids
   eni_count     = "3"
-  create_eip    = ! var.internetless
+  create_eip    = !var.internetless
   tags          = local.modified_tags
 }
 

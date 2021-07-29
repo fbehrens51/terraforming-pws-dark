@@ -267,7 +267,7 @@ module "ops_manager" {
 
   bucket_suffix_name    = local.bucket_suffix_name
   env_name              = var.global_vars.name_prefix
-  om_eip                = ! var.internetless
+  om_eip                = !var.internetless
   private               = false
   subnet_id             = module.infra.public_subnet_ids[0]
   tags                  = local.modified_tags

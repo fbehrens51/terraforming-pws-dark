@@ -12,7 +12,7 @@ locals {
   internal_ldap_port  = 1389
 }
 
-resource random_string ldap_password {
+resource "random_string" "ldap_password" {
   length  = 16
   special = false
 }
@@ -26,7 +26,7 @@ resource "aws_secretsmanager_secret_version" "ldap_password" {
   secret_string = random_string.ldap_password.result
 }
 
-resource aws_ecs_cluster eagle {
+resource "aws_ecs_cluster" "eagle" {
   name = "eagle"
 }
 

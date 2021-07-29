@@ -118,24 +118,24 @@ module "syslog_ports" {
   source = "../../modules/syslog_ports"
 }
 
-data aws_s3_bucket_objects control_plane_certs {
+data "aws_s3_bucket_objects" "control_plane_certs" {
   bucket = local.secrets_bucket_name
   prefix = "control_plane_metrics/"
 }
 
-data aws_s3_bucket_object control_plane_metrics_ca_certificate {
+data "aws_s3_bucket_object" "control_plane_metrics_ca_certificate" {
   count  = local.control_plane_metrics_enabled ? 1 : 0
   bucket = local.secrets_bucket_name
   key    = "control_plane_metrics/ca_certificate.pem"
 }
 
-data aws_s3_bucket_object control_plane_metrics_certificate {
+data "aws_s3_bucket_object" "control_plane_metrics_certificate" {
   count  = local.control_plane_metrics_enabled ? 1 : 0
   bucket = local.secrets_bucket_name
   key    = "control_plane_metrics/certificate.pem"
 }
 
-data aws_s3_bucket_object control_plane_metrics_private_key {
+data "aws_s3_bucket_object" "control_plane_metrics_private_key" {
   count  = local.control_plane_metrics_enabled ? 1 : 0
   bucket = local.secrets_bucket_name
   key    = "control_plane_metrics/private_key.pem"

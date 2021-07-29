@@ -350,12 +350,12 @@ resource "aws_ebs_volume" "sjb_home" {
 }
 
 module "sjb" {
-  instance_count    = 1
-  source            = "../../modules/launch"
-  availability_zone = var.singleton_availability_zone
-  ami_id            = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
-  user_data         = data.template_cloudinit_config.user_data.rendered
-  eni_ids           = data.terraform_remote_state.bootstrap_sjb.outputs.sjb_eni_ids
+  instance_count       = 1
+  source               = "../../modules/launch"
+  availability_zone    = var.singleton_availability_zone
+  ami_id               = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
+  user_data            = data.template_cloudinit_config.user_data.rendered
+  eni_ids              = data.terraform_remote_state.bootstrap_sjb.outputs.sjb_eni_ids
   iam_instance_profile = data.terraform_remote_state.paperwork.outputs.bootstrap_role_name
   instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
   volume_ids           = [aws_ebs_volume.sjb_home.id]

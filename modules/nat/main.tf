@@ -115,7 +115,7 @@ module "eni" {
   subnet_ids = var.public_subnet_ids
   eni_count  = length(var.private_route_table_ids)
   tags       = local.modified_tags
-  create_eip = ! var.internetless
+  create_eip = !var.internetless
 
   source_dest_check = false
 }

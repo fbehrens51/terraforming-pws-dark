@@ -33,7 +33,7 @@ data "external" "create-p12" {
   }
 }
 
-resource aws_s3_bucket_object user_p12 {
+resource "aws_s3_bucket_object" "user_p12" {
   for_each       = data.terraform_remote_state.infra.outputs.combined_users_with_certs
   bucket         = "eagle-ci-blobs"
   key            = "ldap-user-keys/${each.key}.p12"

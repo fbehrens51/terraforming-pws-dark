@@ -125,7 +125,7 @@ resource "grafana_alert_notification" "email" {
   count      = var.email_addresses == "" ? 0 : 1
   name       = "PWS Dark Email Notifications"
   type       = "email"
-  is_default = ! local.slack_default
+  is_default = !local.slack_default
 
   send_reminder = true
   frequency     = "24h"

@@ -1,12 +1,12 @@
 
-resource aws_lb ldap {
+resource "aws_lb" "ldap" {
   name               = "ldap-lb"
   internal           = false
   load_balancer_type = "network"
   subnets            = aws_subnet.public.*.id
 }
 
-resource aws_lb_listener ldaps {
+resource "aws_lb_listener" "ldaps" {
   load_balancer_arn = aws_lb.ldap.arn
   port              = local.external_ldaps_port
   protocol          = "TLS"
@@ -19,7 +19,7 @@ resource aws_lb_listener ldaps {
   }
 }
 
-resource aws_lb_target_group ldap {
+resource "aws_lb_target_group" "ldap" {
   name        = "ldap"
   port        = local.internal_ldap_port
   protocol    = "TCP"

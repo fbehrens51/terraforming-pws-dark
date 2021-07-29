@@ -19,7 +19,7 @@ variable "tags" {
   type = map(string)
 }
 
-variable vpc_id {
+variable "vpc_id" {
 }
 
 variable "metrics_ingress_cidr_block" {

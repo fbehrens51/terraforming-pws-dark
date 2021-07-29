@@ -14,7 +14,7 @@ data "aws_caller_identity" "my_account" {}
 
 data "template_file" "keymanager_output_variables" {
   template = file("${path.module}/keymanager_output.tfvars.tpl")
-  vars     = {
+  vars = {
     kms_key_id       = module.keys.kms_key_id
     kms_key_arn      = module.keys.kms_key_arn
     transfer_key_arn = aws_kms_key.transfer_kms_key.arn
@@ -121,7 +121,7 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
       ]
     }
 
-    actions   = [
+    actions = [
       "kms:Create*",
       "kms:Describe*",
       "kms:Enable*",

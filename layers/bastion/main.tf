@@ -97,7 +97,7 @@ module "bootstrap_bastion" {
   ingress_rules     = var.ingress_rules
   egress_rules      = var.egress_rules
   tags              = local.modified_tags
-  create_eip        = ! var.internetless
+  create_eip        = !var.internetless
 }
 
 data "template_cloudinit_config" "bot_user_data" {
