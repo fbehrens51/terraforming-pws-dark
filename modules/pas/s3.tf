@@ -18,7 +18,7 @@ resource "aws_s3_bucket" "buildpacks_bucket" {
     prefix  = ""
     enabled = true
     noncurrent_version_expiration {
-      days = 120
+      days = 45
     }
   }
 
@@ -59,7 +59,7 @@ resource "aws_s3_bucket" "droplets_bucket" {
     prefix  = ""
     enabled = true
     noncurrent_version_expiration {
-      days = 120
+      days = 45
     }
   }
 
@@ -101,7 +101,7 @@ resource "aws_s3_bucket" "packages_bucket" {
     prefix  = ""
     enabled = true
     noncurrent_version_expiration {
-      days = 120
+      days = 45
     }
   }
 
@@ -143,7 +143,7 @@ resource "aws_s3_bucket" "resources_bucket" {
     prefix  = ""
     enabled = true
     noncurrent_version_expiration {
-      days = 120
+      days = 45
     }
   }
 

@@ -48,7 +48,7 @@ resource "aws_s3_bucket" "director_blobstore_bucket" {
     prefix  = ""
     enabled = true
     noncurrent_version_expiration {
-      days = 120
+      days = 45
     }
   }
 
