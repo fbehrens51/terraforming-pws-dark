@@ -236,6 +236,12 @@ module "iptables_rules" {
   source = "../../modules/iptables"
   // block the DNS Amplification Attacks
   internet_only_rules = var.internet == false ? [] : [
+    "# DNSKEY records",
+    "iptables -A INPUT -p udp --dport 53 -m string --hex-string \"|00003000|\"   --algo bm --from 40 -j DROP",
+    "iptables -A INPUT -p tcp --dport 53 -m string --hex-string \"|00003000|\"   --algo bm --from 52 -j DROP",
+    "# RRSIG records",
+    "iptables -A INPUT -p udp --dport 53 -m string --hex-string \"|00002E00|\"   --algo bm --from 40 -j DROP",
+    "iptables -A INPUT -p tcp --dport 53 -m string --hex-string \"|00002E00|\"   --algo bm --from 52 -j DROP",
     "# ref: https://forums.centos.org/viewtopic.php?f=51&t=62148&sid=3687bf227875a582ba08964fca178dd2",
     "iptables -A INPUT -p udp --dport 53 -m string --hex-string \"|0000FF0001|\" --algo bm --from 40 -j DROP",
     "iptables -A INPUT -p tcp --dport 53 -m string --hex-string \"|0000FF0001|\" --algo bm --from 52 -j DROP"
