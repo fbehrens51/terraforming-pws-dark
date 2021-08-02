@@ -1,39 +1,30 @@
 provider "aws" {
-  version = "~> 2.49.0"
 }
 
 provider "random" {
-  version = "~> 2.1.0"
 }
 
 provider "tls" {
-  version = "~> 2.1.1"
 }
 
 provider "template" {
-  version = "~> 2.1.2"
 }
 
 provider "null" {
-  version = "~> 2.1.2"
 }
 
 provider "external" {
-  version = "1.1.2"
 }
 
 provider "dns" {
-  version = "2.1.1"
 }
 
 provider "local" {
-  version = "1.4.0"
 }
 
 provider "grafana" {
-  version = "1.7.0"
 }
 
 terraform {
-  required_version = "~> 0.13.6"
+  required_version = "~> 0.14.11"
 }
