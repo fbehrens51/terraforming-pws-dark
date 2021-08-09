@@ -151,6 +151,14 @@
   </filter>
 
   <filter **>
+    @type record_transformer
+    <record>
+      ident $${record["host"]}
+      host  $${record["ident"]}
+    </record>
+  </filter>
+
+  <filter **>
     @type parser
     key_name message
     reserve_data true
