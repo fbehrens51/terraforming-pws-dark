@@ -162,6 +162,7 @@
     @type parser
     key_name message
     reserve_data true
+    reserve_time true
     hash_value_field event
     <parse>
       @type multi_format
@@ -209,6 +210,7 @@
       region ${region}
       log_group_name ${cloudwatch_log_group_name}
       log_stream_name ${cloudwatch_log_stream_name}
+      log_rejected_request true
       auto_create_stream true
       json_handler yajl
     </store>
@@ -330,6 +332,7 @@
       region ${region}
       log_group_name ${cloudwatch_audit_log_group_name}
       log_stream_name ${cloudwatch_log_stream_name}
+      log_rejected_request true
       auto_create_stream true
       json_handler yajl
     </store>
