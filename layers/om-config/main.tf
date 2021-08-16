@@ -178,13 +178,13 @@ module "om_config" {
   om_server_cert = data.terraform_remote_state.paperwork.outputs.om_server_cert
   om_server_key  = data.terraform_remote_state.paperwork.outputs.om_server_key
 
-  password_policies_max_retry            = 5
-  password_policies_expires_after_months = 0
-  password_policies_min_length           = 0
-  password_policies_min_lowercase        = 0
-  password_policies_min_numeric          = 0
-  password_policies_min_special          = 0
-  password_policies_min_uppercase        = 0
+  password_policies_max_retry            = var.password_policies_max_retry
+  password_policies_expires_after_months = var.password_policies_expires_after_months
+  password_policies_min_length           = var.password_policies_min_length
+  password_policies_min_lowercase        = var.password_policies_min_lowercase
+  password_policies_min_numeric          = var.password_policies_min_numeric
+  password_policies_min_special          = var.password_policies_min_special
+  password_policies_min_uppercase        = var.password_policies_min_uppercase
 
   cloud_controller_encrypt_key_secret = var.cloud_controller_encrypt_key_secret
   credhub_encryption_password         = var.credhub_encryption_password
