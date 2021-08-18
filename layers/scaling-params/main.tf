@@ -101,12 +101,15 @@ locals {
       isolated_diego_cell = "r5.large"
     }
 
-    // MARKER
     pws-dark-concourse-tile = {
       credhub = "m5.large"
       uaa     = "m5.large"
       web     = "m5.large"
       worker  = "r5.xlarge"
+    }
+
+    pws-dark-concourse-worker-tile = {
+      worker = "r5.xlarge"
     }
   }
 }

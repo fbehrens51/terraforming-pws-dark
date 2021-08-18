@@ -200,6 +200,9 @@ variable "director_config" {
 variable "concourse_config" {
 }
 
+variable "worker_config" {
+}
+
 variable "om_create_db_config" {
 }
 

@@ -90,8 +90,13 @@ variable "director_config" {
 }
 
 variable "concourse_config" {
-  description = "portal configuration file"
+  description = "concourse configuration file"
   default     = "control_plane/concourse_config.yml"
+}
+
+variable "worker_config" {
+  description = "concourse worker configuration file"
+  default     = "control_plane/worker_config.yml"
 }
 
 variable "runtime_config" {
