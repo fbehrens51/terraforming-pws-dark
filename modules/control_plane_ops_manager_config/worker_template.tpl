@@ -9,7 +9,7 @@ syslog-properties:
     ${indent(4, chomp(syslog_ca_cert))}
   permitted_peer: ${syslog_host}
 product-properties:
-  .properties.tags:
+  .properties.tag_names:
     value:
     - tag_name: external
 network-properties:
