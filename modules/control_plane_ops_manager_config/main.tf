@@ -194,6 +194,18 @@ locals {
     postgres_credhub_password = var.postgres_credhub_password
     credhub_endpoint          = "${module.domains.control_plane_credhub_fqdn}:8844"
   })
+
+  worker_template = templatefile("${path.module}/worker_template.tpl", {
+    scale                       = var.scale["pws-dark-concourse-worker-tile"]
+    singleton_availability_zone = var.singleton_availability_zone
+    control_plane_vpc_azs = indent(
+      4,
+      chomp(join("", data.template_file.control_plane_vpc_azs.*.rendered)),
+    )
+    syslog_host    = var.syslog_host
+    syslog_port    = var.syslog_port
+    syslog_ca_cert = var.syslog_ca_cert
+  })
 }
 
 resource "aws_s3_bucket_object" "om_create_db_config" {
@@ -236,4 +248,10 @@ resource "aws_s3_bucket_object" "concourse_template" {
   bucket  = var.secrets_bucket_name
   key     = var.concourse_config
   content = local.concourse_template
+}
+
+resource "aws_s3_bucket_object" "worker_template" {
+  bucket  = var.secrets_bucket_name
+  key     = var.worker_config
+  content = local.worker_template
 }
