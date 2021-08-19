@@ -25,3 +25,7 @@ write_files:
     content: ${zone_content}
     path: /run/${zone_file_name}
     permissions: '0644'
+  - encoding: b64
+    content: ${named_conf_systemd}
+    path: /etc/sysconfig/named
+    permissions: '0644'

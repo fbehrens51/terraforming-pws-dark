@@ -36,10 +36,15 @@ module "bind_conf_content" {
   control_plane_plane_credhub_elb_dns = var.control_plane_plane_credhub_elb_dns
 }
 
+locals {
+  named_conf_systemd = "OPTIONS=\"-4\"\n"
+}
+
 data "template_file" "user_data" {
   template = file("${path.module}/user_data.tpl")
 
   vars = {
+    named_conf_systemd = base64encode(local.named_conf_systemd)
     named_conf_content = base64encode(module.bind_conf_content.named_conf_content)
     zone_content       = base64encode(module.bind_conf_content.zone_content)
     zone_file_name     = "db.${var.zone_name}"
