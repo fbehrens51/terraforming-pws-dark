@@ -105,11 +105,11 @@ locals {
       credhub = "m5.large"
       uaa     = "m5.large"
       web     = "m5.large"
-      worker  = "r5.large"
+      worker  = "r5.xlarge"
     }
 
     pws-dark-concourse-worker-tile = {
-      worker = "r5.large"
+      worker = "r5.xlarge"
     }
   }
 }
