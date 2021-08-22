@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 docker build -t terraform-bundle .
 id=$(docker create terraform-bundle)
