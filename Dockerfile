@@ -3,6 +3,6 @@ FROM harbor-repo.vmware.com/dockerhub-proxy-cache/library/golang:alpine AS terra
 RUN apk --no-cache add git unzip && \
     git clone https://github.com/hashicorp/terraform && \
     cd terraform/ && \
-    git checkout v0.14.11 && \
+    git checkout v0.15.5 && \
     cd tools/terraform-bundle/ && \
     go build -o /usr/bin/terraform-bundle
