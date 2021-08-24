@@ -1,44 +1,44 @@
 terraform {
-  required_version = ">= 1.0.5"
+  required_version = "~> 1.0"
 
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "2.49.0"
+      version = "~> 3.55"
     }
     tls = {
       source  = "hashicorp/tls"
-      version = "~> 2.1.1"
+      version = "~> 3.1"
     }
 
     random = {
       source  = "hashicorp/random"
-      version = "~> 2.1.0"
+      version = "~> 3.1"
     }
 
     template = {
       source  = "hashicorp/template"
-      version = "~> 2.1.2"
+      version = "~> 2.2"
     }
 
     null = {
       source  = "hashicorp/null"
-      version = "~> 2.1.2"
+      version = "~> 3.1"
     }
 
     external = {
       source  = "hashicorp/external"
-      version = "~> 1.1.2"
+      version = "~> 2.1"
     }
 
     dns = {
       source  = "hashicorp/dns"
-      version = "~> 2.1.1"
+      version = "~> 3.2"
     }
 
     local = {
       source  = "hashicorp/local"
-      version = "~> 1.4.0"
+      version = "~> 2.1"
     }
 
     grafana = {
