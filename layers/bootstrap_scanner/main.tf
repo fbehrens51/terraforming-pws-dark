@@ -71,10 +71,9 @@ resource "aws_iam_role" "infosec_scanner" {
   assume_role_policy = data.aws_iam_policy_document.role_policy.*.json[0]
 }
 
-resource "aws_iam_policy_attachment" "infosec_scanner" {
+resource "aws_iam_role_policy_attachment" "infosec_scanner" {
   count      = var.commercial_scanner == true ? 1 : 0
-  name       = "${replace(local.env_name, " ", "-")}-InfosecVulnScanRole"
-  roles      = aws_iam_role.infosec_scanner.*.name
+  role       = aws_iam_role.infosec_scanner[count.index].name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess"
 }
 
