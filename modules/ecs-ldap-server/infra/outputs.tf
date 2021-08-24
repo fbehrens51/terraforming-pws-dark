@@ -34,6 +34,7 @@ output "portal_smoke_test_cert" {
     private_key_pem = tls_private_key.user["smoke_test"].private_key_pem
     cert_pem        = tls_locally_signed_cert.user["smoke_test"].cert_pem
   }
+  sensitive = true
 }
 
 output "portal_end_to_end_test_user_cert" {
@@ -41,6 +42,7 @@ output "portal_end_to_end_test_user_cert" {
     private_key_pem = tls_private_key.user["portal_test_people"].private_key_pem
     cert_pem        = tls_locally_signed_cert.user["portal_test_people"].cert_pem
   }
+  sensitive = true
 }
 
 output "portal_end_to_end_test_application_cert" {
@@ -48,6 +50,7 @@ output "portal_end_to_end_test_application_cert" {
     private_key_pem = tls_private_key.user["portal_test_apps_a"].private_key_pem
     cert_pem        = tls_locally_signed_cert.user["portal_test_apps_a"].cert_pem
   }
+  sensitive = true
 }
 
 output "portal_end_to_end_test_application_cert_b" {
@@ -55,6 +58,7 @@ output "portal_end_to_end_test_application_cert_b" {
     private_key_pem = tls_private_key.user["portal_test_apps_b"].private_key_pem
     cert_pem        = tls_locally_signed_cert.user["portal_test_apps_b"].cert_pem
   }
+  sensitive = true
 }
 
 output "ecs_execution_role" {
