@@ -292,14 +292,33 @@ resource "aws_iam_role" "isse" {
   assume_role_policy = data.aws_iam_policy_document.user_assume_role_policy.json
 }
 
-resource "aws_iam_policy_attachment" "isse" {
-  for_each = toset([
-    aws_iam_policy.isse.arn,
+locals {
+  operator_roles = [
     "arn:aws:iam::aws:policy/AmazonRDSFullAccess",
     "arn:aws:iam::aws:policy/AmazonEC2FullAccess",
     "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess",
     "arn:aws:iam::aws:policy/AmazonS3FullAccess",
     "arn:aws:iam::aws:policy/AdministratorAccess",
+  ]
+}
+
+resource "aws_iam_role_policy_attachment" "isse" {
+  for_each = toset(local.operator_roles)
+
+  role       = aws_iam_role.isse.name
+  policy_arn = each.value
+}
+
+resource "aws_iam_group_policy_attachment" "isse" {
+  for_each = toset(local.operator_roles)
+
+  group      = "tws-isses"
+  policy_arn = each.value
+}
+
+resource "aws_iam_policy_attachment" "isse" {
+  for_each = toset([
+    aws_iam_policy.isse.arn,
   ])
 
   name       = var.isse_role_name
