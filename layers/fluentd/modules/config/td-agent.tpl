@@ -220,9 +220,10 @@
       url ${loki_url}
       username ${loki_username}
       password ${loki_password}
-      <labels>
-        az "#{ENV['AWSAZ']}"
-      </labels>
+      <label>
+        ident $.ident
+        source_address $.source_address
+      </label>
       flush_interval 10s
       flush_at_shutdown true
       buffer_chunk_limit 1m
