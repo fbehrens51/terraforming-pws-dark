@@ -121,6 +121,10 @@ module "configuration" {
   s3_audit_logs_bucket            = data.terraform_remote_state.bootstrap_fluentd.outputs.s3_bucket_syslog_audit_archive
   region                          = var.region
   s3_path                         = "logs/"
+
+  loki_url      = var.loki_url
+  loki_password = var.loki_password
+  loki_username = var.loki_username
 }
 
 data "template_cloudinit_config" "user_data" {
