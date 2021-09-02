@@ -215,6 +215,19 @@
       json_handler yajl
     </store>
 
+    <store>
+      @type loki
+      url ${loki_url}
+      username ${loki_username}
+      password ${loki_password}
+      <labels>
+        az "#{ENV['AWSAZ']}"
+      </labels>
+      flush_interval 10s
+      flush_at_shutdown true
+      buffer_chunk_limit 1m
+    </store>
+
     # "Fan-out" to various other things
     <store>
       @type relabel
