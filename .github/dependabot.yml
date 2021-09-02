@@ -3,5 +3,4 @@ updates:
 - package-ecosystem: gomod
   directory: modules/download_certs
   schedule:
-    interval: weekly
-    day: sunday
+    interval: daily
