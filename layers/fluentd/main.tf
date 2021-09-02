@@ -26,6 +26,13 @@ variable "fluentd_bundle_key" {
 variable "region" {
 }
 
+variable "loki_url" {
+}
+variable "loki_username" {
+}
+variable "loki_password" {
+}
+
 module "providers" {
   source = "../../modules/dark_providers"
 }
