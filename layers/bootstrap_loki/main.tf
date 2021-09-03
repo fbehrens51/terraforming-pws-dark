@@ -179,7 +179,7 @@ resource "aws_lb" "loki_lb" {
 resource "aws_lb_target_group" "loki_nlb_http" {
   name_prefix = "http"
   port        = module.syslog_ports.loki_http_port
-  protocol    = "HTTP"
+  protocol    = "TCP"
   vpc_id      = data.terraform_remote_state.paperwork.outputs.es_vpc_id
 
   tags = {
@@ -210,7 +210,7 @@ resource "aws_lb_listener" "loki_nlb_http" {
 resource "aws_lb_target_group" "loki_nlb_grpc" {
   name_prefix = "grpc"
   port        = module.syslog_ports.loki_grpc_port
-  protocol    = "HTTP"
+  protocol    = "TCP"
   vpc_id      = data.terraform_remote_state.paperwork.outputs.es_vpc_id
 
   tags = {
