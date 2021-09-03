@@ -194,6 +194,7 @@ runcmd:
     export PWSD_ARTIFACT_REPO_REGION="${local.artifact_repo_bucket_region}"
     export PWSD_CHANNEL_NAME="${local.release_channel}"
     /etc/skel/bin/install-pwsd.sh
+    PATH=/usr/local/bin:$PATH
     /etc/skel/bin/install-pcf-eagle-automation.sh
     /root/workspace/pcf-eagle-automation/scripts/sjb/install-cli-tools.sh
     HOME="/root" /root/workspace/pcf-eagle-automation/scripts/sjb/install-terraform.sh
