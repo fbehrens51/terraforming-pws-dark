@@ -89,7 +89,7 @@ locals {
 
   s3_logs_bucket = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
 
-  loki_storage_bucket = "${local.formatted_env_name}-loki-storage"
+  loki_storage_bucket = "${local.formatted_env_name}-loki-store"
 
   loki_lb_name = "${local.formatted_env_name}-loki-lb"
 
@@ -116,7 +116,7 @@ data "aws_iam_role" "loki" {
   name = data.terraform_remote_state.paperwork.outputs.fluentd_role_name
 }
 
-resource "aws_s3_bucket" "syslog_audit_archive" {
+resource "aws_s3_bucket" "loki_storage" {
   bucket        = local.loki_storage_bucket
   acl           = "private"
   tags          = local.modified_tags
@@ -142,7 +142,7 @@ resource "aws_s3_bucket" "syslog_audit_archive" {
 
 module "loki_storage_bucket_policy" {
   source              = "../../modules/bucket/policy/generic"
-  bucket_arn          = aws_s3_bucket.syslog_audit_archive.arn
+  bucket_arn          = aws_s3_bucket.loki_storage.arn
   read_write_role_ids = [data.aws_iam_role.loki.unique_id]
   read_only_role_ids = concat(local.super_user_role_ids, [
     local.director_role_id,
@@ -158,7 +158,7 @@ module "loki_storage_bucket_policy" {
 }
 
 resource "aws_s3_bucket_policy" "loki_storage_bucket_policy_attachment" {
-  bucket = aws_s3_bucket.syslog_audit_archive.bucket
+  bucket = aws_s3_bucket.loki_storage.bucket
   policy = module.loki_storage_bucket_policy.json
 }
 
@@ -176,8 +176,8 @@ resource "aws_lb" "loki_lb" {
   )
 }
 
-resource "aws_lb_target_group" "loki_nlb_syslog" {
-  name_prefix = "syslog"
+resource "aws_lb_target_group" "loki_nlb_http" {
+  name_prefix = "http"
   port        = module.syslog_ports.loki_http_port
   protocol    = "HTTP"
   vpc_id      = data.terraform_remote_state.paperwork.outputs.es_vpc_id
@@ -196,14 +196,45 @@ resource "aws_lb_target_group" "loki_nlb_syslog" {
   }
 }
 
-resource "aws_lb_listener" "loki_nlb_syslog" {
+resource "aws_lb_listener" "loki_nlb_http" {
   load_balancer_arn = aws_lb.loki_lb.arn
   protocol          = "HTTP"
   port              = module.syslog_ports.loki_http_port
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.loki_nlb_syslog.arn
+    target_group_arn = aws_lb_target_group.loki_nlb_http.arn
+  }
+}
+
+resource "aws_lb_target_group" "loki_nlb_grpc" {
+  name_prefix = "grpc"
+  port        = module.syslog_ports.loki_grpc_port
+  protocol    = "HTTP"
+  vpc_id      = data.terraform_remote_state.paperwork.outputs.es_vpc_id
+
+  tags = {
+    Name = "${local.formatted_env_name}-loki${module.syslog_ports.loki_grpc_port}"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  health_check {
+    port = module.syslog_ports.loki_http_port
+    path = "/ready"
+  }
+}
+
+resource "aws_lb_listener" "loki_nlb_grpc" {
+  load_balancer_arn = aws_lb.loki_lb.arn
+  protocol          = "HTTP"
+  port              = module.syslog_ports.loki_grpc_port
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.loki_nlb_grpc.arn
   }
 }
 
