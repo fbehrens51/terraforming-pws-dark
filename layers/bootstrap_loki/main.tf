@@ -194,6 +194,11 @@ resource "aws_lb_target_group" "loki_nlb_http" {
     port = module.syslog_ports.loki_http_port
     path = "/ready"
   }
+
+  stickiness {
+    enabled = false
+    type    = "lb_cookie"
+  }
 }
 
 resource "aws_lb_listener" "loki_nlb_http" {
@@ -224,6 +229,11 @@ resource "aws_lb_target_group" "loki_nlb_grpc" {
   health_check {
     port = module.syslog_ports.loki_http_port
     path = "/ready"
+  }
+
+  stickiness {
+    enabled = false
+    type    = "lb_cookie"
   }
 }
 
