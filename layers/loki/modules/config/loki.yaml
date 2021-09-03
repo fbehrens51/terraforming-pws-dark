@@ -1,0 +1,6 @@
+target: all
+auth_enabled: false
+server:
+  http_listen_port: ${http_port}
+  grpc_listen_port: ${grpc_port}
+
