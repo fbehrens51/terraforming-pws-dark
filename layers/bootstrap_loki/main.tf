@@ -25,6 +25,10 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
+data "aws_vpc" "pas_vpc" {
+  id = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
+}
+
 module "syslog_ports" {
   source = "../../modules/syslog_ports"
 }
@@ -83,7 +87,11 @@ locals {
 
   formatted_env_name = replace(local.env_name, " ", "-")
 
-  syslog_audit_archive_bucket = "${local.formatted_env_name}-syslog-audit-archive"
+  s3_logs_bucket = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
+
+  loki_storage_bucket = "${local.formatted_env_name}-loki-storage"
+
+  loki_lb_name = "${local.formatted_env_name}-loki-lb"
 
   director_role_id    = data.terraform_remote_state.paperwork.outputs.director_role_id
   om_role_id          = data.terraform_remote_state.paperwork.outputs.om_role_id
@@ -108,7 +116,7 @@ data "aws_iam_role" "loki" {
 }
 
 resource "aws_s3_bucket" "syslog_audit_archive" {
-  bucket        = local.syslog_audit_archive_bucket
+  bucket        = local.loki_storage_bucket
   acl           = "private"
   tags          = local.modified_tags
   force_destroy = var.force_destroy_buckets
@@ -127,11 +135,11 @@ resource "aws_s3_bucket" "syslog_audit_archive" {
 
   logging {
     target_bucket = local.s3_logs_bucket
-    target_prefix = "${local.syslog_audit_archive_bucket}/"
+    target_prefix = "${local.loki_storage_bucket}/"
   }
 }
 
-module "syslog_audit_archive_bucket_policy" {
+module "loki_storage_bucket_policy" {
   source              = "../../modules/bucket/policy/generic"
   bucket_arn          = aws_s3_bucket.syslog_audit_archive.arn
   read_write_role_ids = [data.aws_iam_role.loki.unique_id]
@@ -148,9 +156,9 @@ module "syslog_audit_archive_bucket_policy" {
   disable_delete     = true
 }
 
-resource "aws_s3_bucket_policy" "syslog_audit_archive_bucket_policy_attachment" {
+resource "aws_s3_bucket_policy" "loki_storage_bucket_policy_attachment" {
   bucket = aws_s3_bucket.syslog_audit_archive.bucket
-  policy = module.syslog_audit_archive_bucket_policy.json
+  policy = module.loki_storage_bucket_policy.json
 }
 
 resource "aws_lb" "loki_lb" {
