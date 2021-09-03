@@ -278,6 +278,14 @@ output "loki_eni_ids" {
   value = module.bootstrap.eni_ids
 }
 
+output "loki_grpc_target_group" {
+  value = aws_lb_target_group.loki_nlb_grpc.arn
+}
+
+output "loki_http_target_group" {
+  value = aws_lb_target_group.loki_nlb_http.arn
+}
+
 output "loki_eni_ips" {
   value = module.bootstrap.eni_ips
 }
