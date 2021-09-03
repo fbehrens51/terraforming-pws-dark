@@ -198,7 +198,7 @@ resource "aws_lb_target_group" "loki_nlb_http" {
 
 resource "aws_lb_listener" "loki_nlb_http" {
   load_balancer_arn = aws_lb.loki_lb.arn
-  protocol          = "HTTP"
+  protocol          = "TCP"
   port              = module.syslog_ports.loki_http_port
 
   default_action {
@@ -229,7 +229,7 @@ resource "aws_lb_target_group" "loki_nlb_grpc" {
 
 resource "aws_lb_listener" "loki_nlb_grpc" {
   load_balancer_arn = aws_lb.loki_lb.arn
-  protocol          = "HTTP"
+  protocol          = "TCP"
   port              = module.syslog_ports.loki_grpc_port
 
   default_action {
