@@ -59,6 +59,12 @@ data "template_cloudinit_config" "nat_user_data" {
   gzip          = false
 
   part {
+    filename     = "tag_completion.cfg"
+    content_type = "text/x-include-url"
+    content      = data.terraform_remote_state.paperwork.outputs.completion_tag_user_data
+  }
+
+  part {
     filename     = "clamav.cfg"
     content_type = "text/x-include-url"
     content      = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
@@ -80,12 +86,6 @@ data "template_cloudinit_config" "nat_user_data" {
     filename     = "bot_user_accounts_user_data.cfg"
     content_type = "text/x-include-url"
     content      = data.terraform_remote_state.paperwork.outputs.bot_user_accounts_user_data
-  }
-
-  part {
-    filename     = "tag_completion.cfg"
-    content_type = "text/x-include-url"
-    content      = data.terraform_remote_state.paperwork.outputs.completion_tag_user_data
   }
 
   part {

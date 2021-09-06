@@ -8,20 +8,31 @@ merge_how:
 write_files:
   - content: |
       #!/usr/bin/env bash
-      set -ex
-      echo "Running cloud-init status --wait > /dev/null"
-      sudo cloud-init status --wait > /dev/null
-      sudo cloud-init status --long
-      TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
-      INSTANCE_ID=$(curl -H "X-aws-ec2 -$TOKEN" -v http://169.254.169.254/latest/meta-data/instance-id)
-      AWSAZ=$(curl -H "X-aws-ec2 -$TOKEN" -v http://169.254.169.254/latest/meta-data/placement/availability-zone)
-      AWSREGION=${AWSAZ::-1}
-      aws ec2 create-tags --resources ${INSTANCE_ID} --tags Key=cloud_init_done,Value=true --region $AWSREGION
+      set -eo pipefail
+      exit_code=$1
+
+      # grab last 5 lines from log | delete the last two lines | compress stdin -> stdout | base64 encode | flatten to a single line
+      cloud_init_output="$(tail -5 /var/log/cloud-init-output.log | head -n -2  | gzip -qc - | openssl enc -a -e | sed -zEe 's/\n/\\n/g')"
+      if [[ $(wc -c <<< $cloud_init_output) > 256 ]]; then
+        cloud_init_output="$( echo "unable to display last 3 lines cloud-init since output > 256 bytes, please review logs for status" | gzip -qc - | openssl enc -a -e | sed -zEe 's/\n/\\n/g')"
+      fi
+
+      export INSTANCE_ID=$(ec2-metadata -i | awk '{print $2}')
+      export AWS_REGION=$(ec2-metadata -z | awk '{print substr($2, 1, length($2)-1)}')
+
+      [[ $exit_code == 0 ]] && STATUS=true || STATUS=false
+
+      aws ec2 create-tags --resources $INSTANCE_ID --region $AWS_REGION --tags Key=cloud_init_done,Value=$STATUS
+      aws ec2 create-tags --resources $INSTANCE_ID --region $AWS_REGION --tags Key=cloud_init_output,Value="$cloud_init_output"
+      exit $exit_code
     path: /root/tagOnCompletion.sh
     permissions: '0750'
     owner: root:root
 
 runcmd:
   - |
-    sleep 10
-    sudo nohup /root/tagOnCompletion.sh &
+    function tagger() {
+      /root/tagOnCompletion.sh $1
+    }
+
+    trap 'tagger $?' exit

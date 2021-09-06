@@ -100,14 +100,14 @@ locals {
 data "template_file" "setup_scripts" {
   template = <<EOF
 write_files:
-  - path: /etc/skel/bin/install-pwsd.sh
+  - path: /usr/local/bin/install-pwsd.sh
     permissions: '0755'
     owner: root:root
     content: |
       #!/usr/bin/env bash
-      set -eo pipefail
+      set -exo pipefail
 
-      [[ ! -n $HOME ]] && HOME=root # HOME is not set during system boot.
+      [[ ! -n $HOME ]] && HOME=/root # HOME is not set during system boot.
 
       bucket="${local.artifact_repo_bucket_name}"
       user="$(id -nu)"
@@ -126,32 +126,39 @@ write_files:
       $INSTALL tools/* /usr/local/bin/
       rm -rf "$latest" tools
 
-  - path: /etc/skel/bin/install-pcf-eagle-automation.sh
+  - path: /usr/local/bin/install-artifact.sh
     permissions: '0755'
     owner: root:root
     content: |
       #!/usr/bin/env bash
-      set -eo pipefail
+      set -exo pipefail
 
-      [[ ! -n $HOME ]] && HOME=root # HOME is not set during system boot.
+      [[ ! -n $HOME ]] && HOME=/root # HOME is not set during system boot.
 
       workspace="$HOME/workspace"
       [ ! -d $workspace ] && mkdir -p "$workspace"
 
       function get_source() {
-        artifact=$1
-        local_repo="$workspace/artifacts"
-        artifact_dir="$workspace/$artifact"
+        local artifact=$1
+        local local_repo="$workspace/artifacts"
+        local artifact_dir="$workspace/$artifact"
 
-        [ ! -d $artifact_dir ] && mkdir -p "$artifact_dir"
+       if [[ ! -d $artifact_dir ]]; then
+         mkdir -p "$artifact_dir"
+       else
+         echo "Artifact directory exists: $artifact; please remove/rename and try again"
+         exit 1
+       fi
 
-        pwsd release download --components "$artifact" --output "$local_repo"
+        /usr/local/bin/pwsd release download --components "$artifact" --output "$local_repo"
         unzip -q -d "$artifact_dir" "$local_repo/$artifact/*.zip"
 
         rm -r "$local_repo"
       }
 
-      get_source "pcf-eagle-automation"
+      for artifact in "$@"; do
+        get_source $artifact
+      done
 
   - path: /etc/profile.d/tws_env.sh
     permissions: '0644'
@@ -177,6 +184,8 @@ write_files:
       export ldap_client_key="${local.ldap_client_key}"
       export AWS_REGION="${var.region}"
       export AWS_DEFAULT_REGION="${var.region}"
+      export TF_PWS_DARK_REPO=$HOME/workspace/terraforming-pws-dark
+      export PATH=/usr/local/bin:$PATH
 
 runcmd:
   - |
@@ -184,22 +193,28 @@ runcmd:
     yum install jq git python-pip python3 openldap-clients -y
     pip3 install yq --index-url=${local.pypi_protocol}://${var.pypi_host}/simple --trusted-host=${var.pypi_host}
 
-    # set the home dirs to proper owners - users are recreated every time the vm is created, and the home dirs are persisted.
-    # If a user is added or deleted, that will break ownership of home dirs
-    awk -F: '$3 ~ /1[0-9]{3,3}/{ print "chown -R " $3 ":" $4 " " $6}' /etc/passwd | xargs --no-run-if-empty -0 sh -c
-
     export AWS_REGION=${var.region}
     export AWS_DEFAULT_REGION=${var.region}
     export PWSD_ARTIFACT_REPO="s3://${local.artifact_repo_bucket_name}"
     export PWSD_ARTIFACT_REPO_REGION="${local.artifact_repo_bucket_region}"
     export PWSD_CHANNEL_NAME="${local.release_channel}"
-    /etc/skel/bin/install-pwsd.sh
-    PATH=/usr/local/bin:$PATH
-    /etc/skel/bin/install-pcf-eagle-automation.sh
-    /root/workspace/pcf-eagle-automation/scripts/sjb/install-cli-tools.sh
-    HOME="/root" /root/workspace/pcf-eagle-automation/scripts/sjb/install-terraform.sh
+    export root_domain="${local.root_domain}"
 
-    root_domain="${local.root_domain}"                     /root/workspace/pcf-eagle-automation/scripts/sjb/install-fly.sh
+    PATH=/usr/local/bin:$PATH
+    export HOME=/var/root
+    install -d $HOME
+    install-pwsd.sh
+    install-artifact.sh pcf-eagle-automation cli-tools
+    $HOME/workspace/pcf-eagle-automation/scripts/sjb/install-fly.sh
+    $HOME/workspace/pcf-eagle-automation/scripts/sjb/install-cli-tools.sh
+    rm -rf $HOME
+
+    # human users UIDs start at 1000
+    for user in $(awk -F: '$3 ~ /1[0-9]{3,3}/{print $1}' /etc/passwd | sort | grep -Ev 'ec2-user|security_scanner' ); do
+      home="$( awk -v user=$user -F: '$1 == user { print $6 }' /etc/passwd )"
+      sudo -u $user PATH=$PATH -i install-artifact.sh pcf-eagle-automation
+      sudo -u $user PATH=$PATH -i $home/workspace/pcf-eagle-automation/scripts/sjb/setup_user.sh
+    done
 EOF
 }
 
@@ -213,7 +228,13 @@ bootcmd:
   - |
     set -ex
     while [ ! -e /dev/sdf ] ; do echo "Waiting for device /dev/sdf"; sleep 1 ; done
-    if [ "$(file -b -s -L /dev/sdf)" == "data" ]; then mkfs -t ext4 /dev/sdf; fi
+    #old code won't mkfs an existing fs
+    #if [ "$(file -b -s -L /dev/sdf)" == "data" ]; then mkfs -t ext4 /dev/sdf; fi
+
+    # new code will always mkfs a volume to start fresh with the correct verisions.
+    # we have to mount an external volume because the base image has partitioned FS
+    mkfs -t ext4 /dev/sdf
+
     if mountpoint -q /home; then
       umount /home
       sed -i '/^\/dev\/vg0\/home/d' /etc/fstab
@@ -241,6 +262,12 @@ module "syslog_config" {
 data "template_cloudinit_config" "user_data" {
   base64_encode = true
   gzip          = true
+
+  part {
+    filename     = "tag_completion.cfg"
+    content_type = "text/x-include-url"
+    content      = data.terraform_remote_state.paperwork.outputs.completion_tag_user_data
+  }
 
   part {
     filename     = "config.cfg"
@@ -284,12 +311,6 @@ data "template_cloudinit_config" "user_data" {
     filename     = "banner.cfg"
     content_type = "text/x-include-url"
     content      = data.terraform_remote_state.paperwork.outputs.custom_banner_user_data
-  }
-
-  part {
-    filename     = "tag_completion.cfg"
-    content_type = "text/x-include-url"
-    content      = data.terraform_remote_state.paperwork.outputs.completion_tag_user_data
   }
 
   part {
@@ -398,6 +419,12 @@ resource "null_resource" "sjb_status" {
       let COUNTER=COUNTER+1
     done
     echo "$completed_tag = $tags"
+
+    if cloud_init_message="$( aws ec2 describe-tags --filters Name=resource-id,Values=${module.sjb.instance_ids[count.index]} Name=key,Values=cloud_init_output --output text --query Tags[*].Value )"; then
+      [[ ! -z $cloud_init_message ]] && echo -e "cloud_init_output: $( echo -ne "$cloud_init_message" | openssl enc -d -a | gunzip -qc - )"
+    fi
+
+    [[ $tags == false ]] && exit 1 || exit 0
     EOF
   }
 }

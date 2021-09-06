@@ -149,6 +149,12 @@ resource "aws_instance" "instance" {
       let COUNTER=COUNTER+1
     done
     echo "$completed_tag = $tags"
+
+    if cloud_init_message="$( aws ec2 describe-tags --filters Name=resource-id,Values=${self.id} Name=key,Values=cloud_init_output --output text --query Tags[*].Value )"; then
+      [[ ! -z $cloud_init_message ]] && echo -e "cloud_init_output: $( echo -ne "$cloud_init_message" | openssl enc -d -a | gunzip -qc - )"
+    fi
+
+    [[ $tags == false ]] && exit 1 || exit 0
     EOF
   }
 }

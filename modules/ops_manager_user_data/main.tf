@@ -27,6 +27,12 @@ data "template_cloudinit_config" "config" {
   gzip          = true
 
   part {
+    filename     = "tag_completion.cfg"
+    content_type = "text/x-include-url"
+    content      = var.tag_completion_user_data
+  }
+
+  part {
     filename     = "user_accounts_user_data.cfg"
     content_type = "text/x-include-url"
     content      = var.user_accounts_user_data
@@ -51,12 +57,6 @@ data "template_cloudinit_config" "config" {
     content_type = "text/x-include-url"
     content      = var.customer_banner_user_data
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
-  }
-
-  part {
-    filename     = "tag_completion.cfg"
-    content_type = "text/x-include-url"
-    content      = var.tag_completion_user_data
   }
 
   part {

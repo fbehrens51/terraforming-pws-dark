@@ -156,6 +156,12 @@ data "template_cloudinit_config" "user_data" {
   gzip          = true
 
   part {
+    filename     = "tag_completion.cfg"
+    content_type = "text/x-include-url"
+    content      = data.terraform_remote_state.paperwork.outputs.completion_tag_user_data
+  }
+
+  part {
     filename     = "syslog.cfg"
     content      = module.syslog_config.user_data
     content_type = "text/x-include-url"
@@ -191,12 +197,6 @@ data "template_cloudinit_config" "user_data" {
     content_type = "text/cloud-config"
     content      = data.template_file.setup_scanner.rendered
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
-  }
-
-  part {
-    filename     = "tag_completion.cfg"
-    content_type = "text/x-include-url"
-    content      = data.terraform_remote_state.paperwork.outputs.completion_tag_user_data
   }
 
   part {

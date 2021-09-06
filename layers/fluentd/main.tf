@@ -127,6 +127,13 @@ data "template_cloudinit_config" "user_data" {
   base64_encode = true
   gzip          = true
 
+  // tag_completion has to be first, it sets a bash trap to ensure the tagger runs when an error occurs
+  part {
+    filename     = "tag_completion.cfg"
+    content_type = "text/x-include-url"
+    content      = data.terraform_remote_state.paperwork.outputs.completion_tag_user_data
+  }
+
   part {
     filename     = "certs.cfg"
     content      = module.configuration.certs_user_data
@@ -176,12 +183,6 @@ data "template_cloudinit_config" "user_data" {
     filename     = "banner.cfg"
     content_type = "text/x-include-url"
     content      = data.terraform_remote_state.paperwork.outputs.custom_banner_user_data
-  }
-
-  part {
-    filename     = "tag_completion.cfg"
-    content_type = "text/x-include-url"
-    content      = data.terraform_remote_state.paperwork.outputs.completion_tag_user_data
   }
 
   part {
@@ -307,6 +308,12 @@ resource "null_resource" "fluentd_status" {
       let COUNTER=COUNTER+1
     done
     echo "$completed_tag = $tags"
+
+    if cloud_init_message="$( aws ec2 describe-tags --filters Name=resource-id,Values=${module.fluentd_instance.instance_ids[count.index]} Name=key,Values=cloud_init_output --output text --query Tags[*].Value )"; then
+      [[ ! -z $cloud_init_message ]] && echo -e "cloud_init_output: $( echo -ne "$cloud_init_message" | openssl enc -d -a | gunzip -qc - )"
+    fi
+
+    [[ $tags == false ]] && exit 1 || exit 0
     EOF
   }
 }

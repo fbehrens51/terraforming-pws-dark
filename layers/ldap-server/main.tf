@@ -151,6 +151,13 @@ data "template_cloudinit_config" "ldap_userdata" {
   gzip          = true
 
   part {
+    filename     = "tag_completion.cfg"
+    content_type = "text/x-include-url"
+    content      = data.terraform_remote_state.paperwork.outputs.completion_tag_user_data
+    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+  }
+
+  part {
     filename     = "user_accounts_user_data.cfg"
     content_type = "text/x-include-url"
     content      = data.terraform_remote_state.paperwork.outputs.bot_user_accounts_user_data
@@ -161,13 +168,6 @@ data "template_cloudinit_config" "ldap_userdata" {
     filename     = "awscli.cfg"
     content_type = "text/cloud-config"
     content      = data.template_file.setup_awscli.rendered
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
-  }
-
-  part {
-    filename     = "tag_completion.cfg"
-    content_type = "text/x-include-url"
-    content      = data.terraform_remote_state.paperwork.outputs.completion_tag_user_data
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 }
