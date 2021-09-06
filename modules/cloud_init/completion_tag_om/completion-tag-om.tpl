@@ -32,7 +32,7 @@ write_files:
 
 runcmd:
   - |
-    function tagger() {
+    tagger() {
       /root/tagOnCompletion.sh $1
     }
 
