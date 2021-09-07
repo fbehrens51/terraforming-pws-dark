@@ -27,7 +27,7 @@ data "template_file" "config_user_data" {
 
 locals {
   bucket_key    = "loki-${md5(data.template_file.config_user_data.rendered)}-user-data.yml"
-  loki_location = "${var.public_bucket_url}/${local.loki_bundle_key}"
+  loki_location = "${var.public_bucket_url}/${var.loki_bundle_key}"
 }
 
 resource "aws_s3_bucket_object" "config_user_data" {
