@@ -39,7 +39,9 @@ runcmd:
     unzip loki.zip
     mv loki-linux-amd64 loki
     install -o root -g root -m 755 loki /usr/sbin
-    rm loki.zip
+    rm loki.zip loki
+    mkdir -p /loki/index
+    chown loki:loki /loki/index
 
     if   command -v ec2metadata  > /dev/null; then LOCAL_IP=$(ec2metadata --local-ipv4)
     elif command -v ec2-metadata > /dev/null; then LOCAL_IP=$(ec2-metadata -o | cut -d' ' -f2)
