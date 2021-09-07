@@ -240,7 +240,6 @@ bootcmd:
       sed -i '/^\/dev\/vg0\/home/d' /etc/fstab
     fi
     mount -t ext4 -o 'defaults,nofail,nodev,comment=TF_user_data' /dev/sdf /home
-    install -m 755 -d /etc/skel/bin
 
 mounts:
   - [ "/dev/sdf", "/home", "ext4", "defaults,nofail,nodev", "0", "2" ]

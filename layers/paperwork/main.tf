@@ -408,7 +408,13 @@ module "tag_completion_config_om" {
 }
 
 variable "release_channel" {
+  type    = string
   default = "latest"
+}
+
+variable "release_channel_version" {
+  type    = string
+  default = "0.0.0"
 }
 
 variable "artifact_repo_bucket_name" {
@@ -793,6 +799,10 @@ output "artifact_repo_bucket_region" {
 
 output "release_channel" {
   value = var.release_channel
+}
+
+output "release_channel_version" {
+  value = var.release_channel_version
 }
 
 output "log_forwarder_region" {
