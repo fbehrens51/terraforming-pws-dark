@@ -1,4 +1,3 @@
-variable "s3_logs_bucket" {}
 variable "region" {}
 variable "public_bucket_name" {
 }
