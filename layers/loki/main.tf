@@ -105,7 +105,7 @@ module "configuration" {
   public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url
 
   loki_bundle_key = var.loki_bundle_key
-  loki_ips        = module.loki_instance.private_ips
+  loki_ips        = data.terraform_remote_state.bootstrap_loki.outputs.loki_eni_ips
   storage_bucket  = data.terraform_remote_state.bootstrap_loki.outputs.storage_bucket
 
   region = var.region
@@ -216,8 +216,7 @@ module "iptables_rules" {
 }
 
 module "loki_instance" {
-  # TODO: put back HA once I figure out the right config
-  instance_count    = 1 #length(data.terraform_remote_state.bootstrap_loki.outputs.loki_eni_ids)
+  instance_count    = length(data.terraform_remote_state.bootstrap_loki.outputs.loki_eni_ids)
   source            = "../../modules/launch"
   instance_types    = data.terraform_remote_state.scaling-params.outputs.instance_types
   scale_vpc_key     = "enterprise-services"
