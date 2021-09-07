@@ -115,7 +115,7 @@ data "template_cloudinit_config" "user_data" {
 
   part {
     filename     = "config.cfg"
-    content_type = "text/cloud-config"
+    content_type = "text/x-include-url"
     content      = module.configuration.config_user_data
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
