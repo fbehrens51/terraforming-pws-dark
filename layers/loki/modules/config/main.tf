@@ -7,7 +7,7 @@ data "template_file" "config_user_data" {
   template = file("${path.module}/user_data.tpl")
 
   vars = {
-    loki_configuration = data.template_file.loki_configuration.rendered
+    loki_configuration = local.loki_configuration
 
     region             = var.region
     public_bucket_name = var.public_bucket_name
