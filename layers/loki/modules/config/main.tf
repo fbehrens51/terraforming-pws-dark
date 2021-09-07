@@ -21,7 +21,7 @@ data "template_file" "config_user_data" {
 
     region             = var.region
     public_bucket_name = var.public_bucket_name
-    loki_bundle_key    = local.loki_location
+    loki_location      = local.loki_location
   }
 }
 
