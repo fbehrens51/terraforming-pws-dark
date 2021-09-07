@@ -46,7 +46,7 @@ runcmd:
     else false
     fi
 
-    cat "OPTIONS=-config.file=/etc/loki/loki.yaml -server.http-listen-address=$LOCAL_IP -server.grpc-listen-address=$LOCAL_IP" > loki_config
+    echo "OPTIONS=-config.file=/etc/loki/loki.yaml -server.http-listen-address=$LOCAL_IP -server.grpc-listen-address=$LOCAL_IP" > loki_config
     
     install -m 644 -D loki_config /etc/sysconfig/loki
     rm loki_config
