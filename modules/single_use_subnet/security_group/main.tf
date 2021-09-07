@@ -30,7 +30,7 @@ resource "aws_security_group" "security_group" {
   )
 }
 
-resource "aws_security_group_rule" "egress_rules" {
+resource "aws_security_group_rule" "internal_ports" {
   count = length(var.internal_ports)
 
   description = var.internal_ports[count.index]["description"]
