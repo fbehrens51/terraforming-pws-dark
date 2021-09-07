@@ -106,8 +106,7 @@ module "configuration" {
 
   loki_bundle_key = var.loki_bundle_key
 
-  s3_audit_logs_bucket = data.terraform_remote_state.bootstrap_loki.outputs.s3_bucket_syslog_audit_archive
-  region               = var.region
+  region = var.region
 }
 
 data "template_cloudinit_config" "user_data" {
