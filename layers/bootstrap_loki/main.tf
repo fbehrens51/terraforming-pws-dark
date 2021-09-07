@@ -83,6 +83,15 @@ locals {
       cidr_blocks = "0.0.0.0/0"
     },
   ]
+
+  loki_internal_ports = [
+    {
+      description = "Allow loki memberlist coordination"
+      port        = "7946"
+      protocol    = "-1"
+    },
+  ]
+
   private_subnets = data.terraform_remote_state.enterprise-services.outputs.private_subnet_ids
 
   formatted_env_name = replace(local.env_name, " ", "-")
@@ -249,13 +258,14 @@ resource "aws_lb_listener" "loki_nlb_grpc" {
 }
 
 module "bootstrap" {
-  source        = "../../modules/eni_per_subnet"
-  ingress_rules = local.loki_ingress_rules
-  egress_rules  = local.loki_egress_rules
-  subnet_ids    = local.subnets
-  create_eip    = "false"
-  eni_count     = "3"
-  tags          = local.modified_tags
+  source         = "../../modules/eni_per_subnet"
+  ingress_rules  = local.loki_ingress_rules
+  egress_rules   = local.loki_egress_rules
+  internal_ports = local.loki_internal_ports
+  subnet_ids     = local.subnets
+  create_eip     = "false"
+  eni_count      = "3"
+  tags           = local.modified_tags
 }
 
 
@@ -288,6 +298,10 @@ output "loki_http_target_group" {
 
 output "loki_eni_ips" {
   value = module.bootstrap.eni_ips
+}
+
+output "storage_bucket" {
+  value = aws_s3_bucket.loki_storage.bucket
 }
 
 

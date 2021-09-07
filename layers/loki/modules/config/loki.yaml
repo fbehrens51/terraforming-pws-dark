@@ -1,6 +1,70 @@
-target: all
+# Adapted from https://grafana.com/docs/loki/latest/configuration/examples/#almost-zero-dependencies-setup
 auth_enabled: false
+
 server:
   http_listen_port: ${http_port}
   grpc_listen_port: ${grpc_port}
 
+distributor:
+  ring:
+    kvstore:
+      store: memberlist
+
+ingester:
+  lifecycler:
+    ring:
+      kvstore:
+        store: memberlist
+      replication_factor: 1
+    final_sleep: 0s
+  chunk_idle_period: 5m
+  chunk_retain_period: 30s
+
+memberlist:
+  abort_if_cluster_join_fails: false
+
+  # Expose this port on all distributor, ingester
+  # and querier replicas.
+  bind_port: 7946
+
+  join_members:
+%{ for ip in loki_ips ~}
+  - ${ip}
+%{ endfor }
+
+  max_join_backoff: 1m
+  max_join_retries: 10
+  min_join_backoff: 1s
+
+schema_config:
+  configs:
+  - from: 2020-05-15
+    store: boltdb-shipper
+    object_store: s3
+    schema: v11
+    index:
+      prefix: index_
+      period: 168h
+
+storage_config:
+ boltdb_shipper:
+   active_index_directory: /loki/index
+   cache_location: /loki/index_cache
+   shared_store: s3
+
+ aws:
+  bucketnames: ${storage_bucket}
+  region: ${region}
+  insecure: false
+  sse_encryption: true
+
+limits_config:
+  enforce_metric_name: false
+  reject_old_samples: true
+  reject_old_samples_max_age: 168h
+
+# TODO: this can only run on one node, I think?
+compactor:
+  working_directory: /data/compactor
+  shared_store: s3
+  compaction_interval: 5m

@@ -7,9 +7,11 @@ data "template_file" "loki_configuration" {
   template = file("${path.module}/loki.yaml")
 
   vars = {
-    http_port = module.ports.loki_http_port
-    grpc_port = module.ports.loki_grpc_port
-    region    = var.region
+    http_port      = module.ports.loki_http_port
+    grpc_port      = module.ports.loki_grpc_port
+    region         = var.region
+    loki_ips       = var.loki_ips
+    storage_bucket = var.storage_bucket
   }
 }
 

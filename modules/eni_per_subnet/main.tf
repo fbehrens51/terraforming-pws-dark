@@ -6,6 +6,11 @@ variable "egress_rules" {
   type = list(object({ description = string, port = string, protocol = string, cidr_blocks = string }))
 }
 
+variable "internal_ports" {
+  type    = list(object({ description = string, port = string, protocol = string }))
+  default = []
+}
+
 variable "subnet_ids" {
   type = list(string)
 }
@@ -35,11 +40,12 @@ data "aws_subnet" "first_subnet" {
 }
 
 module "security_group" {
-  source        = "../single_use_subnet/security_group"
-  ingress_rules = var.ingress_rules
-  egress_rules  = var.egress_rules
-  tags          = var.tags
-  vpc_id        = data.aws_subnet.first_subnet.vpc_id
+  source         = "../single_use_subnet/security_group"
+  ingress_rules  = var.ingress_rules
+  egress_rules   = var.egress_rules
+  internal_ports = var.internal_ports
+  tags           = var.tags
+  vpc_id         = data.aws_subnet.first_subnet.vpc_id
 }
 
 resource "aws_network_interface" "eni" {
