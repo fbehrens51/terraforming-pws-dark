@@ -10,7 +10,6 @@ data "template_file" "loki_configuration" {
     http_port = module.ports.loki_http_port
     grpc_port = module.ports.loki_grpc_port
     region    = var.region
-    s3_path   = var.s3_path
   }
 }
 
