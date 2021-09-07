@@ -214,19 +214,19 @@ module "iptables_rules" {
 }
 
 module "loki_instance" {
-  instance_count       = length(data.terraform_remote_state.bootstrap_loki.outputs.loki_eni_ids)
-  source               = "../../modules/launch"
-  instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
-  scale_vpc_key        = "enterprise-services"
-  scale_service_key    = "loki"
-  ami_id               = local.encrypted_amazon2_ami_id
-  user_data            = data.template_cloudinit_config.user_data.rendered
-  eni_ids              = data.terraform_remote_state.bootstrap_loki.outputs.loki_eni_ids
-  tags                 = local.modified_tags
-  check_cloud_init     = false
-  bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  iam_instance_profile = data.terraform_remote_state.paperwork.outputs.loki_role_name
-  volume_ids           = data.terraform_remote_state.bootstrap_loki.outputs.volume_id
+  instance_count    = length(data.terraform_remote_state.bootstrap_loki.outputs.loki_eni_ids)
+  source            = "../../modules/launch"
+  instance_types    = data.terraform_remote_state.scaling-params.outputs.instance_types
+  scale_vpc_key     = "enterprise-services"
+  scale_service_key = "loki"
+  ami_id            = local.encrypted_amazon2_ami_id
+  user_data         = data.template_cloudinit_config.user_data.rendered
+  eni_ids           = data.terraform_remote_state.bootstrap_loki.outputs.loki_eni_ids
+  tags              = local.modified_tags
+  check_cloud_init  = false
+  bot_key_pem       = data.terraform_remote_state.paperwork.outputs.bot_private_key
+  # TODO: replace with loki role, since loki role will need delete access to this one bucket
+  iam_instance_profile = data.terraform_remote_state.paperwork.outputs.fluentd_role_name
 }
 
 resource "aws_lb_target_group_attachment" "loki_http_attachment" {

@@ -34,6 +34,7 @@ locals {
       nat     = "t3.medium"
       bind    = "t3.medium"
       fluentd = "t3.medium"
+      loki    = "t3.medium"
       postfix = "t3.medium"
     }
 

@@ -35,7 +35,7 @@ write_files:
 runcmd:
   - |
     set -ex
-    wget --quiet --no-check-certificate -O loki.zip "${var.loki_location}"
+    wget --quiet --no-check-certificate -O loki.zip "${loki_location}"
     unzip loki.zip
     mv loki-linux-amd64 loki
     install -o root -g root -m 755 loki /usr/sbin
