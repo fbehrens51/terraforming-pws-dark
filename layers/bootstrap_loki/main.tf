@@ -92,8 +92,8 @@ locals {
   loki_internal_ports = [
     {
       description = "Allow loki memberlist coordination"
-      port        = "7946"
-      protocol    = "-1"
+      port        = module.syslog_ports.loki_bind_port
+      protocol    = "tcp"
     },
   ]
 

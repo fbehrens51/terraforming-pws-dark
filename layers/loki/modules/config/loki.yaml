@@ -25,7 +25,7 @@ memberlist:
 
   # Expose this port on all distributor, ingester
   # and querier replicas.
-  bind_port: 7946
+  bind_port: ${bind_port}
 
   join_members:
 %{ for ip in loki_ips ~}

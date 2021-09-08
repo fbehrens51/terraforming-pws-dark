@@ -19,6 +19,7 @@ locals {
   bucket_key    = "loki-${md5(data.template_file.config_user_data.rendered)}-user-data.yml"
   loki_location = "${var.public_bucket_url}/${var.loki_bundle_key}"
   loki_configuration = templatefile("${path.module}/loki.yaml", {
+    bind_port      = module.ports.loki_bind_port
     http_port      = module.ports.loki_http_port
     grpc_port      = module.ports.loki_grpc_port
     region         = var.region

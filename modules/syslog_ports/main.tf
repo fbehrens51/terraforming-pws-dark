@@ -13,3 +13,7 @@ output "loki_http_port" {
 output "loki_grpc_port" {
   value = "8091"
 }
+
+output "loki_bind_port" {
+  value = "7946"
+}
