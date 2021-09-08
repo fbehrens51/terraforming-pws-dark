@@ -78,6 +78,12 @@ locals {
       protocol    = "tcp"
       cidr_blocks = data.aws_vpc.pas_vpc.cidr_block
     },
+    {
+      description = "Allow loki memberlist coordination"
+      port        = module.syslog_ports.loki_bind_port
+      protocol    = "tcp"
+      cidr_blocks = join(",", module.bootstrap.eni_ips)
+    },
   ]
 
   loki_egress_rules = [
@@ -89,13 +95,7 @@ locals {
     },
   ]
 
-  loki_internal_ports = [
-    {
-      description = "Allow loki memberlist coordination"
-      port        = module.syslog_ports.loki_bind_port
-      protocol    = "tcp"
-    },
-  ]
+  loki_internal_ports = []
 
   private_subnets = data.terraform_remote_state.enterprise-services.outputs.private_subnet_ids
 
