@@ -35,6 +35,7 @@ memberlist:
   max_join_backoff: 1m
   max_join_retries: 10
   min_join_backoff: 1s
+  rejoin_interval: 30s
 
 schema_config:
   configs:
