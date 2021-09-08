@@ -88,6 +88,17 @@ data "terraform_remote_state" "bootstrap_fluentd" {
   }
 }
 
+data "terraform_remote_state" "bootstrap_loki" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bootstrap_loki"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "bootstrap_bind" {
   backend = "s3"
 
@@ -132,6 +143,7 @@ locals {
   pas_elb_dns                         = data.terraform_remote_state.pas.outputs.pas_elb_dns_name
   postfix_private_ip                  = data.terraform_remote_state.bootstrap_postfix.outputs.postfix_eni_ips[0]
   fluentd_dns_name                    = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_lb_dns_name
+  loki_dns_name                       = data.terraform_remote_state.bootstrap_loki.outputs.loki_lb_dns_name
   grafana_elb_dns                     = data.terraform_remote_state.pas.outputs.grafana_elb_dns_name
   control_plane_plane_uaa_elb_dns     = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.uaa_elb_dns
   control_plane_plane_credhub_elb_dns = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.credhub_elb_dns
@@ -265,6 +277,7 @@ module "bind_master_user_data" {
   pas_elb_dns                         = local.pas_elb_dns
   postfix_private_ip                  = local.postfix_private_ip
   fluentd_dns_name                    = local.fluentd_dns_name
+  loki_dns_name                       = local.loki_dns_name
   grafana_elb_dns                     = local.grafana_elb_dns
   control_plane_plane_uaa_elb_dns     = local.control_plane_plane_uaa_elb_dns
   control_plane_plane_credhub_elb_dns = local.control_plane_plane_credhub_elb_dns

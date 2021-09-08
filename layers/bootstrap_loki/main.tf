@@ -304,4 +304,6 @@ output "storage_bucket" {
   value = aws_s3_bucket.loki_storage.bucket
 }
 
-
+output "loki_lb_dns_name" {
+  value = aws_lb.loki_lb.dns_name
+}
