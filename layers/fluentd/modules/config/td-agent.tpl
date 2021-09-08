@@ -231,9 +231,9 @@
 
     <store>
       @type loki
-      loki_url "https://logs-prod-us-central1.grafana.net"
-      loki_username "96809"
-      loki_password "eyJrIjoiZGEwNTQ3OWZiNmJkNTEwYjE1NGMxMTgzNWM3ZjI3NTIyY2MwZWY1MyIsIm4iOiJ0ZC1hZ2VudCIsImlkIjo1Mzc3ODB9"
+      url "https://logs-prod-us-central1.grafana.net"
+      username "96809"
+      password "eyJrIjoiZGEwNTQ3OWZiNmJkNTEwYjE1NGMxMTgzNWM3ZjI3NTIyY2MwZWY1MyIsIm4iOiJ0ZC1hZ2VudCIsImlkIjo1Mzc3ODB9"
       <label>
         ident $.ident
         source_address $.source_address
