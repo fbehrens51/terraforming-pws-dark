@@ -186,6 +186,14 @@
 </label>
 
 <label @all_logs>
+
+  <filter>
+    @type record_transformer
+    <record>
+      fluentd_az "#{ENV['AWSAZ']}"
+    </record>
+  </filter>
+
   <match **>
     @type copy
 
@@ -223,6 +231,7 @@
       <label>
         ident $.ident
         source_address $.source_address
+        fluentd_az $.fluentd_az
       </label>
       flush_interval 10s
       flush_at_shutdown true
@@ -237,6 +246,7 @@
       <label>
         ident $.ident
         source_address $.source_address
+        fluentd_az $.fluentd_az
       </label>
       flush_interval 10s
       flush_at_shutdown true
