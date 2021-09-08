@@ -98,6 +98,25 @@ product-properties:
         ${indent(8, chomp(root_ca_cert))}
       insecure_skip_verify: false
       scrape_job: |-
+        job_name: 'loki'
+        metrics_path: /metrics
+        scheme: http
+        ec2_sd_configs:
+          - region: ${region}
+            port: 8090
+        relabel_configs:
+          - source_labels: [__meta_ec2_tag_job]
+            regex: loki
+            action: keep
+          - source_labels: [__meta_ec2_tag_env]
+            regex: ${env_tag_name}
+            action: keep
+      server_name: null
+      tls_certificates: {}
+    - ca: |
+        ${indent(8, chomp(root_ca_cert))}
+      insecure_skip_verify: false
+      scrape_job: |-
         job_name: 'fluentd'
         metrics_path: /aggregated_metrics
         scheme: http
