@@ -82,7 +82,7 @@ locals {
       description = "Allow loki memberlist coordination"
       port        = module.syslog_ports.loki_bind_port
       protocol    = "tcp"
-      cidr_blocks = join(",", [for ip in module.bootstrap.eni_ips : concat(ip, "/32")])
+      cidr_blocks = join(",", [for ip in module.bootstrap.eni_ips : "${ip}/32"])
     },
   ]
 
