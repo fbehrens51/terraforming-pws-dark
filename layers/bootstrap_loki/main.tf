@@ -328,5 +328,5 @@ output "loki_username" {
 
 output "loki_url" {
   # TODO: switch to https once I get nginx running
-  value = "http://${module.domains.loki_fqdn}"
+  value = "http://${module.domains.loki_fqdn}:${module.syslog_ports.loki_http_port}"
 }
