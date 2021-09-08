@@ -32,6 +32,17 @@ data "terraform_remote_state" "bootstrap_fluentd" {
   }
 }
 
+data "terraform_remote_state" "bootstrap_loki" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bootstrap_loki"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 variable "namespaces" {
   default = "LogMetrics"
 }
@@ -133,6 +144,14 @@ resource "grafana_alert_notification" "email" {
   settings = {
     addresses = var.email_addresses
   }
+}
+
+resource "grafana_data_source" "loki" {
+  type     = "loki"
+  name     = "loki"
+  url      = data.terraform_remote_state.bootstrap_loki.outputs.loki_url
+  username = data.terraform_remote_state.bootstrap_loki.outputs.loki_username
+  password = data.terraform_remote_state.bootstrap_loki.outputs.loki_password
 }
 
 resource "grafana_data_source" "cloudwatch" {

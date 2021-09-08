@@ -133,8 +133,7 @@ module "configuration" {
   region                          = var.region
   s3_path                         = "logs/"
 
-  # TODO: switch to https once I get nginx running
-  loki_url      = "http://${module.domains.loki_fqdn}"
+  loki_url      = data.terraform_remote_state.bootstrap_loki.outputs.loki_url
   loki_password = data.terraform_remote_state.bootstrap_loki.outputs.loki_password
   loki_username = data.terraform_remote_state.bootstrap_loki.outputs.loki_username
 }

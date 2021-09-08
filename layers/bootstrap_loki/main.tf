@@ -29,6 +29,11 @@ data "aws_vpc" "pas_vpc" {
   id = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
 }
 
+module "domains" {
+  source      = "../../modules/domains"
+  root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
+}
+
 module "syslog_ports" {
   source = "../../modules/syslog_ports"
 }
@@ -319,4 +324,9 @@ output "loki_password" {
 
 output "loki_username" {
   value = "admin"
+}
+
+output "loki_url" {
+  # TODO: switch to https once I get nginx running
+  value = "http://${module.domains.loki_fqdn}"
 }
