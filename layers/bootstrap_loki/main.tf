@@ -268,6 +268,10 @@ module "bootstrap" {
   tags           = local.modified_tags
 }
 
+resource "random_string" "loki_password" {
+  length  = "32"
+  special = false
+}
 
 variable "remote_state_region" {
 }
@@ -306,4 +310,13 @@ output "storage_bucket" {
 
 output "loki_lb_dns_name" {
   value = aws_lb.loki_lb.dns_name
+}
+
+output "loki_password" {
+  value     = random_string.loki_password.result
+  sensitive = true
+}
+
+output "loki_username" {
+  value = "admin"
 }

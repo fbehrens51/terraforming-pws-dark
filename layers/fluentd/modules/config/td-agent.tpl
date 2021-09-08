@@ -223,6 +223,7 @@
       <label>
         ident $.ident
         source_address $.source_address
+        fluentd_az "#{ENV['AWSAZ']}"
       </label>
       flush_interval 10s
       flush_at_shutdown true
