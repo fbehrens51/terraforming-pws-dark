@@ -26,7 +26,7 @@ data "template_file" "config_user_data" {
 }
 
 locals {
-  bucket_key    = [for i, ip in var.loki_ips : "loki-${i}-${md5(data.template_file.config_user_data[count.index].rendered)}-user-data.yml"]
+  bucket_key    = [for i, ip in var.loki_ips : "loki-${i}-${md5(data.template_file.config_user_data[i].rendered)}-user-data.yml"]
   loki_location = "${var.public_bucket_url}/${var.loki_bundle_key}"
   loki_configuration = templatefile("${path.module}/loki.yaml", {
     bind_port      = module.ports.loki_bind_port
