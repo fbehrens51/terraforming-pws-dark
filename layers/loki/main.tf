@@ -230,7 +230,7 @@ module "loki_instance" {
   scale_service_key = "loki"
   ami_id            = local.encrypted_amazon2_ami_id
   user_data         = data.template_cloudinit_config.user_data[count.index].rendered
-  eni_ids           = data.terraform_remote_state.bootstrap_loki.outputs.loki_eni_ids
+  eni_ids           = [data.terraform_remote_state.bootstrap_loki.outputs.loki_eni_ids[count.index]]
   tags              = local.modified_tags
   check_cloud_init  = false
   bot_key_pem       = data.terraform_remote_state.paperwork.outputs.bot_private_key
