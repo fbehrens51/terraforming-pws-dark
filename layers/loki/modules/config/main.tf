@@ -41,7 +41,7 @@ locals {
 resource "aws_s3_bucket_object" "config_user_data" {
   count   = length(var.loki_ips)
   bucket  = var.public_bucket_name
-  key     = var.loki_ips[count.index]
+  key     = local.bucket_key[count.index]
   content = data.template_file.config_user_data[count.index].rendered
 }
 
