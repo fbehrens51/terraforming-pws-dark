@@ -107,6 +107,7 @@ module "configuration" {
   loki_bundle_key = var.loki_bundle_key
   loki_ips        = data.terraform_remote_state.bootstrap_loki.outputs.loki_eni_ips
   storage_bucket  = data.terraform_remote_state.bootstrap_loki.outputs.storage_bucket
+  root_domain     = data.terraform_remote_state.paperwork.outputs.root_domain
 
   region = var.region
 }
