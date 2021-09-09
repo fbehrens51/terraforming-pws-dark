@@ -33,6 +33,12 @@ write_files:
     owner: root:root
 
   - content: |
+      # websockets config
+      map $http_upgrade $connection_upgrade {
+              default upgrade;
+              '' close;
+          }
+
       upstream loki {
         server 127.0.0.1:${http_port};
         keepalive 15;
