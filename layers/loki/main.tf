@@ -241,13 +241,13 @@ module "loki_instance" {
 resource "aws_lb_target_group_attachment" "loki_http_attachment" {
   count            = length(data.terraform_remote_state.bootstrap_loki.outputs.loki_eni_ids)
   target_group_arn = data.terraform_remote_state.bootstrap_loki.outputs.loki_http_target_group
-  target_id        = module.loki_instance.instance_ids[count.index]
+  target_id        = module.loki_instance[count.index].instance_ids[0]
 }
 
 resource "aws_lb_target_group_attachment" "loki_apps_grpc_attachment" {
   count            = length(data.terraform_remote_state.bootstrap_loki.outputs.loki_eni_ids)
   target_group_arn = data.terraform_remote_state.bootstrap_loki.outputs.loki_grpc_target_group
-  target_id        = module.loki_instance.instance_ids[count.index]
+  target_id        = module.loki_instance[count.index].instance_ids[0]
 }
 
 module "syslog_config" {
@@ -263,7 +263,7 @@ module "syslog_config" {
 resource "null_resource" "loki_status" {
   count = length(data.terraform_remote_state.bootstrap_loki.outputs.loki_eni_ids)
   triggers = {
-    instance_id = module.loki_instance.instance_ids[count.index]
+    instance_id = module.loki_instance[count.index].instance_ids[0]
   }
 
   provisioner "local-exec" {
@@ -273,7 +273,7 @@ resource "null_resource" "loki_status" {
     #!/usr/bin/env bash
     set -e
     completed_tag="cloud_init_done"
-    poll_tags="aws ec2 describe-tags --filters Name=resource-id,Values=${module.loki_instance.instance_ids[count.index]} Name=key,Values=$completed_tag --output text --query Tags[*].Value"
+    poll_tags="aws ec2 describe-tags --filters Name=resource-id,Values=${module.loki_instance[count.index].instance_ids[0]} Name=key,Values=$completed_tag --output text --query Tags[*].Value"
     echo "running $poll_tags"
     tags="$($poll_tags)"
     COUNTER=0
@@ -296,5 +296,5 @@ resource "null_resource" "loki_status" {
 }
 
 output "loki_ip" {
-  value = module.loki_instance.private_ips
+  value = flatten(module.loki_instance.*.private_ips)
 }
