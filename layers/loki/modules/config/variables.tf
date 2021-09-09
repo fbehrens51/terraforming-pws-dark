@@ -8,6 +8,9 @@ variable "public_bucket_url" {
 variable "storage_bucket" {
 }
 
+variable "root_domain" {
+}
+
 variable "loki_bundle_key" {
   description = "Loki bundle S3 object key, aka filename."
 }

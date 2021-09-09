@@ -112,13 +112,14 @@ module "configuration" {
 }
 
 data "template_cloudinit_config" "user_data" {
+  count         = length(data.terraform_remote_state.bootstrap_loki.outputs.loki_eni_ips)
   base64_encode = true
   gzip          = true
 
   part {
     filename     = "config.cfg"
     content_type = "text/x-include-url"
-    content      = module.configuration.config_user_data
+    content      = module.configuration.config_user_data[count.index]
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
@@ -221,13 +222,13 @@ module "iptables_rules" {
 }
 
 module "loki_instance" {
-  instance_count    = length(data.terraform_remote_state.bootstrap_loki.outputs.loki_eni_ids)
+  count             = length(data.terraform_remote_state.bootstrap_loki.outputs.loki_eni_ids)
   source            = "../../modules/launch"
   instance_types    = data.terraform_remote_state.scaling-params.outputs.instance_types
   scale_vpc_key     = "enterprise-services"
   scale_service_key = "loki"
   ami_id            = local.encrypted_amazon2_ami_id
-  user_data         = data.template_cloudinit_config.user_data.rendered
+  user_data         = data.template_cloudinit_config.user_data[count.index].rendered
   eni_ids           = data.terraform_remote_state.bootstrap_loki.outputs.loki_eni_ids
   tags              = local.modified_tags
   check_cloud_init  = false

@@ -3,7 +3,14 @@ module "ports" {
   source = "../../../../modules/syslog_ports"
 }
 
+module "domains" {
+  source = "../../../../modules/domains"
+
+  root_domain = var.root_domain
+}
+
 data "template_file" "config_user_data" {
+  for_each = toset(var.loki_ips)
   template = file("${path.module}/user_data.tpl")
 
   vars = {
@@ -12,11 +19,14 @@ data "template_file" "config_user_data" {
     region             = var.region
     public_bucket_name = var.public_bucket_name
     loki_location      = local.loki_location
+    http_port          = module.ports.loki_http_port
+    local_ip           = each.value
+    server_name        = each.value
   }
 }
 
 locals {
-  bucket_key    = "loki-${md5(data.template_file.config_user_data.rendered)}-user-data.yml"
+  bucket_key    = [for i, ip in var.loki_ips : "loki-${i}-${md5(data.template_file.config_user_data.rendered)}-user-data.yml"]
   loki_location = "${var.public_bucket_url}/${var.loki_bundle_key}"
   loki_configuration = templatefile("${path.module}/loki.yaml", {
     bind_port      = module.ports.loki_bind_port
@@ -29,16 +39,19 @@ locals {
 }
 
 resource "aws_s3_bucket_object" "config_user_data" {
+  count   = length(var.loki_ips)
   bucket  = var.public_bucket_name
-  key     = local.bucket_key
+  key     = var.loki_ips[count.index]
   content = data.template_file.config_user_data.rendered
 }
 
 output "config_user_data" {
-  value = <<EOF
+  value = [for i, ip in var.loki_ips : <<EOF
 #include
-${var.public_bucket_url}/${local.bucket_key}
+${var.public_bucket_url}/${local.bucket_key[i]}
 EOF
+
+  ]
 
 }
 

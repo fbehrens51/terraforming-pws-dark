@@ -32,8 +32,62 @@ write_files:
     permissions: '0644'
     owner: root:root
 
+  - content: |
+      upstream loki {
+        server 127.0.0.1:${http_port};
+        keepalive 15;
+      }
+
+      server {
+        listen ${local_ip}:${http_port};
+        server_name ${server_name};
+
+        # auth_basic "loki auth";
+        # auth_basic_user_file /etc/nginx/passwords;
+
+        location / {
+          proxy_read_timeout 1800s;
+          proxy_connect_timeout 1600s;
+          proxy_pass http://loki;
+          proxy_http_version 1.1;
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Connection $connection_upgrade;
+          proxy_set_header Connection "Keep-Alive";
+          proxy_set_header Proxy-Connection "Keep-Alive";
+          proxy_redirect off;
+        }
+
+        location /ready {
+          proxy_pass http://loki;
+          proxy_http_version 1.1;
+          proxy_set_header Connection "Keep-Alive";
+          proxy_set_header Proxy-Connection "Keep-Alive";
+          proxy_redirect off;
+          auth_basic "off";
+        }
+      }
+    path: /etc/nginx/conf.d/loki-http.conf
+    permissions: '0644'
+    owner: root:root
+
+  # - content: |
+  #     server {}
+  #   path: /etc/nginx/conf.d/loki-grpc.conf
+  #   permissions: '0644'
+  #   owner: root:root
+
+  # - content: |
+  #     server {}
+  #   path: /etc/nginx/conf.d/gossip.conf
+  #   permissions: '0644'
+  #   owner: root:root
+
 runcmd:
   - |
+    amazon-linux-extras install -y nginx1
+    systemctl enable nginx.service
+    systemctl start nginx
+
     set -ex
     wget --quiet --no-check-certificate -O loki.zip "${loki_location}"
     unzip loki.zip
@@ -48,7 +102,7 @@ runcmd:
     else false
     fi
 
-    echo "OPTIONS=-config.file=/etc/loki/loki.yaml -server.http-listen-address=$LOCAL_IP -server.grpc-listen-address=$LOCAL_IP" > loki_config
+    echo "OPTIONS=-config.file=/etc/loki/loki.yaml -server.http-listen-address=127.0.0.1 -server.grpc-listen-address=$LOCAL_IP" > loki_config
     
     install -m 644 -D loki_config /etc/sysconfig/loki
     rm loki_config
