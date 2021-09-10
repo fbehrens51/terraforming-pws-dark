@@ -77,26 +77,26 @@ write_files:
     owner: root:root
 
   - content: |
-      upstream peers {
       %{ for i, ip in loki_ips ~}
-      %{ if ip != local_ip ~}
+      %{ if ip != local_ip }
+      upstream loki-${i} {
         server ${ip}:${grpc_port};
-      %{ endif }
-      %{ endfor }
         keepalive 15;
       }
 
       server {
         listen ${local_ip}:${grpc_port} http2;
-        server_name peers;
+        server_name loki-${i};
 
         # auth_basic "loki auth";
         # auth_basic_user_file /etc/nginx/passwords;
 
         location / {
-          grpc_pass grpc://peers:${grpc_port};
+          grpc_pass grpc://loki-${i}:${grpc_port};
         }
       }
+      %{ endif }
+      %{ endfor }
     path: /etc/nginx/conf.d/loki-grpc.conf
     permissions: '0644'
     owner: root:root
