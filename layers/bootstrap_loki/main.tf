@@ -60,14 +60,9 @@ locals {
       cidr_blocks = "0.0.0.0/0"
     },
     {
+      # TODO: this should be open only internally
       description = "Allow http/${module.syslog_ports.loki_http_port} from everywhere"
       port        = module.syslog_ports.loki_http_port
-      protocol    = "tcp"
-      cidr_blocks = "0.0.0.0/0"
-    },
-    {
-      description = "Allow grpc/${module.syslog_ports.loki_grpc_port} from everywhere"
-      port        = module.syslog_ports.loki_grpc_port
       protocol    = "tcp"
       cidr_blocks = "0.0.0.0/0"
     },
@@ -77,12 +72,6 @@ locals {
       port        = "9100"
       protocol    = "tcp"
       cidr_blocks = data.aws_vpc.pas_vpc.cidr_block
-    },
-    {
-      description = "Allow loki memberlist coordination"
-      port        = module.syslog_ports.loki_bind_port
-      protocol    = "tcp"
-      cidr_blocks = join(",", [for ip in module.bootstrap.eni_ips : "${ip}/32"])
     },
   ]
 
@@ -95,7 +84,18 @@ locals {
     },
   ]
 
-  loki_internal_ports = []
+  loki_internal_ports = [
+    {
+      description = "Allow loki memberlist coordination"
+      port        = module.syslog_ports.loki_bind_port
+      protocol    = "tcp"
+    },
+    {
+      description = "Allow loki internal grpc coordination"
+      port        = module.syslog_ports.loki_grpc_port
+      protocol    = "tcp"
+    },
+  ]
 
   private_subnets = data.terraform_remote_state.enterprise-services.outputs.private_subnet_ids
 
