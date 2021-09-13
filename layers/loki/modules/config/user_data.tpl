@@ -33,82 +33,22 @@ write_files:
     owner: root:root
 
   - content: |
-      # websockets config
-      map $http_upgrade $connection_upgrade {
-              default upgrade;
-              '' close;
-          }
-
-      upstream loki {
-        server 127.0.0.1:${http_port};
-        keepalive 15;
-      }
-
-      server {
-        # Disable max_body_size since this is the main ingress for log data and is expected to be large
-        client_max_body_size 0;
-
-        listen ${local_ip}:${http_port};
-        server_name ${server_name};
-
-        # auth_basic "loki auth";
-        # auth_basic_user_file /etc/nginx/passwords;
-
-        location / {
-          proxy_read_timeout 1800s;
-          proxy_connect_timeout 1600s;
-          proxy_pass http://loki;
-          proxy_http_version 1.1;
-          proxy_set_header Upgrade $http_upgrade;
-          proxy_set_header Connection $connection_upgrade;
-          proxy_set_header Connection "Keep-Alive";
-          proxy_set_header Proxy-Connection "Keep-Alive";
-          proxy_redirect off;
-        }
-
-        location /ready {
-          proxy_pass http://loki;
-          proxy_http_version 1.1;
-          proxy_set_header Connection "Keep-Alive";
-          proxy_set_header Proxy-Connection "Keep-Alive";
-          proxy_redirect off;
-          auth_basic "off";
-        }
-      }
+      ${indent(6, nginx_http)}
     path: /etc/nginx/conf.d/loki-http.conf
     permissions: '0644'
     owner: root:root
 
   - content: |
-%{ for i, ip in loki_ips ~}
-%{ if ip != local_ip ~}
-      upstream loki-${i} {
-        server ${ip}:${grpc_port};
-        keepalive 15;
-      }
-
-      server {
-        listen ${local_ip}:${grpc_port} http2;
-        server_name loki-${i};
-
-        # auth_basic "loki auth";
-        # auth_basic_user_file /etc/nginx/passwords;
-
-        location / {
-          grpc_pass grpc://loki-${i}:${grpc_port};
-        }
-      }
-%{~ endif }
-%{~ endfor }
+      ${indent(6, nginx_grpc)}
     path: /etc/nginx/conf.d/loki-grpc.conf
     permissions: '0644'
     owner: root:root
 
-  # - content: |
-  #     server {}
-  #   path: /etc/nginx/conf.d/gossip.conf
-  #   permissions: '0644'
-  #   owner: root:root
+  - content: |
+      ${indent(6, nginx_gossip)}
+    path: /etc/nginx/conf.d/loki-gossip.conf
+    permissions: '0644'
+    owner: root:root
 
 runcmd:
   - |

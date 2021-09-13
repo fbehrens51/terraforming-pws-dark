@@ -15,12 +15,55 @@ locals {
 
   config_user_data = [for i, ip in var.loki_ips : templatefile("${path.module}/user_data.tpl", {
     loki_configuration = local.loki_configuration
+    nginx_http         = local.nginx_http[i]
+    nginx_grpc         = local.nginx_grpc[i]
+    nginx_gossip       = local.nginx_gossip[i]
 
     region             = var.region
     public_bucket_name = var.public_bucket_name
     loki_location      = local.loki_location
     http_port          = module.ports.loki_http_port
     grpc_port          = module.ports.loki_grpc_port
+    local_ip           = ip
+    loki_ips           = var.loki_ips
+    server_name        = module.domains.loki_fqdn
+  })]
+
+  nginx_http = [for i, ip in var.loki_ips : templatefile("${path.module}/nginx-http.conf", {
+    loki_configuration = local.loki_configuration
+
+    region             = var.region
+    public_bucket_name = var.public_bucket_name
+    loki_location      = local.loki_location
+    http_port          = module.ports.loki_http_port
+    grpc_port          = module.ports.loki_grpc_port
+    local_ip           = ip
+    loki_ips           = var.loki_ips
+    server_name        = module.domains.loki_fqdn
+  })]
+
+  nginx_grpc = [for i, ip in var.loki_ips : templatefile("${path.module}/nginx-grpc.conf", {
+    loki_configuration = local.loki_configuration
+
+    region             = var.region
+    public_bucket_name = var.public_bucket_name
+    loki_location      = local.loki_location
+    http_port          = module.ports.loki_http_port
+    grpc_port          = module.ports.loki_grpc_port
+    local_ip           = ip
+    loki_ips           = var.loki_ips
+    server_name        = module.domains.loki_fqdn
+  })]
+
+  nginx_gossip = [for i, ip in var.loki_ips : templatefile("${path.module}/nginx-gossip.conf", {
+    loki_configuration = local.loki_configuration
+
+    region             = var.region
+    public_bucket_name = var.public_bucket_name
+    loki_location      = local.loki_location
+    http_port          = module.ports.loki_http_port
+    grpc_port          = module.ports.loki_grpc_port
+    bind_port          = module.ports.loki_bind_port
     local_ip           = ip
     loki_ips           = var.loki_ips
     server_name        = module.domains.loki_fqdn
