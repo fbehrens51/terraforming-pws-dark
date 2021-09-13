@@ -9,25 +9,22 @@ module "domains" {
   root_domain = var.root_domain
 }
 
-data "template_file" "config_user_data" {
-  count    = length(var.loki_ips)
-  template = file("${path.module}/user_data.tpl")
+locals {
+  bucket_key    = [for i, ip in var.loki_ips : "loki-${i}-${md5(data.template_file.config_user_data[i].rendered)}-user-data.yml"]
+  loki_location = "${var.public_bucket_url}/${var.loki_bundle_key}"
 
-  vars = {
+  config_user_data = [for i, ip in var.loki_ips : templatefile("${path.module}/user_data.tpl", {
     loki_configuration = local.loki_configuration
 
     region             = var.region
     public_bucket_name = var.public_bucket_name
     loki_location      = local.loki_location
     http_port          = module.ports.loki_http_port
-    local_ip           = var.loki_ips[count.index]
+    local_ip           = ip
+    loki_ips           = var.loki_ips
     server_name        = module.domains.loki_fqdn
-  }
-}
+  })]
 
-locals {
-  bucket_key    = [for i, ip in var.loki_ips : "loki-${i}-${md5(data.template_file.config_user_data[i].rendered)}-user-data.yml"]
-  loki_location = "${var.public_bucket_url}/${var.loki_bundle_key}"
   loki_configuration = templatefile("${path.module}/loki.yaml", {
     bind_port      = module.ports.loki_bind_port
     http_port      = module.ports.loki_http_port
@@ -42,7 +39,7 @@ resource "aws_s3_bucket_object" "config_user_data" {
   count   = length(var.loki_ips)
   bucket  = var.public_bucket_name
   key     = local.bucket_key[count.index]
-  content = data.template_file.config_user_data[count.index].rendered
+  content = local.config_user_data[count.index]
 }
 
 output "config_user_data" {
