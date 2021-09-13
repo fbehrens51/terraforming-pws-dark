@@ -81,7 +81,7 @@ write_files:
 
   - content: |
       %{ for i, ip in loki_ips ~}
-      %{ if ip != local_ip }
+      %{ if ip != local_ip ~}
       upstream loki-${i} {
         server ${ip}:${grpc_port};
         keepalive 15;
@@ -98,8 +98,8 @@ write_files:
           grpc_pass grpc://loki-${i}:${grpc_port};
         }
       }
-      %{ endif }
-      %{ endfor }
+      %{~ endif }
+      %{~ endfor }
     path: /etc/nginx/conf.d/loki-grpc.conf
     permissions: '0644'
     owner: root:root
