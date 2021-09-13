@@ -1,0 +1,13 @@
+set -ex
+ENV=dev
+ENV_PROJECT_DIR=~/workspace/pws-dark-environments
+export TF_PWS_DARK_REPO=~/workspace/terraforming-pws-dark
+pushd ${ENV_PROJECT_DIR}/live
+    find . -type d -name '.terragrunt-cache'|xargs rm -rf
+    find ./${ENV}* -mindepth 2 -maxdepth 2 -type f -name terragrunt.hcl -printf '%h\n' | while read dir; do echo -e "\n$dir\n";terragrunt init -input=false -compact-warnings --terragrunt-non-interactive --terragrunt-working-dir $dir --upgrade; done
+popd
+
+git status
+
+echo "If all looks well, run a git commit"
+echo "git commit -m \"Upgrading grafana provider\""

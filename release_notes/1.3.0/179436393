@@ -1,7 +1,9 @@
 set -ex
 ENV=dev
-#~/workspace/pcf-eagle-automation/scripts/utils/create_admin_user -F -e ~/workspace/pws-dark-environments/live/${ENV}/env.yml
-#
+ENV_PROJECT_DIR=~/workspace/pws-dark-environments
+
+~/workspace/pcf-eagle-automation/scripts/utils/create_admin_user -F -e ${ENV_PROJECT_DIR}/live/${ENV}/env.yml
+
 cf orgs               | awk '/^CATS/  {print $1}' | xargs -ri -P 10 cf delete-org {} -f
 cf buildpacks         | awk '/CATS-/  {print $2}' | xargs -ri -P 10 cf delete-buildpack {} -f
 cf org-quotas         | awk '/^CATS-/ {print $1}' | xargs -ri -P 10 cf delete-org-quota {} -f
