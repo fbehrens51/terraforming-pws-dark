@@ -20,6 +20,7 @@ locals {
     public_bucket_name = var.public_bucket_name
     loki_location      = local.loki_location
     http_port          = module.ports.loki_http_port
+    grpc_port          = module.ports.loki_grpc_port
     local_ip           = ip
     loki_ips           = var.loki_ips
     server_name        = module.domains.loki_fqdn
