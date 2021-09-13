@@ -112,11 +112,12 @@ write_files:
 
 runcmd:
   - |
+    set -exo pipefail
+
     amazon-linux-extras install -y nginx1
     systemctl enable nginx.service
     systemctl start nginx
 
-    set -ex
     wget --quiet --no-check-certificate -O loki.zip "${loki_location}"
     unzip loki.zip
     mv loki-linux-amd64 loki
@@ -136,5 +137,5 @@ runcmd:
     rm loki_config
 
     systemctl daemon-reload
-    systemctl start loki
     systemctl enable loki.service
+    systemctl start loki
