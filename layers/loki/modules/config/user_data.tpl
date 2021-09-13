@@ -45,6 +45,9 @@ write_files:
       }
 
       server {
+        # Disable max_body_size since this is the main ingress for log data and is expected to be large
+        client_max_body_size 0;
+
         listen ${local_ip}:${http_port};
         server_name ${server_name};
 
