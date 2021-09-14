@@ -126,8 +126,7 @@ data "aws_subnet" "private_subnets" {
 }
 
 data "aws_iam_role" "loki" {
-  # TODO: replace with loki role, since loki role will need delete access to this one bucket
-  name = data.terraform_remote_state.paperwork.outputs.fluentd_role_name
+  name = data.terraform_remote_state.paperwork.outputs.loki_role_name
 }
 
 resource "aws_s3_bucket" "loki_storage" {
