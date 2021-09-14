@@ -427,6 +427,20 @@ resource "aws_s3_bucket_object" "fluentd_server_key" {
   content      = module.paperwork.fluentd_server_key
 }
 
+resource "aws_s3_bucket_object" "loki_server_cert" {
+  key          = local.loki_server_cert_s3_path
+  bucket       = aws_s3_bucket.certs.bucket
+  content      = module.paperwork.loki_server_cert
+  content_type = "text/plain"
+}
+
+resource "aws_s3_bucket_object" "loki_server_key" {
+  key          = local.loki_server_key_s3_path
+  bucket       = aws_s3_bucket.certs.bucket
+  content_type = "text/plain"
+  content      = module.paperwork.loki_server_key
+}
+
 resource "aws_s3_bucket_object" "smtp_server_cert" {
   key          = local.smtp_server_cert_s3_path
   bucket       = aws_s3_bucket.certs.bucket
