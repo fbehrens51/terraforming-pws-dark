@@ -204,8 +204,9 @@ resource "aws_lb_target_group" "loki_nlb_http" {
   }
 
   health_check {
-    port = module.syslog_ports.loki_http_port
-    path = "/ready"
+    protocol = "HTTPS"
+    port     = module.syslog_ports.loki_http_port
+    path     = "/ready"
   }
 
   stickiness {
@@ -326,6 +327,5 @@ output "loki_username" {
 }
 
 output "loki_url" {
-  # TODO: switch to https once I get nginx running
-  value = "http://${module.domains.loki_fqdn}:${module.syslog_ports.loki_http_port}"
+  value = "https://${module.domains.loki_fqdn}:${module.syslog_ports.loki_http_port}"
 }
