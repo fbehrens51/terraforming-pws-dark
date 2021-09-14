@@ -12,6 +12,22 @@ users:
 
 write_files:
   - content: |
+      ${indent(6, ca_cert)}
+    path: /etc/loki/ca.pem
+    permissions: '0600'
+    owner: root:root
+  - content: |
+      ${indent(6, server_cert)}
+    path: /etc/loki/cert.pem
+    permissions: '0600'
+    owner: root:root
+  - content: |
+      ${indent(6, server_key)}
+    path: /etc/loki/key.pem
+    permissions: '0600'
+    owner: root:root
+
+  - content: |
       ${indent(6, loki_configuration)}
     path: /etc/loki/loki.yaml
     permissions: '0644'

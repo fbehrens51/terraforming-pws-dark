@@ -14,6 +14,10 @@ locals {
   loki_location = "${var.public_bucket_url}/${var.loki_bundle_key}"
 
   config_user_data = [for i, ip in var.loki_ips : templatefile("${path.module}/user_data.tpl", {
+    ca_cert     = var.ca_cert
+    server_key  = var.server_key
+    server_cert = var.server_cert
+
     loki_configuration = local.loki_configuration
     nginx_http         = local.nginx_http[i]
     nginx_grpc         = local.nginx_grpc[i]

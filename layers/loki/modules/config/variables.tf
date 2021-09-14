@@ -18,3 +18,7 @@ variable "loki_bundle_key" {
 variable "loki_ips" {
   type = list(string)
 }
+
+variable "ca_cert" {}
+variable "server_cert" {}
+variable "server_key" {}
