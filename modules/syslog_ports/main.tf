@@ -6,6 +6,10 @@ output "apps_syslog_port" {
   value = "8091"
 }
 
+output "loki_healthcheck_port" {
+  value = "8080"
+}
+
 output "loki_http_port" {
   value = "8090"
 }

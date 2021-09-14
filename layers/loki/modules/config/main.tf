@@ -26,6 +26,7 @@ locals {
     region             = var.region
     public_bucket_name = var.public_bucket_name
     loki_location      = local.loki_location
+    healthcheck_port   = module.ports.loki_healthcheck_port
     http_port          = module.ports.loki_http_port
     grpc_port          = module.ports.loki_grpc_port
     local_ip           = ip

@@ -38,6 +38,8 @@ module "syslog_ports" {
   source = "../../modules/syslog_ports"
 }
 
+data
+
 locals {
   env_name      = var.global_vars.env_name
   modified_name = "${local.env_name} loki"
@@ -65,6 +67,12 @@ locals {
       port        = module.syslog_ports.loki_http_port
       protocol    = "tcp"
       cidr_blocks = "0.0.0.0/0"
+    },
+    {
+      description = "Allow http/${module.syslog_ports.loki_healthcheck_port} (healthcheck) from the load balancer"
+      port        = module.syslog_ports.loki_http_port
+      protocol    = "tcp"
+      cidr_blocks =join(",", data.aws_subnet.private_subnets.*.cidr_block) 
     },
     {
       // node_exporter metrics endpoint for grafana
@@ -98,6 +106,7 @@ locals {
   ]
 
   private_subnets = data.terraform_remote_state.enterprise-services.outputs.private_subnet_ids
+  public_subnets = data.terraform_remote_state.enterprise-services.outputs.public_subnet_ids
 
   formatted_env_name = replace(local.env_name, " ", "-")
 
@@ -118,6 +127,11 @@ locals {
 
   bootstrap_role_id  = data.terraform_remote_state.paperwork.outputs.bootstrap_role_id
   foundation_role_id = data.terraform_remote_state.paperwork.outputs.foundation_role_id
+}
+
+data "aws_subnet" "public_subnets" {
+  count = length(local.public_subnets)
+  id    = local.public_subnets[count.index]
 }
 
 data "aws_subnet" "private_subnets" {
@@ -204,9 +218,8 @@ resource "aws_lb_target_group" "loki_nlb_http" {
   }
 
   health_check {
-    protocol = "HTTPS"
-    port     = module.syslog_ports.loki_http_port
-    path     = "/ready"
+    port = module.syslog_ports.loki_healthcheck_port
+    path = "/ready"
   }
 
   stickiness {

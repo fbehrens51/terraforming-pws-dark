@@ -219,9 +219,10 @@ module "syslog_ports" {
 module "iptables_rules" {
   source = "../../modules/iptables"
   personality_rules = [
-    "iptables -A INPUT -p tcp --dport ${module.syslog_ports.loki_http_port} -m state --state NEW -j ACCEPT",
-    "iptables -A INPUT -p tcp --dport ${module.syslog_ports.loki_grpc_port} -m state --state NEW -j ACCEPT",
-    "iptables -A INPUT -p tcp --dport ${module.syslog_ports.loki_bind_port} -m state --state NEW -j ACCEPT",
+    "iptables -A INPUT -p tcp --dport ${module.syslog_ports.loki_http_port}        -m state --state NEW -j ACCEPT",
+    "iptables -A INPUT -p tcp --dport ${module.syslog_ports.loki_healthcheck_port} -m state --state NEW -j ACCEPT",
+    "iptables -A INPUT -p tcp --dport ${module.syslog_ports.loki_grpc_port}        -m state --state NEW -j ACCEPT",
+    "iptables -A INPUT -p tcp --dport ${module.syslog_ports.loki_bind_port}        -m state --state NEW -j ACCEPT",
   ]
   control_plane_subnet_cidrs = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs
 }
