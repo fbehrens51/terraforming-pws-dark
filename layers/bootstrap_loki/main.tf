@@ -38,7 +38,6 @@ module "syslog_ports" {
   source = "../../modules/syslog_ports"
 }
 
-data
 
 locals {
   env_name      = var.global_vars.env_name
@@ -72,7 +71,7 @@ locals {
       description = "Allow http/${module.syslog_ports.loki_healthcheck_port} (healthcheck) from the load balancer"
       port        = module.syslog_ports.loki_http_port
       protocol    = "tcp"
-      cidr_blocks =join(",", data.aws_subnet.private_subnets.*.cidr_block) 
+      cidr_blocks = join(",", data.aws_subnet.private_subnets.*.cidr_block)
     },
     {
       // node_exporter metrics endpoint for grafana
@@ -106,7 +105,7 @@ locals {
   ]
 
   private_subnets = data.terraform_remote_state.enterprise-services.outputs.private_subnet_ids
-  public_subnets = data.terraform_remote_state.enterprise-services.outputs.public_subnet_ids
+  public_subnets  = data.terraform_remote_state.enterprise-services.outputs.public_subnet_ids
 
   formatted_env_name = replace(local.env_name, " ", "-")
 
