@@ -148,7 +148,7 @@ resource "grafana_alert_notification" "email" {
 
 resource "grafana_data_source" "loki" {
   type     = "loki"
-  name     = "loki"
+  name     = "Loki"
   url      = data.terraform_remote_state.bootstrap_loki.outputs.loki_url
   username = data.terraform_remote_state.bootstrap_loki.outputs.loki_username
   password = data.terraform_remote_state.bootstrap_loki.outputs.loki_password
