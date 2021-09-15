@@ -32,6 +32,17 @@ data "terraform_remote_state" "bootstrap_fluentd" {
   }
 }
 
+data "terraform_remote_state" "bootstrap_loki" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bootstrap_loki"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 variable "namespaces" {
   default = "LogMetrics"
 }
@@ -135,6 +146,23 @@ resource "grafana_alert_notification" "email" {
   }
 }
 
+resource "grafana_data_source" "loki" {
+  type     = "loki"
+  name     = "Loki"
+  url      = data.terraform_remote_state.bootstrap_loki.outputs.loki_url
+  username = data.terraform_remote_state.bootstrap_loki.outputs.loki_username
+  password = data.terraform_remote_state.bootstrap_loki.outputs.loki_password
+
+  json_data {
+    tls_auth = true
+  }
+
+  secure_json_data {
+    tls_client_cert = data.terraform_remote_state.paperwork.outputs.loki_client_cert
+    tls_client_key  = data.terraform_remote_state.paperwork.outputs.loki_client_key
+  }
+}
+
 resource "grafana_data_source" "cloudwatch" {
   type = "cloudwatch"
   name = "cloudwatch"
@@ -172,6 +200,10 @@ resource "grafana_dashboard" "concourse" {
 
 resource "grafana_dashboard" "events-logger" {
   config_json = file("dashboards/events-logger.json")
+}
+
+resource "grafana_dashboard" "loki" {
+  config_json = file("dashboards/loki.json")
 }
 
 data "template_file" "clamav_dashboard" {
