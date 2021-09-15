@@ -51,6 +51,15 @@ output "fluentd_server_key" {
   sensitive = true
 }
 
+output "loki_server_cert" {
+  value = module.loki_server_cert.cert_pem
+}
+
+output "loki_server_key" {
+  value     = module.loki_server_cert.private_key_pem
+  sensitive = true
+}
+
 output "smtp_server_cert" {
   value = module.smtp_server_cert.cert_pem
 }
@@ -93,6 +102,15 @@ output "ldap_client_cert" {
 
 output "ldap_client_key" {
   value     = module.ldap_client_cert.private_key_pem
+  sensitive = true
+}
+
+output "loki_client_cert" {
+  value = module.loki_client_cert.cert_pem
+}
+
+output "loki_client_key" {
+  value     = module.loki_client_cert.private_key_pem
   sensitive = true
 }
 
