@@ -19,6 +19,9 @@ variable "control_plane_metrics_enabled" {
   type = bool
 }
 
+variable "loki_client_cert" {}
+variable "loki_client_key" {}
+
 variable "availability_zones" {
   type = list(string)
 }
@@ -151,6 +154,8 @@ locals {
     control_plane_metrics_certificate    = var.control_plane_metrics_certificate
     control_plane_metrics_private_key    = var.control_plane_metrics_private_key
     control_plane_metrics_enabled        = var.control_plane_metrics_enabled
+    loki_client_cert                     = var.loki_client_cert
+    loki_client_key                      = var.loki_client_key
 
     alerting_rules_yml = templatefile("${path.module}/alerting_rules.yml", {
       log_group_name = var.log_group_name
