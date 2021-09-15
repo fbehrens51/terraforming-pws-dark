@@ -1,21 +1,3 @@
-variable "public_bucket_name" {
-}
-
-variable "public_bucket_url" {
-}
-
-variable "ca_cert" {
-}
-
-variable "fluentd_bundle_key" {
-  description = "Fluentd bundle S3 object key, aka filename."
-}
-
-variable "server_key" {
-}
-
-variable "server_cert" {
-}
 
 locals {
   bucket_key = "fluentd-${md5(data.template_file.certs_user_data.rendered)}-user-data.yml"
@@ -37,6 +19,10 @@ data "template_file" "td_agent_configuration" {
     cloudwatch_log_stream_name      = var.cloudwatch_log_stream_name
     s3_audit_logs_bucket            = var.s3_audit_logs_bucket
     s3_path                         = var.s3_path
+
+    loki_url      = var.loki_url
+    loki_username = var.loki_username
+    loki_password = var.loki_password
   }
 }
 
@@ -59,6 +45,9 @@ data "template_file" "certs_user_data" {
     ca_cert     = var.ca_cert
     server_key  = var.server_key
     server_cert = var.server_cert
+
+    loki_client_cert = var.loki_client_cert
+    loki_client_key  = var.loki_client_key
   }
 }
 
