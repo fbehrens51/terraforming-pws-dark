@@ -9,6 +9,11 @@ variable "egress_rules" {
   type = list(object({ description = string, port = string, protocol = string, cidr_blocks = string }))
 }
 
+variable "internal_ports" {
+  type    = list(object({ description = string, port = string, protocol = string }))
+  default = []
+}
+
 variable "tags" {
   type = map(string)
 }
@@ -23,6 +28,20 @@ resource "aws_security_group" "security_group" {
       Description = "Secrity Group from single_use_subnet"
     }
   )
+}
+
+resource "aws_security_group_rule" "internal_ports" {
+  count = length(var.internal_ports)
+
+  description = var.internal_ports[count.index]["description"]
+  from_port   = var.internal_ports[count.index]["port"]
+  to_port     = var.internal_ports[count.index]["port"]
+
+  self = true
+
+  protocol          = var.internal_ports[count.index]["protocol"]
+  security_group_id = aws_security_group.security_group.id
+  type              = "ingress"
 }
 
 resource "aws_security_group_rule" "egress_rules" {
