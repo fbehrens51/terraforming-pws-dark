@@ -14,6 +14,9 @@ locals {
   fluentd_subdomain = "fluentd"
   fluentd_fqdn      = "${local.fluentd_subdomain}.${var.root_domain}"
 
+  loki_subdomain = "loki"
+  loki_fqdn      = "${local.loki_subdomain}.${var.root_domain}"
+
   control_plane_om_subdomain = "om.ci"
   control_plane_om_fqdn      = "${local.control_plane_om_subdomain}.${var.root_domain}"
 
@@ -109,6 +112,14 @@ output "fluentd_subdomain" {
 
 output "fluentd_fqdn" {
   value = local.fluentd_fqdn
+}
+
+output "loki_subdomain" {
+  value = local.loki_subdomain
+}
+
+output "loki_fqdn" {
+  value = local.loki_fqdn
 }
 
 output "system_fqdn" {
