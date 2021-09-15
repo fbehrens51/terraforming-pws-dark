@@ -63,6 +63,17 @@ data "terraform_remote_state" "bootstrap_fluentd" {
   }
 }
 
+data "terraform_remote_state" "bootstrap_loki" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bootstrap_loki"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "bootstrap_control_plane" {
   backend = "s3"
 
@@ -121,6 +132,15 @@ module "configuration" {
   s3_audit_logs_bucket            = data.terraform_remote_state.bootstrap_fluentd.outputs.s3_bucket_syslog_audit_archive
   region                          = var.region
   s3_path                         = "logs/"
+
+  loki_url      = data.terraform_remote_state.bootstrap_loki.outputs.loki_url
+  loki_password = data.terraform_remote_state.bootstrap_loki.outputs.loki_password
+  loki_username = data.terraform_remote_state.bootstrap_loki.outputs.loki_username
+}
+
+module "domains" {
+  source      = "../../modules/domains"
+  root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
 }
 
 data "template_cloudinit_config" "user_data" {

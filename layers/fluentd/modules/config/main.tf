@@ -37,6 +37,10 @@ data "template_file" "td_agent_configuration" {
     cloudwatch_log_stream_name      = var.cloudwatch_log_stream_name
     s3_audit_logs_bucket            = var.s3_audit_logs_bucket
     s3_path                         = var.s3_path
+
+    loki_url      = var.loki_url
+    loki_username = var.loki_username
+    loki_password = var.loki_password
   }
 }
 
