@@ -481,6 +481,9 @@ variable "cp_vpc_id" {
 variable "fluentd_role_name" {
 }
 
+variable "loki_role_name" {
+}
+
 variable "isse_role_name" {
 }
 
@@ -702,6 +705,30 @@ data "aws_s3_bucket_object" "ldap_client_key" {
   key    = var.ldap_client_key_s3_path
 }
 
+variable "loki_client_cert_signer_ca_cert_s3_path" {
+}
+
+data "aws_s3_bucket_object" "loki_client_cert_signer_ca_cert" {
+  bucket = var.cert_bucket
+  key    = var.loki_client_cert_signer_ca_cert_s3_path
+}
+
+variable "loki_client_cert_s3_path" {
+}
+
+data "aws_s3_bucket_object" "loki_client_cert" {
+  bucket = var.cert_bucket
+  key    = var.loki_client_cert_s3_path
+}
+
+variable "loki_client_key_s3_path" {
+}
+
+data "aws_s3_bucket_object" "loki_client_key" {
+  bucket = var.cert_bucket
+  key    = var.loki_client_key_s3_path
+}
+
 variable "control_plane_star_server_cert_s3_path" {
 }
 
@@ -748,6 +775,22 @@ variable "fluentd_server_key_s3_path" {
 data "aws_s3_bucket_object" "fluentd_server_key" {
   bucket = var.cert_bucket
   key    = var.fluentd_server_key_s3_path
+}
+
+variable "loki_server_cert_s3_path" {
+}
+
+data "aws_s3_bucket_object" "loki_server_cert" {
+  bucket = var.cert_bucket
+  key    = var.loki_server_cert_s3_path
+}
+
+variable "loki_server_key_s3_path" {
+}
+
+data "aws_s3_bucket_object" "loki_server_key" {
+  bucket = var.cert_bucket
+  key    = var.loki_server_key_s3_path
 }
 
 variable "smtp_server_cert_s3_path" {
@@ -926,6 +969,10 @@ output "fluentd_role_name" {
   value = var.fluentd_role_name
 }
 
+output "loki_role_name" {
+  value = var.loki_role_name
+}
+
 output "instance_tagger_role_name" {
   value = var.instance_tagger_role_name
 }
@@ -1071,6 +1118,19 @@ output "ldap_client_key_s3_path" {
   value = var.ldap_client_key_s3_path
 }
 
+output "loki_client_cert_signer_ca_cert" {
+  value = data.aws_s3_bucket_object.loki_client_cert_signer_ca_cert.body
+}
+
+output "loki_client_cert" {
+  value = data.aws_s3_bucket_object.loki_client_cert.body
+}
+
+output "loki_client_key" {
+  value     = data.aws_s3_bucket_object.loki_client_key.body
+  sensitive = true
+}
+
 output "control_plane_star_server_cert" {
   value = data.aws_s3_bucket_object.control_plane_star_server_cert.body
 }
@@ -1095,6 +1155,15 @@ output "fluentd_server_cert" {
 
 output "fluentd_server_key" {
   value     = data.aws_s3_bucket_object.fluentd_server_key.body
+  sensitive = true
+}
+
+output "loki_server_cert" {
+  value = data.aws_s3_bucket_object.loki_server_cert.body
+}
+
+output "loki_server_key" {
+  value     = data.aws_s3_bucket_object.loki_server_key.body
   sensitive = true
 }
 
