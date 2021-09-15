@@ -186,6 +186,14 @@
 </label>
 
 <label @all_logs>
+
+  <filter>
+    @type record_transformer
+    <record>
+      fluentd_az "#{ENV['AWSAZ']}"
+    </record>
+  </filter>
+
   <match **>
     @type copy
 
@@ -213,6 +221,36 @@
       log_rejected_request true
       auto_create_stream true
       json_handler yajl
+    </store>
+
+    <store>
+      @type loki
+      url ${loki_url}
+      username ${loki_username}
+      password ${loki_password}
+      <label>
+        ident $.ident
+        source_address $.source_address
+        fluentd_az $.fluentd_az
+      </label>
+      flush_interval 10s
+      flush_at_shutdown true
+      buffer_chunk_limit 1m
+    </store>
+
+    <store>
+      @type loki
+      url "https://logs-prod-us-central1.grafana.net"
+      username "96809"
+      password "eyJrIjoiZGEwNTQ3OWZiNmJkNTEwYjE1NGMxMTgzNWM3ZjI3NTIyY2MwZWY1MyIsIm4iOiJ0ZC1hZ2VudCIsImlkIjo1Mzc3ODB9"
+      <label>
+        ident $.ident
+        source_address $.source_address
+        fluentd_az $.fluentd_az
+      </label>
+      flush_interval 10s
+      flush_at_shutdown true
+      buffer_chunk_limit 1m
     </store>
 
     # "Fan-out" to various other things
