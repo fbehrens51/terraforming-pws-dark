@@ -363,6 +363,41 @@ resource "aws_iam_instance_profile" "fluentd" {
   role = aws_iam_role.fluentd.name
 }
 
+data "aws_iam_policy_document" "loki" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "s3:*",
+      "ec2:CreateTags",
+    ]
+
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "loki" {
+  name   = var.loki_role_name
+  path   = "/"
+  policy = data.aws_iam_policy_document.loki.json
+}
+
+resource "aws_iam_role" "loki" {
+  name               = var.loki_role_name
+  assume_role_policy = data.aws_iam_policy_document.role_policy.json
+}
+
+resource "aws_iam_policy_attachment" "loki" {
+  name       = var.loki_role_name
+  roles      = [aws_iam_role.loki.name]
+  policy_arn = aws_iam_policy.loki.arn
+}
+
+resource "aws_iam_instance_profile" "loki" {
+  name = var.loki_role_name
+  role = aws_iam_role.loki.name
+}
+
 resource "aws_iam_policy" "bucket" {
   name   = var.bucket_role_name
   path   = "/"

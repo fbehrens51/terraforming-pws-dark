@@ -37,6 +37,8 @@ locals {
   smtp_server_key_s3_path                          = "smtp_server_key.pem"
   fluentd_server_cert_s3_path                      = "fluentd_server_cert.pem"
   fluentd_server_key_s3_path                       = "fluentd_server_key.pem"
+  loki_server_cert_s3_path                         = "loki_server_cert.pem"
+  loki_server_key_s3_path                          = "loki_server_key.pem"
   portal_smoke_test_cert_s3_path                   = "portal_smoke_test_cert.pem"
   portal_smoke_test_key_s3_path                    = "portal_smoke_test_key.pem"
   ldap_password_s3_path                            = "ldap_password.txt"
@@ -61,6 +63,7 @@ module "paperwork" {
   om_role_name              = var.om_role_name
   bosh_role_name            = var.bosh_role_name
   fluentd_role_name         = var.fluentd_role_name
+  loki_role_name            = var.loki_role_name
   instance_tagger_role_name = var.instance_tagger_role_name
   tsdb_role_name            = var.tsdb_role_name
   isse_role_name            = var.isse_role_name
@@ -108,6 +111,7 @@ data "template_file" "paperwork_variables" {
     platform_automation_engine_worker_role_name = var.platform_automation_engine_worker_role_name
     tsdb_role_name                              = var.tsdb_role_name
     fluentd_role_name                           = var.fluentd_role_name
+    loki_role_name                              = var.loki_role_name
     isse_role_name                              = var.isse_role_name
     instance_tagger_role_name                   = var.instance_tagger_role_name
     director_role_name                          = var.director_role_name
@@ -152,6 +156,8 @@ data "template_file" "paperwork_variables" {
     smtp_server_key_s3_path                     = local.smtp_server_key_s3_path
     fluentd_server_cert_s3_path                 = local.fluentd_server_cert_s3_path
     fluentd_server_key_s3_path                  = local.fluentd_server_key_s3_path
+    loki_server_cert_s3_path                    = local.loki_server_cert_s3_path
+    loki_server_key_s3_path                     = local.loki_server_key_s3_path
     portal_smoke_test_cert_s3_path              = local.portal_smoke_test_cert_s3_path
     portal_smoke_test_key_s3_path               = local.portal_smoke_test_key_s3_path
     vanity_server_cert_s3_path                  = local.vanity_server_cert_s3_path
@@ -203,6 +209,10 @@ variable "pas_bucket_role_name" {
 }
 
 variable "fluentd_role_name" {
+  type = string
+}
+
+variable "loki_role_name" {
   type = string
 }
 
@@ -415,6 +425,20 @@ resource "aws_s3_bucket_object" "fluentd_server_key" {
   bucket       = aws_s3_bucket.certs.bucket
   content_type = "text/plain"
   content      = module.paperwork.fluentd_server_key
+}
+
+resource "aws_s3_bucket_object" "loki_server_cert" {
+  key          = local.loki_server_cert_s3_path
+  bucket       = aws_s3_bucket.certs.bucket
+  content      = module.paperwork.loki_server_cert
+  content_type = "text/plain"
+}
+
+resource "aws_s3_bucket_object" "loki_server_key" {
+  key          = local.loki_server_key_s3_path
+  bucket       = aws_s3_bucket.certs.bucket
+  content_type = "text/plain"
+  content      = module.paperwork.loki_server_key
 }
 
 resource "aws_s3_bucket_object" "smtp_server_cert" {
