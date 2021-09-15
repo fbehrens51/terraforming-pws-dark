@@ -192,6 +192,9 @@ module "healthwatch_config" {
   control_plane_metrics_certificate    = local.control_plane_metrics_certificate
   control_plane_metrics_private_key    = local.control_plane_metrics_private_key
   control_plane_metrics_enabled        = local.control_plane_metrics_enabled
+
+  loki_client_cert = data.terraform_remote_state.paperwork.outputs.loki_client_cert
+  loki_client_key  = data.terraform_remote_state.paperwork.outputs.loki_client_key
 }
 
 resource "random_string" "healthwatch_client_credentials_secret" {
