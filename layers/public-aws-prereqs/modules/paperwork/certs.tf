@@ -28,6 +28,15 @@ module "fluentd_server_cert" {
   domains            = [module.domains.fluentd_fqdn]
 }
 
+module "loki_server_cert" {
+  source             = "../server_cert"
+  ca_cert_pem        = module.ca_cert.cert_pem
+  ca_private_key_pem = module.ca_cert.private_key_pem
+  env_name           = var.env_name
+  common_name        = module.domains.loki_subdomain
+  domains            = [module.domains.loki_fqdn]
+}
+
 module "smtp_server_cert" {
   source             = "../server_cert"
   ca_cert_pem        = module.ca_cert.cert_pem
@@ -65,6 +74,16 @@ module "ldap_client_cert" {
   ca_cert_pem        = module.ca_cert.cert_pem
   ca_private_key_pem = module.ca_cert.private_key_pem
   common_name        = "LDAP Client"
+  ou                 = "Applications"
+}
+
+module "loki_client_cert" {
+  source = "../client_cert"
+
+  env_name           = var.env_name
+  ca_cert_pem        = module.ca_cert.cert_pem
+  ca_private_key_pem = module.ca_cert.private_key_pem
+  common_name        = "Loki Client"
   ou                 = "Applications"
 }
 

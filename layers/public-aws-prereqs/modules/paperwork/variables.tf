@@ -5,6 +5,9 @@ variable "env_name" {
 variable "fluentd_role_name" {
 }
 
+variable "loki_role_name" {
+}
+
 variable "isse_role_name" {
 }
 

@@ -16,6 +16,8 @@ iso_vpc_ids = ["${iso_vpc_id}"]
 
 fluentd_role_name = "${fluentd_role_name}"
 
+loki_role_name = "${loki_role_name}"
+
 isse_role_name = "${isse_role_name}"
 
 instance_tagger_role_name = "${instance_tagger_role_name}"
@@ -86,6 +88,12 @@ ldap_client_cert_s3_path = "${ldap_client_cert_s3_path}"
 
 ldap_client_key_s3_path = "${ldap_client_key_s3_path}"
 
+loki_client_cert_signer_ca_cert_s3_path = "${loki_client_cert_signer_ca_cert_s3_path}"
+
+loki_client_cert_s3_path = "${loki_client_cert_s3_path}"
+
+loki_client_key_s3_path = "${loki_client_key_s3_path}"
+
 control_plane_star_server_cert_s3_path = "${control_plane_star_server_cert_s3_path}"
 
 control_plane_star_server_key_s3_path = "${control_plane_star_server_key_s3_path}"
@@ -97,6 +105,10 @@ om_server_key_s3_path = "${om_server_key_s3_path}"
 fluentd_server_cert_s3_path = "${fluentd_server_cert_s3_path}"
 
 fluentd_server_key_s3_path = "${fluentd_server_key_s3_path}"
+
+loki_server_cert_s3_path = "${loki_server_cert_s3_path}"
+
+loki_server_key_s3_path = "${loki_server_key_s3_path}"
 
 smtp_server_cert_s3_path = "${smtp_server_cert_s3_path}"
 
