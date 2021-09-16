@@ -3,7 +3,7 @@ groups:
   - name: BOSHDirectorHealth
     rules:
       - alert: BOSHDirectorStatus
-        expr: 'increase(bosh_sli_failures_total{scrape_instance_group="bosh-health-exporter"}[45m]) > 0'
+        expr: 'increase(bosh_sli_failures_total{scrape_instance_group="bosh-health-exporter"}[20m]) > 0'
         for: 45m
         annotations:
           summary: "A BOSH Director is down"
