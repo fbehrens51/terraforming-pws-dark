@@ -410,7 +410,7 @@ resource "null_resource" "sjb_status" {
     echo "running $poll_tags"
     tags="$($poll_tags)"
     COUNTER=0
-    LOOP_LIMIT=30
+    LOOP_LIMIT=45
     while [[ "$tags" == "" ]] ; do
       if [[ $COUNTER -eq $LOOP_LIMIT ]]; then
         echo "timed out waiting for $completed_tag to be set"
