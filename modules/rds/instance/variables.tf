@@ -45,3 +45,8 @@ variable "parameter_group_name" {
 variable "database_name" {
   default = null
 }
+
+variable "apply_immediately" {
+  type = bool
+  default = true
+}

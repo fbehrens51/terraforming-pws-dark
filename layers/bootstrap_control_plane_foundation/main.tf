@@ -221,6 +221,9 @@ module "postgres" {
   subnet_group_name = module.rds_subnet_group.subnet_group_name
 
   kms_key_id = data.terraform_remote_state.paperwork.outputs.kms_key_arn
+
+  #Disable apply_immediately for concourse postgres RDS.  We don't want the DB to be upgraded while concourse is running a deployment (Concourse uses it for job logs, pipelines, etc)
+  apply_immediately = false
 }
 
 module "mysql" {

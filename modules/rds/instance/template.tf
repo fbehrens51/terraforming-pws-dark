@@ -60,7 +60,7 @@ resource "aws_db_instance" "rds" {
   multi_az                    = true
   skip_final_snapshot         = true
   backup_retention_period     = 7
-  apply_immediately           = true
+  apply_immediately           = var.apply_immediately
   allow_major_version_upgrade = true
 
   delete_automated_backups = false
@@ -73,5 +73,6 @@ resource "aws_db_instance" "rds" {
   storage_encrypted = true
 
   tags = var.tags
+
 }
 
