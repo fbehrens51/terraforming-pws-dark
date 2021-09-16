@@ -11,7 +11,7 @@ module "domains" {
 
 locals {
   bucket_key    = [for i, ip in var.loki_ips : "loki-${i}-${md5(local.config_user_data[i])}-user-data.yml"]
-  loki_location = "${var.public_bucket_url}/${var.loki_bundle_key}"
+  loki_location = "${var.public_bucket_url}/loki/${var.loki_bundle_key}"
 
   config_user_data = [for i, ip in var.loki_ips : templatefile("${path.module}/user_data.tpl", {
     ca_cert     = var.ca_cert
