@@ -50,3 +50,8 @@ variable "apply_immediately" {
   type = bool
   default = true
 }
+
+variable "maintenance_window" {
+  type = string
+  default = ""
+}

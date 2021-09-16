@@ -224,6 +224,7 @@ module "postgres" {
 
   #Disable apply_immediately for concourse postgres RDS.  We don't want the DB to be upgraded while concourse is running a deployment (Concourse uses it for job logs, pipelines, etc)
   apply_immediately = false
+  maintenance_window = var.concourse_postgres_maintenance_window
 }
 
 module "mysql" {
