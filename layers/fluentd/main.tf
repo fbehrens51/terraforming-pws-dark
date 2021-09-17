@@ -123,6 +123,9 @@ module "configuration" {
   server_cert = data.terraform_remote_state.paperwork.outputs.fluentd_server_cert
   server_key  = data.terraform_remote_state.paperwork.outputs.fluentd_server_key
 
+  loki_client_cert = data.terraform_remote_state.paperwork.outputs.loki_client_cert
+  loki_client_key  = data.terraform_remote_state.paperwork.outputs.loki_client_key
+
   fluentd_bundle_key = var.fluentd_bundle_key
 
   cloudwatch_audit_log_group_name = local.audit_log_group_name

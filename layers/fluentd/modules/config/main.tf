@@ -1,21 +1,3 @@
-variable "public_bucket_name" {
-}
-
-variable "public_bucket_url" {
-}
-
-variable "ca_cert" {
-}
-
-variable "fluentd_bundle_key" {
-  description = "Fluentd bundle S3 object key, aka filename."
-}
-
-variable "server_key" {
-}
-
-variable "server_cert" {
-}
 
 locals {
   bucket_key = "fluentd-${md5(data.template_file.certs_user_data.rendered)}-user-data.yml"
@@ -63,6 +45,9 @@ data "template_file" "certs_user_data" {
     ca_cert     = var.ca_cert
     server_key  = var.server_key
     server_cert = var.server_cert
+
+    loki_client_cert = var.loki_client_cert
+    loki_client_key  = var.loki_client_key
   }
 }
 
