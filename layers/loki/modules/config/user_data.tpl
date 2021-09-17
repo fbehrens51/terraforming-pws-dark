@@ -26,6 +26,11 @@ write_files:
     path: /etc/loki/key.pem
     permissions: '0600'
     owner: root:root
+  - content: |
+      ${indent(6, client_ca_cert)}
+    path: /etc/loki/client-ca.pem
+    permissions: '0600'
+    owner: root:root
 
   - content: |
       ${indent(6, loki_configuration)}
