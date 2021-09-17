@@ -22,3 +22,5 @@ variable "loki_ips" {
 variable "ca_cert" {}
 variable "server_cert" {}
 variable "server_key" {}
+
+variable "client_cert_signer" {}
