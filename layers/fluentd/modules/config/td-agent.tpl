@@ -228,6 +228,8 @@
       url ${loki_url}
       username ${loki_username}
       password ${loki_password}
+      cert /etc/td-agent/loki-client-cert.pem
+      key /etc/td-agent/loki-client-key.pem
       <label>
         ident $.ident
         source_address $.source_address
