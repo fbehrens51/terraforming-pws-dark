@@ -235,6 +235,7 @@
         source_address $.source_address
         fluentd_az $.fluentd_az
       </label>
+      line_format json
       flush_interval 10s
       flush_at_shutdown true
       buffer_chunk_limit 1m
