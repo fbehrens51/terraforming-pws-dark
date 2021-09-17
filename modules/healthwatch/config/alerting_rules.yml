@@ -24,7 +24,7 @@ groups:
   - name: OpsManagerHealth
     rules:
       - alert: OpsManagerStatus
-        expr: 'probe_success{instance="<OPS_MANAGER_URL>"} <= 0'
+        expr: 'probe_success{instance=~"https://om\\..*"} <= 0'
         for: 10m
         annotations:
           summary: "The Ops Manager health check failed"
@@ -75,7 +75,8 @@ groups:
             Recommended troubleshooting steps:
             Check to see if your canary app(s) are running. Then check your foundation's networking, capacity, and VM health.
       - alert: TanzuSLOCanaryAppAvailability
-        expr: "avg_over_time(probe_success[5m]) < 1"
+        # Alert if more than 10% of probes have failed in the last 30 minutes
+        expr: 'avg_over_time(probe_success{instance!~"https://om\\..*"}[30m]) < 0.9'
         for: 1m
         annotations:
           summary: "Your Canary URL ({{ $labels.instance }}) is unresponsive"
