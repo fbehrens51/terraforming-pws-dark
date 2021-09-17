@@ -705,6 +705,30 @@ data "aws_s3_bucket_object" "ldap_client_key" {
   key    = var.ldap_client_key_s3_path
 }
 
+variable "loki_client_cert_signer_ca_cert_s3_path" {
+}
+
+data "aws_s3_bucket_object" "loki_client_cert_signer_ca_cert" {
+  bucket = var.cert_bucket
+  key    = var.loki_client_cert_signer_ca_cert_s3_path
+}
+
+variable "loki_client_cert_s3_path" {
+}
+
+data "aws_s3_bucket_object" "loki_client_cert" {
+  bucket = var.cert_bucket
+  key    = var.loki_client_cert_s3_path
+}
+
+variable "loki_client_key_s3_path" {
+}
+
+data "aws_s3_bucket_object" "loki_client_key" {
+  bucket = var.cert_bucket
+  key    = var.loki_client_key_s3_path
+}
+
 variable "control_plane_star_server_cert_s3_path" {
 }
 
@@ -1092,6 +1116,19 @@ output "ldap_client_key" {
 
 output "ldap_client_key_s3_path" {
   value = var.ldap_client_key_s3_path
+}
+
+output "loki_client_cert_signer_ca_cert" {
+  value = data.aws_s3_bucket_object.loki_client_cert_signer_ca_cert.body
+}
+
+output "loki_client_cert" {
+  value = data.aws_s3_bucket_object.loki_client_cert.body
+}
+
+output "loki_client_key" {
+  value     = data.aws_s3_bucket_object.loki_client_key.body
+  sensitive = true
 }
 
 output "control_plane_star_server_cert" {
