@@ -153,6 +153,10 @@ resource "grafana_data_source" "loki" {
   username = data.terraform_remote_state.bootstrap_loki.outputs.loki_username
   password = data.terraform_remote_state.bootstrap_loki.outputs.loki_password
 
+  json_data {
+    tls_auth = true
+  }
+
   secure_json_data {
     tls_client_cert = data.terraform_remote_state.paperwork.outputs.loki_client_cert
     tls_client_key  = data.terraform_remote_state.paperwork.outputs.loki_client_key
