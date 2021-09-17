@@ -29,6 +29,9 @@ locals {
   ldap_ca_cert_s3_path                             = "ldap_ca_cert.pem"
   ldap_client_cert_s3_path                         = "ldap_client_cert.pem"
   ldap_client_key_s3_path                          = "ldap_client_key.pem"
+  loki_client_cert_signer_ca_cert_s3_path          = "loki_client_cert_signer_ca_cert.pem"
+  loki_client_cert_s3_path                         = "loki_client_cert.pem"
+  loki_client_key_s3_path                          = "loki_client_key.pem"
   om_server_cert_s3_path                           = "om_server_cert.pem"
   om_server_key_s3_path                            = "om_server_key.pem"
   control_plane_star_server_cert_s3_path           = "control_plane_star_server_cert.pem"
@@ -148,6 +151,9 @@ data "template_file" "paperwork_variables" {
     ldap_ca_cert_s3_path                        = local.ldap_ca_cert_s3_path
     ldap_client_cert_s3_path                    = local.ldap_client_cert_s3_path
     ldap_client_key_s3_path                     = local.ldap_client_key_s3_path
+    loki_client_cert_signer_ca_cert_s3_path     = local.loki_client_cert_signer_ca_cert_s3_path
+    loki_client_cert_s3_path                    = local.loki_client_cert_s3_path
+    loki_client_key_s3_path                     = local.loki_client_key_s3_path
     om_server_cert_s3_path                      = local.om_server_cert_s3_path
     om_server_key_s3_path                       = local.om_server_key_s3_path
     control_plane_star_server_cert_s3_path      = local.control_plane_star_server_cert_s3_path
@@ -474,6 +480,27 @@ resource "aws_s3_bucket_object" "ldap_client_key" {
   bucket       = aws_s3_bucket.certs.bucket
   content_type = "text/plain"
   content      = module.paperwork.ldap_client_key
+}
+
+resource "aws_s3_bucket_object" "loki_client_cert_signer_ca_cert" {
+  key          = local.loki_client_cert_signer_ca_cert_s3_path
+  bucket       = aws_s3_bucket.certs.bucket
+  content      = module.paperwork.root_ca_cert
+  content_type = "text/plain"
+}
+
+resource "aws_s3_bucket_object" "loki_client_cert" {
+  key          = local.loki_client_cert_s3_path
+  bucket       = aws_s3_bucket.certs.bucket
+  content      = module.paperwork.loki_client_cert
+  content_type = "text/plain"
+}
+
+resource "aws_s3_bucket_object" "loki_client_key" {
+  key          = local.loki_client_key_s3_path
+  bucket       = aws_s3_bucket.certs.bucket
+  content_type = "text/plain"
+  content      = module.paperwork.loki_client_key
 }
 
 resource "aws_s3_bucket_object" "vanity_server_cert" {

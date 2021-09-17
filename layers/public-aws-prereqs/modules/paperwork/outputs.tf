@@ -105,6 +105,15 @@ output "ldap_client_key" {
   sensitive = true
 }
 
+output "loki_client_cert" {
+  value = module.loki_client_cert.cert_pem
+}
+
+output "loki_client_key" {
+  value     = module.loki_client_cert.private_key_pem
+  sensitive = true
+}
+
 output "vanity_server_cert" {
   value = module.vanity_server_cert.cert_pem
 }
