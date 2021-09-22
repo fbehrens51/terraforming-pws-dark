@@ -3,6 +3,8 @@ locals {
   control_plane_vpc_cidr       = "10.1.0.0/24"
   pas_vpc_cidr                 = "10.2.0.0/16"
   enterprise_services_vpc_cidr = "10.3.0.0/24"
+  // iso_seg_cidr = 10.4.0.0/24
+  tkg_vpc_cidr                 = "10.5.0.0/24"
 }
 
 resource "aws_vpc" "bastion_vpc" {
@@ -104,6 +106,33 @@ resource "aws_internet_gateway" "enterprise_services_igw" {
   }
 }
 
+resource "aws_vpc" "tkg_vpc" {
+  count      = var.enable_tkg ? 1 : 0
+  cidr_block = local.tkg_vpc_cidr
+
+  tags = {
+    Name = "${var.env_name} | tkg vpc"
+  }
+}
+
+resource "aws_vpn_gateway" "tkg_vgw" {
+  count  = var.enable_tkg ? 1 : 0
+  vpc_id = aws_vpc.tkg_vpc[count.index].id
+
+  tags = {
+    Name = "${var.env_name} | tkg vgw"
+  }
+}
+
+resource "aws_internet_gateway" "tkg_igw" {
+  count  = var.enable_tkg ? 1 : 0
+  vpc_id = aws_vpc.tkg_vpc[count.index].id
+
+  tags = {
+    Name = "${var.env_name} | tkg igw"
+  }
+}
+
 resource "aws_vpc_peering_connection" "bastion_control_plane" {
   peer_vpc_id = aws_vpc.bastion_vpc.id
   vpc_id      = aws_vpc.control_plane_vpc.id
@@ -151,5 +180,38 @@ resource "aws_vpc_peering_connection" "control_plane_iso1" {
 
   tags = {
     Name = "${var.env_name} | control plane/iso1 vpc peering"
+  }
+}
+
+resource "aws_vpc_peering_connection" "tkg_control_plane" {
+  count       = var.enable_tkg ? 1 : 0
+  peer_vpc_id = aws_vpc.control_plane_vpc.id
+  vpc_id      = aws_vpc.tkg_vpc[count.index].id
+  auto_accept = true
+
+  tags = {
+    Name = "${var.env_name} | tkg/control plane vpc peering"
+  }
+}
+
+resource "aws_vpc_peering_connection" "tkg_pas" {
+  count       = var.enable_tkg ? 1 : 0
+  peer_vpc_id = aws_vpc.pas_vpc.id
+  vpc_id      = aws_vpc.tkg_vpc[count.index].id
+  auto_accept = true
+
+  tags = {
+    Name = "${var.env_name} | tkg/pas vpc peering"
+  }
+}
+
+resource "aws_vpc_peering_connection" "tkg_es" {
+  count       = var.enable_tkg ? 1 : 0
+  peer_vpc_id = aws_vpc.enterprise_services_vpc.id
+  vpc_id      = aws_vpc.tkg_vpc[count.index].id
+  auto_accept = true
+
+  tags = {
+    Name = "${var.env_name} | tkg/enterprise services vpc peering"
   }
 }
