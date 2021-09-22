@@ -75,6 +75,7 @@ resource "aws_db_instance" "rds" {
   tags = var.tags
 
   maintenance_window = var.maintenance_window
+  backup_window      = var.backup_window
 
 }
 
