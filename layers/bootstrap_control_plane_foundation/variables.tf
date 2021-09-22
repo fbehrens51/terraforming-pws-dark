@@ -44,6 +44,11 @@ variable "control_plane_db_engine_version" {
 }
 
 variable "concourse_postgres_maintenance_window" {
-  type = string
+  type    = string
   default = "Sun:08:00-Sun:08:30"
+}
+
+variable "concourse_postgres_backup_window" {
+  type    = string
+  default = "Sun:10:00-Sun:10:30"
 }
