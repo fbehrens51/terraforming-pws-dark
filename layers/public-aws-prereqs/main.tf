@@ -64,6 +64,7 @@ module "paperwork" {
   instance_tagger_role_name = var.instance_tagger_role_name
   tsdb_role_name            = var.tsdb_role_name
   isse_role_name            = var.isse_role_name
+  enable_tkg                = var.enable_tkg
 
   env_name    = var.env_name
   root_domain = var.root_domain
@@ -120,6 +121,7 @@ data "template_file" "paperwork_variables" {
     bastion_vpc_id                              = module.paperwork.bastion_vpc_id
     pas_vpc_id                                  = module.paperwork.pas_vpc_id
     iso_vpc_id                                  = module.paperwork.isolation_segment_vpc_1_id
+    tkg_vpc_id                                  = module.paperwork.tkg_vpc_id
     ldap_basedn                                 = data.terraform_remote_state.ldap-server.outputs.ldap_basedn
     ldap_dn                                     = data.terraform_remote_state.ldap-server.outputs.ldap_dn
     ldap_host                                   = data.terraform_remote_state.ldap-server.outputs.ldap_domain
@@ -259,6 +261,11 @@ variable "smtp_from" {
 
 variable "smtp_to" {
   type = string
+}
+
+variable "enable_tkg" {
+  type = string
+  default = false
 }
 
 resource "aws_s3_bucket_object" "cap_root_ca_cert" {
