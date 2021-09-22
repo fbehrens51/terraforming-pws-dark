@@ -1,6 +1,11 @@
+// TODO: Does this have network access to user_data?
+// TODO: Completion lifecycle?
+// TODO: No evidence that cloud-init is even running
+// TODO: Setup without cloud-init, just get ssh setup
+
 locals {
   env_name      = var.global_vars.env_name
-  modified_name = "${local.env_name} sjb"
+  modified_name = "${local.env_name} tkgjb"
   modified_tags = merge(
     var.global_vars["global_tags"],
     var.global_vars["instance_tags"],
@@ -8,7 +13,7 @@ locals {
       "Name"            = local.modified_name
       "MetricsKey"      = data.terraform_remote_state.paperwork.outputs.metrics_key
       "foundation_name" = data.terraform_remote_state.paperwork.outputs.foundation_name
-      "job"             = "sjb"
+      "job"             = "tkgjb"
     },
   )
   root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
@@ -36,23 +41,34 @@ data "terraform_remote_state" "scaling-params" {
   }
 }
 
+data "terraform_remote_state" "bootstrap_tkg" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bootstrap_tkg"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
+data "terraform_remote_state" "bootstrap_tkgjb" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bootstrap_tkgjb"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "bootstrap_control_plane" {
   backend = "s3"
 
   config = {
     bucket  = var.remote_state_bucket
     key     = "bootstrap_control_plane"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
-data "terraform_remote_state" "bootstrap_sjb" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "bootstrap_sjb"
     region  = var.remote_state_region
     encrypt = true
   }
@@ -74,7 +90,7 @@ locals {
   secret_bucket_name          = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
   artifact_repo_bucket_name   = data.terraform_remote_state.paperwork.outputs.artifact_repo_bucket_name
   artifact_repo_bucket_region = data.terraform_remote_state.paperwork.outputs.artifact_repo_bucket_region
-  terraform_bucket_name       = data.terraform_remote_state.bootstrap_sjb.outputs.terraform_bucket_name
+  terraform_bucket_name       = data.terraform_remote_state.bootstrap_tkgjb.outputs.terraform_bucket_name
   ldap_dn                     = data.terraform_remote_state.paperwork.outputs.ldap_dn
   ldap_port                   = data.terraform_remote_state.paperwork.outputs.ldap_port
   ldap_host                   = data.terraform_remote_state.paperwork.outputs.ldap_host
@@ -216,10 +232,6 @@ bootcmd:
   - |
     set -ex
     while [ ! -e /dev/sdf ] ; do echo "Waiting for device /dev/sdf"; sleep 1 ; done
-    #old code won't mkfs an existing fs
-    #if [ "$(file -b -s -L /dev/sdf)" == "data" ]; then mkfs -t ext4 /dev/sdf; fi
-
-    # new code will always mkfs a volume to start fresh with the correct verisions.
     # we have to mount an external volume because the base image has partitioned FS
     mkfs -t ext4 /dev/sdf
 
@@ -241,7 +253,7 @@ module "syslog_config" {
   root_domain    = local.root_domain
   syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.syslog_ca_certs_bundle
 
-  role_name          = "sjb"
+  role_name          = "tkgjb"
   public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url
 }
@@ -287,55 +299,55 @@ data "template_cloudinit_config" "user_data" {
     content_type = "text/x-include-url"
     content      = data.terraform_remote_state.paperwork.outputs.amazon2_system_certs_user_data
   }
-
-  part {
-    filename     = "clamav.cfg"
-    content_type = "text/x-include-url"
-    content      = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
-  }
-
-  part {
-    filename     = "node_exporter.cfg"
-    content_type = "text/x-include-url"
-    content      = data.terraform_remote_state.paperwork.outputs.node_exporter_user_data
-  }
-
-  part {
-    filename     = "banner.cfg"
-    content_type = "text/x-include-url"
-    content      = data.terraform_remote_state.paperwork.outputs.custom_banner_user_data
-  }
-
+//
+//  part {
+//    filename     = "clamav.cfg"
+//    content_type = "text/x-include-url"
+//    content      = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
+//  }
+//
+//  part {
+//    filename     = "node_exporter.cfg"
+//    content_type = "text/x-include-url"
+//    content      = data.terraform_remote_state.paperwork.outputs.node_exporter_user_data
+//  }
+//
+//  part {
+//    filename     = "banner.cfg"
+//    content_type = "text/x-include-url"
+//    content      = data.terraform_remote_state.paperwork.outputs.custom_banner_user_data
+//  }
+//
   part {
     filename     = "iptables.cfg"
     content_type = "text/cloud-config"
     content      = module.iptables_rules.iptables_user_data
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
-
-  part {
-    filename     = "dnsmasq.cfg"
-    content_type = "text/cloud-config"
-    content      = module.dnsmasq.dnsmasq_user_data
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
-  }
-
-  part {
-    filename     = "postfix_client.cfg"
-    content_type = "text/x-include-url"
-    content      = data.terraform_remote_state.paperwork.outputs.postfix_client_user_data
-  }
-
-  # This must be last - updates the AIDE DB after all installations/configurations are complete.
-  part {
-    filename     = "hardening.cfg"
-    content_type = "text/x-include-url"
-    content      = data.terraform_remote_state.paperwork.outputs.server_hardening_user_data
-  }
+//
+//  part {
+//    filename     = "dnsmasq.cfg"
+//    content_type = "text/cloud-config"
+//    content      = module.dnsmasq.dnsmasq_user_data
+//    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+//  }
+//
+//  part {
+//    filename     = "postfix_client.cfg"
+//    content_type = "text/x-include-url"
+//    content      = data.terraform_remote_state.paperwork.outputs.postfix_client_user_data
+//  }
+//
+//  # This must be last - updates the AIDE DB after all installations/configurations are complete.
+//  part {
+//    filename     = "hardening.cfg"
+//    content_type = "text/x-include-url"
+//    content      = data.terraform_remote_state.paperwork.outputs.server_hardening_user_data
+//  }
 }
 
 data "aws_vpc" "vpc" {
-  id = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
+  id = data.terraform_remote_state.paperwork.outputs.tkg_vpc_id
 }
 
 module "dnsmasq" {
@@ -352,32 +364,38 @@ module "dnsmasq" {
   ]
 }
 
+//module "iptables_rules" {
+//  source                     = "../../modules/iptables"
+//  control_plane_subnet_cidrs = data.terraform_remote_state.bootstrap_tkg.outputs.tkg_subnet_cidrs
+//}
+
 module "iptables_rules" {
   source                     = "../../modules/iptables"
   control_plane_subnet_cidrs = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs
 }
 
-resource "aws_ebs_volume" "sjb_home" {
+resource "aws_ebs_volume" "tkgjb_home" {
   availability_zone = var.singleton_availability_zone
   size              = 60
   encrypted         = true
   kms_key_id        = data.terraform_remote_state.paperwork.outputs.kms_key_arn
 }
 
-module "sjb" {
+module "tkgjb" {
   instance_count       = 1
   source               = "../../modules/launch"
   availability_zone    = var.singleton_availability_zone
   ami_id               = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
   user_data            = data.template_cloudinit_config.user_data.rendered
-  eni_ids              = data.terraform_remote_state.bootstrap_sjb.outputs.sjb_eni_ids
-  iam_instance_profile = data.terraform_remote_state.paperwork.outputs.bootstrap_role_name
+  eni_ids              = data.terraform_remote_state.bootstrap_tkgjb.outputs.tkgjb_eni_ids
+  iam_instance_profile = data.terraform_remote_state.paperwork.outputs.tkg_control_plane_role_name
   instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
-  volume_ids           = [aws_ebs_volume.sjb_home.id]
-  scale_vpc_key        = "control-plane"
-  scale_service_key    = "sjb"
+  volume_ids           = [aws_ebs_volume.tkgjb_home.id]
+  scale_vpc_key        = "tkg"
+  scale_service_key    = "tkgjb"
   tags                 = local.modified_tags
   bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
+  // unchecked instance
   check_cloud_init     = false
   operating_system     = data.terraform_remote_state.paperwork.outputs.amazon_operating_system_tag
 
@@ -386,10 +404,10 @@ module "sjb" {
   }
 }
 
-resource "null_resource" "sjb_status" {
+resource "null_resource" "tkgjb_status" {
   count = 1
   triggers = {
-    instance_id = module.sjb.instance_ids[count.index]
+    instance_id = module.tkgjb.instance_ids[count.index]
   }
 
   provisioner "local-exec" {
@@ -399,7 +417,7 @@ resource "null_resource" "sjb_status" {
     #!/usr/bin/env bash
     set -e
     completed_tag="cloud_init_done"
-    poll_tags="aws ec2 describe-tags --filters Name=resource-id,Values=${module.sjb.instance_ids[count.index]} Name=key,Values=$completed_tag --output text --query Tags[*].Value"
+    poll_tags="aws ec2 describe-tags --filters Name=resource-id,Values=${module.tkgjb.instance_ids[count.index]} Name=key,Values=$completed_tag --output text --query Tags[*].Value"
     echo "running $poll_tags"
     tags="$($poll_tags)"
     COUNTER=0
@@ -410,7 +428,8 @@ resource "null_resource" "sjb_status" {
         exit 1
       fi
       if [[ $COUNTER -gt 0 ]]; then
-        echo "$completed_tag not set, sleeping for 10s"
+        echo "$completed_tag not set, sleeping for 10s ($COUNTER / $LOOP_LIMIT)"
+        echo "This is the tkgjb status script"
         sleep 10s
       fi
       tags="$($poll_tags)"
@@ -418,7 +437,7 @@ resource "null_resource" "sjb_status" {
     done
     echo "$completed_tag = $tags"
 
-    if cloud_init_message="$( aws ec2 describe-tags --filters Name=resource-id,Values=${module.sjb.instance_ids[count.index]} Name=key,Values=cloud_init_output --output text --query Tags[*].Value )"; then
+    if cloud_init_message="$( aws ec2 describe-tags --filters Name=resource-id,Values=${module.tkgjb.instance_ids[count.index]} Name=key,Values=cloud_init_output --output text --query Tags[*].Value )"; then
       [[ ! -z $cloud_init_message ]] && echo -e "cloud_init_output: $( echo -ne "$cloud_init_message" | openssl enc -d -a | gunzip -qc - )"
     fi
 
@@ -427,33 +446,11 @@ resource "null_resource" "sjb_status" {
   }
 }
 
-output "ssh_host_ips" {
-  value = zipmap(flatten(module.sjb.ssh_host_names), flatten(module.sjb.private_ips))
+output "user_data" {
+  sensitive = true
+  value = data.template_cloudinit_config.user_data
 }
 
-//
-//module "sjb2" {
-//  instance_count       = 1
-//  source               = "../../modules/launch"
-//  availability_zone    = var.singleton_availability_zone
-//  ami_id               = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
-//  user_data            = data.template_cloudinit_config.user_data.rendered
-//  // this
-//  eni_ids              = data.terraform_remote_state.bootstrap_sjb.outputs.sjb_eni_ids
-//  // this
-//  iam_instance_profile = data.terraform_remote_state.paperwork.outputs.bootstrap_role_name
-//  instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
-//  volume_ids           = [aws_ebs_volume.sjb_home.id]
-//  // this
-//  scale_vpc_key        = "control-plane"
-//  // this
-//  scale_service_key    = "sjb"
-//  tags                 = local.modified_tags
-//  bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
-//  check_cloud_init     = false
-//  operating_system     = data.terraform_remote_state.paperwork.outputs.amazon_operating_system_tag
-//
-//  root_block_device = {
-//    tags = { "Name" = "${local.modified_name} root" }
-//  }
-//}
+output "ssh_host_ips" {
+  value = zipmap(flatten(module.tkgjb.ssh_host_names), flatten(module.tkgjb.private_ips))
+}

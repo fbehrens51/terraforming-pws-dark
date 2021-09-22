@@ -9,7 +9,6 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
-
 data "terraform_remote_state" "bootstrap_control_plane" {
   backend = "s3"
 
