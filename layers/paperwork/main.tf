@@ -84,6 +84,12 @@ resource "aws_vpc_endpoint" "bastion_s3" {
   service_name = local.s3_service_name
 }
 
+resource "aws_vpc_endpoint" "tkg_s3" {
+  count        = var.enable_tkg ? 1 : 0
+  vpc_id       = var.tkg_vpc_id
+  service_name = local.s3_service_name
+}
+
 # There are several scenarios relevant to accessing this bucket:
 #   1. Unauthenticated access from within the VPC
 #      - The bucket policy applies and there is an explicit allow for requests via the vpc endpoint.
@@ -480,6 +486,10 @@ variable "cp_vpc_id" {
 
 variable "tkg_vpc_id" {
   default = ""
+}
+
+variable "enable_tkg" {
+  default = false
 }
 
 variable "fluentd_role_name" {
@@ -1220,6 +1230,10 @@ output "es_s3_vpc_endpoint_id" {
 
 output "bastion_s3_vpc_endpoint_id" {
   value = aws_vpc_endpoint.bastion_s3.id
+}
+
+output "tkg_s3_vpc_endpoint_id" {
+  value = var.enable_tkg ? aws_vpc_endpoint.tkg_s3[0].id : ""
 }
 
 output "node_exporter_user_data" {
