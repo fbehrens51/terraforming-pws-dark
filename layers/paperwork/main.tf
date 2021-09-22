@@ -501,6 +501,10 @@ variable "es_vpc_id" {
 variable "cp_vpc_id" {
 }
 
+variable "tkg_vpc_id" {
+  default = ""
+}
+
 variable "fluentd_role_name" {
 }
 
@@ -999,6 +1003,10 @@ output "es_vpc_id" {
 
 output "cp_vpc_id" {
   value = var.cp_vpc_id
+}
+
+output "tkg_vpc_id" {
+  value = var.tkg_vpc_id
 }
 
 output "sjb_role_name" {
