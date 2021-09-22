@@ -14,6 +14,10 @@ output "cp_vpc_id" {
   value = aws_vpc.control_plane_vpc.id
 }
 
+output "tkg_vpc_id" {
+  value = var.enable_tkg ? aws_vpc.tkg_vpc[0].id : ""
+}
+
 output "root_ca_cert" {
   value = module.ca_cert.cert_pem
 }

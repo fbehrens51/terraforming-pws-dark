@@ -26,3 +26,10 @@ output "pas_private_vpc_route_table_ids" {
   value = module.pas_vpc_route_tables.private_route_table_ids
 }
 
+output "tkg_public_vpc_route_table_id" {
+  value = var.enable_tkg ? module.tkg_vpc_route_tables[0].public_route_table_id : ""
+}
+
+output "tkg_private_vpc_route_table_ids" {
+  value = var.enable_tkg ? module.tkg_vpc_route_tables[0].private_route_table_ids : []
+}
