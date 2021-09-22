@@ -112,7 +112,11 @@ product-properties:
             regex: ${env_tag_name}
             action: keep
       server_name: null
-      tls_certificates: {}
+      tls_certificates:
+        cert_pem: |
+          ${indent(10, chomp(loki_client_cert))}
+        private_key_pem: |
+          ${indent(10, chomp(loki_client_key))}
     - ca: |
         ${indent(8, chomp(root_ca_cert))}
       insecure_skip_verify: false
