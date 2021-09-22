@@ -17,7 +17,10 @@ ingester:
         store: memberlist
       replication_factor: 1
     final_sleep: 0s
-  chunk_idle_period: 5m
+  # https://grafana.com/docs/loki/latest/best-practices/#use-chunk_target_size
+  chunk_target_size: 1536000
+  max_chunk_age: 1h
+  chunk_idle_period: 30m
   chunk_retain_period: 30s
 
 memberlist:
