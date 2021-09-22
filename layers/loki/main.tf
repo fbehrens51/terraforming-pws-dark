@@ -247,7 +247,7 @@ module "loki_instance" {
   check_cloud_init     = false
   bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
   iam_instance_profile = data.terraform_remote_state.paperwork.outputs.loki_role_name
-  volume_ids           = [data.terraform_remote_state.bootstrap_fluentd.outputs.volume_id[count.index]]
+  volume_ids           = [data.terraform_remote_state.bootstrap_loki.outputs.volume_id[count.index]]
 }
 
 resource "aws_lb_target_group_attachment" "loki_http_attachment" {
