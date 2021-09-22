@@ -71,6 +71,12 @@ resource "aws_vpc_endpoint" "bastion_s3" {
   service_name = local.s3_service_name
 }
 
+resource "aws_vpc_endpoint" "tkg_s3" {
+  count        = var.enable_tkg ? 1 : 0
+  vpc_id       = var.tkg_vpc_id
+  service_name = local.s3_service_name
+}
+
 # There are several scenarios relevant to accessing this bucket:
 #   1. Unauthenticated access from within the VPC
 #      - The bucket policy applies and there is an explicit allow for requests via the vpc endpoint.
@@ -649,6 +655,14 @@ variable "es_vpc_id" {
 variable "cp_vpc_id" {
 }
 
+variable "tkg_vpc_id" {
+  default = ""
+}
+
+variable "enable_tkg" {
+  default = false
+}
+
 variable "fluentd_role_name" {
 }
 
@@ -1150,6 +1164,10 @@ output "cp_vpc_id" {
   value = var.cp_vpc_id
 }
 
+output "tkg_vpc_id" {
+  value = var.tkg_vpc_id
+}
+
 output "sjb_role_name" {
   value = var.sjb_role_name
 }
@@ -1453,6 +1471,10 @@ output "bastion_s3_vpc_endpoint_id" {
   value = aws_vpc_endpoint.bastion_s3.id
 }
 
+output "tkg_s3_vpc_endpoint_id" {
+  value = var.enable_tkg ? aws_vpc_endpoint.tkg_s3[0].id : ""
+}
+
 output "bind_exporter_user_data" {
   value = module.bind_exporter_client_config.user_data
 }
@@ -1596,4 +1618,43 @@ output "s3_endpoint" {
 
 output "endpoint_domain" {
   value = var.endpoint_domain
+}
+
+/*******
+ * TKG
+ *******/
+// control-plane.tkg.cloud.vmware.com
+variable "tkg_control_plane_role_name" {
+}
+
+data "aws_iam_role" "tkg_control_plane" {
+  name = var.tkg_control_plane_role_name
+}
+
+output "tkg_control_plane_role_name" {
+  value = var.tkg_control_plane_role_name
+}
+
+// nodes.tkg.cloud.vmware.com
+variable "tkg_nodes_role_name" {
+}
+
+data "aws_iam_role" "tkg_nodes" {
+  name = var.tkg_nodes_role_name
+}
+
+output "tkg_nodes_role_name" {
+  value = var.tkg_nodes_role_name
+}
+
+// controllers.tkg.cloud.vmware.com
+variable "tkg_controllers_role_name" {
+}
+
+data "aws_iam_role" "tkg_controllers" {
+  name = var.tkg_controllers_role_name
+}
+
+output "tkg_controllers_role_name" {
+  value = var.tkg_controllers_role_name
 }

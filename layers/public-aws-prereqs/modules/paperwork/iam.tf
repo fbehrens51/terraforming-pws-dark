@@ -258,7 +258,7 @@ data "aws_iam_policy_document" "isse" {
   statement {
     effect = "Allow"
 
-    actions = [
+    actions   = [
       "s3:Get*",
       "s3:List*",
       "logs:Describe*",
@@ -323,7 +323,8 @@ resource "aws_iam_policy_attachment" "isse" {
 
   name       = var.isse_role_name
   roles      = [aws_iam_role.isse.name]
-  groups     = ["tws-isses"] // this group created manually and assigned to the ISSEs on the team
+  groups     = ["tws-isses"]
+  // this group created manually and assigned to the ISSEs on the team
   policy_arn = each.value
 }
 
@@ -751,9 +752,9 @@ data "aws_iam_policy_document" "om" {
 
   // -- Added to work with TWS --
   statement {
-    sid    = "RequiredForTWS"
-    effect = "Allow"
-    actions = [
+    sid       = "RequiredForTWS"
+    effect    = "Allow"
+    actions   = [
       "iam:GetInstanceProfile",
       "iam:PassRole"
     ]
@@ -775,8 +776,8 @@ resource "aws_iam_role" "om" {
 }
 
 resource "aws_iam_policy_attachment" "om" {
-  name = var.instance_tagger_role_name
-  roles = [
+  name       = var.instance_tagger_role_name
+  roles      = [
     aws_iam_role.om.name
   ]
   policy_arn = aws_iam_policy.om.arn
@@ -816,60 +817,59 @@ data "aws_iam_policy_document" "bosh" {
     ]
 
     resources = [
-    "*"]
+      "*"]
   }
 
 
-
   statement {
-    sid    = "RequiredIfUsingSnapshotsFeature"
-    effect = "Allow"
-    actions = [
+    sid       = "RequiredIfUsingSnapshotsFeature"
+    effect    = "Allow"
+    actions   = [
       "ec2:CreateSnapshot",
       "ec2:DeleteSnapshot",
-    "ec2:DescribeSnapshots"]
+      "ec2:DescribeSnapshots"]
     resources = [
-    "*"]
+      "*"]
   }
 
   statement {
-    sid    = "RequiredIfUsingElasticIPs"
-    effect = "Allow"
-    actions = [
+    sid       = "RequiredIfUsingElasticIPs"
+    effect    = "Allow"
+    actions   = [
       "ec2:AssociateAddress",
       "ec2:DescribeAddresses"
     ]
     resources = [
-    "*"]
+      "*"]
   }
 
   statement {
-    sid    = "RequiredIfUsingSourceDestCheckCloudProperties"
-    effect = "Allow"
-    actions = [
+    sid       = "RequiredIfUsingSourceDestCheckCloudProperties"
+    effect    = "Allow"
+    actions   = [
       "ec2:ModifyInstanceAttribute"
     ]
     resources = [
-    "*"]
+      "*"]
   }
 
   statement {
-    sid    = "RequiredIfUsingELBCloudProperties"
-    effect = "Allow"
-    actions = [
+    sid       = "RequiredIfUsingELBCloudProperties"
+    effect    = "Allow"
+    actions   = [
       "elasticloadbalancing:DescribeLoadBalancers",
       "elasticloadbalancing:RegisterInstancesWithLoadBalancer",
       "elasticloadbalancing:DescribeTargetGroups",
       "elasticloadbalancing:RegisterTargets"
     ]
     resources = [
-    "*"]
+      "*"]
   }
 
   statement {
-    sid    = "RequiredIfUsingIAMInstanceProfileCloudProperty"
-    effect = "Allow"
-    actions = [
+    sid       = "RequiredIfUsingIAMInstanceProfileCloudProperty"
+    effect    = "Allow"
+    actions   = [
       "iam:PassRole"
     ]
     resources = [
@@ -879,9 +879,9 @@ data "aws_iam_policy_document" "bosh" {
 
   // -- Added to work with TWS --
   statement {
-    sid    = "RequiredForTWS"
-    effect = "Allow"
-    actions = [
+    sid       = "RequiredForTWS"
+    effect    = "Allow"
+    actions   = [
       "iam:GetInstanceProfile",
     ]
     resources = [
@@ -902,8 +902,8 @@ resource "aws_iam_role" "bosh" {
 }
 
 resource "aws_iam_policy_attachment" "bosh" {
-  name = var.instance_tagger_role_name
-  roles = [
+  name       = var.instance_tagger_role_name
+  roles      = [
     aws_iam_role.bosh.name
   ]
   policy_arn = aws_iam_policy.bosh.arn
@@ -1151,7 +1151,7 @@ data "aws_iam_policy_document" "foundation" {
     ]
 
     resources = [
-    "*"]
+      "*"]
   }
 
   statement {
@@ -1190,19 +1190,19 @@ data "aws_iam_policy_document" "foundation" {
   }
 
   statement {
-    sid    = "RequiredIfUsingElasticIPs"
-    effect = "Allow"
-    actions = [
+    sid       = "RequiredIfUsingElasticIPs"
+    effect    = "Allow"
+    actions   = [
       "ec2:AssociateAddress",
       "ec2:DescribeAddresses"
     ]
     resources = [
-    "*"]
+      "*"]
   }
 
   statement {
-    sid    = "RequiredIfUsingSnapshotsFeature"
-    effect = "Allow"
+    sid     = "RequiredIfUsingSnapshotsFeature"
+    effect  = "Allow"
     actions = [
       "ec2:CreateSnapshot",
       "ec2:DeleteSnapshot",
@@ -1264,13 +1264,13 @@ data "aws_iam_policy_document" "foundation" {
   }
 
   statement {
-    sid    = "RequiredIfUsingSourceDestCheckCloudProperties"
-    effect = "Allow"
-    actions = [
+    sid       = "RequiredIfUsingSourceDestCheckCloudProperties"
+    effect    = "Allow"
+    actions   = [
       "ec2:ModifyInstanceAttribute"
     ]
     resources = [
-    "*"]
+      "*"]
   }
 
   statement {
@@ -1291,9 +1291,9 @@ data "aws_iam_policy_document" "foundation" {
   }
 
   statement {
-    sid    = "RequiredIfUsingIAMInstanceProfileCloudProperty"
-    effect = "Allow"
-    actions = [
+    sid       = "RequiredIfUsingIAMInstanceProfileCloudProperty"
+    effect    = "Allow"
+    actions   = [
       "iam:PassRole"
     ]
     resources = [
@@ -1302,9 +1302,9 @@ data "aws_iam_policy_document" "foundation" {
   }
 
   statement {
-    sid    = "RequiredForTWS"
-    effect = "Allow"
-    actions = [
+    sid       = "RequiredForTWS"
+    effect    = "Allow"
+    actions   = [
       "iam:GetInstanceProfile"
     ]
     resources = [
@@ -1325,8 +1325,8 @@ resource "aws_iam_role" "foundation" {
 }
 
 resource "aws_iam_policy_attachment" "foundation" {
-  name = var.instance_tagger_role_name
-  roles = [
+  name       = var.instance_tagger_role_name
+  roles      = [
     aws_iam_role.foundation.name
   ]
   policy_arn = aws_iam_policy.foundation.arn
@@ -1335,4 +1335,402 @@ resource "aws_iam_policy_attachment" "foundation" {
 resource "aws_iam_instance_profile" "foundation" {
   name = var.foundation_role_name
   role = aws_iam_role.foundation.name
+}
+
+/*****************************
+ * TKG Specific Policies
+ * Adapted from https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid/1.4/vmware-tanzu-kubernetes-grid-14/GUID-mgmt-clusters-aws.html#required-permissions-for-the-aws-account-4
+ *****************************/
+// Equivalent to control-plane.tkg.cloud.vmware.com
+// Used for initial bootstrapping
+data "aws_iam_policy_document" "tkg_control_plane" {
+  version = "2012-10-17"
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "autoscaling:DescribeAutoScalingGroups",
+      "autoscaling:DescribeLaunchConfigurations",
+      "autoscaling:DescribeTags",
+      "ec2:DescribeInstances",
+      "ec2:DescribeImages",
+      "ec2:DescribeRegions",
+      "ec2:DescribeRouteTables",
+      "ec2:DescribeSecurityGroups",
+      "ec2:DescribeSubnets",
+      "ec2:DescribeVolumes",
+      "ec2:CreateSecurityGroup",
+      "ec2:CreateTags",
+      "ec2:CreateVolume",
+      "ec2:ModifyInstanceAttribute",
+      "ec2:ModifyVolume",
+      "ec2:AttachVolume",
+      "ec2:AuthorizeSecurityGroupIngress",
+      "ec2:CreateRoute",
+      "ec2:DeleteRoute",
+      "ec2:DeleteSecurityGroup",
+      "ec2:DeleteVolume",
+      "ec2:DetachVolume",
+      "ec2:RevokeSecurityGroupIngress",
+      "ec2:DescribeVpcs",
+      "elasticloadbalancing:AddTags",
+      "elasticloadbalancing:AttachLoadBalancerToSubnets",
+      "elasticloadbalancing:ApplySecurityGroupsToLoadBalancer",
+      "elasticloadbalancing:CreateLoadBalancer",
+      "elasticloadbalancing:CreateLoadBalancerPolicy",
+      "elasticloadbalancing:CreateLoadBalancerListeners",
+      "elasticloadbalancing:ConfigureHealthCheck",
+      "elasticloadbalancing:DeleteLoadBalancer",
+      "elasticloadbalancing:DeleteLoadBalancerListeners",
+      "elasticloadbalancing:DescribeLoadBalancers",
+      "elasticloadbalancing:DescribeLoadBalancerAttributes",
+      "elasticloadbalancing:DetachLoadBalancerFromSubnets",
+      "elasticloadbalancing:DeregisterInstancesFromLoadBalancer",
+      "elasticloadbalancing:ModifyLoadBalancerAttributes",
+      "elasticloadbalancing:RegisterInstancesWithLoadBalancer",
+      "elasticloadbalancing:SetLoadBalancerPoliciesForBackendServer",
+      "elasticloadbalancing:AddTags",
+      "elasticloadbalancing:CreateListener",
+      "elasticloadbalancing:CreateTargetGroup",
+      "elasticloadbalancing:DeleteListener",
+      "elasticloadbalancing:DeleteTargetGroup",
+      "elasticloadbalancing:DescribeListeners",
+      "elasticloadbalancing:DescribeLoadBalancerPolicies",
+      "elasticloadbalancing:DescribeTargetGroups",
+      "elasticloadbalancing:DescribeTargetHealth",
+      "elasticloadbalancing:ModifyListener",
+      "elasticloadbalancing:ModifyTargetGroup",
+      "elasticloadbalancing:RegisterTargets",
+      "elasticloadbalancing:SetLoadBalancerPoliciesOfListener",
+      "iam:CreateServiceLinkedRole",
+      "kms:DescribeKey"
+    ]
+
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "tkg_control_plane" {
+  name   = var.tkg_control_plane_role_name
+  path   = "/"
+  policy = data.aws_iam_policy_document.tkg_control_plane.json
+}
+
+resource "aws_iam_role" "tkg_control_plane" {
+  name               = var.tkg_control_plane_role_name
+  assume_role_policy = data.aws_iam_policy_document.role_policy.json
+}
+
+resource "aws_iam_policy_attachment" "tkg_control_plane" {
+  name       = var.tkg_control_plane_role_name
+  roles      = [aws_iam_role.tkg_control_plane.name]
+  policy_arn = aws_iam_policy.tkg_control_plane.arn
+}
+
+resource "aws_iam_role_policy_attachment" "tkg_control_plane_ecr" {
+  role       = aws_iam_role.tkg_control_plane.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
+}
+
+resource "aws_iam_instance_profile" "tkg_control_plane" {
+  name = var.tkg_control_plane_role_name
+  role = aws_iam_role.tkg_control_plane.name
+}
+
+output "tkg_control_plane_role_arn" {
+  value = aws_iam_role.tkg_control_plane.arn
+}
+
+// Equivalent to nodes.tkg.cloud.vmware.com
+data "aws_iam_policy_document" "tkg_nodes" {
+  version = "2012-10-17"
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "ec2:DescribeInstances",
+      "ec2:DescribeRegions",
+      "ecr:GetAuthorizationToken",
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:GetRepositoryPolicy",
+      "ecr:DescribeRepositories",
+      "ecr:ListImages",
+      "ecr:BatchGetImage"
+    ]
+
+    resources = ["*"]
+  }
+
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "secretsmanager:DeleteSecret",
+      "secretsmanager:GetSecretValue"
+    ]
+
+    // TODO: Will this work? May need to set this up and then match the resource name
+    resources = [
+      "arn:*:secretsmanager:*:*:secret:aws.cluster.x-k8s.io/*"
+    ]
+  }
+
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "ssm:UpdateInstanceInformation",
+      "ssmmessages:CreateControlChannel",
+      "ssmmessages:CreateDataChannel",
+      "ssmmessages:OpenControlChannel",
+      "ssmmessages:OpenDataChannel",
+      "s3:GetEncryptionConfiguration"
+    ]
+
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "tkg_nodes" {
+  name   = var.tkg_nodes_role_name
+  path   = "/"
+  policy = data.aws_iam_policy_document.tkg_nodes.json
+}
+
+resource "aws_iam_role" "tkg_nodes" {
+  name               = var.tkg_nodes_role_name
+  assume_role_policy = data.aws_iam_policy_document.role_policy.json
+}
+
+resource "aws_iam_policy_attachment" "tkg_nodes" {
+  name       = var.tkg_nodes_role_name
+  roles      = [aws_iam_role.tkg_nodes.name]
+  policy_arn = aws_iam_policy.tkg_nodes.arn
+}
+
+resource "aws_iam_role_policy_attachment" "tkg_nodes_ecr" {
+  role       = aws_iam_role.tkg_nodes.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
+}
+
+resource "aws_iam_instance_profile" "tkg_nodes" {
+  name = var.tkg_nodes_role_name
+  role = aws_iam_role.tkg_nodes.name
+}
+
+output "tkg_nodes_role_arn" {
+  value = aws_iam_role.tkg_nodes.arn
+}
+
+// Equivalent to controllers.tkg.cloud.vmware.com
+data "aws_iam_policy_document" "tkg_controllers" {
+  version = "2012-10-17"
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "ec2:AllocateAddress",
+      "ec2:AssociateRouteTable",
+      // Denied on-site
+      // "ec2:AttachInternetGateway",
+      "ec2:AuthorizeSecurityGroupIngress",
+      // Denied on-site
+      // "ec2:CreateInternetGateway",
+      "ec2:CreateNatGateway",
+      "ec2:CreateRoute",
+      "ec2:CreateRouteTable",
+      "ec2:CreateSecurityGroup",
+      "ec2:CreateSubnet",
+      "ec2:CreateTags",
+      // Denied on-site
+      // "ec2:CreateVpc",
+      "ec2:ModifyVpcAttribute",
+      // Denied on-site
+      // "ec2:DeleteInternetGateway",
+      "ec2:DeleteNatGateway",
+      "ec2:DeleteRouteTable",
+      "ec2:DeleteSecurityGroup",
+      "ec2:DeleteSubnet",
+      "ec2:DeleteTags",
+      // Denied on-site
+      // "ec2:DeleteVpc",
+      "ec2:DescribeAccountAttributes",
+      "ec2:DescribeAddresses",
+      "ec2:DescribeAvailabilityZones",
+      "ec2:DescribeInstances",
+      "ec2:DescribeInternetGateways",
+      "ec2:DescribeImages",
+      "ec2:DescribeNatGateways",
+      "ec2:DescribeNetworkInterfaces",
+      "ec2:DescribeNetworkInterfaceAttribute",
+      "ec2:DescribeRouteTables",
+      "ec2:DescribeSecurityGroups",
+      "ec2:DescribeSubnets",
+      "ec2:DescribeVpcs",
+      "ec2:DescribeVpcAttribute",
+      "ec2:DescribeVolumes",
+      // Denied on-site
+      // "ec2:DetachInternetGateway",
+      "ec2:DisassociateRouteTable",
+      "ec2:DisassociateAddress",
+      "ec2:ModifyInstanceAttribute",
+      "ec2:ModifyNetworkInterfaceAttribute",
+      "ec2:ModifySubnetAttribute",
+      "ec2:ReleaseAddress",
+      "ec2:RevokeSecurityGroupIngress",
+      "ec2:RunInstances",
+      "ec2:TerminateInstances",
+      "tag:GetResources",
+      "elasticloadbalancing:AddTags",
+      "elasticloadbalancing:CreateLoadBalancer",
+      "elasticloadbalancing:ConfigureHealthCheck",
+      "elasticloadbalancing:DeleteLoadBalancer",
+      "elasticloadbalancing:DescribeLoadBalancers",
+      "elasticloadbalancing:DescribeLoadBalancerAttributes",
+      "elasticloadbalancing:DescribeTags",
+      "elasticloadbalancing:ModifyLoadBalancerAttributes",
+      "elasticloadbalancing:RegisterInstancesWithLoadBalancer",
+      "elasticloadbalancing:DeregisterInstancesFromLoadBalancer",
+      "elasticloadbalancing:RemoveTags",
+      "autoscaling:DescribeAutoScalingGroups",
+      "autoscaling:DescribeInstanceRefreshes",
+      "ec2:CreateLaunchTemplate",
+      "ec2:CreateLaunchTemplateVersion",
+      "ec2:DescribeLaunchTemplates",
+      "ec2:DescribeLaunchTemplateVersions",
+      "ec2:DeleteLaunchTemplate",
+      "ec2:DeleteLaunchTemplateVersions"
+    ]
+
+    resources = ["*"]
+  }
+
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "autoscaling:CreateAutoScalingGroup",
+      "autoscaling:UpdateAutoScalingGroup",
+      "autoscaling:CreateOrUpdateTags",
+      "autoscaling:StartInstanceRefresh",
+      "autoscaling:DeleteAutoScalingGroup",
+      "autoscaling:DeleteTags"
+    ]
+
+    resources = [
+      "arn:*:autoscaling:*:*:autoScalingGroup:*:autoScalingGroupName/*"
+    ]
+  }
+
+  statement {
+    condition {
+      test     = "StringLike"
+      variable = "iam:AWSServiceName"
+      values   = ["autoscaling.amazonaws.com"]
+    }
+
+    actions = [
+      "iam:CreateServiceLinkedRole"
+    ]
+
+    resources = [
+      "arn:*:iam::*:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling"
+    ]
+
+    effect = "Allow"
+  }
+
+  statement {
+    condition {
+      test     = "StringLike"
+      variable = "iam:AWSServiceName"
+      values   = [
+        "elasticloadbalancing.amazonaws.com"
+      ]
+    }
+
+    actions = [
+      "iam:CreateServiceLinkedRole"
+    ]
+
+    resources = [
+      "arn:*:iam::*:role/aws-service-role/elasticloadbalancing.amazonaws.com/AWSServiceRoleForElasticLoadBalancing"
+    ]
+
+    effect = "Allow"
+  }
+
+  statement {
+    condition {
+      test     = "StringLike"
+      variable = "iam:AWSServiceName"
+      values   = ["spot.amazonaws.com"]
+    }
+
+    actions = [
+      "iam:CreateServiceLinkedRole"
+    ]
+
+    resources = ["arn:*:iam::*:role/aws-service-role/spot.amazonaws.com/AWSServiceRoleForEC2Spot"]
+
+    effect = "Allow"
+  }
+
+  statement {
+    actions = [
+      "iam:PassRole"
+    ]
+
+    resources = [
+      "arn:*:iam::*:role/*.tkg.cloud.vmware.com"
+    ]
+
+    effect = "Allow"
+  }
+
+  statement {
+    actions = [
+      "secretsmanager:CreateSecret",
+      "secretsmanager:DeleteSecret",
+      "secretsmanager:TagResource"
+    ]
+
+    resources = [
+      "arn:*:secretsmanager:*:*:secret:aws.cluster.x-k8s.io/*"
+    ]
+
+    effect = "Allow"
+  }
+}
+
+resource "aws_iam_policy" "tkg_controllers" {
+  name   = var.tkg_controllers_role_name
+  path   = "/"
+  policy = data.aws_iam_policy_document.tkg_controllers.json
+}
+
+resource "aws_iam_role" "tkg_controllers" {
+  name               = var.tkg_controllers_role_name
+  assume_role_policy = data.aws_iam_policy_document.role_policy.json
+}
+
+resource "aws_iam_policy_attachment" "tkg_controllers" {
+  name       = var.tkg_controllers_role_name
+  roles      = [aws_iam_role.tkg_controllers.name]
+  policy_arn = aws_iam_policy.tkg_controllers.arn
+}
+
+resource "aws_iam_role_policy_attachment" "tkg_controllers_ecr" {
+  role       = aws_iam_role.tkg_controllers.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
+}
+
+resource "aws_iam_instance_profile" "tkg_controllers" {
+  name = var.tkg_controllers_role_name
+  role = aws_iam_role.tkg_controllers.name
+}
+
+output "tkg_controllers_role_arn" {
+  value = aws_iam_role.tkg_controllers.arn
 }

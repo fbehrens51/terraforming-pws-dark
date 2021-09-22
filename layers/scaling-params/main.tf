@@ -100,6 +100,10 @@ locals {
     pws-dark-concourse-worker-tile = {
       worker = "r5.xlarge"
     }
+
+    tkg = {
+      tkgjb = "m5.2xlarge"
+    }
   }
 }
 
