@@ -111,7 +111,7 @@ locals {
 
   s3_logs_bucket = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
 
-  loki_storage_bucket = "${local.formatted_env_name}-loki-store"
+  loki_storage_bucket = "${local.formatted_env_name}-loki-storage"
 
   loki_lb_name = "${local.formatted_env_name}-loki-lb"
 
