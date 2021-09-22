@@ -100,7 +100,7 @@ product-properties:
       scrape_job: |-
         job_name: 'loki'
         metrics_path: /metrics
-        scheme: http
+        scheme: https
         ec2_sd_configs:
           - region: ${region}
             port: 8090
