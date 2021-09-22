@@ -231,7 +231,6 @@
       cert /etc/td-agent/loki-client-cert.pem
       key /etc/td-agent/loki-client-key.pem
       <label>
-        ident $.ident
         source_address $.source_address
         fluentd_az $.fluentd_az
       </label>
