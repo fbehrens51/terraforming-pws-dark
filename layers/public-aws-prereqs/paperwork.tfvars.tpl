@@ -14,6 +14,8 @@ cp_vpc_id = "${cp_vpc_id}"
 
 iso_vpc_ids = ["${iso_vpc_id}"]
 
+tkg_vpc_id = "${tkg_vpc_id}"
+
 fluentd_role_name = "${fluentd_role_name}"
 
 isse_role_name = "${isse_role_name}"
