@@ -176,7 +176,8 @@ module "loki_storage_bucket_policy" {
     local.foundation_role_id
   ], [local.isse_role_id])
   read_only_user_ids = local.super_user_ids
-  disable_delete     = true
+  # loki's compactor needs to delete objects over time for log retention limits
+  disable_delete = false
 }
 
 resource "aws_s3_bucket_policy" "loki_storage_bucket_policy_attachment" {
