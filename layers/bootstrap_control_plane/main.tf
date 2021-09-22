@@ -29,11 +29,11 @@ module "public_subnets" {
   availability_zones = var.availability_zones
   vpc_id             = data.aws_vpc.vpc.id
   cidr_block         = local.public_cidr_block
-  tags = merge(
-    local.modified_tags,
-    {
-      "Name" = "${local.modified_name}-public"
-    },
+  tags               = merge(
+  local.modified_tags,
+  {
+    "Name" = "${local.modified_name}-public"
+  },
   )
 }
 
@@ -48,11 +48,11 @@ module "private_subnets" {
   availability_zones = var.availability_zones
   vpc_id             = data.aws_vpc.vpc.id
   cidr_block         = local.private_cidr_block
-  tags = merge(
-    local.modified_tags,
-    {
-      "Name" = "${local.modified_name}-private"
-    },
+  tags               = merge(
+  local.modified_tags,
+  {
+    "Name" = "${local.modified_name}-private"
+  },
   )
 }
 
@@ -94,11 +94,11 @@ resource "aws_security_group" "vms_security_group" {
   }
 
   tags = merge(
-    local.modified_tags,
-    {
-      Name        = "${local.env_name}-vms-security-group"
-      Description = "bootstrap_control_plane"
-    },
+  local.modified_tags,
+  {
+    Name        = "${local.env_name}-vms-security-group"
+    Description = "bootstrap_control_plane"
+  },
   )
 }
 
@@ -114,19 +114,24 @@ locals {
   env_name      = var.global_vars.env_name
   modified_name = "${local.env_name} control plane"
   modified_tags = merge(
-    var.global_vars["global_tags"],
-    {
-      "Name"            = local.modified_name
-      "MetricsKey"      = data.terraform_remote_state.paperwork.outputs.metrics_key,
-      "foundation_name" = data.terraform_remote_state.paperwork.outputs.foundation_name
-    },
+  var.global_vars["global_tags"],
+  {
+    "Name"            = local.modified_name
+    "MetricsKey"      = data.terraform_remote_state.paperwork.outputs.metrics_key,
+    "foundation_name" = data.terraform_remote_state.paperwork.outputs.foundation_name
+  },
   )
 
   public_cidr_block  = cidrsubnet(data.aws_vpc.vpc.cidr_block, 1, 0)
   rds_cidr_block     = cidrsubnet(local.public_cidr_block, 2, 3)
+  //10.1.0.128/25 == [10.1.0.129, 10.1.0.254] (128)
   private_cidr_block = cidrsubnet(data.aws_vpc.vpc.cidr_block, 1, 1)
+  //10.1.0.224/27 == [10.1.0.225, 10.1.0.254] (32)
+  //10.1.0.224/27
   sjb_cidr_block     = cidrsubnet(local.private_cidr_block, 2, 3)
-
+  //2,0 == 10.1.0.128/27 == [10.1.0.129, 10.1.0.158] (32)
+  //2,1 == 10.1.0.160/27 == [10.1.0.161, 10.1.0.190] (32)
+  tkgjb_cidr_block     = cidrsubnet(local.private_cidr_block, 2, 1)
   ec2_service_name = "${var.vpce_interface_prefix}${data.aws_region.current.name}.ec2"
 
 }
@@ -145,7 +150,7 @@ resource "aws_vpc_endpoint" "cp_ec2" {
 resource "aws_vpc_dhcp_options" "cp_dhcp_options" {
   domain_name_servers = data.terraform_remote_state.paperwork.outputs.enterprise_dns
   //  ntp_servers = []
-  tags = {
+  tags                = {
     name = "CP DHCP Options"
   }
 }

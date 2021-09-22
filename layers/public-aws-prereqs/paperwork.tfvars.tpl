@@ -14,6 +14,8 @@ cp_vpc_id = "${cp_vpc_id}"
 
 iso_vpc_ids = ["${iso_vpc_id}"]
 
+tkg_vpc_id = "${tkg_vpc_id}"
+
 fluentd_role_name = "${fluentd_role_name}"
 
 isse_role_name = "${isse_role_name}"
@@ -39,6 +41,12 @@ tsdb_role_name = "${tsdb_role_name}"
 bucket_role_name = "${bucket_role_name}"
 
 platform_automation_engine_worker_role_name = "${platform_automation_engine_worker_role_name}"
+
+tkg_control_plane_role_name = "${tkg_control_plane_role_name}"
+
+tkg_nodes_role_name = "${tkg_nodes_role_name}"
+
+tkg_controllers_role_name = "${tkg_controllers_role_name}"
 
 ldap_basedn = "${ldap_basedn}"
 
