@@ -15,7 +15,7 @@ output "cp_vpc_id" {
 }
 
 output "tkg_vpc_id" {
-  value = aws_vpc.tkg_vpc.id
+  value = var.enable_tkg ? aws_vpc.tkg_vpc[0].id : ""
 }
 
 output "root_ca_cert" {
