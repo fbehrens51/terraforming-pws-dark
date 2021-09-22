@@ -142,6 +142,17 @@ data "terraform_remote_state" "sjb" {
   }
 }
 
+data "terraform_remote_state" "tkg-jumpbox" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "tkg-jumpbox"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 locals {
   bastion_ip          = data.terraform_remote_state.bastion.outputs.ssh_host_ips[local.bastion_name]
   bastion_name        = one(keys(data.terraform_remote_state.bastion.outputs.ssh_host_ips))
@@ -154,23 +165,26 @@ locals {
   secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
   sjb_ip              = data.terraform_remote_state.sjb.outputs.ssh_host_ips[local.sjb_name]
   sjb_name            = one(keys(data.terraform_remote_state.sjb.outputs.ssh_host_ips))
+  tkgjb_name          = one(keys(data.terraform_remote_state.tkg-jumpbox.outputs.ssh_host_ips))
+  tkgjb_ip            = data.terraform_remote_state.tkg-jumpbox.outputs.ssh_host_ips[local.tkgjb_name]
   ssh_key_path        = var.ssh_key_path
   loki_ssh_host_ips   = data.terraform_remote_state.paperwork.outputs.enable_loki == true ? data.terraform_remote_state.loki[0].outputs.ssh_host_ips : {}
-  sshconfig_host_ips = merge(
-    data.terraform_remote_state.bind.outputs.ssh_host_ips,
-    data.terraform_remote_state.bootstrap_isolation_segment_vpc_1.outputs.ssh_host_ips,
-    data.terraform_remote_state.control-plane-ops-manager.outputs.ssh_host_ips,
-    data.terraform_remote_state.control-plane-nats.outputs.ssh_host_ips,
-    data.terraform_remote_state.enterprise-services.outputs.ssh_host_ips,
-    data.terraform_remote_state.fluentd.outputs.ssh_host_ips,
-    data.terraform_remote_state.ops-manager.outputs.ssh_host_ips,
-    data.terraform_remote_state.pas.outputs.ssh_host_ips,
-    data.terraform_remote_state.postfix.outputs.ssh_host_ips,
-    local.loki_ssh_host_ips,
-    var.scanner_host_ips,
+  sshconfig_host_ips  = merge(
+  data.terraform_remote_state.bind.outputs.ssh_host_ips,
+  data.terraform_remote_state.bootstrap_isolation_segment_vpc_1.outputs.ssh_host_ips,
+  data.terraform_remote_state.control-plane-ops-manager.outputs.ssh_host_ips,
+  data.terraform_remote_state.control-plane-nats.outputs.ssh_host_ips,
+  data.terraform_remote_state.enterprise-services.outputs.ssh_host_ips,
+  data.terraform_remote_state.fluentd.outputs.ssh_host_ips,
+  data.terraform_remote_state.ops-manager.outputs.ssh_host_ips,
+  data.terraform_remote_state.pas.outputs.ssh_host_ips,
+  data.terraform_remote_state.postfix.outputs.ssh_host_ips,
+  local.loki_ssh_host_ips,
+  var.scanner_host_ips,
+  data.terraform_remote_state.tkg-jumpbox.outputs.ssh_host_ips,
   )
 
-  common_params = {
+  common_params     = {
     bastion_ip      = local.bastion_ip,
     bastion_name    = local.bastion_name,
     bosh_ip         = var.bosh_ip,
@@ -184,41 +198,43 @@ locals {
     om_name         = local.om_name,
     sjb_ip          = local.sjb_ip,
     sjb_name        = local.sjb_name,
+    tkgjb_ip        = local.tkgjb_ip,
+    tkgjb_name      = local.tkgjb_name,
     ssh_host_ips    = local.sshconfig_host_ips
     ssh_key_path    = local.ssh_key_path,
   }
   sshconfig_outside = templatefile("${path.module}/sshconfig.tpl",
-    merge(local.common_params,
-      {
-        enable_bastion_proxyjump = true,
-        enable_sjb_proxyjump     = true,
-      }
-    )
+  merge(local.common_params,
+  {
+    enable_bastion_proxyjump = true,
+    enable_sjb_proxyjump     = true,
+  }
+  )
   )
 
   sshconfig_bastion = templatefile("${path.module}/sshconfig.tpl",
-    merge(local.common_params,
-      {
-        enable_bastion_proxyjump = false,
-        enable_sjb_proxyjump     = true,
-      }
-    )
+  merge(local.common_params,
+  {
+    enable_bastion_proxyjump = false,
+    enable_sjb_proxyjump     = true,
+  }
+  )
   )
 
   sshconfig_sjb = templatefile("${path.module}/sshconfig.tpl",
-    merge(local.common_params,
-      {
-        enable_bastion_proxyjump = false,
-        enable_sjb_proxyjump     = false,
-      }
-    )
+  merge(local.common_params,
+  {
+    enable_bastion_proxyjump = false,
+    enable_sjb_proxyjump     = false,
+  }
+  )
   )
 
   ssh_host_ips = merge(
-    local.sshconfig_host_ips,
-    data.terraform_remote_state.bastion.outputs.ssh_host_ips,
-    data.terraform_remote_state.sjb.outputs.ssh_host_ips,
-    var.scanner_host_ips,
+  local.sshconfig_host_ips,
+  data.terraform_remote_state.bastion.outputs.ssh_host_ips,
+  data.terraform_remote_state.sjb.outputs.ssh_host_ips,
+  var.scanner_host_ips,
   )
 }
 

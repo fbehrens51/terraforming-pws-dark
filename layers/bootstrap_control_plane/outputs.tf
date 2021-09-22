@@ -27,8 +27,15 @@ output "vms_security_group_id" {
   value = aws_security_group.vms_security_group[0].id
 }
 
+output "private_cidr_block" {
+  value = local.private_cidr_block
+}
 output "sjb_cidr_block" {
   value = local.sjb_cidr_block
+}
+
+output "tkgjb_cidr_block" {
+  value = local.tkgjb_cidr_block
 }
 
 output "terraform_region" {
