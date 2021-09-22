@@ -156,10 +156,6 @@ resource "aws_s3_bucket" "loki_storage" {
     }
   }
 
-  versioning {
-    enabled = true
-  }
-
   logging {
     target_bucket = local.s3_logs_bucket
     target_prefix = "${local.loki_storage_bucket}/"
