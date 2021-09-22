@@ -4,6 +4,7 @@ auth_enabled: false
 server:
   http_listen_port: ${http_port}
   grpc_listen_port: ${grpc_port}
+  log_level: warn
 
 distributor:
   ring:
@@ -22,6 +23,9 @@ ingester:
   max_chunk_age: 1h
   chunk_idle_period: 30m
   chunk_retain_period: 30s
+  wal:
+    enabled: true
+    dir: /data/wal
 
 memberlist:
   abort_if_cluster_join_fails: false
