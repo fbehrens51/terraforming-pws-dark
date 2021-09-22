@@ -19,7 +19,7 @@ locals {
     server_cert    = var.server_cert
     client_ca_cert = var.client_cert_signer
 
-    loki_configuration = local.loki_configuration
+    loki_configuration = local.loki_configuration[i]
     nginx_http         = local.nginx_http[i]
     nginx_grpc         = local.nginx_grpc[i]
     nginx_gossip       = local.nginx_gossip[i]
@@ -36,8 +36,6 @@ locals {
   })]
 
   nginx_http = [for i, ip in var.loki_ips : templatefile("${path.module}/nginx-http.conf", {
-    loki_configuration = local.loki_configuration
-
     region             = var.region
     public_bucket_name = var.public_bucket_name
     loki_location      = local.loki_location
@@ -50,8 +48,6 @@ locals {
   })]
 
   nginx_grpc = [for i, ip in var.loki_ips : templatefile("${path.module}/nginx-grpc.conf", {
-    loki_configuration = local.loki_configuration
-
     region             = var.region
     public_bucket_name = var.public_bucket_name
     loki_location      = local.loki_location
@@ -63,8 +59,6 @@ locals {
   })]
 
   nginx_gossip = [for i, ip in var.loki_ips : templatefile("${path.module}/nginx-gossip.conf", {
-    loki_configuration = local.loki_configuration
-
     region             = var.region
     public_bucket_name = var.public_bucket_name
     loki_location      = local.loki_location
@@ -76,14 +70,16 @@ locals {
     server_name        = module.domains.loki_fqdn
   })]
 
-  loki_configuration = templatefile("${path.module}/loki.yaml", {
-    bind_port      = module.ports.loki_bind_port
-    http_port      = module.ports.loki_http_port
-    grpc_port      = module.ports.loki_grpc_port
-    region         = var.region
-    loki_ips       = var.loki_ips
-    storage_bucket = var.storage_bucket
-  })
+  loki_configuration = [for i, ip in var.loki_ips : templatefile("${path.module}/loki.yaml", {
+    bind_port         = module.ports.loki_bind_port
+    http_port         = module.ports.loki_http_port
+    grpc_port         = module.ports.loki_grpc_port
+    region            = var.region
+    loki_ips          = var.loki_ips
+    storage_bucket    = var.storage_bucket
+    compactor_enabled = i == 0 # enable compactor on a single instance
+    retention_period  = var.retention_period
+  })]
 }
 
 resource "aws_s3_bucket_object" "config_user_data" {

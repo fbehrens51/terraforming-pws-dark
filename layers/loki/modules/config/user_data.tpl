@@ -10,6 +10,16 @@ users:
   system: true
   shell: /sbin/nologin
 
+bootcmd:
+  - |
+    set -ex
+    mkdir -p /data
+    while [ ! -e /dev/sdf ] ; do echo "Waiting for device /dev/sdf"; sleep 1 ; done
+    if [ "$(file -b -s -L /dev/sdf)" == "data" ]; then mkfs -t ext4 /dev/sdf; fi
+
+mounts:
+  - [ "/dev/sdf", "/data", "ext4", "defaults,nofail", "0", "2" ]
+
 write_files:
   - content: |
       ${indent(6, ca_cert)}

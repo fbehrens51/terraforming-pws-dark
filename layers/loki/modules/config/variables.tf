@@ -24,3 +24,4 @@ variable "server_cert" {}
 variable "server_key" {}
 
 variable "client_cert_signer" {}
+variable "retention_period" {}

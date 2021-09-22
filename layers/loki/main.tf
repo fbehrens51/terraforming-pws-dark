@@ -26,6 +26,10 @@ variable "loki_bundle_key" {
 variable "region" {
 }
 
+variable "retention_period" {
+  default = "1440h" # 60 days
+}
+
 module "providers" {
   source = "../../modules/dark_providers"
 }
@@ -110,10 +114,11 @@ module "configuration" {
   public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url
 
-  loki_bundle_key = var.loki_bundle_key
-  loki_ips        = data.terraform_remote_state.bootstrap_loki.outputs.loki_eni_ips
-  storage_bucket  = data.terraform_remote_state.bootstrap_loki.outputs.storage_bucket
-  root_domain     = data.terraform_remote_state.paperwork.outputs.root_domain
+  loki_bundle_key  = var.loki_bundle_key
+  loki_ips         = data.terraform_remote_state.bootstrap_loki.outputs.loki_eni_ips
+  storage_bucket   = data.terraform_remote_state.bootstrap_loki.outputs.storage_bucket
+  root_domain      = data.terraform_remote_state.paperwork.outputs.root_domain
+  retention_period = var.retention_period
 
   region = var.region
 }
@@ -242,6 +247,7 @@ module "loki_instance" {
   check_cloud_init     = false
   bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
   iam_instance_profile = data.terraform_remote_state.paperwork.outputs.loki_role_name
+  volume_ids           = [data.terraform_remote_state.bootstrap_fluentd.outputs.volume_id[count.index]]
 }
 
 resource "aws_lb_target_group_attachment" "loki_http_attachment" {

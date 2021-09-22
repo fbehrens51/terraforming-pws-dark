@@ -188,6 +188,14 @@ resource "aws_s3_bucket_policy" "loki_storage_bucket_policy_attachment" {
   policy = module.loki_storage_bucket_policy.json
 }
 
+resource "aws_ebs_volume" "loki_data" {
+  count             = length(local.private_subnets)
+  availability_zone = element(data.aws_subnet.private_subnets.*.availability_zone, count.index)
+  size              = 100
+  encrypted         = true
+  kms_key_id        = data.terraform_remote_state.paperwork.outputs.kms_key_arn
+}
+
 resource "aws_lb" "loki_lb" {
   name                             = local.loki_lb_name
   internal                         = true
@@ -302,6 +310,10 @@ variable "global_vars" {
 
 output "loki_eni_ids" {
   value = module.bootstrap.eni_ids
+}
+
+output "volume_id" {
+  value = aws_ebs_volume.loki_data.*.id
 }
 
 output "loki_grpc_target_group" {
