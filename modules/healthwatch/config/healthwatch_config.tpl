@@ -96,7 +96,10 @@ product-properties:
       tls_certificates: {}
     - ca: |
         ${indent(8, chomp(root_ca_cert))}
-      insecure_skip_verify: false
+      # We are only enabling TLS for the encryption. Each host has a different name,
+      # and the cert will not match them. The list is also dynamic, so we can't
+      # pre-allocate a cert with all the names.
+      insecure_skip_verify: true
       scrape_job: |-
         job_name: 'loki'
         metrics_path: /metrics
