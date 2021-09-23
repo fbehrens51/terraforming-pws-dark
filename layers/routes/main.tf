@@ -34,7 +34,7 @@ locals {
   es_s3_vpc_endpoint_id      = data.terraform_remote_state.paperwork.outputs.es_s3_vpc_endpoint_id
   cp_s3_vpc_endpoint_id      = data.terraform_remote_state.paperwork.outputs.cp_s3_vpc_endpoint_id
   bastion_s3_vpc_endpoint_id = data.terraform_remote_state.paperwork.outputs.bastion_s3_vpc_endpoint_id
-  tkg_s3_vpc_endpoint_id = data.terraform_remote_state.paperwork.outputs.tkg_s3_vpc_endpoint_id
+  tkg_s3_vpc_endpoint_id     = data.terraform_remote_state.paperwork.outputs.tkg_s3_vpc_endpoint_id
 }
 
 module "pas_vpc_route_tables" {
@@ -159,49 +159,49 @@ module "route_pas_es" {
 }
 
 module "route_tkg_cp" {
-  count              = var.enable_tkg ? 1 : 0
+  count            = var.enable_tkg ? 1 : 0
   source           = "./modules/routing"
-  accepter_vpc_id  = local.tkg_vpc_id
-  requester_vpc_id = local.cp_vpc_id
+  accepter_vpc_id  = local.cp_vpc_id
+  requester_vpc_id = local.tkg_vpc_id
   accepter_route_table_ids = concat(
-    module.tkg_vpc_route_tables[count.index].private_route_table_ids,
-    [module.tkg_vpc_route_tables[count.index].public_route_table_id],
-  )
-  requester_route_table_ids = concat(
     module.cp_vpc_route_tables.private_route_table_ids,
     [module.cp_vpc_route_tables.public_route_table_id],
+  )
+  requester_route_table_ids = concat(
+    module.tkg_vpc_route_tables[count.index].private_route_table_ids,
+    [module.tkg_vpc_route_tables[count.index].public_route_table_id],
   )
   availability_zones = var.availability_zones
 }
 
 module "route_tkg_pas" {
-  count              = var.enable_tkg ? 1 : 0
+  count            = var.enable_tkg ? 1 : 0
   source           = "./modules/routing"
-  accepter_vpc_id  = local.tkg_vpc_id
-  requester_vpc_id = local.pas_vpc_id
+  accepter_vpc_id  = local.pas_vpc_id
+  requester_vpc_id = local.tkg_vpc_id
   accepter_route_table_ids = concat(
-    module.tkg_vpc_route_tables[count.index].private_route_table_ids,
-    [module.tkg_vpc_route_tables[count.index].public_route_table_id],
-  )
-  requester_route_table_ids = concat(
     module.pas_vpc_route_tables.private_route_table_ids,
     [module.pas_vpc_route_tables.public_route_table_id],
+  )
+  requester_route_table_ids = concat(
+    module.tkg_vpc_route_tables[count.index].private_route_table_ids,
+    [module.tkg_vpc_route_tables[count.index].public_route_table_id],
   )
   availability_zones = var.availability_zones
 }
 
 module "route_tkg_es" {
-  count              = var.enable_tkg ? 1 : 0
+  count            = var.enable_tkg ? 1 : 0
   source           = "./modules/routing"
-  accepter_vpc_id  = local.tkg_vpc_id
-  requester_vpc_id = local.es_vpc_id
+  accepter_vpc_id  = local.es_vpc_id
+  requester_vpc_id = local.tkg_vpc_id
   accepter_route_table_ids = concat(
-    module.tkg_vpc_route_tables[count.index].private_route_table_ids,
-    [module.tkg_vpc_route_tables[count.index].public_route_table_id],
-  )
-  requester_route_table_ids = concat(
     module.es_vpc_route_tables.private_route_table_ids,
     [module.es_vpc_route_tables.public_route_table_id],
+  )
+  requester_route_table_ids = concat(
+    module.tkg_vpc_route_tables[count.index].private_route_table_ids,
+    [module.tkg_vpc_route_tables[count.index].public_route_table_id],
   )
   availability_zones = var.availability_zones
 }
@@ -223,7 +223,7 @@ variable "availability_zones" {
   type = list(string)
 }
 
-variable enable_tkg {
-  type = bool
+variable "enable_tkg" {
+  type    = bool
   default = false
 }
