@@ -47,11 +47,16 @@ variable "database_name" {
 }
 
 variable "apply_immediately" {
-  type = bool
+  type    = bool
   default = true
 }
 
 variable "maintenance_window" {
-  type = string
+  type    = string
+  default = ""
+}
+
+variable "backup_window" {
+  type    = string
   default = ""
 }
