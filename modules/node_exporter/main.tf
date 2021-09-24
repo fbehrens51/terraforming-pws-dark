@@ -66,6 +66,7 @@ write_files:
       User=node_exporter
       EnvironmentFile=/etc/sysconfig/node_exporter
       ExecStart=/usr/sbin/node_exporter $OPTIONS
+      Restart=always
 
       [Install]
       WantedBy=multi-user.target
