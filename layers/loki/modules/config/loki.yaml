@@ -19,7 +19,7 @@ ingester:
       replication_factor: 1
     final_sleep: 0s
   # https://grafana.com/docs/loki/latest/best-practices/#use-chunk_target_size
-  chunk_target_size: 1536000
+  chunk_target_size: 153600
   max_chunk_age: 1h
   chunk_idle_period: 30m
   chunk_retain_period: 30s
