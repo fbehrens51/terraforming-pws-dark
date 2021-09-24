@@ -56,6 +56,7 @@ write_files:
       User=loki
       EnvironmentFile=/etc/sysconfig/loki
       ExecStart=/usr/sbin/loki $OPTIONS
+      Restart=always
 
       [Install]
       WantedBy=multi-user.target
