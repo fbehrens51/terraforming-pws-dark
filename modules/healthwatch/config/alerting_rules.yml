@@ -25,7 +25,7 @@ groups:
     rules:
       - alert: OpsManagerStatus
         expr: 'probe_success{instance=~"https://om\\..*"} <= 0'
-        for: 10m
+        for: 45m
         annotations:
           summary: "The Ops Manager health check failed"
           description: |
