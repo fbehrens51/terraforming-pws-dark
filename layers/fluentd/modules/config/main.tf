@@ -43,7 +43,7 @@ data "template_file" "config_user_data" {
 resource "aws_s3_bucket_object" "certs_user_data" {
   bucket  = var.public_bucket_name
   key     = local.bucket_key
-  content = data.template_file.certs_user_data.rendered
+  content = local.certs_user_data
 }
 
 output "config_user_data" {
