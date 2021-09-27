@@ -148,7 +148,8 @@ locals {
     enabled       = true
     loki_dns_name = data.terraform_remote_state.bootstrap_loki[0].outputs.loki_lb_dns_name
     } : {
-    enabled = false
+    enabled       = false
+    loki_dns_name = ""
   }
   grafana_elb_dns                     = data.terraform_remote_state.pas.outputs.grafana_elb_dns_name
   control_plane_plane_uaa_elb_dns     = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.uaa_elb_dns

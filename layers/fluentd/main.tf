@@ -118,7 +118,12 @@ locals {
     loki_client_cert = data.terraform_remote_state.paperwork.outputs.loki_client_cert
     loki_client_key  = data.terraform_remote_state.paperwork.outputs.loki_client_key
     } : {
-    enabled = false
+    enabled          = false
+    loki_url         = ""
+    loki_password    = ""
+    loki_username    = ""
+    loki_client_cert = ""
+    loki_client_key  = ""
   }
 }
 

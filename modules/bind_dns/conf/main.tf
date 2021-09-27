@@ -19,7 +19,7 @@ variable "fluentd_dns_name" {}
 variable "loki_config" {
   type = object({
     enabled       = bool
-    loki_dns_name = optional(string)
+    loki_dns_name = string
   })
 }
 variable "grafana_elb_dns" {}

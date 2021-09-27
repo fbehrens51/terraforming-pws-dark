@@ -17,11 +17,11 @@ variable "s3_path" {}
 variable "loki_config" {
   type = object({
     enabled          = bool
-    loki_url         = optional(string)
-    loki_password    = optional(string)
-    loki_username    = optional(string)
-    loki_client_cert = optional(string)
-    loki_client_key  = optional(string)
+    loki_url         = string
+    loki_password    = string
+    loki_username    = string
+    loki_client_cert = string
+    loki_client_key  = string
   })
 }
 
