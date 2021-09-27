@@ -26,6 +26,11 @@ variable "fluentd_bundle_key" {
 variable "region" {
 }
 
+variable "enable_loki" {
+  type    = bool
+  default = false
+}
+
 module "providers" {
   source = "../../modules/dark_providers"
 }
@@ -64,6 +69,7 @@ data "terraform_remote_state" "bootstrap_fluentd" {
 }
 
 data "terraform_remote_state" "bootstrap_loki" {
+  count   = var.enable_loki ? 1 : 0
   backend = "s3"
 
   config = {
@@ -103,6 +109,22 @@ locals {
   log_stream_name      = "\"fluentd_syslog_#{ENV['AWSAZ']}\""
 
   encrypted_amazon2_ami_id = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
+
+  loki_config = var.enable_loki ? {
+    enabled          = true
+    loki_url         = data.terraform_remote_state.bootstrap_loki[0].outputs.loki_url
+    loki_password    = data.terraform_remote_state.bootstrap_loki[0].outputs.loki_password
+    loki_username    = data.terraform_remote_state.bootstrap_loki[0].outputs.loki_username
+    loki_client_cert = data.terraform_remote_state.paperwork.outputs.loki_client_cert
+    loki_client_key  = data.terraform_remote_state.paperwork.outputs.loki_client_key
+    } : {
+    enabled          = false
+    loki_url         = ""
+    loki_password    = ""
+    loki_username    = ""
+    loki_client_cert = ""
+    loki_client_key  = ""
+  }
 }
 
 data "aws_vpc" "es_vpc" {
@@ -123,9 +145,6 @@ module "configuration" {
   server_cert = data.terraform_remote_state.paperwork.outputs.fluentd_server_cert
   server_key  = data.terraform_remote_state.paperwork.outputs.fluentd_server_key
 
-  loki_client_cert = data.terraform_remote_state.paperwork.outputs.loki_client_cert
-  loki_client_key  = data.terraform_remote_state.paperwork.outputs.loki_client_key
-
   fluentd_bundle_key = var.fluentd_bundle_key
 
   cloudwatch_audit_log_group_name = local.audit_log_group_name
@@ -136,9 +155,7 @@ module "configuration" {
   region                          = var.region
   s3_path                         = "logs/"
 
-  loki_url      = data.terraform_remote_state.bootstrap_loki.outputs.loki_url
-  loki_password = data.terraform_remote_state.bootstrap_loki.outputs.loki_password
-  loki_username = data.terraform_remote_state.bootstrap_loki.outputs.loki_username
+  loki_config = local.loki_config
 }
 
 module "domains" {

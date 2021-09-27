@@ -16,7 +16,12 @@ variable "control_plane_plane_credhub_elb_dns" {}
 variable "pas_elb_dns" {}
 variable "postfix_private_ip" {}
 variable "fluentd_dns_name" {}
-variable "loki_dns_name" {}
+variable "loki_config" {
+  type = object({
+    enabled       = bool
+    loki_dns_name = string
+  })
+}
 variable "grafana_elb_dns" {}
 
 
@@ -32,7 +37,7 @@ module "bind_conf_content" {
   pas_elb_dns                         = var.pas_elb_dns
   postfix_private_ip                  = var.postfix_private_ip
   fluentd_dns_name                    = var.fluentd_dns_name
-  loki_dns_name                       = var.loki_dns_name
+  loki_config                         = var.loki_config
   grafana_elb_dns                     = var.grafana_elb_dns
   control_plane_plane_uaa_elb_dns     = var.control_plane_plane_uaa_elb_dns
   control_plane_plane_credhub_elb_dns = var.control_plane_plane_credhub_elb_dns

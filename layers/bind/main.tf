@@ -89,6 +89,7 @@ data "terraform_remote_state" "bootstrap_fluentd" {
 }
 
 data "terraform_remote_state" "bootstrap_loki" {
+  count   = var.enable_loki ? 1 : 0
   backend = "s3"
 
   config = {
@@ -137,13 +138,19 @@ locals {
 
   encrypted_amazon2_ami_id = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
 
-  om_public_ip                        = data.terraform_remote_state.pas.outputs.ops_manager_ip
-  control_plane_om_public_ip          = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.ops_manager_ip
-  control_plane_plane_elb_dns         = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.plane_elb_dns
-  pas_elb_dns                         = data.terraform_remote_state.pas.outputs.pas_elb_dns_name
-  postfix_private_ip                  = data.terraform_remote_state.bootstrap_postfix.outputs.postfix_eni_ips[0]
-  fluentd_dns_name                    = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_lb_dns_name
-  loki_dns_name                       = data.terraform_remote_state.bootstrap_loki.outputs.loki_lb_dns_name
+  om_public_ip                = data.terraform_remote_state.pas.outputs.ops_manager_ip
+  control_plane_om_public_ip  = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.ops_manager_ip
+  control_plane_plane_elb_dns = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.plane_elb_dns
+  pas_elb_dns                 = data.terraform_remote_state.pas.outputs.pas_elb_dns_name
+  postfix_private_ip          = data.terraform_remote_state.bootstrap_postfix.outputs.postfix_eni_ips[0]
+  fluentd_dns_name            = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_lb_dns_name
+  loki_config = var.enable_loki ? {
+    enabled       = true
+    loki_dns_name = data.terraform_remote_state.bootstrap_loki[0].outputs.loki_lb_dns_name
+    } : {
+    enabled       = false
+    loki_dns_name = ""
+  }
   grafana_elb_dns                     = data.terraform_remote_state.pas.outputs.grafana_elb_dns_name
   control_plane_plane_uaa_elb_dns     = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.uaa_elb_dns
   control_plane_plane_credhub_elb_dns = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.credhub_elb_dns
@@ -277,7 +284,7 @@ module "bind_master_user_data" {
   pas_elb_dns                         = local.pas_elb_dns
   postfix_private_ip                  = local.postfix_private_ip
   fluentd_dns_name                    = local.fluentd_dns_name
-  loki_dns_name                       = local.loki_dns_name
+  loki_config                         = local.loki_config
   grafana_elb_dns                     = local.grafana_elb_dns
   control_plane_plane_uaa_elb_dns     = local.control_plane_plane_uaa_elb_dns
   control_plane_plane_credhub_elb_dns = local.control_plane_plane_credhub_elb_dns
@@ -326,6 +333,11 @@ variable "internetless" {
 variable "internet" {
   default     = false
   description = "if true, applies extra rules to iptables on the bind servers to prevent participation in distributed DNS amplification attacks"
+}
+
+variable "enable_loki" {
+  type    = bool
+  default = false
 }
 
 output "master_ips" {

@@ -13,8 +13,15 @@ variable "cloudwatch_log_stream_name" {}
 variable "s3_audit_logs_bucket" {}
 variable "region" {}
 variable "s3_path" {}
-variable "loki_url" {}
-variable "loki_username" {}
-variable "loki_password" {}
-variable "loki_client_cert" {}
-variable "loki_client_key" {}
+
+variable "loki_config" {
+  type = object({
+    enabled          = bool
+    loki_url         = string
+    loki_password    = string
+    loki_username    = string
+    loki_client_cert = string
+    loki_client_key  = string
+  })
+}
+
