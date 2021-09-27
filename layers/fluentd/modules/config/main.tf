@@ -20,9 +20,7 @@ data "template_file" "td_agent_configuration" {
     s3_audit_logs_bucket            = var.s3_audit_logs_bucket
     s3_path                         = var.s3_path
 
-    loki_url      = var.loki_url
-    loki_username = var.loki_username
-    loki_password = var.loki_password
+    loki_config = var.loki_config
   }
 }
 
@@ -46,8 +44,7 @@ data "template_file" "certs_user_data" {
     server_key  = var.server_key
     server_cert = var.server_cert
 
-    loki_client_cert = var.loki_client_cert
-    loki_client_key  = var.loki_client_key
+    loki_config = var.loki_config
   }
 }
 

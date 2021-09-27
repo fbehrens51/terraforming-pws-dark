@@ -223,11 +223,12 @@
       json_handler yajl
     </store>
 
+%{if loki_config.enabled ~}
     <store>
       @type loki
-      url ${loki_url}
-      username ${loki_username}
-      password ${loki_password}
+      url ${loki_config.loki_url}
+      username ${loki_config.loki_username}
+      password ${loki_config.loki_password}
       cert /etc/td-agent/loki-client-cert.pem
       key /etc/td-agent/loki-client-key.pem
       <label>
@@ -240,6 +241,7 @@
       flush_at_shutdown true
       buffer_chunk_limit 1m
     </store>
+%{~ endif }
 
     # "Fan-out" to various other things
     <store>
