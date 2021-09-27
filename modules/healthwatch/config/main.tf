@@ -19,6 +19,7 @@ variable "control_plane_metrics_enabled" {
   type = bool
 }
 
+variable "loki_enabled" { type = bool }
 variable "loki_client_cert" {}
 variable "loki_client_key" {}
 
@@ -154,6 +155,7 @@ locals {
     control_plane_metrics_certificate    = var.control_plane_metrics_certificate
     control_plane_metrics_private_key    = var.control_plane_metrics_private_key
     control_plane_metrics_enabled        = var.control_plane_metrics_enabled
+    loki_enabled                         = var.loki_enabled
     loki_client_cert                     = var.loki_client_cert
     loki_client_key                      = var.loki_client_key
 

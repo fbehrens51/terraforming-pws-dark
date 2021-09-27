@@ -94,6 +94,7 @@ product-properties:
           action: keep
       server_name: null
       tls_certificates: {}
+%{ if loki_enabled ~}
     - ca: |
         ${indent(8, chomp(root_ca_cert))}
       # We are only enabling TLS for the encryption. Each host has a different name,
@@ -120,6 +121,7 @@ product-properties:
           ${indent(10, chomp(loki_client_cert))}
         private_key_pem: |
           ${indent(10, chomp(loki_client_key))}
+%{ ~ endif }
     - ca: |
         ${indent(8, chomp(root_ca_cert))}
       insecure_skip_verify: false
