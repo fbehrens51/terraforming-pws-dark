@@ -481,7 +481,9 @@ variable "cp_vpc_id" {
 variable "fluentd_role_name" {
 }
 
-variable "loki_role_name" {
+variable "enable_loki" {
+  type    = bool
+  default = false
 }
 
 variable "isse_role_name" {
@@ -705,28 +707,88 @@ data "aws_s3_bucket_object" "ldap_client_key" {
   key    = var.ldap_client_key_s3_path
 }
 
+variable "loki_role_name" {
+  default = ""
+
+  validation {
+    condition     = (!var.enable_loki) || (var.enable_loki && length(var.loki_role_name) > 0)
+    error_message = "loki_role_name must be set if enable_loki is true"
+  }
+}
+
 variable "loki_client_cert_signer_ca_cert_s3_path" {
+  default = ""
+
+  validation {
+    condition     = (!var.enable_loki) || (var.enable_loki && length(var.loki_client_cert_signer_ca_cert_s3_path) > 0)
+    error_message = "loki_client_cert_signer_ca_cert_s3_path must be set if enable_loki is true"
+  }
 }
 
 data "aws_s3_bucket_object" "loki_client_cert_signer_ca_cert" {
+  count  = var.enable_loki ? 1 : 0
   bucket = var.cert_bucket
   key    = var.loki_client_cert_signer_ca_cert_s3_path
 }
 
 variable "loki_client_cert_s3_path" {
+  default = ""
+
+  validation {
+    condition     = (!var.enable_loki) || (var.enable_loki && length(var.loki_client_cert_s3_path) > 0)
+    error_message = "loki_client_cert_s3_path must be set if enable_loki is true"
+  }
 }
 
 data "aws_s3_bucket_object" "loki_client_cert" {
+  count  = var.enable_loki ? 1 : 0
   bucket = var.cert_bucket
   key    = var.loki_client_cert_s3_path
 }
 
 variable "loki_client_key_s3_path" {
+  default = ""
+
+  validation {
+    condition     = (!var.enable_loki) || (var.enable_loki && length(var.loki_client_key_s3_path) > 0)
+    error_message = "loki_client_key_s3_path must be set if enable_loki is true"
+  }
 }
 
 data "aws_s3_bucket_object" "loki_client_key" {
+  count  = var.enable_loki ? 1 : 0
   bucket = var.cert_bucket
   key    = var.loki_client_key_s3_path
+}
+
+variable "loki_server_cert_s3_path" {
+  default = ""
+
+  validation {
+    condition     = (!var.enable_loki) || (var.enable_loki && length(var.loki_server_cert_s3_path) > 0)
+    error_message = "loki_server_cert_s3_path must be set if enable_loki is true"
+  }
+}
+
+data "aws_s3_bucket_object" "loki_server_cert" {
+  count  = var.enable_loki ? 1 : 0
+  bucket = var.cert_bucket
+  key    = var.loki_server_cert_s3_path
+}
+
+variable "loki_server_key_s3_path" {
+  default = ""
+
+  validation {
+    condition     = (!var.enable_loki) || (var.enable_loki && length(var.loki_server_key_s3_path) > 0)
+    error_message = "loki_server_key_s3_path must be set if enable_loki is true"
+  }
+}
+
+data "aws_s3_bucket_object" "loki_server_key" {
+  count  = var.enable_loki ? 1 : 0
+  bucket = var.cert_bucket
+  key    = var.loki_server_key_s3_path
 }
 
 variable "control_plane_star_server_cert_s3_path" {
@@ -777,21 +839,6 @@ data "aws_s3_bucket_object" "fluentd_server_key" {
   key    = var.fluentd_server_key_s3_path
 }
 
-variable "loki_server_cert_s3_path" {
-}
-
-data "aws_s3_bucket_object" "loki_server_cert" {
-  bucket = var.cert_bucket
-  key    = var.loki_server_cert_s3_path
-}
-
-variable "loki_server_key_s3_path" {
-}
-
-data "aws_s3_bucket_object" "loki_server_key" {
-  bucket = var.cert_bucket
-  key    = var.loki_server_key_s3_path
-}
 
 variable "smtp_server_cert_s3_path" {
 }
@@ -969,10 +1016,6 @@ output "fluentd_role_name" {
   value = var.fluentd_role_name
 }
 
-output "loki_role_name" {
-  value = var.loki_role_name
-}
-
 output "instance_tagger_role_name" {
   value = var.instance_tagger_role_name
 }
@@ -1118,16 +1161,29 @@ output "ldap_client_key_s3_path" {
   value = var.ldap_client_key_s3_path
 }
 
+output "loki_role_name" {
+  value = var.loki_role_name
+}
+
 output "loki_client_cert_signer_ca_cert" {
-  value = data.aws_s3_bucket_object.loki_client_cert_signer_ca_cert.body
+  value = var.enable_loki ? data.aws_s3_bucket_object.loki_client_cert_signer_ca_cert[0].body : ""
 }
 
 output "loki_client_cert" {
-  value = data.aws_s3_bucket_object.loki_client_cert.body
+  value = var.enable_loki ? data.aws_s3_bucket_object.loki_client_cert[0].body : ""
 }
 
 output "loki_client_key" {
-  value     = data.aws_s3_bucket_object.loki_client_key.body
+  value     = var.enable_loki ? data.aws_s3_bucket_object.loki_client_key[0].body : ""
+  sensitive = true
+}
+
+output "loki_server_cert" {
+  value = var.enable_loki ? data.aws_s3_bucket_object.loki_server_cert[0].body : ""
+}
+
+output "loki_server_key" {
+  value     = var.enable_loki ? data.aws_s3_bucket_object.loki_server_key[0].body : ""
   sensitive = true
 }
 
@@ -1155,15 +1211,6 @@ output "fluentd_server_cert" {
 
 output "fluentd_server_key" {
   value     = data.aws_s3_bucket_object.fluentd_server_key.body
-  sensitive = true
-}
-
-output "loki_server_cert" {
-  value = data.aws_s3_bucket_object.loki_server_cert.body
-}
-
-output "loki_server_key" {
-  value     = data.aws_s3_bucket_object.loki_server_key.body
   sensitive = true
 }
 
