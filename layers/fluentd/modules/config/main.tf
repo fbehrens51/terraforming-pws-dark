@@ -1,6 +1,6 @@
 
 locals {
-  bucket_key = "fluentd-${md5(data.template_file.certs_user_data.rendered)}-user-data.yml"
+  bucket_key = "fluentd-${md5(local.certs_user_data)}-user-data.yml"
 
   td_agent_configuration = templatefile("${path.module}/td-agent.tpl", {
     syslog_port                     = module.ports.syslog_port
