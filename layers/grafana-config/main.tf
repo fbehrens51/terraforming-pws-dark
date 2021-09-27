@@ -33,6 +33,7 @@ data "terraform_remote_state" "bootstrap_fluentd" {
 }
 
 data "terraform_remote_state" "bootstrap_loki" {
+  count   = var.enable_loki ? 1 : 0
   backend = "s3"
 
   config = {
@@ -75,6 +76,11 @@ variable "email_addresses" {
 
 variable "aws_base_domain" {
   default = "aws.amazon.com"
+}
+
+variable "enable_loki" {
+  type    = bool
+  default = false
 }
 
 data "aws_region" "current" {
@@ -147,11 +153,12 @@ resource "grafana_alert_notification" "email" {
 }
 
 resource "grafana_data_source" "loki" {
+  count    = var.enable_loki ? 1 : 0
   type     = "loki"
   name     = "Loki"
-  url      = data.terraform_remote_state.bootstrap_loki.outputs.loki_url
-  username = data.terraform_remote_state.bootstrap_loki.outputs.loki_username
-  password = data.terraform_remote_state.bootstrap_loki.outputs.loki_password
+  url      = data.terraform_remote_state.bootstrap_loki[0].outputs.loki_url
+  username = data.terraform_remote_state.bootstrap_loki[0].outputs.loki_username
+  password = data.terraform_remote_state.bootstrap_loki[0].outputs.loki_password
 
   json_data {
     tls_auth = true
@@ -203,6 +210,7 @@ resource "grafana_dashboard" "events-logger" {
 }
 
 resource "grafana_dashboard" "loki" {
+  count       = var.enable_loki ? 1 : 0
   config_json = file("dashboards/loki.json")
 }
 
