@@ -121,7 +121,7 @@ product-properties:
           ${indent(10, chomp(loki_client_cert))}
         private_key_pem: |
           ${indent(10, chomp(loki_client_key))}
-%{ ~ endif }
+%{~ endif }
     - ca: |
         ${indent(8, chomp(root_ca_cert))}
       insecure_skip_verify: false
