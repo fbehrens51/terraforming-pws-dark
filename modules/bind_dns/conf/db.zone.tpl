@@ -26,6 +26,8 @@ ${smtp_subdomain}           A       ${postfix_private_ip}
 
 ${fluentd_subdomain}        CNAME   ${fluentd_dns_name}.
 
-${loki_subdomain}           CNAME   ${loki_dns_name}.
+%{ if loki_config.enabled ~}
+${loki_subdomain}           CNAME   ${loki_config.loki_dns_name}.
+%{~ endif }
 
 ${grafana_subdomain}        CNAME   ${grafana_elb_dns}.
