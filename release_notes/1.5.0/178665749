@@ -33,7 +33,7 @@ The other variables are certificates for loki communication.
 
 ## Feature Flag
 
-Set `enable_loki = true` in the shared environment `terraform.tfvars`, e.g. `live/staging/terraform.tfvars`
+Set `enable_loki = true` in the shared environment `terraform.tfvars`, e.g. `live/staging/terraform.tfvars` and `live/staging-vms/terraform.tfvars`
 
 This will result in changes in the following layers, which you can apply manually or let the pipeline handle:
 
