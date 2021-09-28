@@ -21,3 +21,15 @@ write_files:
     path: /etc/td-agent/key.pem
     permissions: '0600'
     owner: root:root
+%{if loki_config.enabled ~}
+  - content: |
+      ${indent(6, loki_config.loki_client_cert)}
+    path: /etc/td-agent/loki-client-cert.pem
+    permissions: '0600'
+    owner: root:root
+  - content: |
+      ${indent(6, loki_config.loki_client_key)}
+    path: /etc/td-agent/loki-client-key.pem
+    permissions: '0600'
+    owner: root:root
+%{~ endif}

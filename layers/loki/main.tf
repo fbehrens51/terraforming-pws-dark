@@ -19,16 +19,15 @@ variable "global_vars" {
 variable "internetless" {
 }
 
-variable "fluentd_bundle_key" {
-  description = "Fluentd bundle S3 object key, aka filename."
+variable "loki_bundle_key" {
+  description = "Loki bundle S3 object key, aka filename."
 }
 
 variable "region" {
 }
 
-variable "enable_loki" {
-  type    = bool
-  default = false
+variable "retention_period" {
+  default = "1440h" # 60 days
 }
 
 module "providers" {
@@ -57,19 +56,7 @@ data "terraform_remote_state" "scaling-params" {
   }
 }
 
-data "terraform_remote_state" "bootstrap_fluentd" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "bootstrap_fluentd"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 data "terraform_remote_state" "bootstrap_loki" {
-  count   = var.enable_loki ? 1 : 0
   backend = "s3"
 
   config = {
@@ -93,38 +80,18 @@ data "terraform_remote_state" "bootstrap_control_plane" {
 
 locals {
   env_name      = var.global_vars.env_name
-  modified_name = "${local.env_name} fluentd"
+  modified_name = "${local.env_name} loki"
   modified_tags = merge(
     var.global_vars["global_tags"],
     var.global_vars["instance_tags"],
     {
       "Name"       = local.modified_name
       "MetricsKey" = data.terraform_remote_state.paperwork.outputs.metrics_key,
-      "job"        = "fluentd",
+      "job"        = "loki",
     },
   )
 
-  audit_log_group_name = data.terraform_remote_state.bootstrap_fluentd.outputs.audit_log_group_name
-  log_group_name       = data.terraform_remote_state.bootstrap_fluentd.outputs.log_group_name
-  log_stream_name      = "\"fluentd_syslog_#{ENV['AWSAZ']}\""
-
   encrypted_amazon2_ami_id = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
-
-  loki_config = var.enable_loki ? {
-    enabled          = true
-    loki_url         = data.terraform_remote_state.bootstrap_loki[0].outputs.loki_url
-    loki_password    = data.terraform_remote_state.bootstrap_loki[0].outputs.loki_password
-    loki_username    = data.terraform_remote_state.bootstrap_loki[0].outputs.loki_username
-    loki_client_cert = data.terraform_remote_state.paperwork.outputs.loki_client_cert
-    loki_client_key  = data.terraform_remote_state.paperwork.outputs.loki_client_key
-    } : {
-    enabled          = false
-    loki_url         = ""
-    loki_password    = ""
-    loki_username    = ""
-    loki_client_cert = ""
-    loki_client_key  = ""
-  }
 }
 
 data "aws_vpc" "es_vpc" {
@@ -138,52 +105,33 @@ data "aws_vpc" "pas_vpc" {
 module "configuration" {
   source = "./modules/config"
 
+  ca_cert     = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  server_cert = data.terraform_remote_state.paperwork.outputs.loki_server_cert
+  server_key  = data.terraform_remote_state.paperwork.outputs.loki_server_key
+
+  client_cert_signer = data.terraform_remote_state.paperwork.outputs.loki_client_cert_signer_ca_cert
+
   public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url
 
-  ca_cert     = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
-  server_cert = data.terraform_remote_state.paperwork.outputs.fluentd_server_cert
-  server_key  = data.terraform_remote_state.paperwork.outputs.fluentd_server_key
+  loki_bundle_key  = var.loki_bundle_key
+  loki_ips         = data.terraform_remote_state.bootstrap_loki.outputs.loki_eni_ips
+  storage_bucket   = data.terraform_remote_state.bootstrap_loki.outputs.storage_bucket
+  root_domain      = data.terraform_remote_state.paperwork.outputs.root_domain
+  retention_period = var.retention_period
 
-  fluentd_bundle_key = var.fluentd_bundle_key
-
-  cloudwatch_audit_log_group_name = local.audit_log_group_name
-  cloudwatch_log_group_name       = local.log_group_name
-  cloudwatch_log_stream_name      = local.log_stream_name
-  s3_logs_bucket                  = data.terraform_remote_state.bootstrap_fluentd.outputs.s3_bucket_syslog_archive
-  s3_audit_logs_bucket            = data.terraform_remote_state.bootstrap_fluentd.outputs.s3_bucket_syslog_audit_archive
-  region                          = var.region
-  s3_path                         = "logs/"
-
-  loki_config = local.loki_config
-}
-
-module "domains" {
-  source      = "../../modules/domains"
-  root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
+  region = var.region
 }
 
 data "template_cloudinit_config" "user_data" {
+  count         = length(data.terraform_remote_state.bootstrap_loki.outputs.loki_eni_ips)
   base64_encode = true
   gzip          = true
 
-  // tag_completion has to be first, it sets a bash trap to ensure the tagger runs when an error occurs
-  part {
-    filename     = "tag_completion.cfg"
-    content_type = "text/x-include-url"
-    content      = data.terraform_remote_state.paperwork.outputs.completion_tag_user_data
-  }
-
-  part {
-    filename     = "certs.cfg"
-    content      = module.configuration.certs_user_data
-    content_type = "text/x-include-url"
-  }
-
   part {
     filename     = "config.cfg"
-    content_type = "text/cloud-config"
-    content      = module.configuration.config_user_data
+    content_type = "text/x-include-url"
+    content      = module.configuration.config_user_data[count.index]
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
 
@@ -199,8 +147,6 @@ data "template_cloudinit_config" "user_data" {
     content      = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
   }
 
-  // syslog has to come after clamav because it uses augtool, which is installed by clamav
-  // this only applies to this layer, since fluentd is the only one to setup local syslog forwarding
   part {
     filename     = "syslog.cfg"
     content      = module.syslog_config.user_data
@@ -223,6 +169,12 @@ data "template_cloudinit_config" "user_data" {
     filename     = "banner.cfg"
     content_type = "text/x-include-url"
     content      = data.terraform_remote_state.paperwork.outputs.custom_banner_user_data
+  }
+
+  part {
+    filename     = "tag_completion.cfg"
+    content_type = "text/x-include-url"
+    content      = data.terraform_remote_state.paperwork.outputs.completion_tag_user_data
   }
 
   part {
@@ -267,43 +219,47 @@ module "dnsmasq" {
   ]
 }
 
+module "syslog_ports" {
+  source = "../../modules/syslog_ports"
+}
+
 module "iptables_rules" {
   source = "../../modules/iptables"
   personality_rules = [
-    "iptables -A INPUT -p tcp --dport 8090                -m state --state NEW -j ACCEPT",
-    "iptables -A INPUT -p tcp --dport 8091                -m state --state NEW -j ACCEPT",
-    "iptables -A INPUT -p tcp --dport 8888                -m state --state NEW -j ACCEPT",
-    "iptables -A INPUT -p tcp --dport 9200                -m state --state NEW -j ACCEPT"
+    "iptables -A INPUT -p tcp --dport ${module.syslog_ports.loki_http_port}        -m state --state NEW -j ACCEPT",
+    "iptables -A INPUT -p tcp --dport ${module.syslog_ports.loki_healthcheck_port} -m state --state NEW -j ACCEPT",
+    "iptables -A INPUT -p tcp --dport ${module.syslog_ports.loki_grpc_port}        -m state --state NEW -j ACCEPT",
+    "iptables -A INPUT -p tcp --dport ${module.syslog_ports.loki_bind_port}        -m state --state NEW -j ACCEPT",
   ]
   control_plane_subnet_cidrs = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs
 }
 
-module "fluentd_instance" {
-  instance_count       = length(data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_eni_ids)
+module "loki_instance" {
+  count                = length(data.terraform_remote_state.bootstrap_loki.outputs.loki_eni_ids)
   source               = "../../modules/launch"
   instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
   scale_vpc_key        = "enterprise-services"
-  scale_service_key    = "fluentd"
+  scale_service_key    = "loki"
   ami_id               = local.encrypted_amazon2_ami_id
-  user_data            = data.template_cloudinit_config.user_data.rendered
-  eni_ids              = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_eni_ids
+  user_data            = data.template_cloudinit_config.user_data[count.index].rendered
+  eni_ids              = [data.terraform_remote_state.bootstrap_loki.outputs.loki_eni_ids[count.index]]
   tags                 = local.modified_tags
   check_cloud_init     = false
   bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  iam_instance_profile = data.terraform_remote_state.paperwork.outputs.fluentd_role_name
-  volume_ids           = data.terraform_remote_state.bootstrap_fluentd.outputs.volume_id
+  iam_instance_profile = data.terraform_remote_state.paperwork.outputs.loki_role_name
+  volume_ids           = [data.terraform_remote_state.bootstrap_loki.outputs.volume_id[count.index]]
 }
 
-resource "aws_lb_target_group_attachment" "fluentd_syslog_attachment" {
-  count            = length(data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_eni_ids)
-  target_group_arn = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_lb_syslog_tg_arn
-  target_id        = module.fluentd_instance.instance_ids[count.index]
+resource "aws_lb_target_group_attachment" "loki_http_attachment" {
+  count            = length(data.terraform_remote_state.bootstrap_loki.outputs.loki_eni_ids)
+  target_group_arn = data.terraform_remote_state.bootstrap_loki.outputs.loki_http_target_group
+  target_id        = module.loki_instance[count.index].instance_ids[0]
 }
 
-resource "aws_lb_target_group_attachment" "fluentd_apps_syslog_attachment" {
-  count            = length(data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_eni_ids)
-  target_group_arn = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_lb_apps_syslog_tg_arn
-  target_id        = module.fluentd_instance.instance_ids[count.index]
+resource "aws_lb_target_group_attachment" "loki_apps_grpc_attachment" {
+  count            = length(data.terraform_remote_state.bootstrap_loki.outputs.loki_eni_ids)
+  target_group_arn = data.terraform_remote_state.bootstrap_loki.outputs.loki_grpc_target_group
+  target_id        = module.loki_instance[count.index].instance_ids[0]
 }
 
 module "syslog_config" {
@@ -311,16 +267,15 @@ module "syslog_config" {
   root_domain    = data.terraform_remote_state.paperwork.outputs.root_domain
   syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
 
-  role_name          = "fluentd"
-  forward_locally    = true
+  role_name          = "loki"
   public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url
 }
 
-resource "null_resource" "fluentd_status" {
-  count = length(data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_eni_ids)
+resource "null_resource" "loki_status" {
+  count = length(data.terraform_remote_state.bootstrap_loki.outputs.loki_eni_ids)
   triggers = {
-    instance_id = module.fluentd_instance.instance_ids[count.index]
+    instance_id = module.loki_instance[count.index].instance_ids[0]
   }
 
   provisioner "local-exec" {
@@ -330,7 +285,7 @@ resource "null_resource" "fluentd_status" {
     #!/usr/bin/env bash
     set -e
     completed_tag="cloud_init_done"
-    poll_tags="aws ec2 describe-tags --filters Name=resource-id,Values=${module.fluentd_instance.instance_ids[count.index]} Name=key,Values=$completed_tag --output text --query Tags[*].Value"
+    poll_tags="aws ec2 describe-tags --filters Name=resource-id,Values=${module.loki_instance[count.index].instance_ids[0]} Name=key,Values=$completed_tag --output text --query Tags[*].Value"
     echo "running $poll_tags"
     tags="$($poll_tags)"
     COUNTER=0
@@ -348,16 +303,10 @@ resource "null_resource" "fluentd_status" {
       let COUNTER=COUNTER+1
     done
     echo "$completed_tag = $tags"
-
-    if cloud_init_message="$( aws ec2 describe-tags --filters Name=resource-id,Values=${module.fluentd_instance.instance_ids[count.index]} Name=key,Values=cloud_init_output --output text --query Tags[*].Value )"; then
-      [[ ! -z $cloud_init_message ]] && echo -e "cloud_init_output: $( echo -ne "$cloud_init_message" | openssl enc -d -a | gunzip -qc - )"
-    fi
-
-    [[ $tags == false ]] && exit 1 || exit 0
     EOF
   }
 }
 
-output "fluent_ip" {
-  value = module.fluentd_instance.private_ips
+output "loki_ip" {
+  value = flatten(module.loki_instance.*.private_ips)
 }

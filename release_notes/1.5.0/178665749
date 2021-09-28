@@ -1,0 +1,59 @@
+# Installing Loki
+
+## Prereqs
+
+Generate two certs:
+
+1. Loki's server cert with DNS SAN (loki.<root_romain>) e.g. `loki.pcfeagle.cf-app.com`
+2. Loki's client cert
+
+Place them in the secrets bucket.
+Also place the issuer certificate authority for the loki client cert in the s3 bucket.
+
+Add the following variable to the paperwork prereqs.tfvars
+
+```
+loki_config = {
+  loki_role_name = ""
+  loki_client_cert_signer_ca_cert_s3_path = ""
+  loki_client_cert_s3_path = ""
+  loki_client_key_s3_path = ""
+  loki_server_cert_s3_path = ""
+  loki_server_key_s3_path = ""
+}
+```
+
+Loki's IAM role requires only "s3:*" and "ec2:CreateTags".
+
+The other variables are certificates for loki communication.
+
+`loki_client_cert_signer_ca_cert` will be used to validate `loki_client_cert` and `loki_client_key`
+`loki_client_cert` and `loki_client_key` are used by fluentd to write and grafana to read from loki
+`loki_server_cert` and `loki_server_key` are used by loki for TLS
+
+## Feature Flag
+
+Set `enable_loki = true` in the shared environment `terraform.tfvars`, e.g. `live/staging/terraform.tfvars`
+
+This will result in changes in the following layers, which you can apply manually or let the pipeline handle:
+
+- paperwork (to read the certificates and publish as outputs)
+- bind (to add the loki.<root_domain> CNAME)
+- fluentd (to start forwarding logs to loki)
+- healthwatch-config (to start scraping loki's metrics endpoint)
+- grafana-config (to populate the loki datasource and dashboard)
+
+## Bootstrapping
+
+Add and apply the `bootstrap_loki` layer to your environment. No special inputs
+are required.
+
+This will create enis, an NLB, persistent EBS volumes, etc.
+
+## Deploying
+
+Add and apply the `loki` layer to your environment. If applying interactively,
+you will need to specify the path to the loki bundle, which should have been
+populated by the pipeline into the public bucket. `loki-2.3.0.zip` for example.
+You can optionally set the `retention_period` to some number of hours (>24).
+Default is `1440h` (60 days). Loki will delete logs older than this period.

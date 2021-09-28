@@ -702,6 +702,61 @@ data "aws_s3_bucket_object" "ldap_client_key" {
   key    = var.ldap_client_key_s3_path
 }
 
+variable "enable_loki" {
+  type    = bool
+  default = false
+}
+
+variable "loki_config" {
+  type = object({
+    loki_role_name                          = string
+    loki_client_cert_signer_ca_cert_s3_path = string
+    loki_client_cert_s3_path                = string
+    loki_client_key_s3_path                 = string
+    loki_server_cert_s3_path                = string
+    loki_server_key_s3_path                 = string
+  })
+
+  default = {
+    loki_role_name                          = ""
+    loki_client_cert_signer_ca_cert_s3_path = ""
+    loki_client_cert_s3_path                = ""
+    loki_client_key_s3_path                 = ""
+    loki_server_cert_s3_path                = ""
+    loki_server_key_s3_path                 = ""
+  }
+}
+
+data "aws_s3_bucket_object" "loki_client_cert_signer_ca_cert" {
+  count  = var.enable_loki ? 1 : 0
+  bucket = var.cert_bucket
+  key    = var.loki_config.loki_client_cert_signer_ca_cert_s3_path
+}
+
+data "aws_s3_bucket_object" "loki_client_cert" {
+  count  = var.enable_loki ? 1 : 0
+  bucket = var.cert_bucket
+  key    = var.loki_config.loki_client_cert_s3_path
+}
+
+data "aws_s3_bucket_object" "loki_client_key" {
+  count  = var.enable_loki ? 1 : 0
+  bucket = var.cert_bucket
+  key    = var.loki_config.loki_client_key_s3_path
+}
+
+data "aws_s3_bucket_object" "loki_server_cert" {
+  count  = var.enable_loki ? 1 : 0
+  bucket = var.cert_bucket
+  key    = var.loki_config.loki_server_cert_s3_path
+}
+
+data "aws_s3_bucket_object" "loki_server_key" {
+  count  = var.enable_loki ? 1 : 0
+  bucket = var.cert_bucket
+  key    = var.loki_config.loki_server_key_s3_path
+}
+
 variable "control_plane_star_server_cert_s3_path" {
 }
 
@@ -749,6 +804,7 @@ data "aws_s3_bucket_object" "fluentd_server_key" {
   bucket = var.cert_bucket
   key    = var.fluentd_server_key_s3_path
 }
+
 
 variable "smtp_server_cert_s3_path" {
 }
@@ -1069,6 +1125,32 @@ output "ldap_client_key" {
 
 output "ldap_client_key_s3_path" {
   value = var.ldap_client_key_s3_path
+}
+
+output "loki_role_name" {
+  value = var.loki_config.loki_role_name
+}
+
+output "loki_client_cert_signer_ca_cert" {
+  value = var.enable_loki ? data.aws_s3_bucket_object.loki_client_cert_signer_ca_cert[0].body : ""
+}
+
+output "loki_client_cert" {
+  value = var.enable_loki ? data.aws_s3_bucket_object.loki_client_cert[0].body : ""
+}
+
+output "loki_client_key" {
+  value     = var.enable_loki ? data.aws_s3_bucket_object.loki_client_key[0].body : ""
+  sensitive = true
+}
+
+output "loki_server_cert" {
+  value = var.enable_loki ? data.aws_s3_bucket_object.loki_server_cert[0].body : ""
+}
+
+output "loki_server_key" {
+  value     = var.enable_loki ? data.aws_s3_bucket_object.loki_server_key[0].body : ""
+  sensitive = true
 }
 
 output "control_plane_star_server_cert" {

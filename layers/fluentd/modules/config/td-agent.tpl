@@ -186,6 +186,14 @@
 </label>
 
 <label @all_logs>
+
+  <filter>
+    @type record_transformer
+    <record>
+      fluentd_az "#{ENV['AWSAZ']}"
+    </record>
+  </filter>
+
   <match **>
     @type copy
 
@@ -214,6 +222,26 @@
       auto_create_stream true
       json_handler yajl
     </store>
+
+%{if loki_config.enabled ~}
+    <store>
+      @type loki
+      url ${loki_config.loki_url}
+      username ${loki_config.loki_username}
+      password ${loki_config.loki_password}
+      cert /etc/td-agent/loki-client-cert.pem
+      key /etc/td-agent/loki-client-key.pem
+      <label>
+        ident $.ident
+        source_address $.source_address
+        fluentd_az $.fluentd_az
+      </label>
+      line_format json
+      flush_interval 10s
+      flush_at_shutdown true
+      buffer_chunk_limit 1m
+    </store>
+%{~ endif }
 
     # "Fan-out" to various other things
     <store>

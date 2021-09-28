@@ -94,6 +94,34 @@ product-properties:
           action: keep
       server_name: null
       tls_certificates: {}
+%{ if loki_enabled ~}
+    - ca: |
+        ${indent(8, chomp(root_ca_cert))}
+      # We are only enabling TLS for the encryption. Each host has a different name,
+      # and the cert will not match them. The list is also dynamic, so we can't
+      # pre-allocate a cert with all the names.
+      insecure_skip_verify: true
+      scrape_job: |-
+        job_name: 'loki'
+        metrics_path: /metrics
+        scheme: https
+        ec2_sd_configs:
+          - region: ${region}
+            port: 8090
+        relabel_configs:
+          - source_labels: [__meta_ec2_tag_job]
+            regex: loki
+            action: keep
+          - source_labels: [__meta_ec2_tag_env]
+            regex: ${env_tag_name}
+            action: keep
+      server_name: null
+      tls_certificates:
+        cert_pem: |
+          ${indent(10, chomp(loki_client_cert))}
+        private_key_pem: |
+          ${indent(10, chomp(loki_client_key))}
+%{~ endif }
     - ca: |
         ${indent(8, chomp(root_ca_cert))}
       insecure_skip_verify: false

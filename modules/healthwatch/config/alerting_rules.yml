@@ -271,6 +271,14 @@ groups:
           description: |
             Fluentd's output buffer has been down for more than 5 minutes.
             If left unchecked, this could lead to log loss once the fluentd disk is full.
+      - alert: LokiAppendFailure
+        expr: 'sum(increase(loki_distributor_ingester_append_failures_total[5m])) / sum(increase(loki_distributor_ingester_appends_total[5m])) > 0.01'
+        for: 5m
+        annotations:
+          summary: "Loki is failing to append log chunks"
+          description: |
+            Loki has been losing > 1% of logs for 5 minutes.
+            Check the loki error log to diagnose.
       - alert: VirusFound
         expr: 'fluentd_clamav_infected_files > 0'
         for: 1m

@@ -44,6 +44,11 @@ variable "grafana_additional_cipher_suites" {
   default = ["TLS_RSA_WITH_AES_128_GCM_SHA256"]
 }
 
+variable "enable_loki" {
+  type    = bool
+  default = false
+}
+
 terraform {
   backend "s3" {
   }
@@ -192,6 +197,10 @@ module "healthwatch_config" {
   control_plane_metrics_certificate    = local.control_plane_metrics_certificate
   control_plane_metrics_private_key    = local.control_plane_metrics_private_key
   control_plane_metrics_enabled        = local.control_plane_metrics_enabled
+
+  loki_enabled     = var.enable_loki
+  loki_client_cert = data.terraform_remote_state.paperwork.outputs.loki_client_cert
+  loki_client_key  = data.terraform_remote_state.paperwork.outputs.loki_client_key
 }
 
 resource "random_string" "healthwatch_client_credentials_secret" {
