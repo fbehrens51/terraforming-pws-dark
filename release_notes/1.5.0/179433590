@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+export ENV=~/workspace/pws-dark-environments/live/ci/env.yml
+export CAU=~/workspace/pcf-eagle-automation/scripts/utils/create_admin_user
+
+#
+uaa_users=uaa_users.json
+cf_users=cf_users.json
+
+# login to env cf
+${CAU} -F -e ${ENV}
+
+# login to env uaa
+${CAU} -U -e ${ENV}
+
+# get all info from cf v3 api
+# http://v3-apidocs.cloudfoundry.org/version/3.105.0/index.html#list-builds
+cf curl /v3 | grep -Po '(?<=cf-app.com/v3/)([^"]+)' | grep -Ev 'resource_matches|environment_variable|events' | while read i; do cf curl "/v3/${i}?page=1&per_page=2000" > cf_${i}.json; done
+echo -e "running\nstaging" | while read i; do cf curl "/v3/environment_variable_groups/${i}?page=1&per_page=2000" > cf_environment_variable_groups_${i}.json; done
+
+# remove users from UAA
+uaa list-users > ${uaa_users}
+
+jq -r '.resources[] | select( .name | match("^CATS-")) | .name' cf_organizations.json       | xargs -ri -P 10 cf delete-org {} -f
+jq -r '.resources[] | select( .name | match("^CATS-")) | .name' cf_organization_quotas.json | xargs -ri -P 10 cf delete-org-quota {} -f
+jq -r '.resources[] | select( .name | match("^CATS-")) | .name' cf_domains.json             | xargs -ri -P 10 cf delete-shared-domain {} -f
+cf set-running-environment-variable-group '{}'
+cf set-staging-environment-variable-group '{}'
+
+# remove CATS users from CF
+if count=$(grep -c CATS ${cf_users}); then
+  echo "removing ${count} CATS users from cf"
+  jq -r '.resources[] | select( .presentation_name | match("^CATS-.*")).guid' ${cf_users} | xargs -ri -P 10 cf curl -X DELETE /v3/users/{}
+fi
+
+# remove CATS users from UAA
+if count=$(grep -c CATS ${uaa_users}); then
+  echo "removing ${count} CATS users from uaa"
+  jq -r '.[] |select( .userName | match("^CATS-")) | .userName' ${uaa_users} | xargs -ri -P 10 uaa delete-user {}
+fi
+
+#jq -r '.resources[].guid' cf_routes.json | xargs -ri cf curl '/v3/routes/{}?include=space.organization' | jq -r '"\(.guid) \(.host) \(.included.organizations[0].name) \(.included.spaces[0].name)"' | column -t | sort -k2
+
+echo "other files that have 'CATS' in them"
+grep -l CATS cf_*.json
+echo "the 'delete-org' is an example of how to cleanup additional files"
