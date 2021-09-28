@@ -238,42 +238,6 @@ resource "aws_lb_listener" "loki_nlb_http" {
   }
 }
 
-resource "aws_lb_target_group" "loki_nlb_grpc" {
-  name_prefix = "grpc"
-  port        = module.syslog_ports.loki_grpc_port
-  protocol    = "TCP"
-  vpc_id      = data.terraform_remote_state.paperwork.outputs.es_vpc_id
-
-  tags = {
-    Name = "${local.formatted_env_name}-loki${module.syslog_ports.loki_grpc_port}"
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
-  health_check {
-    port = module.syslog_ports.loki_healthcheck_port
-    path = "/ready"
-  }
-
-  stickiness {
-    enabled = false
-    type    = "lb_cookie"
-  }
-}
-
-resource "aws_lb_listener" "loki_nlb_grpc" {
-  load_balancer_arn = aws_lb.loki_lb.arn
-  protocol          = "TCP"
-  port              = module.syslog_ports.loki_grpc_port
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.loki_nlb_grpc.arn
-  }
-}
-
 module "bootstrap" {
   source         = "../../modules/eni_per_subnet"
   ingress_rules  = local.loki_ingress_rules
@@ -311,10 +275,6 @@ output "loki_eni_ids" {
 
 output "volume_id" {
   value = aws_ebs_volume.loki_data.*.id
-}
-
-output "loki_grpc_target_group" {
-  value = aws_lb_target_group.loki_nlb_grpc.arn
 }
 
 output "loki_http_target_group" {

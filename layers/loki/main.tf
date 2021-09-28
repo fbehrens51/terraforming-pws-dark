@@ -256,12 +256,6 @@ resource "aws_lb_target_group_attachment" "loki_http_attachment" {
   target_id        = module.loki_instance[count.index].instance_ids[0]
 }
 
-resource "aws_lb_target_group_attachment" "loki_apps_grpc_attachment" {
-  count            = length(data.terraform_remote_state.bootstrap_loki.outputs.loki_eni_ids)
-  target_group_arn = data.terraform_remote_state.bootstrap_loki.outputs.loki_grpc_target_group
-  target_id        = module.loki_instance[count.index].instance_ids[0]
-}
-
 module "syslog_config" {
   source         = "../../modules/syslog"
   root_domain    = data.terraform_remote_state.paperwork.outputs.root_domain
