@@ -25,17 +25,4 @@ variable "internetless" {
   type = bool
 }
 
-variable "scanner_username" {
-  type    = string
-  default = "tas_scanner"
-}
-
-variable "scanner_password" {
-  type = string
-}
-
-variable "scanner_package_url" {
-  type = string
-}
-
 

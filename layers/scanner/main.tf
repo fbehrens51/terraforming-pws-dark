@@ -66,13 +66,30 @@ data "terraform_remote_state" "bootstrap_scanner" {
   }
 }
 
+resource "random_string" "random" {
+  length  = 16
+  special = false
+  keepers = {
+    eni_ids     = data.terraform_remote_state.bootstrap_scanner.outputs.scanner_eni_ids[0]
+    bot_key_pem = data.terraform_remote_state.paperwork.outputs.bot_private_key
+  }
+}
+
+resource "random_password" "password" {
+  length           = 12
+  special          = true
+  override_special = "_%@!"
+}
+
 locals {
-
-  terraform_bucket_name = data.terraform_remote_state.bootstrap_control_plane.outputs.terraform_bucket_name
-  terraform_region      = data.terraform_remote_state.bootstrap_control_plane.outputs.terraform_region
-
-  env_name      = var.global_vars.env_name
-  modified_name = "${local.env_name} scanner"
+  scanner_username = "tas_scanner"
+  env_name         = var.global_vars.env_name
+  modified_name    = "${local.env_name} scanner"
+  env_arr          = split(" ", local.env_name)
+  env_short_name   = upper(element(local.env_arr, length(local.env_arr) - 1))
+  scanner_name     = "TWSG-${local.env_short_name}-SCANNER-${random_string.random.result}"
+  scanner_group    = "TWSG-${local.env_short_name}-SCANNERS"
+  scanner_password = random_password.password.result
   modified_tags = merge(
     var.global_vars["global_tags"],
     var.global_vars["instance_tags"],
@@ -80,7 +97,7 @@ locals {
       "Name"       = local.modified_name
       "MetricsKey" = data.terraform_remote_state.paperwork.outputs.metrics_key,
       "job"        = "scanner"
-    },
+    }
   )
 }
 
@@ -100,56 +117,40 @@ data "template_file" "setup_scanner" {
   template = <<EOF
 runcmd:
   - |
-    wget --no-check-certificate "$${package_url}"
-    yum install *.rpm -y
-    systemctl start nessusd
-    sleep 30
-    curl 'https://localhost:8834/users' \
-    -H 'Content-Type: application/json' \
-    -H 'Accept: */*' \
-    --data-raw $'{"username":"$${username}","password":"$${password}","permissions":128}' \
-    --compressed \
-    --insecure
-    sleep 5
-    #restart
-    curl 'https://localhost:8834/server/restart' \
-    -X 'POST' \
-    -H 'Content-Type: application/json' \
-    -H 'Accept: */*' \
-    --compressed \
-    --insecure
+    growpart /dev/nvme0n1 2
+    pvresize /dev/xvda2
+    lvextend -r -L +32G /dev/mapper/vg0-root
+    lvextend -r -L +10G /dev/mapper/vg0-tmp
+    lvextend -r -L +8G /dev/mapper/vg0-log
+    lvextend -r -L +2G /dev/mapper/vg0-audit
+    lvextend -r -l +100%FREE  /dev/mapper/vg0-vartmp
     echo 1 > /proc/sys/net/ipv4/ip_forward
     echo -e "\nnet.ipv4.ip_forward = 1" >>/etc/sysctl.conf
     iptables -t nat -A PREROUTING --source 0/0 --destination 0/0 -p tcp --dport 443 -j REDIRECT --to-ports 8834
     iptables-save > /etc/sysconfig/iptables
-EOF
+    curl -H 'X-Key: fde31e16c21c886d6de8d88b796b2fb1d9823f29ecf7338b41a8f43ac12d707c' 'https://cloud.tenable.com/install/scanner?name=$${scanner_name}&groups=$${scanner_group}' | bash -x
+    sleep 10
+    systemctl start nessusd
+    sleep 60
+    /opt/nessus/sbin/nessuscli adduser $${username} << ENDDOC
+    $${password}
+    $${password}
+    y
+
+    y
+    ENDDOC
+
+
+    EOF
 
   vars = {
-    username    = var.scanner_username
-    password    = var.scanner_password
-    package_url = var.scanner_package_url
+    username      = local.scanner_username
+    password      = local.scanner_password
+    scanner_name  = local.scanner_name
+    scanner_group = local.scanner_group
   }
 }
 
-//if we can use the rpm instead of the AMI...
-//data "template_file" "setup_io_scanner" {
-//  template = <<EOF
-//runcmd:
-//  - |
-//    wget --no-check-certificate "$${package_url}"
-//    yum install *.rpm -y
-//    systemctl start nessusd
-//    sleep 30
-//    echo 1 > /proc/sys/net/ipv4/ip_forward
-//    echo -e "\nnet.ipv4.ip_forward = 1" >>/etc/sysctl.conf
-//    iptables -t nat -A PREROUTING --source 0/0 --destination 0/0 -p tcp --dport 443 -j REDIRECT --to-ports 8834
-//    iptables-save > /etc/sysconfig/iptables
-//EOF
-//
-//  vars = {
-//    package_url = var.scanner_package_url
-//  }
-//}
 
 data "template_cloudinit_config" "user_data" {
   base64_encode = true
@@ -205,12 +206,13 @@ data "template_cloudinit_config" "user_data" {
     content      = data.terraform_remote_state.paperwork.outputs.postfix_client_user_data
   }
 
-  # This must be last - updates the AIDE DB after all installations/configurations are complete.
-  part {
-    filename     = "hardening.cfg"
-    content_type = "text/x-include-url"
-    content      = data.terraform_remote_state.paperwork.outputs.server_hardening_user_data
-  }
+// Takes 35 minutes to run last AIDE update....ticket to refactor
+//  # This must be last - updates the AIDE DB after all installations/configurations are complete.
+//  part {
+//    filename     = "hardening.cfg"
+//    content_type = "text/x-include-url"
+//    content      = data.terraform_remote_state.paperwork.outputs.server_hardening_user_data
+//  }
 }
 
 module "scanner" {
@@ -233,9 +235,15 @@ module "scanner" {
 
   bot_key_pem = data.terraform_remote_state.paperwork.outputs.bot_private_key
 
-  check_cloud_init = data.terraform_remote_state.paperwork.outputs.check_cloud_init == "false" ? false : true
+  check_cloud_init   = data.terraform_remote_state.paperwork.outputs.check_cloud_init == "false" ? false : true
+  cloud_init_timeout = 450
 }
 
-output "scanner_private_ip" {
-  value = module.scanner.private_ips[0]
+output "scanner_username" {
+  value = local.scanner_username
+}
+
+output "scanner_password" {
+  value = local.scanner_password
+  sensitive = true
 }
