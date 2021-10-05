@@ -67,6 +67,8 @@ product-properties:
     ${indent(4, chomp(admin_users))}
   .properties.credhub_endpoint:
     value: ${credhub_endpoint}
+  .properties.enable_rerun_when_worker_disappears:
+    value: false
 network-properties:
   network:
     name: control-plane-subnet
