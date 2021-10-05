@@ -247,3 +247,7 @@ output "scanner_password" {
   value = local.scanner_password
   sensitive = true
 }
+
+output "scanner_name" {
+  value = local.scanner_name
+}
