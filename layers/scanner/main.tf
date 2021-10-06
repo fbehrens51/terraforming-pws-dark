@@ -66,12 +66,15 @@ data "terraform_remote_state" "bootstrap_scanner" {
   }
 }
 
+//forces change each time it's run.
+//If we decide to change this...
+//1. tenable doesn't like the same scanner name to be used as an existing scanner
+//2. may need to change pipeline job since it has to delete the old scanner and update the new one, but should run the delete if we didn't create a new one
 resource "random_string" "random" {
   length  = 16
   special = false
   keepers = {
-    eni_ids     = data.terraform_remote_state.bootstrap_scanner.outputs.scanner_eni_ids[0]
-    bot_key_pem = data.terraform_remote_state.paperwork.outputs.bot_private_key
+      uuid = uuid()
   }
 }
 
@@ -206,13 +209,13 @@ data "template_cloudinit_config" "user_data" {
     content      = data.terraform_remote_state.paperwork.outputs.postfix_client_user_data
   }
 
-// Takes 35 minutes to run last AIDE update....ticket to refactor
-//  # This must be last - updates the AIDE DB after all installations/configurations are complete.
-//  part {
-//    filename     = "hardening.cfg"
-//    content_type = "text/x-include-url"
-//    content      = data.terraform_remote_state.paperwork.outputs.server_hardening_user_data
-//  }
+  // Takes 35 minutes to run last AIDE update....ticket to refactor
+  //  # This must be last - updates the AIDE DB after all installations/configurations are complete.
+  //  part {
+  //    filename     = "hardening.cfg"
+  //    content_type = "text/x-include-url"
+  //    content      = data.terraform_remote_state.paperwork.outputs.server_hardening_user_data
+  //  }
 }
 
 module "scanner" {
@@ -244,7 +247,7 @@ output "scanner_username" {
 }
 
 output "scanner_password" {
-  value = local.scanner_password
+  value     = local.scanner_password
   sensitive = true
 }
 
