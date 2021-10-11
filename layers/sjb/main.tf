@@ -391,6 +391,10 @@ module "sjb" {
   tags                 = local.modified_tags
   bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
   check_cloud_init     = false
+
+  root_block_device = {
+    tags = { "Name" = "${local.modified_name} root" }
+  }
 }
 
 resource "null_resource" "sjb_status" {

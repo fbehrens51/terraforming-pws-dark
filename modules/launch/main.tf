@@ -1,3 +1,7 @@
+terraform {
+  experiments = [module_variable_optional_attrs]
+}
+
 //TODO: terraform thinks the user_data is changing when running on different machines.  Need to research
 variable "ami_id" {
   description = "ami ID to use to launch instance"
@@ -80,12 +84,23 @@ variable "instance_count" {
 locals {
   instance_type = var.instance_types[var.scale_vpc_key][var.scale_service_key]
   computed_instance_tags = {
-    SourceAmiId = var.ami_id
+    SourceAmiId       = var.ami_id
+    cloud_init_done   = ""
+    cloud_init_output = ""
+    operating-system  = ""
   }
 }
 
 variable "root_block_device" {
-  type    = map(string)
+  type = object({
+    delete_on_termination = optional(string)
+    encrypted             = optional(string)
+    iops                  = optional(string)
+    tags                  = optional(map(string))
+    kms_key_id            = optional(string)
+    volume_size           = optional(string)
+    volume_type           = optional(string)
+  })
   default = {}
 }
 
@@ -115,6 +130,7 @@ resource "aws_instance" "instance" {
       delete_on_termination = lookup(root_block_device.value, "delete_on_termination", null)
       encrypted             = lookup(root_block_device.value, "encrypted", null)
       iops                  = lookup(root_block_device.value, "iops", null)
+      tags                  = lookup(root_block_device.value, "tags", {})
       kms_key_id            = lookup(root_block_device.value, "kms_key_id", null)
       volume_size           = lookup(root_block_device.value, "volume_size", null)
       volume_type           = lookup(root_block_device.value, "volume_type", null)
@@ -122,7 +138,11 @@ resource "aws_instance" "instance" {
   }
 
   lifecycle {
-    ignore_changes = [tags["operating-system"], tags["cloud_init_done"]]
+    ignore_changes = [
+      tags["operating-system"], tags_all["operating-system"],
+      tags["cloud_init_done"], tags_all["cloud_init_done"],
+      tags["cloud_init_output"], tags_all["cloud_init_output"]
+    ]
   }
   provisioner "local-exec" {
     on_failure  = fail
@@ -181,13 +201,19 @@ resource "aws_instance" "unchecked_instance" {
       delete_on_termination = lookup(root_block_device.value, "delete_on_termination", null)
       encrypted             = lookup(root_block_device.value, "encrypted", null)
       iops                  = lookup(root_block_device.value, "iops", null)
+      tags                  = lookup(root_block_device.value, "tags", {})
       kms_key_id            = lookup(root_block_device.value, "kms_key_id", null)
       volume_size           = lookup(root_block_device.value, "volume_size", null)
       volume_type           = lookup(root_block_device.value, "volume_type", null)
     }
   }
+
   lifecycle {
-    ignore_changes = [tags["operating-system"]]
+    ignore_changes = [
+      tags["operating-system"], tags_all["operating-system"],
+      tags["cloud_init_done"], tags_all["cloud_init_done"],
+      tags["cloud_init_output"], tags_all["cloud_init_output"]
+    ]
   }
 }
 
@@ -220,6 +246,7 @@ resource "aws_instance" "instance_ignoring_tags" {
       delete_on_termination = lookup(root_block_device.value, "delete_on_termination", null)
       encrypted             = lookup(root_block_device.value, "encrypted", null)
       iops                  = lookup(root_block_device.value, "iops", null)
+      tags                  = lookup(root_block_device.value, "tags", {})
       kms_key_id            = lookup(root_block_device.value, "kms_key_id", null)
       volume_size           = lookup(root_block_device.value, "volume_size", null)
       volume_type           = lookup(root_block_device.value, "volume_type", null)
@@ -228,7 +255,10 @@ resource "aws_instance" "instance_ignoring_tags" {
 
   lifecycle {
     // We don't want terraform to remove tags applied later by customer processes
-    ignore_changes = [tags]
+    ignore_changes = [
+      tags,
+      tags_all
+    ]
   }
 }
 

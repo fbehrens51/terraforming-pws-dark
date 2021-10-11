@@ -290,7 +290,7 @@ resource "aws_lb_target_group" "fluentd_nlb_syslog" {
 
   stickiness {
     enabled = false
-    type    = "lb_cookie"
+    type    = "source_ip"
   }
 }
 
@@ -315,7 +315,7 @@ resource "aws_lb_target_group" "fluentd_nlb_apps_syslog" {
 
   stickiness {
     enabled = false
-    type    = "lb_cookie"
+    type    = "source_ip"
   }
 }
 
