@@ -283,11 +283,11 @@ resource "random_integer" "bucket" {
 }
 
 variable "pas_db_engine" {
-  default = "mariadb"
+  default = "mysql"
 }
 
 variable "pas_db_engine_version" {
-  default = "10.2"
+  default = "5.7"
 }
 
 variable "remote_state_bucket" {

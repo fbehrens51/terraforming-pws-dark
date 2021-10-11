@@ -36,11 +36,11 @@ variable "force_destroy_buckets" {
 }
 
 variable "control_plane_db_engine" {
-  default = "mariadb"
+  default = "mysql"
 }
 
 variable "control_plane_db_engine_version" {
-  default = "10.2"
+  default = "5.7"
 }
 
 variable "concourse_postgres_maintenance_window" {
