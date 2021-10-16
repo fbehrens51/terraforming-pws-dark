@@ -61,7 +61,8 @@ resource "aws_db_instance" "rds" {
   skip_final_snapshot         = true
   backup_retention_period     = 7
   apply_immediately           = var.apply_immediately
-  allow_major_version_upgrade = true
+  allow_major_version_upgrade = false
+  deletion_protection         = true
 
   delete_automated_backups = false
 
