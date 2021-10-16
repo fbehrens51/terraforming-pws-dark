@@ -566,3 +566,17 @@ resource "aws_s3_bucket_object" "allowed-cidr" {
   key          = "allowed-cidrs/platform-public-cidr"
   content      = module.calculated_subnets.public_cidr
 }
+
+resource "aws_s3_bucket_object" "rds-password" {
+  bucket       = local.secrets_bucket_name
+  content_type = "text/plain"
+  key          = "pas/rds-password"
+  content      = module.rds.rds_password
+}
+
+resource "aws_s3_bucket_object" "postgres-rds-password" {
+  bucket       = local.secrets_bucket_name
+  content_type = "text/plain"
+  key          = "pas/postgres-rds-password"
+  content      = module.postgres.rds_password
+}

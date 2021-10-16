@@ -62,10 +62,11 @@ data "aws_vpc" "pas_vpc" {
 }
 
 locals {
-  s3_logs_bucket     = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
-  bucket_suffix_name = "cp"
-  env_name           = var.global_vars.env_name
-  modified_name      = "${local.env_name} control plane"
+  secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
+  s3_logs_bucket      = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
+  bucket_suffix_name  = "cp"
+  env_name            = var.global_vars.env_name
+  modified_name       = "${local.env_name} control plane"
   modified_tags = merge(
     var.global_vars["global_tags"],
     {
@@ -302,4 +303,18 @@ module "credhub_elb" {
 module "om_key_pair" {
   source   = "../../modules/key_pair"
   key_name = local.om_key_name
+}
+
+resource "aws_s3_bucket_object" "mysql-rds-password" {
+  bucket       = local.secrets_bucket_name
+  content_type = "text/plain"
+  key          = "control_plane/mysql-rds-password"
+  content      = module.mysql.rds_password
+}
+
+resource "aws_s3_bucket_object" "postgres-rds-password" {
+  bucket       = local.secrets_bucket_name
+  content_type = "text/plain"
+  key          = "control_plane/postgres-rds-password"
+  content      = module.postgres.rds_password
 }
