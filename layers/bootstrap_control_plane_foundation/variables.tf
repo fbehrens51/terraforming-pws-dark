@@ -35,6 +35,11 @@ variable "force_destroy_buckets" {
   default = false
 }
 
+variable "database_deletion_protection" {
+  type    = bool
+  default = true
+}
+
 variable "control_plane_db_engine" {
   default = "mysql"
 }

@@ -60,3 +60,8 @@ variable "backup_window" {
   type    = string
   default = ""
 }
+
+variable "database_deletion_protection" {
+  type    = bool
+  default = true
+}

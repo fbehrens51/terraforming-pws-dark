@@ -62,7 +62,7 @@ resource "aws_db_instance" "rds" {
   backup_retention_period     = 7
   apply_immediately           = var.apply_immediately
   allow_major_version_upgrade = false
-  deletion_protection         = true
+  deletion_protection         = var.database_deletion_protection
 
   delete_automated_backups = false
 

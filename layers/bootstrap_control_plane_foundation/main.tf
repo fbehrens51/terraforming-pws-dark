@@ -227,6 +227,8 @@ module "postgres" {
   apply_immediately  = false
   maintenance_window = var.concourse_postgres_maintenance_window
   backup_window      = var.concourse_postgres_backup_window
+
+  database_deletion_protection = var.database_deletion_protection
 }
 
 module "mysql" {
@@ -252,6 +254,8 @@ module "mysql" {
   subnet_group_name = module.rds_subnet_group.subnet_group_name
 
   kms_key_id = data.terraform_remote_state.paperwork.outputs.kms_key_arn
+
+  database_deletion_protection = var.database_deletion_protection
 }
 
 module "rds_subnet_group" {

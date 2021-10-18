@@ -166,7 +166,6 @@ module "pas" {
   create_backup_pas_buckets    = false
   create_versioned_pas_buckets = true
   s3_logs_bucket               = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
-  force_destroy_buckets        = var.force_destroy_buckets
 }
 
 module "postgres" {
@@ -192,6 +191,8 @@ module "postgres" {
   subnet_group_name = module.rds_subnet_group.subnet_group_name
 
   kms_key_id = data.terraform_remote_state.paperwork.outputs.kms_key_arn
+
+  database_deletion_protection = var.database_deletion_protection
 }
 
 module "rds" {
@@ -217,6 +218,8 @@ module "rds" {
   subnet_group_name = module.rds_subnet_group.subnet_group_name
 
   kms_key_id = data.terraform_remote_state.paperwork.outputs.kms_key_arn
+
+  database_deletion_protection = var.database_deletion_protection
 }
 
 module "rds_subnet_group" {
@@ -536,6 +539,11 @@ output "ops_manager_ip" {
 variable "force_destroy_buckets" {
   type    = bool
   default = false
+}
+
+variable "database_deletion_protection" {
+  type    = bool
+  default = true
 }
 
 locals {
