@@ -56,7 +56,8 @@ locals {
     local.modified_tags,
     var.global_vars["instance_tags"],
     {
-      "job" = "bastion"
+      "foundation_name" = data.terraform_remote_state.paperwork.outputs.foundation_name
+      "job"             = "bastion"
     },
   )
 

@@ -74,7 +74,7 @@ resource "random_string" "random" {
   length  = 16
   special = false
   keepers = {
-      uuid = uuid()
+    uuid = uuid()
   }
 }
 
@@ -97,9 +97,10 @@ locals {
     var.global_vars["global_tags"],
     var.global_vars["instance_tags"],
     {
-      "Name"       = local.modified_name
-      "MetricsKey" = data.terraform_remote_state.paperwork.outputs.metrics_key,
-      "job"        = "scanner"
+      "Name"            = local.modified_name
+      "MetricsKey"      = data.terraform_remote_state.paperwork.outputs.metrics_key
+      "foundation_name" = data.terraform_remote_state.paperwork.outputs.foundation_name
+      "job"             = "scanner"
     }
   )
 }
@@ -209,13 +210,12 @@ data "template_cloudinit_config" "user_data" {
     content      = data.terraform_remote_state.paperwork.outputs.postfix_client_user_data
   }
 
-  // Takes 35 minutes to run last AIDE update....ticket to refactor
-  //  # This must be last - updates the AIDE DB after all installations/configurations are complete.
-  //  part {
-  //    filename     = "hardening.cfg"
-  //    content_type = "text/x-include-url"
-  //    content      = data.terraform_remote_state.paperwork.outputs.server_hardening_user_data
-  //  }
+  # This must be last - updates the AIDE DB after all installations/configurations are complete.
+  part {
+    filename     = "hardening.cfg"
+    content_type = "text/x-include-url"
+    content      = data.terraform_remote_state.paperwork.outputs.server_hardening_user_data
+  }
 }
 
 module "scanner" {

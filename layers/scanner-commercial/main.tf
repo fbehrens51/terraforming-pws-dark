@@ -65,8 +65,9 @@ locals {
     var.global_vars["global_tags"],
     var.global_vars["instance_tags"],
     {
-      "Name" = local.modified_name
-      "job"  = "scanner-commercial"
+      "Name"            = local.modified_name
+      "foundation_name" = data.terraform_remote_state.paperwork.outputs.foundation_name
+      "job"             = "scanner-commercial"
     },
   )
 }

@@ -335,6 +335,7 @@ data "aws_iam_policy_document" "fluentd" {
       "logs:*",
       "s3:*",
       "ec2:CreateTags",
+      "ec2:DescribeTags",
     ]
 
     resources = ["*"]
@@ -370,6 +371,7 @@ data "aws_iam_policy_document" "loki" {
     actions = [
       "s3:*",
       "ec2:CreateTags",
+      "ec2:DescribeTags",
     ]
 
     resources = ["*"]
@@ -521,7 +523,14 @@ data "aws_iam_policy_document" "instance_tagger" {
     effect = "Allow"
 
     actions = [
+      "s3:PutObject",
+      "s3:GetObject",
+      "s3:ListAllMyBuckets",
       "ec2:CreateTags",
+      "ec2:DescribeTags",
+      "s3:ListBucket",
+      "s3:DeleteObject",
+      "s3:GetBucketLocation"
     ]
 
     resources = ["*"]

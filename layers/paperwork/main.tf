@@ -220,6 +220,18 @@ resource "null_resource" "secrets_logging" {
   }
 }
 
+data "aws_iam_role" "fluentd_role" {
+  name = var.fluentd_role_name
+}
+
+data "aws_iam_role" "tagger_role" {
+  name = var.instance_tagger_role_name
+}
+
+data "aws_iam_role" "loki_role" {
+  name = var.loki_config.loki_role_name
+}
+
 data "aws_iam_role" "isse_role" {
   name = var.isse_role_name
 }
@@ -266,8 +278,14 @@ data "aws_iam_role" "super_user_roles" {
 module "reporting_bucket_policy" {
   source     = "../../modules/bucket/policy/generic"
   bucket_arn = aws_s3_bucket.reporting_bucket.arn
-  read_write_role_ids = [data.aws_iam_role.director_role.unique_id, data.aws_iam_role.bootstrap_role.unique_id,
-  data.aws_iam_role.foundation_role.unique_id]
+  read_write_role_ids = [
+    data.aws_iam_role.director_role.unique_id,
+    data.aws_iam_role.bootstrap_role.unique_id,
+    data.aws_iam_role.foundation_role.unique_id,
+    data.aws_iam_role.fluentd_role.unique_id,
+    data.aws_iam_role.loki_role.unique_id,
+    data.aws_iam_role.tagger_role.unique_id
+  ]
   read_only_role_ids = concat([
     data.aws_iam_role.director_role.unique_id,
     data.aws_iam_role.bootstrap_role.unique_id,
@@ -372,6 +390,7 @@ module "server_hardening_config" {
   source             = "../../modules/cloud_init/server_hardening"
   public_bucket_name = aws_s3_bucket.public_bucket.bucket
   public_bucket_url  = local.public_bucket_url
+  reporting_bucket   = aws_s3_bucket.reporting_bucket.bucket
 }
 
 module "custom_banner_config" {
@@ -405,6 +424,10 @@ module "tag_completion_config_om" {
   source             = "../../modules/cloud_init/completion_tag_om"
   public_bucket_name = aws_s3_bucket.public_bucket.bucket
   public_bucket_url  = local.public_bucket_url
+}
+
+variable "foundation_name" {
+  type = string
 }
 
 variable "release_channel" {
@@ -843,6 +866,10 @@ data "aws_s3_bucket_object" "portal_smoke_test_key" {
 
 variable "log_forwarder_region" {
   default = ""
+}
+
+output "foundation_name" {
+  value = var.foundation_name
 }
 
 output "artifact_repo_bucket_name" {

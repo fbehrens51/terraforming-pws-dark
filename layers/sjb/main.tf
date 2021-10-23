@@ -17,12 +17,12 @@ locals {
     var.global_vars["global_tags"],
     var.global_vars["instance_tags"],
     {
-      "Name"       = local.modified_name
-      "MetricsKey" = data.terraform_remote_state.paperwork.outputs.metrics_key,
-      "job"        = "sjb"
+      "Name"            = local.modified_name
+      "MetricsKey"      = data.terraform_remote_state.paperwork.outputs.metrics_key
+      "foundation_name" = data.terraform_remote_state.paperwork.outputs.foundation_name
+      "job"             = "sjb"
     },
   )
-
   root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
 }
 

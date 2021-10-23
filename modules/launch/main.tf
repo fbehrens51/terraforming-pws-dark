@@ -76,6 +76,12 @@ variable "cloud_init_timeout" {
   default = 300
 }
 
+variable "module_instance_count" {
+  type        = number
+  default     = 9999
+  description = "This is required when the module + count is used"
+}
+
 //allows calling module to set a fixed count since count cannot use a value calculated from something that may not exist yet (e.g. eni_ids)
 variable "instance_count" {
   default = 1
@@ -89,6 +95,17 @@ locals {
     cloud_init_output = ""
     operating-system  = ""
   }
+  key = (
+    var.scale_service_key == "nat" ? "${replace(var.scale_vpc_key, "-", "_")}_${var.scale_service_key}" :
+    var.scale_service_key == "cp_ops_manager" ? "cp_om" :
+    var.scale_service_key == "ops_manager" ? "om" :
+    var.scale_service_key
+  )
+  ssh_host_names = (
+    var.module_instance_count != 9999 ? formatlist("%s_%s_%d", var.tags["foundation_name"], local.key, [var.module_instance_count + 1]) :
+    var.instance_count != 1 ? formatlist("%s_%s_%d", var.tags["foundation_name"], local.key, range(1, var.instance_count + 1)) :
+    formatlist("%s_%s", var.tags["foundation_name"], local.key)
+  )
 }
 
 variable "root_block_device" {
@@ -123,7 +140,7 @@ resource "aws_instance" "instance" {
   user_data            = var.user_data
   iam_instance_profile = var.iam_instance_profile
 
-  tags = merge(var.tags, local.computed_instance_tags)
+  tags = merge(var.tags, local.computed_instance_tags, { "ssh_host_name" = local.ssh_host_names[count.index] })
   dynamic "root_block_device" {
     for_each = [var.root_block_device]
     content {
@@ -194,7 +211,7 @@ resource "aws_instance" "unchecked_instance" {
   user_data            = var.user_data
   iam_instance_profile = var.iam_instance_profile
 
-  tags = merge(var.tags, local.computed_instance_tags)
+  tags = merge(var.tags, local.computed_instance_tags, { "ssh_host_name" = local.ssh_host_names[count.index] })
   dynamic "root_block_device" {
     for_each = [var.root_block_device]
     content {
@@ -239,7 +256,7 @@ resource "aws_instance" "instance_ignoring_tags" {
   user_data            = var.user_data
   iam_instance_profile = var.iam_instance_profile
 
-  tags = merge(var.tags, local.computed_instance_tags)
+  tags = merge(var.tags, local.computed_instance_tags, { "ssh_host_name" = local.ssh_host_names[count.index] })
   dynamic "root_block_device" {
     for_each = [var.root_block_device]
     content {
