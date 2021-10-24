@@ -25,8 +25,6 @@ write_files:
         rm $report_file
 
         mailx -s "Aide Check <root@$ssh_host_name> /root/aide.bash" root <<< "$email_report"
-      else
-        mailx -s "Aide Check Error<root@$ssh_host_name> /root/aide.bash" root <<< "$aide_report"
       fi
   - path: /root/aide-update.bash
     permissions: '0755'
@@ -49,8 +47,6 @@ write_files:
         mv /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz
 
         mailx -s "Aide Update <root@$ssh_host_name> /root/aide-update.bash" root <<< "$email_report"
-      else
-        mailx -s "Aide Update Error<root@$ssh_host_name> /root/aide-update.bash" root <<< "$aide_report"
       fi
 runcmd:
   - |
