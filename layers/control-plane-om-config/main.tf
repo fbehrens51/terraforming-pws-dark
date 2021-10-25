@@ -126,7 +126,7 @@ module "om_config" {
   control_plane_star_server_key  = data.terraform_remote_state.paperwork.outputs.control_plane_star_server_key
 
   vpc_id       = local.vpc_id
-  env_name     = join(",", [var.global_vars.env_name, "iaas:${data.terraform_remote_state.paperwork.outputs.foundation_name}_cp", "foundation_name:${data.terraform_remote_state.paperwork.outputs.foundation_name}"])
+  env_name     = join(", ", [var.global_vars.env_name, "iaas:${data.terraform_remote_state.paperwork.outputs.foundation_name}_cp", "foundation_name:${data.terraform_remote_state.paperwork.outputs.foundation_name}"])
   region       = data.aws_region.current.name
   s3_endpoint  = var.s3_endpoint
   ec2_endpoint = var.ec2_endpoint

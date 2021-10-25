@@ -147,7 +147,7 @@ module "om_config" {
   om_ssl_config               = var.om_ssl_config
   om_ssh_banner_config        = var.om_ssh_banner_config
   pas_vpc_dns                 = join(", ", data.terraform_remote_state.paperwork.outputs.enterprise_dns)
-  env_name                    = join(",", [var.global_vars.env_name, "iaas:${data.terraform_remote_state.paperwork.outputs.foundation_name}_cp", "foundation_name:${data.terraform_remote_state.paperwork.outputs.foundation_name}"])
+  env_name                    = join(", ", [var.global_vars.env_name, "iaas:${data.terraform_remote_state.paperwork.outputs.foundation_name}_cp", "foundation_name:${data.terraform_remote_state.paperwork.outputs.foundation_name}"])
   region                      = data.aws_region.current.name
   s3_endpoint                 = var.s3_endpoint
   ec2_endpoint                = var.ec2_endpoint
