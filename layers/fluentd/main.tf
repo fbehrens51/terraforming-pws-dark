@@ -362,3 +362,7 @@ resource "null_resource" "fluentd_status" {
 output "fluent_ip" {
   value = module.fluentd_instance.private_ips
 }
+
+output "ssh_host_ips" {
+  value = zipmap(flatten(module.fluentd_instance.ssh_host_names), flatten(module.fluentd_instance.private_ips))
+}

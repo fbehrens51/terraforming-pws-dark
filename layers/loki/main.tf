@@ -306,3 +306,7 @@ resource "null_resource" "loki_status" {
 output "loki_ip" {
   value = flatten(module.loki_instance.*.private_ips)
 }
+
+output "ssh_host_ips" {
+  value = zipmap(flatten(module.loki_instance.*.ssh_host_names), flatten(module.loki_instance.*.private_ips))
+}

@@ -128,3 +128,7 @@ EOF
 
   check_cloud_init = false
 }
+
+output "ssh_host_ips" {
+  value = zipmap(flatten(module.scanner.ssh_host_names), flatten(module.scanner.private_ips))
+}

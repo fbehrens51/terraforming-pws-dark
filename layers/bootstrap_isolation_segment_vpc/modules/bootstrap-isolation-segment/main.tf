@@ -86,9 +86,13 @@ module "nat" {
   public_bucket_url          = var.public_bucket_url
   role_name                  = var.default_instance_role_name
   check_cloud_init           = var.check_cloud_init
-
+  iso_seg_name               = var.name
 }
 
 output "private_route_table_ids" {
   value = aws_route_table.private_route_tables.*.id
+}
+
+output "ssh_host_ips" {
+  value = module.nat.ssh_host_ips
 }

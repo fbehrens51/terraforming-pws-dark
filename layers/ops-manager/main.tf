@@ -102,7 +102,7 @@ module "ops_manager_user_data" {
 }
 
 module "ops_manager" {
-  instance_count = "1"
+  instance_count = 1
 
   source               = "../../modules/launch"
   ami_id               = var.om_ami_id
@@ -140,4 +140,8 @@ resource "aws_s3_bucket_policy" "ops_manager_backup_bucket_policy_attachment" {
 
 output "ops_manager_private_ip" {
   value = module.ops_manager.private_ips[0]
+}
+
+output "ssh_host_ips" {
+  value = zipmap(flatten(module.ops_manager.ssh_host_names), flatten(module.ops_manager.private_ips))
 }

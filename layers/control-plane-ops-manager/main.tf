@@ -92,7 +92,7 @@ variable "clamav_deb_pkg_object_url" {
 }
 
 module "ops_manager" {
-  instance_count = "1"
+  instance_count = 1
 
   source               = "../../modules/launch"
   ami_id               = var.om_ami_id
@@ -142,3 +142,6 @@ output "ops_manager_private_ip" {
   value = module.ops_manager.private_ips[0]
 }
 
+output "ssh_host_ips" {
+  value = zipmap(flatten(module.ops_manager.ssh_host_names), flatten(module.ops_manager.private_ips))
+}

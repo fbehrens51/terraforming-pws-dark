@@ -159,3 +159,6 @@ module "nat" {
   role_name = data.terraform_remote_state.paperwork.outputs.instance_tagger_role_name
 }
 
+output "ssh_host_ips" {
+  value = module.nat.ssh_host_ips
+}

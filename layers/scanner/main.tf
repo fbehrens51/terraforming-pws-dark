@@ -254,3 +254,7 @@ output "scanner_password" {
 output "scanner_name" {
   value = local.scanner_name
 }
+
+output "ssh_host_ips" {
+  value = zipmap(flatten(module.sanner.ssh_host_names), flatten(module.scanner.private_ips))
+}

@@ -437,3 +437,7 @@ resource "null_resource" "sjb_status" {
     EOF
   }
 }
+
+output "ssh_host_ips" {
+  value = zipmap(flatten(module.sjb.ssh_host_names), flatten(module.sjb.private_ips))
+}

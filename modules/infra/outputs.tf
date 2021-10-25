@@ -46,3 +46,6 @@ output "infrastructure_subnet_gateways" {
   value = data.template_file.infrastructure_subnet_gateways.*.rendered
 }
 
+output "ssh_host_ips" {
+  value = module.nat.ssh_host_ips
+}

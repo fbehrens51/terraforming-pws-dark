@@ -366,6 +366,10 @@ module "calculated_subnets" {
   vpc_cidr = data.aws_vpc.pas_vpc.cidr_block
 }
 
+output "ssh_host_ips" {
+  value = module.infra.ssh_host_ips
+}
+
 output "om_private_key_pem" {
   value     = module.om_key_pair.private_key_pem
   sensitive = true

@@ -242,3 +242,6 @@ module "syslog_config" {
   public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url
 }
 
+output "ssh_host_ips" {
+  value = zipmap(flatten(module.postfix_master_host.ssh_host_names), flatten(module.postfix_master_host.private_ips))
+}

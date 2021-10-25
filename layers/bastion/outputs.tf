@@ -23,3 +23,7 @@ output "bot_user_on_bastion" {
 output "bastion_route_table_id" {
   value = local.derived_route_table_id
 }
+
+output "ssh_host_ips" {
+  value = zipmap(flatten(module.bastion_host.ssh_host_names), flatten(module.bastion_host.private_ips))
+}

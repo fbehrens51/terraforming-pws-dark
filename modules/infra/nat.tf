@@ -21,4 +21,3 @@ module "nat" {
   public_bucket_url  = var.public_bucket_url
   role_name          = var.default_instance_role_name
 }
-

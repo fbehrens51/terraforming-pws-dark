@@ -223,6 +223,10 @@ variable "availability_zones" {
   type = list(string)
 }
 
+output "ssh_host_ips" {
+  value = module.nat.ssh_host_ips
+}
+
 output "public_subnet_ids" {
   value = module.public_subnets.subnet_ids
 }

@@ -61,6 +61,9 @@ variable "check_cloud_init" {
 variable "role_name" {
 }
 
+variable "iso_seg_name" {
+  default = null
+}
 
 locals {
   modified_name = "${var.tags.tags["Name"]} nat"
@@ -165,6 +168,7 @@ module "nat_host" {
   source = "../launch"
 
   instance_count       = length(var.private_route_table_ids)
+  iso_seg_name         = var.iso_seg_name
   ami_id               = var.ami_id
   user_data            = data.template_cloudinit_config.user_data.rendered
   eni_ids              = module.eni.eni_ids
@@ -184,3 +188,6 @@ resource "aws_route" "toggle_internet" {
   destination_cidr_block = "0.0.0.0/0"
 }
 
+output "ssh_host_ips" {
+  value = zipmap(flatten(module.nat_host.ssh_host_names), flatten(module.nat_host.private_ips))
+}

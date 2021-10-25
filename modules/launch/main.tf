@@ -82,6 +82,12 @@ variable "module_instance_count" {
   description = "This is required when the module + count is used"
 }
 
+variable "iso_seg_name" {
+  type        = string
+  default     = null
+  description = "Used to name the nats <env>_isolation_segment_<iso_seg_name>_nat_<index>"
+}
+
 //allows calling module to set a fixed count since count cannot use a value calculated from something that may not exist yet (e.g. eni_ids)
 variable "instance_count" {
   default = 1
@@ -95,10 +101,13 @@ locals {
     cloud_init_output = ""
     operating-system  = ""
   }
+  iso_nat_name = var.scale_vpc_key == "isolation-segment" ? "${replace(var.scale_vpc_key, "-", "_")}_${lower(replace(var.iso_seg_name, "/[ -]/", "_"))}" : "${replace(var.scale_vpc_key, "-", "_")}"
+  om_name = (var.scale_service_key != "ops-manager" ? "" :
+    var.scale_vpc_key == "pas" ? "om" : "cp_om"
+  )
   key = (
-    var.scale_service_key == "nat" ? "${replace(var.scale_vpc_key, "-", "_")}_${var.scale_service_key}" :
-    var.scale_service_key == "cp_ops_manager" ? "cp_om" :
-    var.scale_service_key == "ops_manager" ? "om" :
+    var.scale_service_key == "nat" ? "${local.iso_nat_name}_${var.scale_service_key}" :
+    var.scale_service_key == "ops-manager" ? local.om_name :
     var.scale_service_key
   )
   ssh_host_names = (
@@ -287,3 +296,6 @@ output "private_ips" {
   value = concat(aws_instance.instance.*.private_ip, aws_instance.unchecked_instance.*.private_ip, aws_instance.instance_ignoring_tags.*.private_ip)
 }
 
+output "ssh_host_names" {
+  value = flatten(local.ssh_host_names)
+}

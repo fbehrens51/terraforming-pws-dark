@@ -132,7 +132,7 @@ data "template_cloudinit_config" "user_data" {
 
 
 module "bastion_host" {
-  instance_count       = "1"
+  instance_count       = 1
   source               = "../../modules/launch"
   ignore_tag_changes   = true
   instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
@@ -199,4 +199,3 @@ variable "global_vars" {
 variable "route_table_id" {
   default = null
 }
-

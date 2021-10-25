@@ -13,7 +13,6 @@ variable "name" {}
 
 variable "cidr_block" {}
 
-
 locals {
   modified_tags = merge(
     var.tags,
@@ -47,4 +46,8 @@ resource "aws_route_table_association" "private_route_table_associations" {
 
 output "private_route_table_ids" {
   value = aws_route_table.private_route_tables.*.id
+}
+
+output "ssh_host_ips" {
+  value = {}
 }

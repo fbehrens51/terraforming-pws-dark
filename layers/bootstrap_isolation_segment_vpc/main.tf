@@ -421,3 +421,28 @@ resource "aws_s3_bucket_object" "blocked-vpc" {
   content_type = "text/plain"
   content      = data.aws_vpc.vpc.cidr_block
 }
+
+output "ssh_host_ips" {
+  value = merge(
+    module.isolation_segment_0.ssh_host_ips,
+    module.isolation_segment_1.ssh_host_ips,
+    module.isolation_segment_2.ssh_host_ips,
+    module.isolation_segment_3.ssh_host_ips,
+  )
+}
+
+output "iso_seg_0_nats" {
+  value = module.isolation_segment_0.ssh_host_ips
+}
+
+output "iso_seg_1_nats" {
+  value = module.isolation_segment_1.ssh_host_ips
+}
+
+output "iso_seg_2_nats" {
+  value = module.isolation_segment_2.ssh_host_ips
+}
+
+output "iso_seg_3_nats" {
+  value = module.isolation_segment_3.ssh_host_ips
+}

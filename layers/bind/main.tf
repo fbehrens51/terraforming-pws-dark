@@ -344,3 +344,7 @@ variable "enable_loki" {
 output "master_ips" {
   value = local.master_ips
 }
+
+output "ssh_host_ips" {
+  value = zipmap(flatten(module.bind_master_host.ssh_host_names), flatten(module.bind_master_host.private_ips))
+}
