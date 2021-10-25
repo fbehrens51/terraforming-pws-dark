@@ -83,7 +83,7 @@ properties-configuration:
     hm_pager_duty_options:
       enabled: false
     identification_tags:
-      env: ${env_name}
+      ${indent(6, chomp(env_name))}
     job_configuration_on_tmpfs: false
     keep_unreachable_vms: false
     %{~ if director_blobstore_location == "local" ~}
