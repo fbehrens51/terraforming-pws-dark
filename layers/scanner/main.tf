@@ -256,5 +256,5 @@ output "scanner_name" {
 }
 
 output "ssh_host_ips" {
-  value = zipmap(flatten(module.sanner.ssh_host_names), flatten(module.scanner.private_ips))
+  value = zipmap(flatten(module.scanner.ssh_host_names), flatten(module.scanner.private_ips))
 }
