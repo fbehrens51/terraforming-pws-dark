@@ -242,6 +242,34 @@ module "scanner" {
   cloud_init_timeout = 450
 }
 
+module "domains" {
+  source = "../../modules/domains"
+
+  root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
+}
+
+locals {
+
+  scan_config = templatefile("${path.module}/scan_config.tpl", {
+    banner_text        = data.terraform_remote_state.paperwork.outputs.custom_ssh_banner
+    credentials_name   = "TWSG-${local.env_short_name}-CREDENTIALS"
+    group_name         = var.group_name
+    network_name       = var.network_name != "" ? var.network_name : "TWSG_${local.env_short_name}"
+    ntp_server         = var.ntp_server
+    scan_name          = "TWSG ${local.env_short_name} Advanced Network Scan (Automated)"
+    scanner_group_name = "TWSG-${local.env_short_name}-SCANNERS"
+    syslog_server      = module.domains.fluentd_fqdn
+    target_group_name  = "TWSG-${local.env_short_name}"
+    user_name          = var.user_name
+  })
+}
+
+resource "aws_s3_bucket_object" "scan_config" {
+  bucket  = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
+  key     = "tenable-scan-config.yml"
+  content = local.scan_config
+}
+
 output "scanner_username" {
   value = local.scanner_username
 }
