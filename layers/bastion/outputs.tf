@@ -25,5 +25,5 @@ output "bastion_route_table_id" {
 }
 
 output "ssh_host_ips" {
-  value = zipmap(flatten(module.bastion_host.ssh_host_names), flatten(module.bastion_host.private_ips))
+  value = zipmap(flatten(module.bastion_host.ssh_host_names), [element(concat(module.bootstrap_bastion.public_ips, [module.bootstrap_bastion.private_ip]), 0)])
 }
