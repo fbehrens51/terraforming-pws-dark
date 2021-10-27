@@ -36,6 +36,8 @@ memberlist:
 
   # Expose this port on all distributor, ingester
   # and querier replicas.
+  bind_addr:
+  - ${local_ip}
   bind_port: ${bind_port}
 
   join_members:

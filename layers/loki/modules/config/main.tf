@@ -75,6 +75,7 @@ locals {
     http_port         = module.ports.loki_http_port
     grpc_port         = module.ports.loki_grpc_port
     region            = var.region
+    local_ip          = ip
     loki_ips          = var.loki_ips
     storage_bucket    = var.storage_bucket
     compactor_enabled = i == 0 # enable compactor on a single instance
