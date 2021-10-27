@@ -110,7 +110,7 @@ module "syslog_config" {
   source = "../../modules/syslog"
 
   root_domain    = data.terraform_remote_state.paperwork.outputs.root_domain
-  syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.root_ca_cert
 
   role_name          = "scanner"
   public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name

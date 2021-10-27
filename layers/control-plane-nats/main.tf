@@ -150,7 +150,7 @@ module "nat" {
   scale_vpc_key              = "control-plane"
   user_data                  = data.template_cloudinit_config.nat_user_data.rendered
   root_domain                = data.terraform_remote_state.paperwork.outputs.root_domain
-  syslog_ca_cert             = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  syslog_ca_cert             = data.terraform_remote_state.paperwork.outputs.root_ca_cert
   check_cloud_init           = data.terraform_remote_state.paperwork.outputs.check_cloud_init == "false" ? false : true
 
   public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name

@@ -14,7 +14,7 @@ data "aws_region" "current" {
 }
 
 locals {
-  trusted_with_additional_ca_certs = "${data.aws_s3_bucket_object.trusted_ca_certs.body}${data.aws_s3_bucket_object.additional_trusted_ca_certs.body}"
+  trusted_with_additional_ca_certs = "${data.aws_s3_bucket_object.root_ca_cert.body}${data.aws_s3_bucket_object.additional_trusted_ca_certs.body}"
   bucket_prefix                    = replace(local.env_name_prefix, " ", "-")
   reporting_bucket_name            = "${local.bucket_prefix}-reporting-bucket"
   public_bucket_name               = "${local.bucket_prefix}-public-bucket"
@@ -600,11 +600,6 @@ data "aws_s3_bucket_object" "router_trusted_ca_certs" {
 variable "trusted_ca_certs_s3_path" {
 }
 
-data "aws_s3_bucket_object" "trusted_ca_certs" {
-  bucket = var.cert_bucket
-  key    = var.trusted_ca_certs_s3_path
-}
-
 variable "additional_trusted_ca_certs_s3_path" {
 }
 
@@ -1073,10 +1068,6 @@ output "router_trusted_ca_certs" {
   value = data.aws_s3_bucket_object.router_trusted_ca_certs.body
 }
 
-output "trusted_ca_certs" {
-  value = data.aws_s3_bucket_object.trusted_ca_certs.body
-}
-
 output "trusted_with_additional_ca_certs" {
   value = local.trusted_with_additional_ca_certs
 }
@@ -1463,3 +1454,22 @@ output "s3_endpoint" {
 output "endpoint_domain" {
   value = var.endpoint_domain
 }
+
+
+//variable "additional_test_cas" {
+//  type = set(string)
+//}
+//
+//data "aws_s3_bucket_object" "additional_test_ca_certs" {
+//  for_each = var.additional_test_cas
+//  bucket = var.cert_bucket
+//  key    = each.key
+//}
+//
+//locals {
+//    certList = join("\n",[for cert in data.aws_s3_bucket_object.additional_test_ca_certs : cert.body])
+//}
+//
+//output "test_ca_list"{
+//  value = local.certList
+//}
