@@ -170,6 +170,8 @@ data "template_file" "paperwork_variables" {
     portal_smoke_test_key_s3_path               = local.portal_smoke_test_key_s3_path
     vanity_server_cert_s3_path                  = local.vanity_server_cert_s3_path
     vanity_server_key_s3_path                   = local.vanity_server_key_s3_path
+    iaas_trusted_ca_certs_s3_path               = local.iaas_trusted_ca_certs_s3_path
+    slack_trusted_ca_certs_s3_path              = local.slack_trusted_ca_certs_s3_path
 
     bootstrap_role_name  = var.bootstrap_role_name
     foundation_role_name = var.foundation_role_name

@@ -127,3 +127,7 @@ log_forwarder_region = "us-east-1"
 cap_url = "https://combine-1-elb-tap-e-770a8babaa78d696.elb.us-east-1.amazonaws.com"
 
 cap_root_ca_s3_path = "${cap_root_ca_s3_path}"
+
+iaas_trusted_ca_certs_s3_path  = "${iaas_trusted_ca_certs_s3_path}"
+
+slack_trusted_ca_certs_s3_path = "${slack_trusted_ca_certs_s3_path}"
