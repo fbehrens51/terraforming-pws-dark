@@ -88,6 +88,12 @@ runcmd:
 
     amazon-linux-extras install -y nginx1
     systemctl enable nginx.service
+    # disable the default server listening on port 80 as part of server hardening
+    pushd /etc/nginx
+    mv nginx.conf nginx.conf.package
+    awk '/^    server {/,/^    }/ { print "#" $0; next } {print}' nginx.conf.package > nginx.conf
+    chmod 644 nginx.conf
+    popd
     systemctl start nginx
 
     wget --quiet --no-check-certificate -O loki.zip "${loki_location}"
@@ -104,7 +110,7 @@ runcmd:
     fi
 
     echo "OPTIONS=-config.file=/etc/loki/loki.yaml -server.http-listen-address=127.0.0.1 -server.grpc-listen-address=$LOCAL_IP" > loki_config
-    
+
     install -m 644 -D loki_config /etc/sysconfig/loki
     rm loki_config
 

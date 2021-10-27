@@ -21,6 +21,8 @@ ingester:
   # https://grafana.com/docs/loki/latest/best-practices/#use-chunk_target_size
   chunk_target_size: 153600
   max_chunk_age: 1h
+  flush_check_period: 5s
+  flush_op_timeout: 5m
   chunk_idle_period: 30m
   chunk_retain_period: 30s
   # This must be set to 0 to use the WAL
