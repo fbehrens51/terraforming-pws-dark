@@ -17,6 +17,8 @@ locals {
   router_trusted_ca_certs_s3_path                  = "router_trusted_ca_certs.pem"
   trusted_ca_certs_s3_path                         = "trusted_ca_certs.pem"
   additional_trusted_ca_certs_s3_path              = "additional_trusted_ca_certs.pem"
+  iaas_trusted_ca_certs_s3_path                    = "iaas_trusted_ca_certs.pem"
+  slack_trusted_ca_certs_s3_path                   = "slack_trusted_ca_certs.pem"
   rds_ca_cert_s3_path                              = "rds_ca_cert.pem"
   smtp_relay_password_s3_path                      = "smtp_relay_password.pem"
   smtp_relay_ca_cert_s3_path                       = "smtp_relay_ca_cert.pem"
@@ -317,8 +319,17 @@ resource "aws_s3_bucket_object" "trusted_ca_certs" {
 
 module "download-ca-certs" {
   source = "../../modules/download_certs"
+  hosts  = var.additional_trusted_ca_cert_hosts
+}
 
-  hosts = var.additional_trusted_ca_cert_hosts
+module "download-iaas-ca-certs" {
+  source = "../../modules/download_certs"
+  hosts  = var.iaas_trusted_ca_cert_hosts
+}
+
+module "download-slack-ca-certs" {
+  source = "../../modules/download_certs"
+  hosts  = var.slack_trusted_ca_cert_hosts
 }
 
 resource "aws_s3_bucket_object" "additional_trusted_ca_certs" {
@@ -327,6 +338,21 @@ resource "aws_s3_bucket_object" "additional_trusted_ca_certs" {
   content      = module.download-ca-certs.ca_certs
   content_type = "text/plain"
 }
+
+resource "aws_s3_bucket_object" "iaas_trusted_ca_certs" {
+  key          = local.iaas_trusted_ca_certs_s3_path
+  bucket       = aws_s3_bucket.certs.bucket
+  content      = module.download-iaas-ca-certs.ca_certs
+  content_type = "text/plain"
+}
+
+resource "aws_s3_bucket_object" "slack_trusted_ca_certs" {
+  key          = local.slack_trusted_ca_certs_s3_path
+  bucket       = aws_s3_bucket.certs.bucket
+  content      = module.download-slack-ca-certs.ca_certs
+  content_type = "text/plain"
+}
+
 
 resource "aws_s3_bucket_object" "rds_ca_cert" {
   key          = local.rds_ca_cert_s3_path
@@ -596,5 +622,13 @@ variable "smtp_relay_password" {
 }
 
 variable "additional_trusted_ca_cert_hosts" {
+  type = list(string)
+}
+
+variable "iaas_trusted_ca_cert_hosts" {
+  type = list(string)
+}
+
+variable "slack_trusted_ca_cert_hosts" {
   type = list(string)
 }
