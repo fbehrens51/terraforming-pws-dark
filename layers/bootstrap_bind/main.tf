@@ -104,9 +104,14 @@ locals {
       cidr_blocks = data.aws_vpc.cp_vpc.cidr_block
     },
     {
-      // metrics endpoint for grafana
       description = "Allow node_exporter/9100 from pas_vpc"
       port        = "9100"
+      protocol    = "tcp"
+      cidr_blocks = data.aws_vpc.pas_vpc.cidr_block
+    },
+    {
+      description = "Allow bind_exporter/9119 from pas_vpc"
+      port        = "9119"
       protocol    = "tcp"
       cidr_blocks = data.aws_vpc.pas_vpc.cidr_block
     },

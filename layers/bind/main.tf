@@ -193,6 +193,12 @@ data "template_cloudinit_config" "master_bind_conf_userdata" {
   }
 
   part {
+    filename     = "bind_exporter.cfg"
+    content_type = "text/x-include-url"
+    content      = data.terraform_remote_state.paperwork.outputs.bind_exporter_user_data
+  }
+
+  part {
     filename     = "node_exporter.cfg"
     content_type = "text/x-include-url"
     content      = data.terraform_remote_state.paperwork.outputs.node_exporter_user_data
@@ -268,7 +274,8 @@ module "iptables_rules" {
   ]
   personality_rules = [
     "iptables -A INPUT -p tcp --dport 53 -m state --state NEW -j ACCEPT",
-    "iptables -A INPUT -p udp --dport 53 -m state --state NEW -j ACCEPT"
+    "iptables -A INPUT -p udp --dport 53 -m state --state NEW -j ACCEPT",
+    "iptables -A INPUT -p tcp --dport 9119 -m state --state NEW -j ACCEPT"
   ]
   control_plane_subnet_cidrs = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs
 }

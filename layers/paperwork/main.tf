@@ -347,6 +347,15 @@ module "bot_host_key_pair" {
   key_name = "${local.env_name_prefix}-bot"
 }
 
+module "bind_exporter_client_config" {
+  source                 = "../../modules/bind_exporter"
+  bind_exporter_location = var.bind_exporter_object_url
+  public_bucket_name     = aws_s3_bucket.public_bucket.bucket
+  public_bucket_url      = local.public_bucket_url
+  server_cert_pem        = data.aws_s3_bucket_object.grafana_server_cert.body
+  server_key_pem         = data.aws_s3_bucket_object.grafana_server_key.body
+}
+
 module "node_exporter_client_config" {
   source                 = "../../modules/node_exporter"
   node_exporter_location = var.node_exporter_object_url
@@ -451,6 +460,11 @@ variable "artifact_repo_bucket_region" {
 variable "force_destroy_buckets" {
   type    = bool
   default = false
+}
+
+variable "bind_exporter_object_url" {
+  default     = ""
+  description = "Location of the bind_exporter release. If not specified, the bind_exporter agent will not be installed."
 }
 
 variable "node_exporter_object_url" {
@@ -1321,6 +1335,10 @@ output "es_s3_vpc_endpoint_id" {
 
 output "bastion_s3_vpc_endpoint_id" {
   value = aws_vpc_endpoint.bastion_s3.id
+}
+
+output "bind_exporter_user_data" {
+  value = module.bind_exporter_client_config.user_data
 }
 
 output "node_exporter_user_data" {
