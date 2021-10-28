@@ -214,6 +214,10 @@ resource "grafana_dashboard" "loki" {
   config_json = file("dashboards/loki.json")
 }
 
+resource "grafana_dashboard" "bind" {
+  config_json = file("dashboards/bind.json")
+}
+
 data "template_file" "clamav_dashboard" {
   template = file("dashboards/antivirus-alerts.json.tpl")
   vars = {
