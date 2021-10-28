@@ -81,3 +81,8 @@ YSEY1QSteDwsOoBrp+uvFRTp2InBuThs4pFsiv9kuXclVzDAGySj4dzp30d8tbQk
 CAUw7C29C79Fv1C5qfPrmAESrciIxpg0X40KPMbp1ZWVbd4=
 -----END CERTIFICATE-----
 ```
+
+Was using the followin to run, capture output, write to file and then dump subject read in from file:
+```shell
+go run main.go <<< $(echo "{\"hosts\":\"ec2.us-east-2.amazonaws.com:443,elasticloadbalancing.us-east-2.amazonaws.com:443,s3.us-east-2.amazonaws.com:443,hooks.slack.com:443,pws-dark-artifact-repo.s3.amazonaws.com:443\"}") | jq -r .certs > CHAINED.pem ; openssl crl2pkcs7 -nocrl -certfile CHAINED.pem | openssl pkcs7 -print_certs -text -noout|grep 'Subject:'
+```
