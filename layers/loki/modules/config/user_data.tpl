@@ -94,7 +94,11 @@ runcmd:
     awk '/^    server {/,/^    }/ { print "#" $0; next } {print}' nginx.conf.package > nginx.conf
     chmod 644 nginx.conf
     popd
+    # ensure new log files are not world readable
+    augtool set /files/etc/logrotate.d/nginx/rule/create/mode 640
     systemctl start nginx
+    # ensure existing log files are not world readable
+    chmod 640 /var/log/nginx/*.log
 
     wget --quiet --no-check-certificate -O loki.zip "${loki_location}"
     unzip loki.zip
