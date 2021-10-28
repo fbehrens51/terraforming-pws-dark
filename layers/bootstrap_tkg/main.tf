@@ -38,6 +38,17 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
+data "terraform_remote_state" "routes" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "routes"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 data "aws_vpc" "vpc" {
   id = data.terraform_remote_state.paperwork.outputs.tkg_vpc_id
 }
