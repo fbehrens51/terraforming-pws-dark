@@ -10,6 +10,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"sort"
 	"strings"
 	"time"
 )
@@ -35,6 +36,13 @@ func main() {
 		fatal(err)
 	}
 }
+
+// BySubject implements sort.Interface based on the Subject field.
+type BySubject []*x509.Certificate
+
+func (a BySubject) Len() int           { return len(a) }
+func (a BySubject) Less(i, j int) bool { return a[i].Subject.String() < a[j].Subject.String() }
+func (a BySubject) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 
 func process(input Input) Output {
 
@@ -79,7 +87,12 @@ func process(input Input) Output {
 	buf := new(bytes.Buffer)
 
 	log.Printf("Encoding certs...")
+
+	//sort so that if we get the same CAs from different hosts they will still be output in the same order (and reduce deployment churn)
+	sort.Sort(BySubject(allRoots))
+
 	for _, cert := range allRoots {
+		log.Println(cert.Subject.String())
 		err := pem.Encode(buf, &pem.Block{Type: "CERTIFICATE", Bytes: cert.Raw})
 		if err != nil {
 			fatal(err)
