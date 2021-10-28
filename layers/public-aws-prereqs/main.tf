@@ -284,7 +284,7 @@ variable "smtp_to" {
 }
 
 variable "enable_tkg" {
-  type = string
+  type    = string
   default = false
 }
 
