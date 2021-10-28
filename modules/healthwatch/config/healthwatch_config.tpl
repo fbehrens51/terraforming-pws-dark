@@ -141,6 +141,25 @@ product-properties:
             action: keep
       server_name: null
       tls_certificates: {}
+    - ca: |
+        ${indent(8, chomp(root_ca_cert))}
+      insecure_skip_verify: true
+      scrape_job: |-
+        job_name: 'bind'
+        metrics_path: /metrics
+        scheme: https
+        ec2_sd_configs:
+          - region: ${region}
+            port: 9119
+        relabel_configs:
+          - source_labels: [__meta_ec2_tag_job]
+            regex: bind
+            action: keep
+          - source_labels: [__meta_ec2_tag_env]
+            regex: ${env_tag_name}
+            action: keep
+      server_name: null
+      tls_certificates: {}
 %{ if control_plane_metrics_enabled == true ~}
     - ca: |-
         ${indent(8, chomp(control_plane_metrics_ca_certificate))}
