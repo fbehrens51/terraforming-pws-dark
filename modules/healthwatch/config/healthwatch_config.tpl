@@ -143,7 +143,7 @@ product-properties:
       tls_certificates: {}
     - ca: |
         ${indent(8, chomp(root_ca_cert))}
-      insecure_skip_verify: false
+      insecure_skip_verify: true
       scrape_job: |-
         job_name: 'bind'
         metrics_path: /metrics
