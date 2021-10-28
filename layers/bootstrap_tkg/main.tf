@@ -43,10 +43,10 @@ data "aws_vpc" "vpc" {
 }
 
 locals {
-  env_name      = var.global_vars.env_name
-  modified_name = "${local.env_name} tkg"
-  modified_tags = merge(var.global_vars["global_tags"])
-  public_subnet_cidr = cidrsubnet(data.aws_vpc.vpc.cidr_block, 1, 0)
+  env_name            = var.global_vars.env_name
+  modified_name       = "${local.env_name} tkg"
+  modified_tags       = merge(var.global_vars["global_tags"])
+  public_subnet_cidr  = cidrsubnet(data.aws_vpc.vpc.cidr_block, 1, 0)
   private_subnet_cidr = cidrsubnet(data.aws_vpc.vpc.cidr_block, 1, 1)
 }
 
@@ -54,14 +54,14 @@ module "public_subnet" {
   source             = "../../modules/subnet_per_az"
   availability_zones = var.availability_zones
   vpc_id             = data.aws_vpc.vpc.id
-  cidr_block        = local.public_subnet_cidr
+  cidr_block         = local.public_subnet_cidr
   tags = merge(
-  local.modified_tags,
-  {
-    "Name" = "${local.modified_name}-tkg",
-    "kubernetes.io/role/elb" = 1,
-    "kubernetes.io/cluster/${var.tkg_cluster_name}" = "shared"
-  },
+    local.modified_tags,
+    {
+      "Name"                                          = "${local.modified_name}-tkg",
+      "kubernetes.io/role/elb"                        = 1,
+      "kubernetes.io/cluster/${var.tkg_cluster_name}" = "shared"
+    },
   )
 }
 
@@ -71,12 +71,12 @@ module "private_subnet" {
   vpc_id             = data.aws_vpc.vpc.id
   cidr_block         = local.private_subnet_cidr
   tags = merge(
-  local.modified_tags,
-  {
-    "Name" = "${local.modified_name}-tkg"
-    "kubernetes.io/role/internal-elb" = 1
-    "kubernetes.io/cluster/${var.tkg_cluster_name}" = "shared"
-  },
+    local.modified_tags,
+    {
+      "Name"                                          = "${local.modified_name}-tkg"
+      "kubernetes.io/role/internal-elb"               = 1
+      "kubernetes.io/cluster/${var.tkg_cluster_name}" = "shared"
+    },
   )
 }
 

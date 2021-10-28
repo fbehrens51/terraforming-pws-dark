@@ -31,6 +31,5 @@ output "tkg_public_vpc_route_table_id" {
 }
 
 output "tkg_private_vpc_route_table_ids" {
-  value = var.enable_tkg ? module.tkg_vpc_route_tables[0].private_route_table_ids : tuple()
+  value = var.enable_tkg ? module.tkg_vpc_route_tables[0].private_route_table_ids : []
 }
-

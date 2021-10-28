@@ -3,7 +3,8 @@ locals {
   control_plane_vpc_cidr       = "10.1.0.0/24"
   pas_vpc_cidr                 = "10.2.0.0/16"
   enterprise_services_vpc_cidr = "10.3.0.0/24"
-  tkg_vpc_cidr                 = "10.4.0.0/24"
+  // iso_seg_cidr = 10.4.0.0/24
+  tkg_vpc_cidr                 = "10.5.0.0/24"
 }
 
 resource "aws_vpc" "bastion_vpc" {
