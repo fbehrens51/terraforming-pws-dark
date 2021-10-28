@@ -75,5 +75,5 @@ zone "${zone_name}" {
 };
 
 statistics-channels {
-	inet 127.0.0.1 port 8080 allow { 127.0.0.1; };
+	inet 127.0.0.1 port 8053 allow { 127.0.0.1; };
 };
