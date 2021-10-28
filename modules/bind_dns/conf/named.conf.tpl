@@ -12,10 +12,10 @@ acl "clients" {
 
 options {
     #listen on all interfaces except loopback (as it's used by dnsmasq)
-    listen-on {
-            !127.0.0.1;
-            0.0.0.0/0;
-    };
+	listen-on {
+		!127.0.0.1;
+		0.0.0.0/0;
+	};
 	listen-on-v6 { none; };
 	directory 	"/var/named";
 	dump-file 	"/var/named/data/cache_dump.db";
@@ -46,13 +46,13 @@ options {
 
 # Specifications of what to log, and where the log messages are sent
 logging {
-    channel default_syslog {
-        print-time yes;
-        print-category yes;
-        print-severity yes;
-        syslog daemon;
-        severity info;
-    };
+	channel default_syslog {
+		print-time yes;
+		print-category yes;
+		print-severity yes;
+		syslog daemon;
+		severity info;
+	};
 	category default { "default_syslog";};
 	category general { "default_syslog";};
 	category queries { "default_syslog";};
@@ -72,4 +72,8 @@ zone "${zone_name}" {
 	type master;
 	file "data/db.${zone_name}";
 	allow-transfer { "none"; };
+};
+
+statistics-channels {
+	inet 127.0.0.1 port 8080 allow { 127.0.0.1; };
 };
