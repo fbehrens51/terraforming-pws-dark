@@ -190,18 +190,18 @@ module "route_pas_tkg" {
   availability_zones = var.availability_zones
 }
 
-module "route_tkg_es" {
+module "route_es_tkg" {
   count            = var.enable_tkg ? 1 : 0
   source           = "./modules/routing"
-  accepter_vpc_id  = local.tkg_vpc_id
-  requester_vpc_id = local.es_vpc_id
+  accepter_vpc_id  = local.es_vpc_id
+  requester_vpc_id = local.tkg_vpc_id
   accepter_route_table_ids = concat(
-    module.tkg_vpc_route_tables[count.index].private_route_table_ids,
-    [module.tkg_vpc_route_tables[count.index].public_route_table_id],
-  )
-  requester_route_table_ids = concat(
     module.es_vpc_route_tables.private_route_table_ids,
     [module.es_vpc_route_tables.public_route_table_id],
+  )
+  requester_route_table_ids = concat(
+    module.tkg_vpc_route_tables[count.index].private_route_table_ids,
+    [module.tkg_vpc_route_tables[count.index].public_route_table_id],
   )
   availability_zones = var.availability_zones
 }
