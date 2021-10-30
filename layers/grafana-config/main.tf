@@ -205,6 +205,10 @@ resource "grafana_dashboard" "concourse" {
   config_json = file("dashboards/concourse.json")
 }
 
+resource "grafana_dashboard" "server-metrics" {
+  config_json = file("dashboards/server-metrics.json")
+}
+
 resource "grafana_dashboard" "events-logger" {
   config_json = file("dashboards/events-logger.json")
 }
