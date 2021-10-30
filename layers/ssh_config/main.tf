@@ -154,48 +154,74 @@ data "terraform_remote_state" "sjb" {
 }
 
 locals {
-  bot_key_pem         = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  enable_bot_user     = var.enable_bot_user
-  ssh_key_path        = var.ssh_key_path
-  secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
-  foundation_name     = data.terraform_remote_state.paperwork.outputs.foundation_name
+  bastion_ip          = data.terraform_remote_state.bastion.outputs.ssh_host_ips[local.bastion_name]
   bastion_name        = one(keys(data.terraform_remote_state.bastion.outputs.ssh_host_ips))
+  bot_key_pem         = data.terraform_remote_state.paperwork.outputs.bot_private_key
+  cp_om_ip            = data.terraform_remote_state.control-plane-ops-manager.outputs.ssh_host_ips[local.cp_om_name]
   cp_om_name          = one(keys(data.terraform_remote_state.control-plane-ops-manager.outputs.ssh_host_ips))
+  foundation_name     = data.terraform_remote_state.paperwork.outputs.foundation_name
+  om_ip               = data.terraform_remote_state.ops-manager.outputs.ssh_host_ips[local.om_name]
   om_name             = one(keys(data.terraform_remote_state.ops-manager.outputs.ssh_host_ips))
+  secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
+  sjb_ip              = data.terraform_remote_state.sjb.outputs.ssh_host_ips[local.sjb_name]
   sjb_name            = one(keys(data.terraform_remote_state.sjb.outputs.ssh_host_ips))
+  ssh_key_path        = var.ssh_key_path
+  sshconfig_host_ips = merge(
+    data.terraform_remote_state.bind.outputs.ssh_host_ips,
+    data.terraform_remote_state.bootstrap_isolation_segment_vpc_1.outputs.ssh_host_ips,
+    data.terraform_remote_state.control-plane-ops-manager.outputs.ssh_host_ips,
+    data.terraform_remote_state.control-plane-nats.outputs.ssh_host_ips,
+    data.terraform_remote_state.enterprise-services.outputs.ssh_host_ips,
+    data.terraform_remote_state.fluentd.outputs.ssh_host_ips,
+    data.terraform_remote_state.loki.outputs.ssh_host_ips,
+    data.terraform_remote_state.ops-manager.outputs.ssh_host_ips,
+    data.terraform_remote_state.pas.outputs.ssh_host_ips,
+    data.terraform_remote_state.postfix.outputs.ssh_host_ips,
+    var.scanner_host_ips,
+  )
 
-  sshconfig = templatefile("${path.module}/sshconfig.tpl",
-    {
-      ssh_key_path     = local.ssh_key_path,
-      enable_bot_user  = local.enable_bot_user,
-      enable_proxyjump = var.enable_proxyjump,
-      foundation_name  = local.foundation_name,
-      ssh_host_ips = merge(
-        data.terraform_remote_state.bind.outputs.ssh_host_ips,
-        data.terraform_remote_state.bootstrap_isolation_segment_vpc_1.outputs.ssh_host_ips,
-        data.terraform_remote_state.control-plane-ops-manager.outputs.ssh_host_ips,
-        data.terraform_remote_state.control-plane-nats.outputs.ssh_host_ips,
-        data.terraform_remote_state.enterprise-services.outputs.ssh_host_ips,
-        data.terraform_remote_state.fluentd.outputs.ssh_host_ips,
-        data.terraform_remote_state.loki.outputs.ssh_host_ips,
-        data.terraform_remote_state.ops-manager.outputs.ssh_host_ips,
-        data.terraform_remote_state.pas.outputs.ssh_host_ips,
-        data.terraform_remote_state.postfix.outputs.ssh_host_ips,
-        var.scanner_host_ips,
-      ),
-      bastion_name = local.bastion_name,
-      bosh_name    = "${local.foundation_name}_bosh",
-      cp_bosh_name = "${local.foundation_name}_cp_bosh",
-      cp_om_name   = local.cp_om_name,
-      om_name      = local.om_name,
-      sjb_name     = local.sjb_name,
-      bastion_ip   = data.terraform_remote_state.bastion.outputs.ssh_host_ips[local.bastion_name],
-      bosh_ip      = var.bosh_ip,
-      cp_bosh_ip   = var.cp_bosh_ip,
-      cp_om_ip     = data.terraform_remote_state.control-plane-ops-manager.outputs.ssh_host_ips[local.cp_om_name],
-      om_ip        = data.terraform_remote_state.ops-manager.outputs.ssh_host_ips[local.om_name],
-      sjb_ip       = data.terraform_remote_state.sjb.outputs.ssh_host_ips[local.sjb_name],
-    }
+  common_params = {
+    bastion_ip      = local.bastion_ip,
+    bastion_name    = local.bastion_name,
+    bosh_ip         = var.bosh_ip,
+    bosh_name       = "${local.foundation_name}_bosh",
+    cp_bosh_ip      = var.cp_bosh_ip,
+    cp_bosh_name    = "${local.foundation_name}_cp_bosh",
+    cp_om_ip        = local.cp_om_ip,
+    cp_om_name      = local.cp_om_name,
+    foundation_name = local.foundation_name,
+    om_ip           = local.om_ip,
+    om_name         = local.om_name,
+    sjb_ip          = local.sjb_ip,
+    sjb_name        = local.sjb_name,
+    ssh_host_ips    = local.sshconfig_host_ips
+    ssh_key_path    = local.ssh_key_path,
+  }
+  sshconfig_outside = templatefile("${path.module}/sshconfig.tpl",
+    merge(local.common_params,
+      {
+        enable_bastion_proxyjump = true,
+        enable_sjb_proxyjump     = true,
+      }
+    )
+  )
+
+  sshconfig_bastion = templatefile("${path.module}/sshconfig.tpl",
+    merge(local.common_params,
+      {
+        enable_bastion_proxyjump = false,
+        enable_sjb_proxyjump     = true,
+      }
+    )
+  )
+
+  sshconfig_sjb = templatefile("${path.module}/sshconfig.tpl",
+    merge(local.common_params,
+      {
+        enable_bastion_proxyjump = false,
+        enable_sjb_proxyjump     = false,
+      }
+    )
   )
 
   ssh_host_ips = merge(
@@ -241,20 +267,9 @@ variable "cp_bbr_key" {
   description = "control_plane bbr key required to ssh to cp_bosh"
 }
 
-variable "enable_proxyjump" {
-  type        = bool
-  default     = true
-  description = "true = outside bastion, false = inside bastion"
-}
-
 variable "ssh_key_path" {
   type    = string
-  default = "/home/<USER>/.ssh"
-}
-
-variable "enable_bot_user" {
-  type    = bool
-  default = false
+  default = "~/.ssh"
 }
 
 variable "enable_s3_objects" {
@@ -279,15 +294,27 @@ output "ssh_host_ips" {
   value = local.ssh_host_ips
 }
 
-output "sshconfig" {
-  value = local.sshconfig
-}
-
-resource "aws_s3_bucket_object" "sshconfig" {
+resource "aws_s3_bucket_object" "sshconfig_outside" {
   count        = var.enable_s3_objects == true ? 1 : 0
   bucket       = local.secrets_bucket_name
-  key          = "sshconfig/${local.foundation_name}_sshconfig"
-  content      = local.sshconfig
+  key          = "sshconfig/${local.foundation_name}_sshconfig_outside"
+  content      = local.sshconfig_outside
+  content_type = "text/plain"
+}
+
+resource "aws_s3_bucket_object" "sshconfig_bastion" {
+  count        = var.enable_s3_objects == true ? 1 : 0
+  bucket       = local.secrets_bucket_name
+  key          = "sshconfig/${local.foundation_name}_sshconfig_bastion"
+  content      = local.sshconfig_bastion
+  content_type = "text/plain"
+}
+
+resource "aws_s3_bucket_object" "sshconfig_sjb" {
+  count        = var.enable_s3_objects == true ? 1 : 0
+  bucket       = local.secrets_bucket_name
+  key          = "sshconfig/${local.foundation_name}_sshconfig_sjb"
+  content      = local.sshconfig_sjb
   content_type = "text/plain"
 }
 
@@ -315,10 +342,26 @@ resource "aws_s3_bucket_object" "bot_key" {
   content_type = "text/plain"
 }
 
-resource "local_file" "sshconfig" {
+resource "local_file" "sshconfig_outside" {
   count                = var.enable_local_objects == true ? 1 : 0
-  content              = local.sshconfig
-  filename             = "${var.ssh_key_path}/${local.foundation_name}_sshconfig"
+  content              = local.sshconfig_outside
+  filename             = "${var.ssh_key_path}/${local.foundation_name}_sshconfig_outside"
+  file_permission      = "0600"
+  directory_permission = "0700"
+}
+
+resource "local_file" "sshconfig_bastion" {
+  count                = var.enable_local_objects == true ? 1 : 0
+  content              = local.sshconfig_bastion
+  filename             = "${var.ssh_key_path}/${local.foundation_name}_sshconfig_bastion"
+  file_permission      = "0600"
+  directory_permission = "0700"
+}
+
+resource "local_file" "sshconfig_sjb" {
+  count                = var.enable_local_objects == true ? 1 : 0
+  content              = local.sshconfig_sjb
+  filename             = "${var.ssh_key_path}/${local.foundation_name}_sshconfig_sjb"
   file_permission      = "0600"
   directory_permission = "0700"
 }
