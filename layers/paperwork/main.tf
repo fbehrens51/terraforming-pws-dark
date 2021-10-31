@@ -964,6 +964,19 @@ data "aws_s3_bucket_object" "cap_root_ca" {
   key    = var.cap_root_ca_s3_path
 }
 
+variable "iaas_trusted_ca_certs_s3_path" {
+  type = string
+}
+
+data "aws_s3_bucket_object" "iaas_trusted_ca_certs" {
+  bucket = var.cert_bucket
+  key    = var.iaas_trusted_ca_certs_s3_path
+}
+
+output "iaas_trusted_ca_certs" {
+  value = data.aws_s3_bucket_object.iaas_trusted_ca_certs.body
+}
+
 # This key is used to distinguish between metrics domains in grafana.
 resource "random_string" "metrics_key" {
   length  = "10"
@@ -1079,14 +1092,6 @@ output "root_ca_cert" {
 
 output "root_ca_cert_path" {
   value = data.aws_s3_bucket_object.root_ca_cert.key
-}
-
-output "additional_trusted_ca_certs" {
-  value = data.aws_s3_bucket_object.additional_trusted_ca_certs.body
-}
-
-output "additional_trusted_ca_certs_path" {
-  value = data.aws_s3_bucket_object.additional_trusted_ca_certs.key
 }
 
 output "router_trusted_ca_certs" {
