@@ -163,7 +163,7 @@ module "om_config" {
 
   concourse_worker_role_name = data.terraform_remote_state.paperwork.outputs.bootstrap_role_name
 
-  iaas_configuration_endpoints_ca_cert    = data.terraform_remote_state.paperwork.outputs.additional_trusted_ca_certs
+  iaas_configuration_endpoints_ca_cert    = data.terraform_remote_state.paperwork.outputs.iaas_trusted_ca_certs
   iaas_configuration_iam_instance_profile = data.terraform_remote_state.paperwork.outputs.foundation_role_name
   blobstore_instance_profile              = data.terraform_remote_state.paperwork.outputs.bucket_role_name
 
