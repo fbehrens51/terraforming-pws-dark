@@ -22,7 +22,6 @@
       "datasource": null,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "displayName": "",
           "mappings": [],
           "max": 1,
@@ -63,9 +62,10 @@
           "fields": "",
           "values": false
         },
+        "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.3.4",
+      "pluginVersion": "7.5.11",
       "targets": [
         {
           "expr": "(sum(node_systemd_unit_state{name=\"cloud-init.service\",state=\"active\"})) / sum(up{job=\"ec2\"})",
@@ -83,7 +83,6 @@
       "datasource": null,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "displayName": "",
           "mappings": [],
           "max": 1,
@@ -124,9 +123,10 @@
           "fields": "",
           "values": false
         },
+        "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.3.4",
+      "pluginVersion": "7.5.11",
       "targets": [
         {
           "expr": "(sum(node_systemd_unit_state{name=\"rsyslog.service\",state=\"active\"})) / sum(up{job=\"ec2\"})",
@@ -144,7 +144,6 @@
       "datasource": null,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "displayName": "",
           "mappings": [],
           "max": 1,
@@ -185,9 +184,10 @@
           "fields": "",
           "values": false
         },
+        "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.3.4",
+      "pluginVersion": "7.5.11",
       "targets": [
         {
           "expr": "(sum(node_systemd_unit_state{name=\"clamd@scan.service\",state=\"active\"}) + sum(node_systemd_unit_state{name=\"clamav-daemon.service\",state=\"active\"})) / sum(up{job=\"ec2\"})",
@@ -211,7 +211,6 @@
       "datasource": null,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "mappings": [
             {
               "from": "",
@@ -276,15 +275,17 @@
           "fields": "",
           "values": false
         },
+        "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.3.4",
+      "pluginVersion": "7.5.11",
       "targets": [
         {
-          "expr": "up{name_tag=~\".*bind\"} + on(name_tag, availability_zone) node_systemd_unit_state{name=\"named.service\",state=\"active\"}",
+          "exemplar": true,
+          "expr": "up{name_tag=~\".*bind\"} + on(instance, name_tag, availability_zone) node_systemd_unit_state{name=\"named.service\",state=\"active\"}",
           "hide": false,
           "interval": "",
-          "legendFormat": "{{name_tag}}",
+          "legendFormat": "{{instance}}",
           "refId": "A"
         }
       ],
@@ -297,7 +298,6 @@
       "datasource": null,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "mappings": [
             {
               "from": "",
@@ -362,25 +362,111 @@
           "fields": "",
           "values": false
         },
+        "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.3.4",
+      "pluginVersion": "7.5.11",
       "targets": [
         {
-          "expr": "up{name_tag=~\".*fluentd\"} + on(name_tag, availability_zone)  node_systemd_unit_state{name=\"td-agent.service\",state=\"active\"}",
+          "exemplar": true,
+          "expr": "up{name_tag=~\".*fluentd\"} + on(instance, name_tag, availability_zone)  node_systemd_unit_state{name=\"td-agent.service\",state=\"active\"}",
           "hide": false,
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{name_tag}}",
+          "legendFormat": "{{instance}}",
           "refId": "A"
-        },
-        {
-          "refId": "B"
         }
       ],
       "timeFrom": null,
       "timeShift": null,
       "title": "Fluentd Status",
+      "type": "stat"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "from": "",
+              "id": 1,
+              "operator": "",
+              "text": "VM is down",
+              "to": "",
+              "type": 1,
+              "value": "0"
+            },
+            {
+              "from": "",
+              "id": 2,
+              "operator": "",
+              "text": "Named is Down",
+              "to": "",
+              "type": 1,
+              "value": "1"
+            },
+            {
+              "from": "",
+              "id": 3,
+              "operator": "",
+              "text": "Up",
+              "to": "",
+              "type": 1,
+              "value": "2"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 2
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 14
+      },
+      "id": 14,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "last"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.5.11",
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "up{name_tag=~\".*loki\"} + on(instance, name_tag, availability_zone) node_systemd_unit_state{name=\"loki.service\",state=\"active\"}",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "{{instance}}",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Loki Status",
       "type": "stat"
     },
     {
@@ -427,7 +513,6 @@
       "datasource": null,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -438,7 +523,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 14
+        "y": 21
       },
       "hiddenSeries": false,
       "id": 12,
@@ -459,7 +544,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.4",
+      "pluginVersion": "7.5.11",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -483,7 +568,8 @@
           "fill": true,
           "line": true,
           "op": "lt",
-          "value": 0.5
+          "value": 0.5,
+          "visible": true
         }
       ],
       "timeFrom": null,
@@ -528,7 +614,7 @@
     }
   ],
   "refresh": "30s",
-  "schemaVersion": 26,
+  "schemaVersion": 27,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -554,5 +640,5 @@
   "timezone": "",
   "title": "VM Health",
   "uid": "wKsWYuEGk",
-  "version": 1
+  "version": 3
 }

@@ -64,6 +64,7 @@ runcmd:
     # defer setting umask until after all of the yum installs have completed.
     sed -i -E -e '/umask 002/s/002/027/' /etc/profile /etc/bashrc
     sed -i -E -e '/umask 022/s/022/077/' /etc/profile /etc/bashrc
+    sed -i -e '$a!/etc/tenable_tag$' /etc/aide.conf
     at -M -f /root/aide-update.bash now +10 minutes
 EOF
 
