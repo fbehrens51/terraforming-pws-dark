@@ -165,9 +165,9 @@ resource "aws_instance" "instance" {
 
   lifecycle {
     ignore_changes = [
-      tags["operating-system"], tags_all["operating-system"],
-      tags["cloud_init_done"], tags_all["cloud_init_done"],
-      tags["cloud_init_output"], tags_all["cloud_init_output"]
+      tags["operating-system"],
+      tags["cloud_init_done"],
+      tags["cloud_init_output"]
     ]
   }
   provisioner "local-exec" {
@@ -236,9 +236,9 @@ resource "aws_instance" "unchecked_instance" {
 
   lifecycle {
     ignore_changes = [
-      tags["operating-system"], tags_all["operating-system"],
-      tags["cloud_init_done"], tags_all["cloud_init_done"],
-      tags["cloud_init_output"], tags_all["cloud_init_output"]
+      tags["operating-system"],
+      tags["cloud_init_done"],
+      tags["cloud_init_output"]
     ]
   }
 }
@@ -282,8 +282,7 @@ resource "aws_instance" "instance_ignoring_tags" {
   lifecycle {
     // We don't want terraform to remove tags applied later by customer processes
     ignore_changes = [
-      tags,
-      tags_all
+      tags
     ]
   }
 }
