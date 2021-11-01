@@ -75,6 +75,9 @@ product-properties:
           target_label: availability_zone
         - source_labels: [__meta_ec2_instance_id]
           target_label: instance_id
+        - source_labels: [__meta_ec2_tag_ssh_host_name]
+          target_label: instance
+          action: replace
       server_name: null
       tls_certificates: {}
     - scrape_job: |
@@ -115,6 +118,9 @@ product-properties:
           - source_labels: [__meta_ec2_tag_env]
             regex: ${env_tag_name}
             action: keep
+          - source_labels: [__meta_ec2_tag_ssh_host_name]
+            target_label: instance
+            action: replace
       server_name: null
       tls_certificates:
         cert_pem: |
@@ -139,6 +145,9 @@ product-properties:
           - source_labels: [__meta_ec2_tag_env]
             regex: ${env_tag_name}
             action: keep
+          - source_labels: [__meta_ec2_tag_ssh_host_name]
+            target_label: instance
+            action: replace
       server_name: null
       tls_certificates: {}
     - ca: |
@@ -158,6 +167,10 @@ product-properties:
           - source_labels: [__meta_ec2_tag_env]
             regex: ${env_tag_name}
             action: keep
+          - source_labels: [__meta_ec2_tag_ssh_host_name]
+            target_label: instance
+            replacement: '${1}:9119'
+            action: replace
       server_name: null
       tls_certificates: {}
 %{ if control_plane_metrics_enabled == true ~}
