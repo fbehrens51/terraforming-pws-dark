@@ -32,8 +32,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 1,
-  "id": 19,
-  "iteration": 1596648865172,
+  "id": 106,
+  "iteration": 1635865405908,
   "links": [],
   "panels": [
     {
@@ -55,9 +55,7 @@
       "dashboardTags": [],
       "datasource": null,
       "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
+        "defaults": {},
         "overrides": []
       },
       "folderId": null,
@@ -81,21 +79,97 @@
     },
     {
       "cacheTimeout": null,
-      "columns": [
-        {
-          "text": "Avg",
-          "value": "avg"
-        }
-      ],
       "datasource": null,
       "description": "These services are reporting 'failed' in systemd.",
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "left",
+            "displayMode": "color-text",
+            "filterable": false
+          },
+          "mappings": [
+            {
+              "from": "",
+              "id": 1,
+              "text": "Down",
+              "to": "",
+              "type": 1,
+              "value": "1"
+            },
+            {
+              "from": "",
+              "id": 2,
+              "text": "Up",
+              "to": "",
+              "type": 1,
+              "value": "0"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgb(255, 0, 0)",
+                "value": null
+              },
+              {
+                "color": "rgb(255, 0, 0)",
+                "value": 1
+              }
+            ]
+          }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Avg"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              },
+              {
+                "id": "custom.displayMode",
+                "value": "color-background"
+              },
+              {
+                "id": "custom.align",
+                "value": "right"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "rgba(50, 172, 45, 0.97)",
+                      "value": null
+                    },
+                    {
+                      "color": "#56A64B",
+                      "value": 0
+                    },
+                    {
+                      "color": "rgba(245, 54, 54, 0.9)",
+                      "value": 1
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
       },
-      "fontSize": "100%",
       "gridPos": {
         "h": 5,
         "w": 12,
@@ -104,78 +178,135 @@
       },
       "id": 18,
       "links": [],
-      "pageSize": null,
-      "pluginVersion": "6.7.1",
+      "options": {
+        "showHeader": false
+      },
+      "pluginVersion": "7.5.11",
       "repeat": null,
       "repeatDirection": "h",
-      "showHeader": true,
-      "sort": {
-        "col": 1,
-        "desc": false
-      },
-      "styles": [
-        {
-          "alias": "",
-          "align": "right",
-          "colorMode": "cell",
-          "colors": [
-            "rgba(50, 172, 45, 0.97)",
-            "#56A64B",
-            "rgba(245, 54, 54, 0.9)"
-          ],
-          "decimals": 2,
-          "mappingType": 1,
-          "pattern": "Avg",
-          "thresholds": [
-            "0",
-            "1"
-          ],
-          "type": "string",
-          "unit": "short",
-          "valueMaps": [
-            {
-              "text": "Up",
-              "value": "0"
-            },
-            {
-              "text": "Down",
-              "value": "1"
-            }
-          ]
-        }
-      ],
       "targets": [
         {
-          "expr": "sum(node_systemd_unit_state{availability_zone=~\"${az:regex}\",name_tag=~\"${name:regex}\",state=\"failed\"}) by (name_tag, availability_zone, name) > 0",
+          "exemplar": true,
+          "expr": "sum(node_systemd_unit_state{availability_zone=~\"${az:regex}\",name_tag=~\"${name:regex}\",state=\"failed\"}) by (instance, name_tag, availability_zone, name) > 0",
           "instant": true,
           "interval": "",
-          "legendFormat": "{{name_tag}} - {{availability_zone}} - {{name}}",
+          "legendFormat": "{{instance}} - {{name}}",
           "refId": "A"
         }
       ],
       "timeFrom": null,
       "timeShift": null,
       "title": "Failed Systemd Units",
-      "transform": "timeseries_aggregations",
-      "type": "table-old"
+      "transformations": [
+        {
+          "id": "reduce",
+          "options": {
+            "includeTimeField": false,
+            "reducers": [
+              "mean"
+            ]
+          }
+        }
+      ],
+      "type": "table"
     },
     {
       "cacheTimeout": null,
-      "columns": [
-        {
-          "text": "Avg",
-          "value": "avg"
-        }
-      ],
       "datasource": null,
       "description": "TSDB is able to retrieve metrics from these instances, this means the instance is up and node_exporter is working. Check the systemd status to understand whether other services are working.",
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "left",
+            "displayMode": "color-text",
+            "filterable": true
+          },
+          "mappings": [
+            {
+              "from": "",
+              "id": 1,
+              "text": "Down",
+              "to": "",
+              "type": 1,
+              "value": "0"
+            },
+            {
+              "from": "",
+              "id": 2,
+              "text": "Up",
+              "to": "",
+              "type": 1,
+              "value": "1"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgb(33, 255, 0)",
+                "value": null
+              },
+              {
+                "color": "semi-dark-red",
+                "value": 0
+              },
+              {
+                "color": "rgb(36, 255, 0)",
+                "value": 1
+              }
+            ]
+          }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Avg"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              },
+              {
+                "id": "custom.displayMode",
+                "value": "color-background"
+              },
+              {
+                "id": "custom.align",
+                "value": "right"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "rgba(245, 54, 54, 0.9)",
+                      "value": null
+                    },
+                    {
+                      "color": "rgba(237, 129, 40, 0.89)",
+                      "value": 0
+                    },
+                    {
+                      "color": "rgba(50, 172, 45, 0.97)",
+                      "value": 1
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
       },
-      "fontSize": "100%",
       "gridPos": {
         "h": 5,
         "w": 12,
@@ -184,78 +315,146 @@
       },
       "id": 20,
       "links": [],
-      "pageSize": null,
-      "pluginVersion": "6.7.1",
+      "options": {
+        "showHeader": false
+      },
+      "pluginVersion": "7.5.11",
       "repeat": null,
       "repeatDirection": "h",
-      "showHeader": true,
-      "sort": {
-        "col": 1,
-        "desc": false
-      },
-      "styles": [
-        {
-          "alias": "",
-          "align": "right",
-          "colorMode": "cell",
-          "colors": [
-            "rgba(245, 54, 54, 0.9)",
-            "rgba(237, 129, 40, 0.89)",
-            "rgba(50, 172, 45, 0.97)"
-          ],
-          "decimals": 2,
-          "mappingType": 1,
-          "pattern": "Avg",
-          "thresholds": [
-            "0",
-            "1"
-          ],
-          "type": "string",
-          "unit": "short",
-          "valueMaps": [
-            {
-              "text": "Up",
-              "value": "1"
-            },
-            {
-              "text": "Down",
-              "value": "0"
-            }
-          ]
-        }
-      ],
       "targets": [
         {
-          "expr": "sum(up{availability_zone=~\"${az:regex}\",name_tag=~\"${name:regex}\"}) by (name_tag, availability_zone) > 0",
+          "exemplar": true,
+          "expr": "sum(up{availability_zone=~\"${az:regex}\",name_tag=~\"${name:regex}\"}) by (instance, name_tag, availability_zone) > 0",
           "instant": true,
           "interval": "",
-          "legendFormat": "{{name_tag}} - {{availability_zone}}",
+          "legendFormat": "{{instance}}",
           "refId": "A"
         }
       ],
       "timeFrom": null,
       "timeShift": null,
       "title": "Up Instances",
-      "transform": "timeseries_aggregations",
-      "type": "table-old"
+      "transformations": [
+        {
+          "id": "reduce",
+          "options": {
+            "includeTimeField": false,
+            "reducers": [
+              "mean"
+            ]
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "field": "Field"
+              }
+            ]
+          }
+        }
+      ],
+      "type": "table"
     },
     {
       "cacheTimeout": null,
-      "columns": [
-        {
-          "text": "Avg",
-          "value": "avg"
-        }
-      ],
       "datasource": null,
       "description": "TSDB is unable to retrieve metrics from these instances, this likely means the instance is not correctly configured.",
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "left",
+            "displayMode": "color-text",
+            "filterable": false
+          },
+          "mappings": [
+            {
+              "from": "",
+              "id": 1,
+              "text": "Down",
+              "to": "",
+              "type": 1,
+              "value": "0"
+            },
+            {
+              "from": "",
+              "id": 2,
+              "text": "Up",
+              "to": "",
+              "type": 1,
+              "value": "1"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgb(255, 0, 4)",
+                "value": null
+              },
+              {
+                "color": "rgb(255, 0, 0)",
+                "value": 0
+              },
+              {
+                "color": "rgb(0, 255, 4)",
+                "value": 1
+              }
+            ]
+          }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Avg"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              },
+              {
+                "id": "custom.displayMode",
+                "value": "color-background"
+              },
+              {
+                "id": "custom.align",
+                "value": "right"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "rgba(245, 54, 54, 0.9)",
+                      "value": null
+                    },
+                    {
+                      "color": "rgba(245, 54, 54, 0.9)",
+                      "value": 0
+                    },
+                    {
+                      "color": "rgba(50, 172, 45, 0.97)",
+                      "value": 1
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
       },
-      "fontSize": "100%",
       "gridPos": {
         "h": 5,
         "w": 12,
@@ -264,63 +463,40 @@
       },
       "id": 16,
       "links": [],
-      "pageSize": null,
-      "pluginVersion": "6.7.1",
+      "options": {
+        "showHeader": false
+      },
+      "pluginVersion": "7.5.11",
       "repeat": null,
       "repeatDirection": "h",
-      "showHeader": true,
-      "sort": {
-        "col": 1,
-        "desc": false
-      },
-      "styles": [
-        {
-          "alias": "",
-          "align": "right",
-          "colorMode": "cell",
-          "colors": [
-            "rgba(245, 54, 54, 0.9)",
-            "rgba(245, 54, 54, 0.9)",
-            "rgba(50, 172, 45, 0.97)"
-          ],
-          "decimals": 2,
-          "mappingType": 1,
-          "pattern": "Avg",
-          "thresholds": [
-            "0",
-            "1"
-          ],
-          "type": "string",
-          "unit": "short",
-          "valueMaps": [
-            {
-              "text": "Up",
-              "value": "1"
-            },
-            {
-              "text": "Down",
-              "value": "0"
-            }
-          ]
-        }
-      ],
       "targets": [
         {
-          "expr": "sum(up{availability_zone=~\"${az:regex}\",name_tag=~\"${name:regex}\"}) by (name_tag, availability_zone) < 1",
+          "exemplar": true,
+          "expr": "sum(up{availability_zone=~\"${az:regex}\",name_tag=~\"${name:regex}\"}) by (instance, name_tag, availability_zone) < 1",
           "instant": true,
           "interval": "",
-          "legendFormat": "{{name_tag}} - {{availability_zone}}",
+          "legendFormat": "{{instance}}",
           "refId": "A"
         }
       ],
       "timeFrom": null,
       "timeShift": null,
       "title": "Down Instances",
-      "transform": "timeseries_aggregations",
-      "type": "table-old"
+      "transformations": [
+        {
+          "id": "reduce",
+          "options": {
+            "includeTimeField": false,
+            "reducers": [
+              "mean"
+            ]
+          }
+        }
+      ],
+      "type": "table"
     },
     {
-      "collapsed": false,
+      "collapsed": true,
       "datasource": null,
       "gridPos": {
         "h": 1,
@@ -329,307 +505,333 @@
         "y": 11
       },
       "id": 12,
-      "panels": [],
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": null,
+          "fieldConfig": {
+            "defaults": {
+              "links": []
+            },
+            "overrides": []
+          },
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 11,
+            "w": 12,
+            "x": 0,
+            "y": 12
+          },
+          "hiddenSeries": false,
+          "id": 2,
+          "legend": {
+            "alignAsTable": false,
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "rightSide": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.5.11",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "repeat": null,
+          "repeatDirection": null,
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "1 - (avg by (instance, name_tag, availability_zone)  (irate(node_cpu_seconds_total{mode=\"idle\",name_tag=~\"${name:regex}\",availability_zone=~\"${az:regex}\"}[5m])))",
+              "interval": "",
+              "legendFormat": "{{name_tag}} - {{availability_zone}}",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "CPU Usage",
+          "tooltip": {
+            "shared": true,
+            "sort": 2,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "percentunit",
+              "label": null,
+              "logBase": 1,
+              "max": "1",
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": null,
+          "fieldConfig": {
+            "defaults": {
+              "links": []
+            },
+            "overrides": []
+          },
+          "fill": 0,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 11,
+            "w": 12,
+            "x": 12,
+            "y": 12
+          },
+          "hiddenSeries": false,
+          "id": 4,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.5.11",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "((node_memory_MemTotal_bytes - node_memory_MemFree_bytes - (node_memory_Buffers_bytes + node_memory_Cached_bytes)) / node_memory_MemTotal_bytes{name_tag=~\"${name:regex}\",availability_zone=~\"${az:regex}\"})",
+              "interval": "",
+              "legendFormat": "{{name_tag}} - {{availability_zone}}",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "Memory Usage",
+          "tooltip": {
+            "shared": true,
+            "sort": 2,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "percentunit",
+              "label": null,
+              "logBase": 1,
+              "max": "1",
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": null,
+          "decimals": null,
+          "fieldConfig": {
+            "defaults": {
+              "links": []
+            },
+            "overrides": []
+          },
+          "fill": 0,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 9,
+            "w": 24,
+            "x": 0,
+            "y": 23
+          },
+          "hiddenSeries": false,
+          "id": 6,
+          "legend": {
+            "alignAsTable": true,
+            "avg": false,
+            "current": true,
+            "max": false,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "sort": "current",
+            "sortDesc": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.5.11",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "exemplar": true,
+              "expr": "avg((node_filesystem_size_bytes{name_tag=~\"${name:regex}\",availability_zone=~\"${az:regex}\"} - node_filesystem_avail_bytes{name_tag=~\"${name:regex}\",availability_zone=~\"${az:regex}\"}) / node_filesystem_size_bytes{name_tag=~\"${name:regex}\",availability_zone=~\"${az:regex}\"}) by (instance, name_tag, availability_zone, mountpoint)",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "{{instance}} - {{mountpoint}}",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [
+            {
+              "$$hashKey": "object:2067",
+              "colorMode": "critical",
+              "fill": true,
+              "line": true,
+              "op": "gt",
+              "value": null,
+              "yaxis": "left"
+            }
+          ],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "Disk Usage",
+          "tooltip": {
+            "shared": true,
+            "sort": 2,
+            "value_type": "individual"
+          },
+          "transformations": [
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "Time"
+                  }
+                ]
+              }
+            }
+          ],
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "$$hashKey": "object:2025",
+              "format": "percentunit",
+              "label": null,
+              "logBase": 1,
+              "max": "1",
+              "min": "0",
+              "show": true
+            },
+            {
+              "$$hashKey": "object:2026",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": false
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        }
+      ],
       "title": "VM Stats",
       "type": "row"
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 11,
-        "w": 12,
-        "x": 0,
-        "y": 12
-      },
-      "hiddenSeries": false,
-      "id": 2,
-      "legend": {
-        "alignAsTable": false,
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "rightSide": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "links": [],
-      "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
-      "percentage": false,
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "repeat": null,
-      "repeatDirection": null,
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "1 - (avg by (instance, name_tag, availability_zone)  (irate(node_cpu_seconds_total{mode=\"idle\",name_tag=~\"${name:regex}\",availability_zone=~\"${az:regex}\"}[5m])))",
-          "interval": "",
-          "legendFormat": "{{name_tag}} - {{availability_zone}}",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "CPU Usage",
-      "tooltip": {
-        "shared": true,
-        "sort": 2,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "percentunit",
-          "label": null,
-          "logBase": 1,
-          "max": "1",
-          "min": "0",
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
-      "fill": 0,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 11,
-        "w": 12,
-        "x": 12,
-        "y": 12
-      },
-      "hiddenSeries": false,
-      "id": 4,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
-      "percentage": false,
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "((node_memory_MemTotal_bytes - node_memory_MemFree_bytes - (node_memory_Buffers_bytes + node_memory_Cached_bytes)) / node_memory_MemTotal_bytes{name_tag=~\"${name:regex}\",availability_zone=~\"${az:regex}\"})",
-          "interval": "",
-          "legendFormat": "{{name_tag}} - {{availability_zone}}",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Memory Usage",
-      "tooltip": {
-        "shared": true,
-        "sort": 2,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "percentunit",
-          "label": null,
-          "logBase": 1,
-          "max": "1",
-          "min": "0",
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": null,
-      "decimals": null,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
-      "fill": 0,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 9,
-        "w": 24,
-        "x": 0,
-        "y": 23
-      },
-      "hiddenSeries": false,
-      "id": 6,
-      "legend": {
-        "alignAsTable": true,
-        "avg": false,
-        "current": true,
-        "max": false,
-        "min": false,
-        "rightSide": true,
-        "show": true,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
-      "percentage": false,
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "avg((node_filesystem_size_bytes{name_tag=~\"${name:regex}\",availability_zone=~\"${az:regex}\"} - node_filesystem_avail_bytes{name_tag=~\"${name:regex}\",availability_zone=~\"${az:regex}\"}) / node_filesystem_size_bytes{name_tag=~\"${name:regex}\",availability_zone=~\"${az:regex}\"}) by (name_tag, availability_zone, mountpoint)",
-          "format": "time_series",
-          "instant": false,
-          "interval": "",
-          "legendFormat": "{{name_tag}} - {{availability_zone}} - {{mountpoint}}",
-          "refId": "A"
-        },
-        {
-          "expr": "",
-          "interval": "",
-          "legendFormat": "",
-          "refId": "B"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Disk Usage",
-      "tooltip": {
-        "shared": true,
-        "sort": 2,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "percentunit",
-          "label": null,
-          "logBase": 1,
-          "max": "1",
-          "min": "0",
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": false
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
     },
     {
       "collapsed": false,
@@ -638,7 +840,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 32
+        "y": 12
       },
       "id": 22,
       "panels": [],
@@ -689,7 +891,7 @@
       "datasource": null,
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "links": []
         },
         "overrides": []
       },
@@ -699,7 +901,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 33
+        "y": 13
       },
       "hiddenSeries": false,
       "id": 26,
@@ -716,9 +918,10 @@
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.5.11",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -728,9 +931,10 @@
       "steppedLine": false,
       "targets": [
         {
+          "exemplar": true,
           "expr": "node_systemd_unit_state{state=\"failed\"} > 0",
           "interval": "",
-          "legendFormat": "{{name_tag}} | {{availability_zone}} | {{name}}",
+          "legendFormat": "{{instance}} | {{name}}",
           "refId": "A"
         }
       ],
@@ -740,7 +944,8 @@
           "fill": true,
           "line": true,
           "op": "gt",
-          "value": 0.5
+          "value": 0.5,
+          "visible": true
         }
       ],
       "timeFrom": null,
@@ -762,6 +967,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:2131",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -770,6 +976,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:2132",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -784,8 +991,8 @@
       }
     }
   ],
-  "refresh": "1m",
-  "schemaVersion": 25,
+  "refresh": "10s",
+  "schemaVersion": 27,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -793,21 +1000,28 @@
       {
         "allValue": null,
         "current": {
-          "selected": true,
-          "text": "All",
+          "selected": false,
+          "text": [
+            "All"
+          ],
           "value": [
             "$__all"
           ]
         },
         "datasource": "prometheus",
         "definition": "label_values(up, availability_zone)",
+        "description": null,
+        "error": null,
         "hide": 0,
         "includeAll": true,
         "label": "Availability Zone",
         "multi": true,
         "name": "az",
         "options": [],
-        "query": "label_values(up, availability_zone)",
+        "query": {
+          "query": "label_values(up, availability_zone)",
+          "refId": "prometheus-az-Variable-Query"
+        },
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -822,21 +1036,28 @@
         "allValue": null,
         "current": {
           "selected": true,
-          "text": "All",
+          "text": [
+            "All"
+          ],
           "value": [
             "$__all"
           ]
         },
         "datasource": "prometheus",
         "definition": "label_values(up, name_tag)",
+        "description": null,
+        "error": null,
         "hide": 0,
         "includeAll": true,
         "label": "Name",
         "multi": true,
         "name": "name",
         "options": [],
-        "query": "label_values(up, name_tag)",
-        "refresh": 1,
+        "query": {
+          "query": "label_values(up, name_tag)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
         "regex": "",
         "skipUrlSync": false,
         "sort": 1,
@@ -849,7 +1070,7 @@
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-5m",
     "to": "now"
   },
   "timepicker": {
@@ -868,5 +1089,5 @@
   "timezone": "",
   "title": "VM Resources",
   "uid": "HMJtNeCZz",
-  "version": 10
+  "version": 3
 }
