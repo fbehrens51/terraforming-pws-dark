@@ -12,7 +12,7 @@
       }
     ]
   },
-  "editable": true,
+  "editable": false,
   "gnetId": null,
   "graphTooltip": 1,
   "id": 36,
@@ -23,7 +23,6 @@
       "description": "Records processed for both input and output. Ideally, these should be the same number, but may occasionally fluctuate during high load.",
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -60,18 +59,20 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.4.2",
+      "pluginVersion": "7.5.11",
       "targets": [
         {
+          "exemplar": true,
           "expr": "rate(fluentd_input_status_num_records_total[5m])",
           "interval": "",
-          "legendFormat": "Input",
+          "legendFormat": "{{instance}} Input",
           "refId": "A"
         },
         {
+          "exemplar": true,
           "expr": "avg(rate(fluentd_output_status_emit_records{type=\"cloudwatch_logs\"}[5m])) by (instance)",
           "interval": "",
-          "legendFormat": "Output",
+          "legendFormat": "{{instance}} Output",
           "refId": "B"
         }
       ],
@@ -89,7 +90,6 @@
       "description": "The number of chunks of data currently buffered due to downstream backpressure. Ideally, this is 0, but it may occasionally spike for a short period during high log volume or if a consumer slows down.",
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -120,7 +120,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.2",
+      "pluginVersion": "7.5.11",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -196,7 +196,6 @@
       "description": "The number of retries for each output type. This should ideally be 0, but may occasionally spike during heavy load.",
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -227,7 +226,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.2",
+      "pluginVersion": "7.5.11",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -295,7 +294,6 @@
       "description": "Size of each output buffer in bytes. The s3 buffer rotates every 1 GB, so it's normal to see it climb and fall every 1 GB.",
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -326,7 +324,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.2",
+      "pluginVersion": "7.5.11",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -387,7 +385,7 @@
     }
   ],
   "refresh": "1m",
-  "schemaVersion": 25,
+  "schemaVersion": 27,
   "style": "dark",
   "tags": [],
   "templating": {

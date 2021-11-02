@@ -19,7 +19,7 @@
     ]
   },
   "description": "Bind9 DNS Service Statistics.",
-  "editable": true,
+  "editable": false,
   "gnetId": 12309,
   "graphTooltip": 0,
   "id": 94,

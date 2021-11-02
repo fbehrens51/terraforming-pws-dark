@@ -37,7 +37,7 @@
     ]
   },
   "description": "Overview of metrics from Prometheus 2.0.  \r\nUseful for using prometheus to monitor your prometheus.\r\nRevisions welcome!",
-  "editable": true,
+  "editable": false,
   "gnetId": 3662,
   "graphTooltip": 0,
   "id": 74,
