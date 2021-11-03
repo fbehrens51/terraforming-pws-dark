@@ -70,6 +70,9 @@ write_files:
 
       [Install]
       WantedBy=multi-user.target
+      RestartSec = 5sec
+      StartLimitBurst = 4
+      StartLimitInterval = 30
     path: /usr/lib/systemd/system/node_exporter.service
     permissions: '0644'
     owner: root:root
