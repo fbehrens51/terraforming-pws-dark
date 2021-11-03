@@ -561,7 +561,7 @@
             {
               "expr": "1 - (avg by (instance, name_tag, availability_zone)  (irate(node_cpu_seconds_total{mode=\"idle\",name_tag=~\"${name:regex}\",availability_zone=~\"${az:regex}\"}[5m])))",
               "interval": "",
-              "legendFormat": "{{name_tag}} - {{availability_zone}}",
+              "legendFormat": "{{instance}}",
               "refId": "A"
             }
           ],
@@ -656,7 +656,7 @@
             {
               "expr": "((node_memory_MemTotal_bytes - node_memory_MemFree_bytes - (node_memory_Buffers_bytes + node_memory_Cached_bytes)) / node_memory_MemTotal_bytes{name_tag=~\"${name:regex}\",availability_zone=~\"${az:regex}\"})",
               "interval": "",
-              "legendFormat": "{{name_tag}} - {{availability_zone}}",
+              "legendFormat": "{{instance}}",
               "refId": "A"
             }
           ],
