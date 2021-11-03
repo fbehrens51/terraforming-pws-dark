@@ -8,6 +8,8 @@ ExecStart = /usr/bin/freshclam -d -c 4
 Restart = on-failure
 PrivateTmp = true
 RestartSec = 20sec
+StartLimitBurst = 4
+StartLimitInterval = 180
 
 [Install]
 WantedBy=multi-user.target
