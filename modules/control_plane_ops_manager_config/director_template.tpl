@@ -31,14 +31,12 @@ networks-configuration:
     ${control_plane_subnets}
 properties-configuration:
   director_configuration:
-%{ if length(extra_users)>0 ~}
-    additional_ssh_users:
-%{ for user in extra_users ~}
+    additional_ssh_users:%{if length(extra_users)<1}[]%{endif}
+    %{~ for user in extra_users ~}
     - name: ${user.username}
       public_key: ${user.public_ssh_key}
       sudo: ${user.sudo_priv}
-%{ endfor ~}
-%{ endif ~}
+    %{~ endfor ~}
     blobstore_type: ${director_blobstore_location}
     bosh_director_recreate_on_next_deploy: false
     bosh_recreate_on_next_deploy: false
