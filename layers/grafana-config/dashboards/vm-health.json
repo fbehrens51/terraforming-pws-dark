@@ -556,7 +556,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "(sum by (instance, name) (node_systemd_unit_state{name=~\"(td-agent|named|rsyslog|clamd@scan|clamav-daemon|clam-freshclam|clamav-freshclam|cloud-init).service\", state=\"active\"})) / (sum by (instance, name) (node_systemd_unit_state))",
+          "expr": "(sum by (instance, name) (node_systemd_unit_state{name=~\"(td-agent|named|rsyslog|clamd@scan|clamav-daemon|clam-freshclam|clamav-freshclam|cloud-init|loki).service\", state=\"active\"})) / (sum by (instance, name) (node_systemd_unit_state))",
           "interval": "",
           "legendFormat": "{{instance}} {{name}}",
           "refId": "A"
