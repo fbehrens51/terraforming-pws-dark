@@ -348,3 +348,8 @@ variable "extra_users" {
     sudo_priv      = bool
   }))
 }
+
+variable "disk_type" {
+  description = "disk type to use for bosh VMs"
+  type        = string
+}

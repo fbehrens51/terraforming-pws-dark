@@ -139,6 +139,7 @@ locals {
     director_blobstore_location                 = var.director_blobstore_location, // s3 or local
     forwarders                                  = var.forwarders
     extra_users                                 = var.extra_users
+    disk_type                                   = var.disk_type
   })
 }
 
