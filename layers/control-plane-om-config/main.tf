@@ -220,6 +220,8 @@ module "om_config" {
       forwarder_ips = [cidrhost(data.aws_vpc.cp_vpc.cidr_block, 2)]
     }
   ]
+
+  extra_users = data.terraform_remote_state.paperwork.outputs.extra_bosh_users
 }
 
 module "runtime_config_config" {
@@ -237,7 +239,7 @@ module "runtime_config_config" {
   s3_endpoint = var.s3_endpoint
   region      = var.region
 
-  extra_users = data.terraform_remote_state.paperwork.outputs.extra_bosh_users
+  extra_users = []
 
   vpc_dns = cidrhost(data.aws_vpc.cp_vpc.cidr_block, 2)
 }

@@ -169,7 +169,7 @@ product-properties:
             action: keep
           - source_labels: [__meta_ec2_tag_ssh_host_name]
             target_label: instance
-            replacement: '${1}:9119'
+            replacement: '$${1}:9119'
             action: replace
       server_name: null
       tls_certificates: {}
