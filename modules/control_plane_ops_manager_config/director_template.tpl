@@ -7,7 +7,6 @@ iaas-configurations:
         ${indent(8, chomp(iaas_configuration_endpoints_ca_cert))}
     ec2_endpoint: ${ec2_endpoint}
     elb_endpoint: ${elb_endpoint}
-  disk_type: gp2
   encrypted: true
   iam_instance_profile: ${iaas_configuration_iam_instance_profile}
   key_pair_name: ${iaas_configuration_ssh_key_pair_name}
@@ -31,25 +30,15 @@ networks-configuration:
     ${control_plane_subnets}
 properties-configuration:
   director_configuration:
-%{ if length(extra_users)>0 ~}
-    additional_ssh_users:
-%{ for user in extra_users ~}
-    - name: ${user.username}
-      public_key: ${user.public_ssh_key}
-      sudo: ${user.sudo_priv}
-%{ endfor ~}
-%{ endif ~}
     blobstore_type: ${director_blobstore_location}
     bosh_director_recreate_on_next_deploy: false
     bosh_recreate_on_next_deploy: false
     bosh_recreate_persistent_disks_on_next_deploy: false
-    ca_certificate_duration: 1460
     custom_ssh_banner: |
       ${indent(6, chomp(custom_ssh_banner))}
     database_type: external
     director_metrics_server_enabled: true
     director_worker_count: 5
-    duration_overrides_enabled: false
     encryption:
       keys: []
       providers: []
