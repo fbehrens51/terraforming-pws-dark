@@ -31,7 +31,7 @@ networks-configuration:
     ${control_plane_subnets}
 properties-configuration:
   director_configuration:
-    additional_ssh_users: %{if length(extra_users)<1}[]%{endif}
+    additional_ssh_users:%{if length(extra_users)<1} []%{endif}
     %{~ for user in extra_users ~}
     - name: ${user.username}
       public_key: ${user.public_ssh_key}
