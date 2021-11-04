@@ -376,7 +376,7 @@ module "amazon2_clam_av_client_config" {
 
 module "amazon2_system_certs_user_data" {
   source             = "../../modules/cloud_init/certs"
-  ca_chain           = local.trusted_with_additional_ca_certs
+  ca_chain           = local.bosh_system_ca_bundle
   public_bucket_name = aws_s3_bucket.public_bucket.bucket
   public_bucket_url  = local.public_bucket_url
 }
