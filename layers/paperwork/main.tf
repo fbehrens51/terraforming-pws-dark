@@ -14,7 +14,6 @@ data "aws_region" "current" {
 }
 
 locals {
-  trusted_with_additional_ca_certs = "${data.aws_s3_bucket_object.root_ca_cert.body}${data.aws_s3_bucket_object.additional_trusted_ca_certs.body}"
   bucket_prefix                    = replace(local.env_name_prefix, " ", "-")
   reporting_bucket_name            = "${local.bucket_prefix}-reporting-bucket"
   public_bucket_name               = "${local.bucket_prefix}-public-bucket"
@@ -1087,10 +1086,6 @@ output "router_trusted_ca_certs" {
   value = data.aws_s3_bucket_object.router_trusted_ca_certs.body
 }
 
-output "trusted_with_additional_ca_certs" {
-  value = local.trusted_with_additional_ca_certs
-}
-
 output "rds_ca_cert" {
   value = data.aws_s3_bucket_object.rds_ca_cert.body
 }
@@ -1496,3 +1491,22 @@ output "endpoint_domain" {
 //output "test_ca_list"{
 //  value = local.certList
 //}
+
+
+variable "bosh_vms_system_ca_certs" {
+  type = set(string)
+}
+
+data "aws_s3_bucket_object" "bosh_vms_ca_certs" {
+  for_each = var.bosh_vms_system_ca_certs
+  bucket = var.cert_bucket
+  key    = each.key
+}
+
+locals {
+    bosh_system_ca_bundle = join("\n",[for cert in data.aws_s3_bucket_object.bosh_vms_ca_certs : cert.body])
+}
+
+output "bosh_system_ca_bundle"{
+  value = local.bosh_system_ca_bundle
+}
