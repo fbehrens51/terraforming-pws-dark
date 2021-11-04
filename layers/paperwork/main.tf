@@ -1505,3 +1505,21 @@ output "s3_endpoint" {
 output "endpoint_domain" {
   value = var.endpoint_domain
 }
+
+variable "bosh_vms_system_ca_certs" {
+  type = set(string)
+}
+
+data "aws_s3_bucket_object" "bosh_vms_ca_certs" {
+  for_each = var.bosh_vms_system_ca_certs
+  bucket = var.cert_bucket
+  key    = each.key
+}
+
+locals {
+  bosh_system_ca_bundle = join("\n",[for cert in data.aws_s3_bucket_object.bosh_vms_ca_certs : cert.body])
+}
+
+output "bosh_system_ca_bundle"{
+  value = local.bosh_system_ca_bundle
+}

@@ -216,7 +216,7 @@ module "om_config" {
 
   ntp_servers                                 = var.ntp_servers
   custom_ssh_banner                           = data.terraform_remote_state.paperwork.outputs.custom_ssh_banner
-  security_configuration_trusted_certificates = data.terraform_remote_state.paperwork.outputs.trusted_with_additional_ca_certs
+  security_configuration_trusted_certificates = data.terraform_remote_state.paperwork.outputs.bosh_system_ca_bundle
 
   rds_address     = data.terraform_remote_state.pas.outputs.rds_address
   rds_password    = data.terraform_remote_state.pas.outputs.rds_password

@@ -160,7 +160,7 @@ module "om_config" {
 
   ntp_servers                                 = var.ntp_servers
   custom_ssh_banner                           = data.terraform_remote_state.paperwork.outputs.custom_ssh_banner
-  security_configuration_trusted_certificates = data.terraform_remote_state.paperwork.outputs.trusted_with_additional_ca_certs
+  security_configuration_trusted_certificates = data.terraform_remote_state.paperwork.outputs.bosh_system_ca_bundle
 
   director_blobstore_bucket   = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.director_blobstore_bucket
   director_blobstore_location = var.director_blobstore_location
