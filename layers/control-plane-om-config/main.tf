@@ -222,7 +222,6 @@ module "om_config" {
   ]
 
   extra_users = data.terraform_remote_state.paperwork.outputs.extra_bosh_users
-  disk_type   = var.disk_type
 }
 
 module "runtime_config_config" {

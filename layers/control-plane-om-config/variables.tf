@@ -126,9 +126,3 @@ variable "clamav_release_url" {
 variable "clamav_release_sha1" {
   description = "sha1 sum of clamav_release_url"
 }
-
-variable "disk_type" {
-  description = "disk type to use for bosh VMs"
-  type        = string
-  default     = "gp2"
-}

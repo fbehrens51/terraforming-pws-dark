@@ -7,7 +7,7 @@ iaas-configurations:
         ${indent(8, chomp(iaas_configuration_endpoints_ca_cert))}
     ec2_endpoint: ${ec2_endpoint}
     elb_endpoint: ${elb_endpoint}
-  disk_type: ${disk_type}
+  disk_type: gp2
   encrypted: true
   iam_instance_profile: ${iaas_configuration_iam_instance_profile}
   key_pair_name: ${iaas_configuration_ssh_key_pair_name}
