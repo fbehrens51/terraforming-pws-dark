@@ -141,36 +141,42 @@ variable "clamav_release_sha1" {
 }
 
 variable "password_policies_expires_after_months" {
-  type = string
+  type    = string
   default = "0"
 }
 
 variable "password_policies_max_retry" {
-  type = string
+  type    = string
   default = "5"
 }
 
 variable "password_policies_min_length" {
-  type = string
+  type    = string
   default = "0"
 }
 
 variable "password_policies_min_lowercase" {
-  type = string
+  type    = string
   default = "0"
 }
 
 variable "password_policies_min_numeric" {
-  type = string
+  type    = string
   default = "0"
 }
 
 variable "password_policies_min_special" {
-  type = string
+  type    = string
   default = "0"
 }
 
 variable "password_policies_min_uppercase" {
-  type = string
+  type    = string
   default = "0"
+}
+
+variable "disk_type" {
+  description = "disk type to use for bosh VMs"
+  type        = string
+  default     = "gp2"
 }
