@@ -202,7 +202,7 @@ module "om_config" {
 
   router_cert_pem                = data.terraform_remote_state.paperwork.outputs.router_server_cert
   router_private_key_pem         = data.terraform_remote_state.paperwork.outputs.router_server_key
-  router_trusted_ca_certificates = data.terraform_remote_state.paperwork.outputs.router_trusted_ca_certs
+  router_trusted_ca_certificates = data.terraform_remote_state.paperwork.outputs.router_trusted_ca_certs_bundle
 
   smtp_host       = local.smtp_host
   smtp_user       = local.smtp_user

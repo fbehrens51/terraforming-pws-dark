@@ -376,7 +376,7 @@ module "amazon2_clam_av_client_config" {
 
 module "amazon2_system_certs_user_data" {
   source             = "../../modules/cloud_init/certs"
-  ca_chain           = local.bosh_system_ca_bundle
+  ca_chain           = local.system_ca_certs_bundle
   public_bucket_name = aws_s3_bucket.public_bucket.bucket
   public_bucket_url  = local.public_bucket_url
 }
@@ -600,25 +600,6 @@ variable "root_ca_cert_s3_path" {
 data "aws_s3_bucket_object" "root_ca_cert" {
   bucket = var.cert_bucket
   key    = var.root_ca_cert_s3_path
-}
-
-variable "router_trusted_ca_certs_s3_path" {
-}
-
-data "aws_s3_bucket_object" "router_trusted_ca_certs" {
-  bucket = var.cert_bucket
-  key    = var.router_trusted_ca_certs_s3_path
-}
-
-variable "trusted_ca_certs_s3_path" {
-}
-
-variable "additional_trusted_ca_certs_s3_path" {
-}
-
-data "aws_s3_bucket_object" "additional_trusted_ca_certs" {
-  bucket = var.cert_bucket
-  key    = var.additional_trusted_ca_certs_s3_path
 }
 
 variable "rds_ca_cert_s3_path" {
@@ -1082,10 +1063,6 @@ output "root_ca_cert_path" {
   value = data.aws_s3_bucket_object.root_ca_cert.key
 }
 
-output "router_trusted_ca_certs" {
-  value = data.aws_s3_bucket_object.router_trusted_ca_certs.body
-}
-
 output "rds_ca_cert" {
   value = data.aws_s3_bucket_object.rds_ca_cert.body
 }
@@ -1473,26 +1450,6 @@ output "endpoint_domain" {
   value = var.endpoint_domain
 }
 
-
-//variable "additional_test_cas" {
-//  type = set(string)
-//}
-//
-//data "aws_s3_bucket_object" "additional_test_ca_certs" {
-//  for_each = var.additional_test_cas
-//  bucket = var.cert_bucket
-//  key    = each.key
-//}
-//
-//locals {
-//    certList = join("\n",[for cert in data.aws_s3_bucket_object.additional_test_ca_certs : cert.body])
-//}
-//
-//output "test_ca_list"{
-//  value = local.certList
-//}
-
-
 variable "bosh_vms_system_ca_certs" {
   type = set(string)
 }
@@ -1509,4 +1466,40 @@ locals {
 
 output "bosh_system_ca_bundle"{
   value = local.bosh_system_ca_bundle
+}
+
+variable "system_ca_certs" {
+  type = set(string)
+}
+
+data "aws_s3_bucket_object" "system_ca_certs" {
+  for_each = var.system_ca_certs
+  bucket = var.cert_bucket
+  key    = each.key
+}
+
+locals {
+  system_ca_certs_bundle = join("\n",[for cert in data.aws_s3_bucket_object.system_ca_certs : cert.body])
+}
+
+output "system_ca_certs_bundle"{
+  value = local.system_ca_certs_bundle
+}
+
+variable "router_trusted_ca_certs" {
+  type = set(string)
+}
+
+data "aws_s3_bucket_object" "router_trusted_ca_certs" {
+  for_each = var.router_trusted_ca_certs
+  bucket = var.cert_bucket
+  key    = each.key
+}
+
+locals {
+  router_trusted_ca_certs_bundle = join("\n",[for cert in data.aws_s3_bucket_object.router_trusted_ca_certs : cert.body])
+}
+
+output "router_trusted_ca_certs_bundle"{
+  value = local.router_trusted_ca_certs_bundle
 }
