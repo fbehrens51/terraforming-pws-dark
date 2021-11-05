@@ -133,3 +133,7 @@ iaas_trusted_ca_certs_s3_path  = "${iaas_trusted_ca_certs_s3_path}"
 slack_trusted_ca_certs_s3_path = "${slack_trusted_ca_certs_s3_path}"
 
 bosh_vms_system_ca_certs = ["${root_ca_cert_s3_path}","${iaas_trusted_ca_certs_s3_path}"]
+
+system_ca_certs = ["${root_ca_cert_s3_path}","${iaas_trusted_ca_certs_s3_path}"]
+
+router_trusted_ca_certs = ["${router_trusted_ca_certs_s3_path}"]
