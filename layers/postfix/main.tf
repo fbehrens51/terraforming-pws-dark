@@ -230,6 +230,7 @@ module "postfix_master_host" {
   tags                 = local.modified_tags
   bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
   iam_instance_profile = data.terraform_remote_state.paperwork.outputs.instance_tagger_role_name
+  operating_system     = data.terraform_remote_state.paperwork.outputs.amazon_operating_system_tag
 }
 
 module "syslog_config" {

@@ -293,6 +293,7 @@ module "fluentd_instance" {
   bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
   iam_instance_profile = data.terraform_remote_state.paperwork.outputs.fluentd_role_name
   volume_ids           = data.terraform_remote_state.bootstrap_fluentd.outputs.volume_id
+  operating_system     = data.terraform_remote_state.paperwork.outputs.amazon_operating_system_tag
 }
 
 resource "aws_lb_target_group_attachment" "fluentd_syslog_attachment" {

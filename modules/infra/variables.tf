@@ -47,6 +47,10 @@ variable "check_cloud_init" {
   type = bool
 }
 
+variable "operating_system" {
+  type = string
+}
+
 //variable "nat_ami_map" {
 //  type = "map"
 //

@@ -137,6 +137,7 @@ module "infra" {
   ops_manager_security_group_id = module.ops_manager.security_group_id
   elb_security_group_id         = module.pas_elb.security_group_id
   grafana_elb_security_group_id = module.grafana_elb.security_group_id
+  operating_system              = data.terraform_remote_state.paperwork.outputs.amazon_operating_system_tag
 
   user_data = data.template_cloudinit_config.nat_user_data.rendered
 
@@ -278,6 +279,7 @@ module "ops_manager" {
   ingress_rules         = local.ingress_rules
   s3_logs_bucket        = local.s3_logs_bucket
   force_destroy_buckets = var.force_destroy_buckets
+  operating_system      = data.terraform_remote_state.paperwork.outputs.amazon_operating_system_tag
 }
 
 resource "random_integer" "bucket" {

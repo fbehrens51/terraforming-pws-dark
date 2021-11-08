@@ -30,3 +30,7 @@ variable "force_destroy_buckets" {
   type    = bool
   default = false
 }
+
+variable "operating_system" {
+  type = string
+}
