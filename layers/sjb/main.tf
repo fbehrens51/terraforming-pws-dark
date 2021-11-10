@@ -391,6 +391,7 @@ module "sjb" {
   tags                 = local.modified_tags
   bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
   check_cloud_init     = false
+  operating_system     = data.terraform_remote_state.paperwork.outputs.amazon_operating_system_tag
 
   root_block_device = {
     tags = { "Name" = "${local.modified_name} root" }

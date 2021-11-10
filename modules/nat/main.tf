@@ -65,6 +65,11 @@ variable "iso_seg_name" {
   default = null
 }
 
+variable "operating_system" {
+  type        = string
+  description = "operating system of nat instance"
+}
+
 locals {
   modified_name = "${var.tags.tags["Name"]} nat"
   modified_tags = merge(
@@ -179,6 +184,7 @@ module "nat_host" {
   bot_key_pem          = var.bot_key_pem
   check_cloud_init     = var.check_cloud_init
   iam_instance_profile = var.role_name
+  operating_system     = var.operating_system
 }
 
 resource "aws_route" "toggle_internet" {

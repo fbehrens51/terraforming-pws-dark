@@ -88,6 +88,12 @@ variable "iso_seg_name" {
   description = "Used to name the nats <env>_isolation_segment_<iso_seg_name>_nat_<index>"
 }
 
+variable "operating_system" {
+  type        = string
+  default     = ""
+  description = "Default value for OS tag, defaults to empty string becuase module is called from ldap layer"
+}
+
 //allows calling module to set a fixed count since count cannot use a value calculated from something that may not exist yet (e.g. eni_ids)
 variable "instance_count" {
   default = 1
@@ -99,7 +105,7 @@ locals {
     SourceAmiId       = var.ami_id
     cloud_init_done   = ""
     cloud_init_output = ""
-    operating-system  = ""
+    operating-system  = var.operating_system
   }
   iso_nat_name = var.scale_vpc_key == "isolation-segment" ? "${replace(var.scale_vpc_key, "-", "_")}_${lower(replace(var.iso_seg_name, "/[ -]/", "_"))}" : "${replace(var.scale_vpc_key, "-", "_")}"
   om_name = (var.scale_service_key != "ops-manager" ? "" :
@@ -165,7 +171,6 @@ resource "aws_instance" "instance" {
 
   lifecycle {
     ignore_changes = [
-      tags["operating-system"],
       tags["cloud_init_done"],
       tags["cloud_init_output"]
     ]
@@ -236,7 +241,6 @@ resource "aws_instance" "unchecked_instance" {
 
   lifecycle {
     ignore_changes = [
-      tags["operating-system"],
       tags["cloud_init_done"],
       tags["cloud_init_output"]
     ]

@@ -589,6 +589,16 @@ variable "check_cloud_init" {
   default = true
 }
 
+variable "ubuntu_operating_system_tag" {
+  type    = string
+  default = "Ubuntu Xenial"
+}
+
+variable "amazon_operating_system_tag" {
+  type    = string
+  default = "Amazon Linux 2"
+}
+
 data "aws_s3_bucket_object" "ldap_password" {
   bucket = var.cert_bucket
   key    = var.ldap_password_s3_path
@@ -855,6 +865,14 @@ data "aws_s3_bucket_object" "portal_smoke_test_key" {
 
 variable "log_forwarder_region" {
   default = ""
+}
+
+output "ubuntu_operating_system_tag" {
+  value = var.ubuntu_operating_system_tag
+}
+
+output "amazon_operating_system_tag" {
+  value = var.amazon_operating_system_tag
 }
 
 output "foundation_name" {

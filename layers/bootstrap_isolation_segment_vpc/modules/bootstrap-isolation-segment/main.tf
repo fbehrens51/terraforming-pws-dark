@@ -1,3 +1,5 @@
+provider "aws" {
+}
 
 variable "vpc_id" {}
 
@@ -32,6 +34,9 @@ variable "public_bucket_url" {}
 variable "default_instance_role_name" {}
 variable "check_cloud_init" {
   type = bool
+}
+variable "operating_system" {
+  type = string
 }
 
 locals {
@@ -87,6 +92,7 @@ module "nat" {
   role_name                  = var.default_instance_role_name
   check_cloud_init           = var.check_cloud_init
   iso_seg_name               = var.name
+  operating_system           = var.operating_system
 }
 
 output "private_route_table_ids" {

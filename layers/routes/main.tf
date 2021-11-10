@@ -150,6 +150,7 @@ variable "remote_state_bucket" {
 }
 
 variable "internetless" {
+  type = bool
 }
 
 variable "global_vars" {
