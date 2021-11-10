@@ -1,11 +1,3 @@
-terraform {
-  backend "s3" {
-  }
-}
-
-provider "aws" {
-}
-
 variable "remote_state_region" {
 }
 
@@ -28,10 +20,6 @@ variable "region" {
 
 variable "retention_period" {
   default = "1440h" # 60 days
-}
-
-module "providers" {
-  source = "../../modules/dark_providers"
 }
 
 data "terraform_remote_state" "paperwork" {

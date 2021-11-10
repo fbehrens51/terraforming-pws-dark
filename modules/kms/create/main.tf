@@ -17,15 +17,17 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
     principals {
       type = "AWS"
 
-      identifiers = [
-        var.director_role_arn,
-        var.om_role_arn,
-        var.concourse_role_arn,
-        var.sjb_role_arn,
-        var.bosh_role_arn,
-        var.bootstrap_role_arn,
-        var.foundation_role_arn,
-      ]
+      identifiers = sort(
+        [
+          var.director_role_arn,
+          var.om_role_arn,
+          var.concourse_role_arn,
+          var.sjb_role_arn,
+          var.bosh_role_arn,
+          var.bootstrap_role_arn,
+          var.foundation_role_arn,
+        ]
+      )
     }
 
     resources = ["*"]
@@ -45,17 +47,19 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
     principals {
       type = "AWS"
 
-      identifiers = [
-        var.director_role_arn,
-        var.sjb_role_arn,
-        var.concourse_role_arn,
-        var.om_role_arn,
-        var.bosh_role_arn,
-        var.pas_bucket_role_arn,
-        var.additional_bootstrap_principal_arn,
-        var.bootstrap_role_arn,
-        var.foundation_role_arn
-      ]
+      identifiers = sort(
+        [
+          var.director_role_arn,
+          var.sjb_role_arn,
+          var.concourse_role_arn,
+          var.om_role_arn,
+          var.bosh_role_arn,
+          var.pas_bucket_role_arn,
+          var.additional_bootstrap_principal_arn,
+          var.bootstrap_role_arn,
+          var.foundation_role_arn
+        ]
+      )
     }
 
     actions = [

@@ -1,7 +1,3 @@
-terraform {
-  backend "s3" {}
-}
-
 data "terraform_remote_state" "paperwork" {
   backend = "s3"
 

@@ -1,15 +1,3 @@
-terraform {
-  backend "s3" {
-  }
-}
-
-module "providers" {
-  source = "../../modules/dark_providers"
-}
-
-provider "aws" {
-}
-
 data "aws_region" "current" {
 }
 

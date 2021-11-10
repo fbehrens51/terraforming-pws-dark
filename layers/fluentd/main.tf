@@ -1,11 +1,3 @@
-terraform {
-  backend "s3" {
-  }
-}
-
-provider "aws" {
-}
-
 variable "remote_state_region" {
 }
 
@@ -29,10 +21,6 @@ variable "region" {
 variable "enable_loki" {
   type    = bool
   default = false
-}
-
-module "providers" {
-  source = "../../modules/dark_providers"
 }
 
 data "terraform_remote_state" "paperwork" {

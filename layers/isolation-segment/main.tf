@@ -1,8 +1,3 @@
-terraform {
-  backend "s3" {
-  }
-}
-
 data "terraform_remote_state" "paperwork" {
   backend = "s3"
 
@@ -45,10 +40,6 @@ data "terraform_remote_state" "bootstrap_control_plane" {
     region  = var.remote_state_region
     encrypt = true
   }
-}
-
-module "providers" {
-  source = "../../modules/dark_providers"
 }
 
 locals {

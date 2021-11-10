@@ -1,15 +1,3 @@
-terraform {
-  backend "s3" {
-  }
-}
-
-provider "aws" {
-}
-
-module "providers" {
-  source = "../../modules/dark_providers"
-}
-
 variable "remote_state_bucket" {
 }
 
@@ -26,7 +14,6 @@ data "terraform_remote_state" "paperwork" {
     encrypt = true
   }
 }
-
 
 locals {
   secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name

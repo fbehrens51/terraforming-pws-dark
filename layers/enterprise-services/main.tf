@@ -1,15 +1,3 @@
-terraform {
-  backend "s3" {
-  }
-}
-
-provider "aws" {
-}
-
-module "providers" {
-  source = "../../modules/dark_providers"
-}
-
 data "terraform_remote_state" "paperwork" {
   backend = "s3"
 

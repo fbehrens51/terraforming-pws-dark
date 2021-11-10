@@ -20,15 +20,6 @@ variable "metrics_store_config" {
   default = "pas/metrics_store_tile_config.yml"
 }
 
-terraform {
-  backend "s3" {
-  }
-}
-
-module "providers" {
-  source = "../../modules/dark_providers"
-}
-
 data "terraform_remote_state" "paperwork" {
   backend = "s3"
 
