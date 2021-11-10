@@ -36,11 +36,12 @@ locals {
 }
 
 module "pas_vpc_route_tables" {
-  source             = "./modules/vpc_route_tables"
-  internetless       = var.internetless
-  vpc_id             = local.pas_vpc_id
-  s3_vpc_endpoint_id = local.pas_s3_vpc_endpoint_id
-  availability_zones = var.availability_zones
+  source                 = "./modules/vpc_route_tables"
+  internetless           = var.internetless
+  vpc_id                 = local.pas_vpc_id
+  s3_vpc_endpoint_id     = local.pas_s3_vpc_endpoint_id
+  availability_zones     = var.availability_zones
+  enable_s3_vpc_endpoint = var.enable_pas_s3_vpc_endpoint
 
   tags = {
     Name = "${local.env_name_prefix} | PAS"
@@ -48,11 +49,12 @@ module "pas_vpc_route_tables" {
 }
 
 module "bastion_vpc_route_tables" {
-  source             = "./modules/vpc_route_tables"
-  internetless       = var.internetless
-  vpc_id             = local.bastion_vpc_id
-  s3_vpc_endpoint_id = local.bastion_s3_vpc_endpoint_id
-  availability_zones = var.availability_zones
+  source                 = "./modules/vpc_route_tables"
+  internetless           = var.internetless
+  vpc_id                 = local.bastion_vpc_id
+  s3_vpc_endpoint_id     = local.bastion_s3_vpc_endpoint_id
+  availability_zones     = var.availability_zones
+  enable_s3_vpc_endpoint = var.enable_bastion_s3_vpc_endpoint
 
   tags = {
     Name = "${local.env_name_prefix} | BASTION"
@@ -60,11 +62,12 @@ module "bastion_vpc_route_tables" {
 }
 
 module "es_vpc_route_tables" {
-  source             = "./modules/vpc_route_tables"
-  internetless       = var.internetless
-  vpc_id             = local.es_vpc_id
-  s3_vpc_endpoint_id = local.es_s3_vpc_endpoint_id
-  availability_zones = var.availability_zones
+  source                 = "./modules/vpc_route_tables"
+  internetless           = var.internetless
+  vpc_id                 = local.es_vpc_id
+  s3_vpc_endpoint_id     = local.es_s3_vpc_endpoint_id
+  availability_zones     = var.availability_zones
+  enable_s3_vpc_endpoint = var.enable_es_s3_vpc_endpoint
 
   tags = {
     Name = "${local.env_name_prefix} | ENT SVCS"
@@ -72,11 +75,12 @@ module "es_vpc_route_tables" {
 }
 
 module "cp_vpc_route_tables" {
-  source             = "./modules/vpc_route_tables"
-  internetless       = var.internetless
-  vpc_id             = local.cp_vpc_id
-  s3_vpc_endpoint_id = local.cp_s3_vpc_endpoint_id
-  availability_zones = var.availability_zones
+  source                 = "./modules/vpc_route_tables"
+  internetless           = var.internetless
+  vpc_id                 = local.cp_vpc_id
+  s3_vpc_endpoint_id     = local.cp_s3_vpc_endpoint_id
+  availability_zones     = var.availability_zones
+  enable_s3_vpc_endpoint = var.enable_cp_s3_vpc_endpoint
 
   tags = {
     Name = "${local.env_name_prefix} | CP"
@@ -159,4 +163,24 @@ variable "global_vars" {
 
 variable "availability_zones" {
   type = list(string)
+}
+
+variable "enable_cp_s3_vpc_endpoint" {
+  type    = bool
+  default = true
+}
+
+variable "enable_es_s3_vpc_endpoint" {
+  type    = bool
+  default = true
+}
+
+variable "enable_bastion_s3_vpc_endpoint" {
+  type    = bool
+  default = true
+}
+
+variable "enable_pas_s3_vpc_endpoint" {
+  type    = bool
+  default = true
 }
