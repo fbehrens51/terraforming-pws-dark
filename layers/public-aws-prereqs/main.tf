@@ -1,15 +1,3 @@
-terraform {
-  backend "s3" {
-  }
-}
-
-module "providers" {
-  source = "../../modules/dark_providers"
-}
-
-provider "aws" {
-}
-
 locals {
   cert_bucket                                      = "${replace(var.env_name, " ", "-")}-secrets"
   cap_root_ca_cert_s3_path                         = "cap_root_ca_cert.pem"

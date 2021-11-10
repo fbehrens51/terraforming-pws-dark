@@ -1,8 +1,3 @@
-terraform {
-  backend "s3" {
-  }
-}
-
 data "terraform_remote_state" "enterprise-services" {
   backend = "s3"
 

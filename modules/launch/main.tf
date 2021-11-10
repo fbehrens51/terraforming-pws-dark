@@ -102,11 +102,10 @@ variable "instance_count" {
 locals {
   instance_type = var.instance_types[var.scale_vpc_key][var.scale_service_key]
   computed_instance_tags = {
-    SourceAmiId       = var.ami_id
-    cloud_init_done   = ""
-    cloud_init_output = ""
-    operating-system  = var.operating_system
+    SourceAmiId      = var.ami_id
+    operating-system = var.operating_system
   }
+  #    cloud_init_done   = "" cloud_init_output = ""
   iso_nat_name = var.scale_vpc_key == "isolation-segment" ? "${replace(var.scale_vpc_key, "-", "_")}_${lower(replace(var.iso_seg_name, "/[ -]/", "_"))}" : "${replace(var.scale_vpc_key, "-", "_")}"
   om_name = (var.scale_service_key != "ops-manager" ? "" :
     var.scale_vpc_key == "pas" ? "om" : "cp_om"
@@ -169,12 +168,7 @@ resource "aws_instance" "instance" {
     }
   }
 
-  lifecycle {
-    ignore_changes = [
-      tags["cloud_init_done"],
-      tags["cloud_init_output"]
-    ]
-  }
+  #  lifecycle { ignore_changes = [ tags["cloud_init_done"], tags["cloud_init_output"] ] }
   provisioner "local-exec" {
     on_failure  = fail
     interpreter = ["/bin/bash", "-c"]
@@ -239,12 +233,7 @@ resource "aws_instance" "unchecked_instance" {
     }
   }
 
-  lifecycle {
-    ignore_changes = [
-      tags["cloud_init_done"],
-      tags["cloud_init_output"]
-    ]
-  }
+  #  lifecycle { ignore_changes = [ tags["cloud_init_done"], tags["cloud_init_output"] ] }
 }
 
 resource "aws_volume_attachment" "volume_attachment" {
@@ -283,12 +272,8 @@ resource "aws_instance" "instance_ignoring_tags" {
     }
   }
 
-  lifecycle {
-    // We don't want terraform to remove tags applied later by customer processes
-    ignore_changes = [
-      tags
-    ]
-  }
+  // We don't want terraform to remove tags applied later by customer processes
+  #  lifecycle { ignore_changes = [ tags ] }
 }
 
 output "instance_ids" {

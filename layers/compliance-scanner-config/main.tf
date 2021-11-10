@@ -32,11 +32,6 @@ variable "force_destroy_buckets" {
   default = false
 }
 
-terraform {
-  backend "s3" {
-  }
-}
-
 data "aws_region" "current" {
 }
 

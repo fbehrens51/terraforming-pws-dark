@@ -1,15 +1,3 @@
-provider "aws" {
-}
-
-module "providers" {
-  source = "../../modules/dark_providers"
-}
-
-terraform {
-  backend "s3" {
-  }
-}
-
 locals {
   env_name      = var.global_vars.env_name
   modified_name = "${local.env_name} sjb"

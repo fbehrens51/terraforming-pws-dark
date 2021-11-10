@@ -1,6 +1,3 @@
-provider "aws" {
-}
-
 variable "vpc_id" {}
 
 variable "availability_zones" {

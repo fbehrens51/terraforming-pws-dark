@@ -8,15 +8,6 @@ variable "fim_config" {
   default = "pas/fim_addon_tile_config.yml"
 }
 
-terraform {
-  backend "s3" {
-  }
-}
-
-module "providers" {
-  source = "../../modules/dark_providers"
-}
-
 data "terraform_remote_state" "paperwork" {
   backend = "s3"
 
