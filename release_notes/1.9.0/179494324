@@ -1,0 +1,73 @@
+# delivering tagging changes
+
+## Prereqs
+
+Edit the following files:
+
+1. live/<ENV>/terragrunt.hcl - append the following content to the file and edit the `keys` and `key_prefixes` in the `alias = bastion` provider to include all of the tags/prefixes the enterprise team adds to the bastion host.
+```
+generate "provider" {
+  path = "provider.tf"
+  if_exists = "overwrite_terragrunt"
+  contents = <<EOF
+# Configure the AWS Provider for all except the bastion
+provider "aws" {
+  ignore_tags { keys = ["cloud_init_done", "cloud_init_output"] }
+}
+
+# Configure the bastion AWS Provider
+provider "aws" {
+  alias  = "bastion"
+
+  ignore_tags {
+    keys = ["cloud_init_done", "cloud_init_output"]
+    key_prefixes = ["dummy"]
+  }
+}
+
+module "providers" {
+  source = "../../modules/dark_providers"
+}
+
+terraform {
+  backend "s3" {
+  }
+}
+EOF
+}
+```
+
+2. live/<ENV>-ops-managers/terragrunt.hcl, live/ENV-vms/terragrunt.hcl - append the following content to the files
+```
+generate "provider" {
+  path = "provider.tf"
+  if_exists = "overwrite_terragrunt"
+  contents = <<EOF
+# Configure the AWS Provider for all except the bastion
+provider "aws" {
+  #  uncomment next line after AWS provider v3.38 has been verified onsite
+  ignore_tags { keys = ["cloud_init_done", "cloud_init_output"] }
+}
+
+module "providers" {
+  source = "../../modules/dark_providers"
+}
+
+terraform {
+  backend "s3" {
+  }
+}
+EOF
+}
+```
+
+3. live/<ENV>/bastion/terragrunt.hcl - add the following content to the inputs (choose a value appropriate for onsite)
+```
+  bastion_operating_system_tag = "Amazon Linux 2"
+
+```
+
+## Deploying
+
+Commit the change above and allow the pipeline to deploy changes.
+These changes should not cause the replacement of any resources, but should update in place with new tags
