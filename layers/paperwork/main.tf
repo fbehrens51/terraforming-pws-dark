@@ -1200,6 +1200,11 @@ output "loki_server_key" {
   sensitive = true
 }
 
+output "enable_loki" {
+  # used in ssh_config layer to conditionally include loki
+  value = var.enable_loki
+}
+
 output "control_plane_star_server_cert" {
   value = data.aws_s3_bucket_object.control_plane_star_server_cert.body
 }
