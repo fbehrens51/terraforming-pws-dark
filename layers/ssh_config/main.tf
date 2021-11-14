@@ -154,6 +154,7 @@ locals {
   sjb_ip              = data.terraform_remote_state.sjb.outputs.ssh_host_ips[local.sjb_name]
   sjb_name            = one(keys(data.terraform_remote_state.sjb.outputs.ssh_host_ips))
   ssh_key_path        = var.ssh_key_path
+  loki_ssh_host_ips   = data.terraform_remote_state.paperwork.outputs.enable_loki == true ? data.terraform_remote_state.loki.outputs.ssh_host_ips : {}
   sshconfig_host_ips = merge(
     data.terraform_remote_state.bind.outputs.ssh_host_ips,
     data.terraform_remote_state.bootstrap_isolation_segment_vpc_1.outputs.ssh_host_ips,
@@ -161,10 +162,10 @@ locals {
     data.terraform_remote_state.control-plane-nats.outputs.ssh_host_ips,
     data.terraform_remote_state.enterprise-services.outputs.ssh_host_ips,
     data.terraform_remote_state.fluentd.outputs.ssh_host_ips,
-    data.terraform_remote_state.loki.outputs.ssh_host_ips,
     data.terraform_remote_state.ops-manager.outputs.ssh_host_ips,
     data.terraform_remote_state.pas.outputs.ssh_host_ips,
     data.terraform_remote_state.postfix.outputs.ssh_host_ips,
+    local.loki_ssh_host_ips,
     var.scanner_host_ips,
   )
 
@@ -213,17 +214,8 @@ locals {
   )
 
   ssh_host_ips = merge(
+    local.sshconfig_host_ips,
     data.terraform_remote_state.bastion.outputs.ssh_host_ips,
-    data.terraform_remote_state.bind.outputs.ssh_host_ips,
-    data.terraform_remote_state.bootstrap_isolation_segment_vpc_1.outputs.ssh_host_ips,
-    data.terraform_remote_state.control-plane-nats.outputs.ssh_host_ips,
-    data.terraform_remote_state.control-plane-ops-manager.outputs.ssh_host_ips,
-    data.terraform_remote_state.enterprise-services.outputs.ssh_host_ips,
-    data.terraform_remote_state.fluentd.outputs.ssh_host_ips,
-    data.terraform_remote_state.loki.outputs.ssh_host_ips,
-    data.terraform_remote_state.ops-manager.outputs.ssh_host_ips,
-    data.terraform_remote_state.pas.outputs.ssh_host_ips,
-    data.terraform_remote_state.postfix.outputs.ssh_host_ips,
     data.terraform_remote_state.sjb.outputs.ssh_host_ips,
     var.scanner_host_ips,
   )
