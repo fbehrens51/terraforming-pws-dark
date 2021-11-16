@@ -71,7 +71,6 @@ resource "aws_route_table" "public_route_table" {
 }
 
 resource "aws_vpc_endpoint_route_table_association" "public_s3_vpc_endpoint" {
-  count           = var.enable_s3_vpc_endpoint ? 1 : 0
   vpc_endpoint_id = var.s3_vpc_endpoint_id
   route_table_id  = aws_route_table.public_route_table[0].id
 }
