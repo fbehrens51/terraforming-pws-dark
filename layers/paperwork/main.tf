@@ -1094,6 +1094,14 @@ output "root_ca_cert_path" {
   value = data.aws_s3_bucket_object.root_ca_cert.key
 }
 
+output "additional_trusted_ca_certs" {
+  value = data.aws_s3_bucket_object.additional_trusted_ca_certs.body
+}
+
+output "additional_trusted_ca_certs_path" {
+  value = data.aws_s3_bucket_object.additional_trusted_ca_certs.key
+}
+
 output "router_trusted_ca_certs" {
   value = data.aws_s3_bucket_object.router_trusted_ca_certs.body
 }
