@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
+terragrunt output
 VMS_SECURITY_GROUP_ID=$(terragrunt output vms_security_group_id)
+
+terragrunt output --terragrunt-working-dir ../bastion
 BASTION_PRIVATE_IP=$(terragrunt output bastion_private_ip --terragrunt-working-dir ../bastion)
 PAS_VPC_CIDR=$(terragrunt state show data.aws_vpc.pas_vpc | grep 'cidr_block ' | awk '{print $3}' | jq -r .)
 
