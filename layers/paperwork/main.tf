@@ -1528,14 +1528,14 @@ variable "router_trusted_ca_certs" {
   type = set(string)
 }
 
-data "aws_s3_bucket_object" "router_trusted_ca_certs" {
+data "aws_s3_bucket_object" "router_trusted_ca_certs_bundle" {
   for_each = var.router_trusted_ca_certs
   bucket = var.cert_bucket
   key    = each.key
 }
 
 locals {
-  router_trusted_ca_certs_bundle = join("\n",[for cert in data.aws_s3_bucket_object.router_trusted_ca_certs : cert.body])
+  router_trusted_ca_certs_bundle = join("\n",[for cert in data.aws_s3_bucket_object.router_trusted_ca_certs_bundle : cert.body])
 }
 
 output "router_trusted_ca_certs_bundle"{
