@@ -2,7 +2,6 @@ data "aws_region" "current" {
 }
 
 locals {
-  trusted_with_additional_ca_certs = "${data.aws_s3_bucket_object.trusted_ca_certs.body}${data.aws_s3_bucket_object.additional_trusted_ca_certs.body}"
   bucket_prefix                    = replace(local.env_name_prefix, " ", "-")
   reporting_bucket_name            = "${local.bucket_prefix}-reporting-bucket"
   public_bucket_name               = "${local.bucket_prefix}-public-bucket"
@@ -617,14 +616,6 @@ data "aws_s3_bucket_object" "trusted_ca_certs" {
   key    = var.trusted_ca_certs_s3_path
 }
 
-variable "additional_trusted_ca_certs_s3_path" {
-}
-
-data "aws_s3_bucket_object" "additional_trusted_ca_certs" {
-  bucket = var.cert_bucket
-  key    = var.additional_trusted_ca_certs_s3_path
-}
-
 variable "rds_ca_cert_s3_path" {
 }
 
@@ -1094,13 +1085,6 @@ output "root_ca_cert_path" {
   value = data.aws_s3_bucket_object.root_ca_cert.key
 }
 
-output "additional_trusted_ca_certs" {
-  value = data.aws_s3_bucket_object.additional_trusted_ca_certs.body
-}
-
-output "additional_trusted_ca_certs_path" {
-  value = data.aws_s3_bucket_object.additional_trusted_ca_certs.key
-}
 
 output "router_trusted_ca_certs" {
   value = data.aws_s3_bucket_object.router_trusted_ca_certs.body
@@ -1108,10 +1092,6 @@ output "router_trusted_ca_certs" {
 
 output "trusted_ca_certs" {
   value = data.aws_s3_bucket_object.trusted_ca_certs.body
-}
-
-output "trusted_with_additional_ca_certs" {
-  value = local.trusted_with_additional_ca_certs
 }
 
 output "rds_ca_cert" {
