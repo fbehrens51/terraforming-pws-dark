@@ -365,7 +365,7 @@ module "amazon2_clam_av_client_config" {
 
 module "amazon2_system_certs_user_data" {
   source             = "../../modules/cloud_init/certs"
-  ca_chain           = local.trusted_with_additional_ca_certs
+  ca_chain           = local.system_ca_certs_bundle
   public_bucket_name = aws_s3_bucket.public_bucket.bucket
   public_bucket_url  = local.public_bucket_url
 }
@@ -1540,4 +1540,23 @@ locals {
 
 output "router_trusted_ca_certs_bundle"{
   value = local.router_trusted_ca_certs_bundle
+}
+
+
+variable "system_ca_certs" {
+  type = set(string)
+}
+
+data "aws_s3_bucket_object" "system_ca_certs" {
+  for_each = var.system_ca_certs
+  bucket = var.cert_bucket
+  key    = each.key
+}
+
+locals {
+  system_ca_certs_bundle = join("\n",[for cert in data.aws_s3_bucket_object.system_ca_certs : cert.body])
+}
+
+output "system_ca_certs_bundle"{
+  value = local.system_ca_certs_bundle
 }
