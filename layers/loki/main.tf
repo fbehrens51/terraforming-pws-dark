@@ -94,7 +94,7 @@ data "aws_vpc" "pas_vpc" {
 module "configuration" {
   source = "./modules/config"
 
-  ca_cert     = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  ca_cert     = data.terraform_remote_state.paperwork.outputs.root_ca_cert
   server_cert = data.terraform_remote_state.paperwork.outputs.loki_server_cert
   server_key  = data.terraform_remote_state.paperwork.outputs.loki_server_key
 
