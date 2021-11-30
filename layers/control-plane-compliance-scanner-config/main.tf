@@ -96,7 +96,7 @@ module "compliance_scanner_config" {
   ntp_servers                 = var.ntp_servers
   syslog_host                 = module.domains.fluentd_fqdn
   syslog_port                 = module.syslog_ports.syslog_port
-  syslog_ca_cert              = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  syslog_ca_cert              = data.terraform_remote_state.paperwork.outputs.root_ca_cert
   custom_ssh_banner           = data.terraform_remote_state.paperwork.outputs.custom_ssh_banner
   reports_bucket_name         = local.bucket_name
   reports_bucket_region       = data.aws_region.current.name

@@ -182,7 +182,7 @@ module "nat" {
   scale_vpc_key              = "enterprise-services"
   user_data                  = data.template_cloudinit_config.nat_user_data.rendered
   root_domain                = data.terraform_remote_state.paperwork.outputs.root_domain
-  syslog_ca_cert             = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  syslog_ca_cert             = data.terraform_remote_state.paperwork.outputs.root_ca_cert
   bot_key_pem                = data.terraform_remote_state.paperwork.outputs.bot_private_key
   check_cloud_init           = data.terraform_remote_state.paperwork.outputs.check_cloud_init == "false" ? false : true
   operating_system           = data.terraform_remote_state.paperwork.outputs.amazon_operating_system_tag
