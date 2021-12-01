@@ -56,12 +56,6 @@ cert_bucket = "${cert_bucket}"
 
 root_ca_cert_s3_path = "${root_ca_cert_s3_path}"
 
-router_trusted_ca_certs_s3_path = "${router_trusted_ca_certs_s3_path}"
-
-trusted_ca_certs_s3_path = "${trusted_ca_certs_s3_path}"
-
-additional_trusted_ca_certs_s3_path = "${additional_trusted_ca_certs_s3_path}"
-
 rds_ca_cert_s3_path = "${rds_ca_cert_s3_path}"
 
 smtp_relay_ca_cert_s3_path = "${smtp_relay_ca_cert_s3_path}"
