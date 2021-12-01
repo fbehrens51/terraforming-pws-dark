@@ -600,22 +600,6 @@ data "aws_s3_bucket_object" "root_ca_cert" {
   key    = var.root_ca_cert_s3_path
 }
 
-variable "router_trusted_ca_certs_s3_path" {
-}
-
-data "aws_s3_bucket_object" "router_trusted_ca_certs" {
-  bucket = var.cert_bucket
-  key    = var.router_trusted_ca_certs_s3_path
-}
-
-variable "trusted_ca_certs_s3_path" {
-}
-
-data "aws_s3_bucket_object" "trusted_ca_certs" {
-  bucket = var.cert_bucket
-  key    = var.trusted_ca_certs_s3_path
-}
-
 variable "rds_ca_cert_s3_path" {
 }
 
@@ -736,7 +720,6 @@ variable "enable_loki" {
 variable "loki_config" {
   type = object({
     loki_role_name                          = string
-    loki_client_cert_signer_ca_cert_s3_path = string
     loki_client_cert_signer_ca_certs        = set(string)
     loki_client_cert_s3_path                = string
     loki_client_key_s3_path                 = string
@@ -746,19 +729,12 @@ variable "loki_config" {
 
   default = {
     loki_role_name                          = ""
-    loki_client_cert_signer_ca_cert_s3_path = ""
     loki_client_cert_signer_ca_certs        = []
     loki_client_cert_s3_path                = ""
     loki_client_key_s3_path                 = ""
     loki_server_cert_s3_path                = ""
     loki_server_key_s3_path                 = ""
   }
-}
-
-data "aws_s3_bucket_object" "loki_client_cert_signer_ca_cert" {
-  count  = var.enable_loki ? 1 : 0
-  bucket = var.cert_bucket
-  key    = var.loki_config.loki_client_cert_signer_ca_cert_s3_path
 }
 
 data "aws_s3_bucket_object" "loki_client_cert" {
@@ -1087,15 +1063,6 @@ output "root_ca_cert_path" {
   value = data.aws_s3_bucket_object.root_ca_cert.key
 }
 
-
-output "router_trusted_ca_certs" {
-  value = data.aws_s3_bucket_object.router_trusted_ca_certs.body
-}
-
-output "trusted_ca_certs" {
-  value = data.aws_s3_bucket_object.trusted_ca_certs.body
-}
-
 output "rds_ca_cert" {
   value = data.aws_s3_bucket_object.rds_ca_cert.body
 }
@@ -1171,10 +1138,6 @@ output "ldap_client_key_s3_path" {
 
 output "loki_role_name" {
   value = var.loki_config.loki_role_name
-}
-
-output "loki_client_cert_signer_ca_cert" {
-  value = var.enable_loki ? data.aws_s3_bucket_object.loki_client_cert_signer_ca_cert[0].body : ""
 }
 
 output "loki_client_cert" {
