@@ -746,6 +746,7 @@ variable "loki_config" {
   type = object({
     loki_role_name                          = string
     loki_client_cert_signer_ca_cert_s3_path = string
+    loki_client_cert_signer_ca_certs        = list(string)
     loki_client_cert_s3_path                = string
     loki_client_key_s3_path                 = string
     loki_server_cert_s3_path                = string
@@ -755,6 +756,7 @@ variable "loki_config" {
   default = {
     loki_role_name                          = ""
     loki_client_cert_signer_ca_cert_s3_path = ""
+    loki_client_cert_signer_ca_certs        = []
     loki_client_cert_s3_path                = ""
     loki_client_key_s3_path                 = ""
     loki_server_cert_s3_path                = ""
