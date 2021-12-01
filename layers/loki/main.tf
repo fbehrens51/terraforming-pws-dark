@@ -98,7 +98,7 @@ module "configuration" {
   server_cert = data.terraform_remote_state.paperwork.outputs.loki_server_cert
   server_key  = data.terraform_remote_state.paperwork.outputs.loki_server_key
 
-  client_cert_signer = data.terraform_remote_state.paperwork.outputs.loki_client_cert_signer_ca_cert
+  client_cert_signer = data.terraform_remote_state.paperwork.outputs.loki_ca_certs_bundle
 
   public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url

@@ -1542,3 +1542,18 @@ locals {
 output "system_ca_certs_bundle"{
   value = local.system_ca_certs_bundle
 }
+
+
+data "aws_s3_bucket_object" "loki_ca_certs" {
+  for_each = var.loki_config.loki_client_cert_signer_ca_certs
+  bucket = var.cert_bucket
+  key    = each.key
+}
+
+locals {
+  loki_ca_certs_bundle = join("\n",[for cert in data.aws_s3_bucket_object.loki_ca_certs : cert.body])
+}
+
+output "loki_ca_certs_bundle"{
+  value = var.enable_loki ? local.loki_ca_certs_bundle : ""
+}
