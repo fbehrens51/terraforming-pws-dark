@@ -130,7 +130,7 @@ module "configuration" {
   public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url
 
-  ca_cert     = data.terraform_remote_state.paperwork.outputs.root_ca_cert
+  ca_cert     = data.terraform_remote_state.paperwork.outputs.syslog_ca_certs_bundle
   server_cert = data.terraform_remote_state.paperwork.outputs.fluentd_server_cert
   server_key  = data.terraform_remote_state.paperwork.outputs.fluentd_server_key
 
