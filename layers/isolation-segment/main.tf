@@ -79,7 +79,7 @@ module "config" {
 
   syslog_host    = module.domains.fluentd_fqdn
   syslog_port    = module.syslog_ports.syslog_port
-  syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.root_ca_cert
+  syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.syslog_ca_certs_bundle
 
   env_name = var.global_vars.env_name
 }
