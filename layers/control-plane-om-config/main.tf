@@ -125,7 +125,7 @@ module "om_config" {
 
   singleton_availability_zone = var.singleton_availability_zone
 
-  ca_certificate            = data.terraform_remote_state.paperwork.outputs.root_ca_cert
+  ca_certificate            = data.terraform_remote_state.paperwork.outputs.concourse_ca_certs
   concourse_cert_pem        = data.terraform_remote_state.paperwork.outputs.control_plane_star_server_cert
   concourse_private_key_pem = data.terraform_remote_state.paperwork.outputs.control_plane_star_server_key
   admin_users               = var.admin_users

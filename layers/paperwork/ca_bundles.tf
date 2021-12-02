@@ -91,3 +91,39 @@ locals {
 output "syslog_ca_certs_bundle"{
   value = local.syslog_ca_certs_bundle
 }
+
+variable "concourse_ca_certs" {
+  type = set(string)
+}
+
+data "aws_s3_bucket_object" "concourse_ca_certs" {
+  for_each = var.concourse_ca_certs
+  bucket = var.cert_bucket
+  key    = each.key
+}
+
+locals {
+  concourse_ca_certs_bundle = join("\n",[for cert in data.aws_s3_bucket_object.concourse_ca_certs : cert.body])
+}
+
+output "concourse_ca_certs_bundle"{
+  value = local.concourse_ca_certs_bundle
+}
+
+variable "grafana_ca_certs" {
+  type = set(string)
+}
+
+data "aws_s3_bucket_object" "grafana_ca_certs" {
+  for_each = var.grafana_ca_certs
+  bucket = var.cert_bucket
+  key    = each.key
+}
+
+locals {
+  grafana_ca_certs_bundle = join("\n",[for cert in data.aws_s3_bucket_object.grafana_ca_certs : cert.body])
+}
+
+output "grafana_ca_certs_bundle"{
+  value = local.grafana_ca_certs_bundle
+}
