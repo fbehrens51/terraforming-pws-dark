@@ -190,7 +190,7 @@ module "om_config" {
 
   router_cert_pem                = data.terraform_remote_state.paperwork.outputs.router_server_cert
   router_private_key_pem         = data.terraform_remote_state.paperwork.outputs.router_server_key
-  router_trusted_ca_certificates = data.terraform_remote_state.paperwork.outputs.router_trusted_ca_certs
+  router_trusted_ca_certificates = data.terraform_remote_state.paperwork.outputs.router_trusted_ca_certs_bundle
 
   smtp_host       = local.smtp_host
   smtp_user       = local.smtp_user
@@ -202,7 +202,7 @@ module "om_config" {
   smtp_domain     = var.smtp_domain
   smtp_enabled    = var.smtp_enabled
 
-  iaas_configuration_endpoints_ca_cert    = data.terraform_remote_state.paperwork.outputs.additional_trusted_ca_certs
+  iaas_configuration_endpoints_ca_cert    = data.terraform_remote_state.paperwork.outputs.iaas_trusted_ca_certs
   iaas_configuration_iam_instance_profile = data.terraform_remote_state.paperwork.outputs.foundation_role_name
   blobstore_instance_profile              = data.terraform_remote_state.paperwork.outputs.bucket_role_name
 
@@ -216,7 +216,7 @@ module "om_config" {
 
   ntp_servers                                 = var.ntp_servers
   custom_ssh_banner                           = data.terraform_remote_state.paperwork.outputs.custom_ssh_banner
-  security_configuration_trusted_certificates = data.terraform_remote_state.paperwork.outputs.trusted_with_additional_ca_certs
+  security_configuration_trusted_certificates = data.terraform_remote_state.paperwork.outputs.bosh_system_ca_bundle
 
   rds_address     = data.terraform_remote_state.pas.outputs.rds_address
   rds_password    = data.terraform_remote_state.pas.outputs.rds_password
@@ -266,7 +266,7 @@ module "om_config" {
   syslog_host      = module.domains.fluentd_fqdn
   syslog_port      = module.syslog_ports.syslog_port
   apps_syslog_port = module.syslog_ports.apps_syslog_port
-  syslog_ca_cert   = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  syslog_ca_cert   = data.terraform_remote_state.paperwork.outputs.syslog_ca_certs_bundle
 
   //  forwarders = [
   //    {
@@ -319,7 +319,7 @@ module "clamav_config" {
   region                           = var.region
   syslog_host                      = module.domains.fluentd_fqdn
   syslog_port                      = module.syslog_ports.syslog_port
-  syslog_ca_cert                   = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  syslog_ca_cert                   = data.terraform_remote_state.paperwork.outputs.syslog_ca_certs_bundle
 }
 
 data "aws_vpc" "bastion_vpc" {

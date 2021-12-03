@@ -156,7 +156,7 @@ module "healthwatch_config" {
   healthwatch_config               = var.healthwatch_config
   healthwatch_pas_exporter_config  = var.healthwatch_pas_exporter_config
   grafana_elb_id                   = data.terraform_remote_state.pas.outputs.grafana_elb_id
-  grafana_server_ca_cert           = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  grafana_server_ca_cert           = data.terraform_remote_state.paperwork.outputs.grafana_ca_certs_bundle
   grafana_server_cert              = data.terraform_remote_state.paperwork.outputs.grafana_server_cert
   grafana_server_key               = data.terraform_remote_state.paperwork.outputs.grafana_server_key
   root_domain                      = local.root_domain
@@ -172,7 +172,7 @@ module "healthwatch_config" {
 
   syslog_host    = module.domains.fluentd_fqdn
   syslog_port    = module.syslog_ports.syslog_port
-  syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.syslog_ca_certs_bundle
   log_group_name = data.terraform_remote_state.bootstrap_fluentd.outputs.log_group_name
 
   slack_webhook        = var.slack_webhook

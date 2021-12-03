@@ -3,8 +3,6 @@ locals {
   cap_root_ca_cert_s3_path                         = "cap_root_ca_cert.pem"
   root_ca_cert_s3_path                             = "root_ca_cert.pem"
   router_trusted_ca_certs_s3_path                  = "router_trusted_ca_certs.pem"
-  trusted_ca_certs_s3_path                         = "trusted_ca_certs.pem"
-  additional_trusted_ca_certs_s3_path              = "additional_trusted_ca_certs.pem"
   iaas_trusted_ca_certs_s3_path                    = "iaas_trusted_ca_certs.pem"
   slack_trusted_ca_certs_s3_path                   = "slack_trusted_ca_certs.pem"
   rds_ca_cert_s3_path                              = "rds_ca_cert.pem"
@@ -127,8 +125,6 @@ data "template_file" "paperwork_variables" {
     cap_root_ca_s3_path                         = local.cap_root_ca_cert_s3_path
     root_ca_cert_s3_path                        = local.root_ca_cert_s3_path
     router_trusted_ca_certs_s3_path             = local.router_trusted_ca_certs_s3_path
-    trusted_ca_certs_s3_path                    = local.trusted_ca_certs_s3_path
-    additional_trusted_ca_certs_s3_path         = local.additional_trusted_ca_certs_s3_path
     rds_ca_cert_s3_path                         = local.rds_ca_cert_s3_path
     smtp_relay_ca_cert_s3_path                  = local.smtp_relay_ca_cert_s3_path
     smtp_relay_password_s3_path                 = local.smtp_relay_password_s3_path
@@ -300,17 +296,6 @@ resource "aws_s3_bucket_object" "root_ca_cert" {
   content_type = "text/plain"
 }
 
-resource "aws_s3_bucket_object" "trusted_ca_certs" {
-  key          = local.trusted_ca_certs_s3_path
-  bucket       = aws_s3_bucket.certs.bucket
-  content      = module.paperwork.trusted_ca_certs
-  content_type = "text/plain"
-}
-
-module "download-ca-certs" {
-  source = "../../modules/download_certs"
-  hosts  = var.additional_trusted_ca_cert_hosts
-}
 
 module "download-iaas-ca-certs" {
   source = "../../modules/download_certs"
@@ -320,13 +305,6 @@ module "download-iaas-ca-certs" {
 module "download-slack-ca-certs" {
   source = "../../modules/download_certs"
   hosts  = var.slack_trusted_ca_cert_hosts
-}
-
-resource "aws_s3_bucket_object" "additional_trusted_ca_certs" {
-  key          = local.additional_trusted_ca_certs_s3_path
-  bucket       = aws_s3_bucket.certs.bucket
-  content      = module.download-ca-certs.ca_certs
-  content_type = "text/plain"
 }
 
 resource "aws_s3_bucket_object" "iaas_trusted_ca_certs" {
@@ -609,10 +587,6 @@ variable "smtp_relay_ca_cert_pem" {
 
 variable "smtp_relay_password" {
   type = string
-}
-
-variable "additional_trusted_ca_cert_hosts" {
-  type = list(string)
 }
 
 variable "iaas_trusted_ca_cert_hosts" {

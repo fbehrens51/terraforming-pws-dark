@@ -319,7 +319,7 @@ module "isolation_segment_0" {
   user_data      = data.template_cloudinit_config.nat_user_data.rendered
 
   root_domain                = data.terraform_remote_state.paperwork.outputs.root_domain
-  syslog_ca_cert             = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  syslog_ca_cert             = data.terraform_remote_state.paperwork.outputs.syslog_ca_certs_bundle
   ami_id                     = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
   public_bucket_name         = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url          = data.terraform_remote_state.paperwork.outputs.public_bucket_url
