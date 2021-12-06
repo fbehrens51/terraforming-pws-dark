@@ -1,18 +1,3 @@
-locals {
-  env_name      = var.global_vars.env_name
-  modified_name = "${local.env_name} tkgjb"
-  modified_tags = merge(
-    var.global_vars["global_tags"],
-    var.global_vars["instance_tags"],
-    {
-      "Name"            = local.modified_name
-      "MetricsKey"      = data.terraform_remote_state.paperwork.outputs.metrics_key
-      "foundation_name" = data.terraform_remote_state.paperwork.outputs.foundation_name
-      "job"             = "tkgjb"
-    },
-  )
-  root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
-}
 
 data "terraform_remote_state" "paperwork" {
   backend = "s3"
@@ -47,6 +32,17 @@ data "terraform_remote_state" "bootstrap_control_plane" {
   }
 }
 
+data "terraform_remote_state" "bootstrap_tkg" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bootstrap_tkg"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
 data "terraform_remote_state" "bootstrap_tkgjb" {
   backend = "s3"
 
@@ -67,6 +63,22 @@ data "terraform_remote_state" "bootstrap_control_plane_foundation" {
     region  = var.remote_state_region
     encrypt = true
   }
+}
+
+locals {
+  env_name      = var.global_vars.env_name
+  modified_name = "${local.env_name} tkgjb"
+  modified_tags = merge(
+    var.global_vars["global_tags"],
+    var.global_vars["instance_tags"],
+    {
+      "Name"            = local.modified_name
+      "MetricsKey"      = data.terraform_remote_state.paperwork.outputs.metrics_key
+      "foundation_name" = data.terraform_remote_state.paperwork.outputs.foundation_name
+      "job"             = "tkgjb"
+    },
+  )
+  root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
 }
 
 locals {
@@ -193,8 +205,8 @@ runcmd:
     install -d $HOME
     install-pwsd.sh
     install-artifact.sh pcf-eagle-automation cli-tools
-    $HOME/workspace/pcf-eagle-automation/scripts/tkgjb/install-fly.sh
-    $HOME/workspace/pcf-eagle-automation/scripts/tkgjb/install-cli-tools.sh
+    $HOME/workspace/pcf-eagle-automation/scripts/sjb/install-fly.sh
+    $HOME/workspace/pcf-eagle-automation/scripts/sjb/install-cli-tools.sh
     rm -rf $HOME
 
     # human users UIDs start at 1000
@@ -335,7 +347,7 @@ data "template_cloudinit_config" "user_data" {
 }
 
 data "aws_vpc" "vpc" {
-  id = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
+  id = data.terraform_remote_state.paperwork.outputs.tkg_vpc_id
 }
 
 module "dnsmasq" {
@@ -352,9 +364,10 @@ module "dnsmasq" {
   ]
 }
 
+//TODO: Understand this better; Very dependent on control plane
 module "iptables_rules" {
   source                     = "../../modules/iptables"
-  control_plane_subnet_cidrs = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs
+  control_plane_subnet_cidrs = data.terraform_remote_state.bootstrap_tkg.outputs.control_plane_subnet_cidrs
 }
 
 resource "aws_ebs_volume" "tkgjb_home" {
@@ -371,10 +384,12 @@ module "tkgjb" {
   ami_id               = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
   user_data            = data.template_cloudinit_config.user_data.rendered
   eni_ids              = data.terraform_remote_state.bootstrap_tkgjb.outputs.tkgjb_eni_ids
+  // This needs to be tkg specific
   iam_instance_profile = data.terraform_remote_state.paperwork.outputs.bootstrap_role_name
   instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
   volume_ids           = [aws_ebs_volume.tkgjb_home.id]
-  scale_vpc_key        = "control-plane"
+//  What is this for tkg?
+  scale_vpc_key        = "tkg"
   scale_service_key    = "tkgjb"
   tags                 = local.modified_tags
   bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
