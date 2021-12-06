@@ -9,13 +9,12 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
-
-data "terraform_remote_state" "bootstrap_control_plane" {
+data "terraform_remote_state" "bootstrap_tkg" {
   backend = "s3"
 
   config = {
     bucket  = var.remote_state_bucket
-    key     = "bootstrap_control_plane"
+    key     = "bootstrap_tkg"
     region  = var.remote_state_region
     encrypt = true
   }
@@ -62,14 +61,22 @@ locals {
       },
     ]
   )
+
+  tkgjb_egress_rules = [
+    {
+      description = "Allow all protocols/ports to everywhere"
+      port        = "0"
+      protocol    = "-1"
+      cidr_blocks = "0.0.0.0/0"
+    },
+  ]
 }
 
 module "tkgjb_subnet" {
   source             = "../../modules/subnet_per_az"
   availability_zones = [var.singleton_availability_zone]
   vpc_id             = data.aws_vpc.vpc.id
-// TODO: bootstrap_tkg.output.tkgjb_cidr_block
-  cidr_block         = data.terraform_remote_state.bootstrap_control_plane.outputs.sjb_cidr_block
+  cidr_block         = data.terraform_remote_state.bootstrap_tkg.outputs.tkgjb_cidr_block
   tags = merge(
     local.modified_tags,
     {
@@ -78,14 +85,13 @@ module "tkgjb_subnet" {
   )
 }
 
-resource "aws_route_table_association" "sjb_route_table_assoc" {
+resource "aws_route_table_association" "tkgjb_route_table_assoc" {
   count          = "1"
   subnet_id      = module.tkgjb_subnet.subnet_ids[count.index]
-//  TODO: What should this be?
-  route_table_id = data.terraform_remote_state.routes.outputs.cp_private_vpc_route_table_ids[count.index]
+  route_table_id = data.terraform_remote_state.routes.outputs.tkg_private_vpc_route_table_ids[count.index]
 }
 
-module "sjb_bootstrap" {
+module "tkgjb_bootstrap" {
   source        = "../../modules/eni_per_subnet"
   ingress_rules = local.tkgjb_ingress_rules
   egress_rules  = var.tkgjb_egress_rules
@@ -94,4 +100,3 @@ module "sjb_bootstrap" {
   create_eip    = "false"
   tags          = local.modified_tags
 }
-
