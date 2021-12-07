@@ -384,11 +384,11 @@ module "tkgjb" {
   ami_id               = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
   user_data            = data.template_cloudinit_config.user_data.rendered
   eni_ids              = data.terraform_remote_state.bootstrap_tkgjb.outputs.tkgjb_eni_ids
-  // This needs to be tkg specific
-  iam_instance_profile = data.terraform_remote_state.paperwork.outputs.bootstrap_role_name
+  // TODO: This needs to be tkg specific
+  iam_instance_profile = data.terraform_remote_state.paperwork.outputs.tkg_control_plane_role_name
   instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
   volume_ids           = [aws_ebs_volume.tkgjb_home.id]
-//  What is this for tkg?
+  //  What is this for tkg?
   scale_vpc_key        = "tkg"
   scale_service_key    = "tkgjb"
   tags                 = local.modified_tags

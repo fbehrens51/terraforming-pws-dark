@@ -176,6 +176,10 @@ data "template_file" "keymanager_variables" {
 
     bootstrap_role_arn  = module.paperwork.bootstrap_role_arn
     foundation_role_arn = module.paperwork.foundation_role_arn
+
+    tkg_control_plane_role_arn = module.paperwork.tkg_control_plane_role_arn
+    tkg_nodes_role_arn = module.paperwork.tkg_nodes_role_arn
+    tkg_controllers_role_arn = module.paperwork.tkg_controllers_role_arn
   }
 }
 

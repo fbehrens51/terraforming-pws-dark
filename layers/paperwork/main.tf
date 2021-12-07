@@ -1472,3 +1472,42 @@ output "s3_endpoint" {
 output "endpoint_domain" {
   value = var.endpoint_domain
 }
+
+/*******
+ * TKG
+ *******/
+// control-plane.tkg.cloud.vmware.com
+variable "tkg_control_plane_role_name" {
+}
+
+data "aws_iam_role" "tkg_control_plane" {
+  name = var.tkg_control_plane_role_name
+}
+
+output "tkg_control_plane_role_name" {
+  value = var.tkg_control_plane_role_name
+}
+
+// nodes.tkg.cloud.vmware.com
+variable "tkg_nodes_role_name" {
+}
+
+data "aws_iam_role" "tkg_nodes" {
+  name = var.tkg_nodes_role_name
+}
+
+output "tkg_nodes_role_name" {
+  value = var.tkg_nodes_role_name
+}
+
+// controllers.tkg.cloud.vmware.com
+variable "tkg_controllers_role_name" {
+}
+
+data "aws_iam_role" "tkg_controllers" {
+  name = var.tkg_controllers_role_name
+}
+
+output "tkg_controllers_role_name" {
+  value = var.tkg_controllers_role_name
+}

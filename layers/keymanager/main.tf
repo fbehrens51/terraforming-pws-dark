@@ -32,6 +32,10 @@ module "keys" {
 
   bootstrap_role_arn  = var.bootstrap_role_arn
   foundation_role_arn = var.foundation_role_arn
+
+  tkg_control_plane_role_arn = var.tkg_control_plane_role_arn
+  tkg_nodes_role_arn = var.tkg_nodes_role_arn
+  tkg_controllers_role_arn = var.tkg_controllers_role_arn
 }
 
 data "aws_iam_policy_document" "kms_key_policy_document" {
@@ -147,6 +151,9 @@ variable "sjb_role_arn" {}
 variable "concourse_role_arn" {}
 variable "om_role_arn" {}
 variable "bosh_role_arn" {}
+variable "tkg_control_plane_role_arn" {}
+variable "tkg_nodes_role_arn" {}
+variable "tkg_controllers_role_arn" {}
 variable "pas_kms_key_name" {}
 variable "keymanager_file_output_path" {}
 variable "logs_service_name" {
