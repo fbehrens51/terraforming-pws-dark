@@ -43,22 +43,25 @@ locals {
 }
 
 module "paperwork" {
-  source                    = "./modules/paperwork"
-  bucket_role_name          = var.pas_bucket_role_name
-  worker_role_name          = var.platform_automation_engine_worker_role_name
-  director_role_name        = var.director_role_name
-  bootstrap_role_name       = var.bootstrap_role_name
-  foundation_role_name      = var.foundation_role_name
-  sjb_role_name             = var.sjb_role_name
-  concourse_role_name       = var.concourse_role_name
-  om_role_name              = var.om_role_name
-  bosh_role_name            = var.bosh_role_name
-  fluentd_role_name         = var.fluentd_role_name
-  loki_role_name            = var.loki_role_name
-  instance_tagger_role_name = var.instance_tagger_role_name
-  tsdb_role_name            = var.tsdb_role_name
-  isse_role_name            = var.isse_role_name
-  enable_tkg                = var.enable_tkg
+  source                      = "./modules/paperwork"
+  bucket_role_name            = var.pas_bucket_role_name
+  worker_role_name            = var.platform_automation_engine_worker_role_name
+  director_role_name          = var.director_role_name
+  bootstrap_role_name         = var.bootstrap_role_name
+  foundation_role_name        = var.foundation_role_name
+  sjb_role_name               = var.sjb_role_name
+  concourse_role_name         = var.concourse_role_name
+  om_role_name                = var.om_role_name
+  bosh_role_name              = var.bosh_role_name
+  fluentd_role_name           = var.fluentd_role_name
+  loki_role_name              = var.loki_role_name
+  instance_tagger_role_name   = var.instance_tagger_role_name
+  tsdb_role_name              = var.tsdb_role_name
+  isse_role_name              = var.isse_role_name
+  enable_tkg                  = var.enable_tkg
+  tkg_control_plane_role_name = var.tkg_control_plane_role_name
+  tkg_nodes_role_name         = var.tkg_nodes_role_name
+  tkg_controllers_role_name   = var.tkg_controllers_role_name
 
   env_name    = var.env_name
   root_domain = var.root_domain
@@ -166,7 +169,7 @@ data "template_file" "paperwork_variables" {
 
 data "template_file" "keymanager_variables" {
   template = file("${path.module}/keymanager.tfvars.tpl")
-  vars = {
+  vars     = {
     pas_bucket_role_arn = module.paperwork.pas_bucket_role_arn
     director_role_arn   = module.paperwork.director_role_arn
     sjb_role_arn        = module.paperwork.sjb_role_arn
@@ -178,8 +181,8 @@ data "template_file" "keymanager_variables" {
     foundation_role_arn = module.paperwork.foundation_role_arn
 
     tkg_control_plane_role_arn = module.paperwork.tkg_control_plane_role_arn
-    tkg_nodes_role_arn = module.paperwork.tkg_nodes_role_arn
-    tkg_controllers_role_arn = module.paperwork.tkg_controllers_role_arn
+    tkg_nodes_role_arn         = module.paperwork.tkg_nodes_role_arn
+    tkg_controllers_role_arn   = module.paperwork.tkg_controllers_role_arn
   }
 }
 
@@ -274,6 +277,18 @@ variable "smtp_to" {
 variable "enable_tkg" {
   type    = string
   default = false
+}
+
+variable "tkg_control_plane_role_name" {
+  type = string
+}
+
+variable "tkg_nodes_role_name" {
+  type = string
+}
+
+variable "tkg_controllers_role_name" {
+  type = string
 }
 
 resource "aws_s3_bucket_object" "cap_root_ca_cert" {
