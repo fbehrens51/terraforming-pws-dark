@@ -1,4 +1,3 @@
-
 data "terraform_remote_state" "paperwork" {
   backend = "s3"
 
@@ -49,17 +48,6 @@ data "terraform_remote_state" "bootstrap_tkgjb" {
   config = {
     bucket  = var.remote_state_bucket
     key     = "bootstrap_tkgjb"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
-data "terraform_remote_state" "bootstrap_control_plane_foundation" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "bootstrap_control_plane_foundation"
     region  = var.remote_state_region
     encrypt = true
   }
@@ -364,10 +352,9 @@ module "dnsmasq" {
   ]
 }
 
-//TODO: Understand this better; Very dependent on control plane
 module "iptables_rules" {
   source                     = "../../modules/iptables"
-  control_plane_subnet_cidrs = data.terraform_remote_state.bootstrap_tkg.outputs.control_plane_subnet_cidrs
+  control_plane_subnet_cidrs = data.terraform_remote_state.bootstrap_tkg.outputs.tkgjb_cidr_block
 }
 
 resource "aws_ebs_volume" "tkgjb_home" {
@@ -384,11 +371,9 @@ module "tkgjb" {
   ami_id               = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
   user_data            = data.template_cloudinit_config.user_data.rendered
   eni_ids              = data.terraform_remote_state.bootstrap_tkgjb.outputs.tkgjb_eni_ids
-  // TODO: This needs to be tkg specific
   iam_instance_profile = data.terraform_remote_state.paperwork.outputs.tkg_control_plane_role_name
   instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
   volume_ids           = [aws_ebs_volume.tkgjb_home.id]
-  //  What is this for tkg?
   scale_vpc_key        = "tkg"
   scale_service_key    = "tkgjb"
   tags                 = local.modified_tags
