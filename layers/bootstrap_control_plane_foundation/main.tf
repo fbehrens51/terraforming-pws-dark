@@ -1,15 +1,3 @@
-provider "aws" {
-}
-
-module "providers" {
-  source = "../../modules/dark_providers"
-}
-
-terraform {
-  backend "s3" {
-  }
-}
-
 data "terraform_remote_state" "paperwork" {
   backend = "s3"
 
@@ -120,6 +108,7 @@ module "ops_manager" {
   ingress_rules         = local.om_ingress_rules
   s3_logs_bucket        = local.s3_logs_bucket
   force_destroy_buckets = var.force_destroy_buckets
+  operating_system      = data.terraform_remote_state.paperwork.outputs.ubuntu_operating_system_tag
 }
 
 resource "aws_s3_bucket" "transfer_bucket" {

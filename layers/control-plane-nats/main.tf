@@ -1,15 +1,3 @@
-provider "aws" {
-}
-
-module "providers" {
-  source = "../../modules/dark_providers"
-}
-
-terraform {
-  backend "s3" {
-  }
-}
-
 data "terraform_remote_state" "paperwork" {
   backend = "s3"
 
@@ -150,8 +138,9 @@ module "nat" {
   scale_vpc_key              = "control-plane"
   user_data                  = data.template_cloudinit_config.nat_user_data.rendered
   root_domain                = data.terraform_remote_state.paperwork.outputs.root_domain
-  syslog_ca_cert             = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  syslog_ca_cert             = data.terraform_remote_state.paperwork.outputs.syslog_ca_certs_bundle
   check_cloud_init           = data.terraform_remote_state.paperwork.outputs.check_cloud_init == "false" ? false : true
+  operating_system           = data.terraform_remote_state.paperwork.outputs.amazon_operating_system_tag
 
   public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url

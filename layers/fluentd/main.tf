@@ -1,11 +1,3 @@
-terraform {
-  backend "s3" {
-  }
-}
-
-provider "aws" {
-}
-
 variable "remote_state_region" {
 }
 
@@ -29,10 +21,6 @@ variable "region" {
 variable "enable_loki" {
   type    = bool
   default = false
-}
-
-module "providers" {
-  source = "../../modules/dark_providers"
 }
 
 data "terraform_remote_state" "paperwork" {
@@ -142,7 +130,7 @@ module "configuration" {
   public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url
 
-  ca_cert     = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  ca_cert     = data.terraform_remote_state.paperwork.outputs.syslog_ca_certs_bundle
   server_cert = data.terraform_remote_state.paperwork.outputs.fluentd_server_cert
   server_key  = data.terraform_remote_state.paperwork.outputs.fluentd_server_key
 
@@ -293,6 +281,7 @@ module "fluentd_instance" {
   bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
   iam_instance_profile = data.terraform_remote_state.paperwork.outputs.fluentd_role_name
   volume_ids           = data.terraform_remote_state.bootstrap_fluentd.outputs.volume_id
+  operating_system     = data.terraform_remote_state.paperwork.outputs.amazon_operating_system_tag
 }
 
 resource "aws_lb_target_group_attachment" "fluentd_syslog_attachment" {
@@ -310,7 +299,7 @@ resource "aws_lb_target_group_attachment" "fluentd_apps_syslog_attachment" {
 module "syslog_config" {
   source         = "../../modules/syslog"
   root_domain    = data.terraform_remote_state.paperwork.outputs.root_domain
-  syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.syslog_ca_certs_bundle
 
   role_name          = "fluentd"
   forward_locally    = true

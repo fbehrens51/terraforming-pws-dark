@@ -2,12 +2,18 @@ product-name: appMetrics
 product-properties:
   .db-and-errand-runner.enable_logs:
     value: true
+  .db-and-errand-runner.postgres_ciphers:
+    value: HIGH:MEDIUM:+3DES:!aNULL
   .db-and-errand-runner.use_socks_proxy:
     value: false
+  .log-store-vms.log_store_partition_count:
+    value: 64
   .log-store-vms.log_store_prune_interval:
     value: 2m
   .log-store-vms.log_store_prune_threshold:
     value: 80
+  .log-store-vms.log_store_retention_period:
+    value: 42
 network-properties:
   network:
     name: ${bosh_network_name}

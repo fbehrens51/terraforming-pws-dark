@@ -20,15 +20,6 @@ variable "metrics_store_config" {
   default = "pas/metrics_store_tile_config.yml"
 }
 
-terraform {
-  backend "s3" {
-  }
-}
-
-module "providers" {
-  source = "../../modules/dark_providers"
-}
-
 data "terraform_remote_state" "paperwork" {
   backend = "s3"
 
@@ -90,5 +81,5 @@ module "metrics_config" {
 
   syslog_host    = module.domains.fluentd_fqdn
   syslog_port    = module.syslog_ports.syslog_port
-  syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.syslog_ca_certs_bundle
 }

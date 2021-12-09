@@ -13,6 +13,7 @@ module "nat" {
   user_data                  = var.user_data
   bot_key_pem                = var.bot_key_pem
   check_cloud_init           = var.check_cloud_init
+  operating_system           = var.operating_system
 
   root_domain    = var.root_domain
   syslog_ca_cert = var.syslog_ca_cert

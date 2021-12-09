@@ -46,7 +46,7 @@ write_files:
         mv /var/lib/aide/aide.db.gz /var/lib/aide/aide.db.packer.gz
         mv /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz
 
-        mailx -s "Aide Update <root@$ssh_host_name> /root/aide-update.bash" root <<< "$email_report"
+        #mailx -s "Aide Update <root@$ssh_host_name> /root/aide-update.bash" root <<< "$email_report"
       fi
 runcmd:
   - |

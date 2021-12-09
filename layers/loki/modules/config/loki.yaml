@@ -62,8 +62,8 @@ schema_config:
 
 storage_config:
  boltdb_shipper:
-   active_index_directory: /var/lib/loki/index
-   cache_location: /var/lib/loki/index_cache
+   active_index_directory: /data/loki/index
+   cache_location: /data/loki/index_cache
    shared_store: s3
 
  aws:

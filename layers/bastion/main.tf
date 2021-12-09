@@ -1,15 +1,3 @@
-terraform {
-  backend "s3" {
-  }
-}
-
-provider "aws" {
-}
-
-module "providers" {
-  source = "../../modules/dark_providers"
-}
-
 data "terraform_remote_state" "paperwork" {
   backend = "s3"
 
@@ -132,6 +120,9 @@ data "template_cloudinit_config" "user_data" {
 
 
 module "bastion_host" {
+  providers = {
+    aws = aws.bastion
+  }
   instance_count       = 1
   source               = "../../modules/launch"
   ignore_tag_changes   = true
@@ -143,6 +134,7 @@ module "bastion_host" {
   eni_ids              = [module.bootstrap_bastion.eni_id]
   tags                 = local.instance_tags
   iam_instance_profile = local.ami_filter_provided ? "" : data.terraform_remote_state.paperwork.outputs.instance_tagger_role_name
+  operating_system     = var.bastion_operating_system_tag
 }
 
 variable "ami_filter" {
@@ -198,4 +190,9 @@ variable "global_vars" {
 
 variable "route_table_id" {
   default = null
+}
+
+variable "bastion_operating_system_tag" {
+  type    = string
+  default = "varies"
 }

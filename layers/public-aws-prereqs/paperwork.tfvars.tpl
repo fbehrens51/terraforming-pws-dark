@@ -56,12 +56,6 @@ cert_bucket = "${cert_bucket}"
 
 root_ca_cert_s3_path = "${root_ca_cert_s3_path}"
 
-router_trusted_ca_certs_s3_path = "${router_trusted_ca_certs_s3_path}"
-
-trusted_ca_certs_s3_path = "${trusted_ca_certs_s3_path}"
-
-additional_trusted_ca_certs_s3_path = "${additional_trusted_ca_certs_s3_path}"
-
 rds_ca_cert_s3_path = "${rds_ca_cert_s3_path}"
 
 smtp_relay_ca_cert_s3_path = "${smtp_relay_ca_cert_s3_path}"
@@ -88,7 +82,7 @@ ldap_client_key_s3_path = "${ldap_client_key_s3_path}"
 
 loki_config = {
     loki_role_name                          = "${loki_role_name}"
-    loki_client_cert_signer_ca_cert_s3_path = "${loki_client_cert_signer_ca_cert_s3_path}"
+    loki_client_cert_signer_ca_certs        = ["${loki_client_cert_signer_ca_cert_s3_path}"]
     loki_client_cert_s3_path                = "${loki_client_cert_s3_path}"
     loki_client_key_s3_path                 = "${loki_client_key_s3_path}"
     loki_server_cert_s3_path                = "${loki_server_cert_s3_path}"
@@ -133,3 +127,13 @@ iaas_trusted_ca_certs_s3_path  = "${iaas_trusted_ca_certs_s3_path}"
 slack_trusted_ca_certs_s3_path = "${slack_trusted_ca_certs_s3_path}"
 
 bosh_vms_system_ca_certs = ["${root_ca_cert_s3_path}","${iaas_trusted_ca_certs_s3_path}"]
+
+system_ca_certs = ["${root_ca_cert_s3_path}","${iaas_trusted_ca_certs_s3_path}"]
+
+router_trusted_ca_certs = ["${router_trusted_ca_certs_s3_path}"]
+
+syslog_ca_certs = ["${root_ca_cert_s3_path}"]
+
+concourse_ca_certs = ["${root_ca_cert_s3_path}"]
+
+grafana_ca_certs = ["${root_ca_cert_s3_path}"]

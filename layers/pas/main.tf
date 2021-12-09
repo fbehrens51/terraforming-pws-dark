@@ -1,15 +1,3 @@
-provider "aws" {
-}
-
-module "providers" {
-  source = "../../modules/dark_providers"
-}
-
-terraform {
-  backend "s3" {
-  }
-}
-
 data "terraform_remote_state" "paperwork" {
   backend = "s3"
 
@@ -133,10 +121,11 @@ module "infra" {
   private_route_table_ids       = data.terraform_remote_state.routes.outputs.pas_private_vpc_route_table_ids
   root_domain                   = data.terraform_remote_state.paperwork.outputs.root_domain
   instance_types                = data.terraform_remote_state.scaling-params.outputs.instance_types
-  syslog_ca_cert                = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  syslog_ca_cert                = data.terraform_remote_state.paperwork.outputs.syslog_ca_certs_bundle
   ops_manager_security_group_id = module.ops_manager.security_group_id
   elb_security_group_id         = module.pas_elb.security_group_id
   grafana_elb_security_group_id = module.grafana_elb.security_group_id
+  operating_system              = data.terraform_remote_state.paperwork.outputs.amazon_operating_system_tag
 
   user_data = data.template_cloudinit_config.nat_user_data.rendered
 
@@ -278,6 +267,7 @@ module "ops_manager" {
   ingress_rules         = local.ingress_rules
   s3_logs_bucket        = local.s3_logs_bucket
   force_destroy_buckets = var.force_destroy_buckets
+  operating_system      = data.terraform_remote_state.paperwork.outputs.amazon_operating_system_tag
 }
 
 resource "random_integer" "bucket" {

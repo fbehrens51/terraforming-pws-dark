@@ -1,15 +1,3 @@
-provider "aws" {
-}
-
-module "providers" {
-  source = "../../modules/dark_providers"
-}
-
-terraform {
-  backend "s3" {
-  }
-}
-
 data "terraform_remote_state" "paperwork" {
   backend = "s3"
 
@@ -116,6 +104,7 @@ EOF
   instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
   scale_vpc_key        = "control-plane"
   scale_service_key    = "scanner"
+  operating_system     = data.terraform_remote_state.paperwork.outputs.amazon_operating_system_tag
 
   tags = local.modified_tags
 

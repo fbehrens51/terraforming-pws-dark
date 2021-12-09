@@ -1,15 +1,3 @@
-terraform {
-  backend "s3" {
-  }
-}
-
-provider "aws" {
-}
-
-module "providers" {
-  source = "../../modules/dark_providers"
-}
-
 data "terraform_remote_state" "paperwork" {
   backend = "s3"
 
@@ -310,12 +298,13 @@ module "bind_master_host" {
   tags                 = local.modified_tags
   bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
   iam_instance_profile = data.terraform_remote_state.paperwork.outputs.instance_tagger_role_name
+  operating_system     = data.terraform_remote_state.paperwork.outputs.amazon_operating_system_tag
 }
 
 module "syslog_config" {
   source         = "../../modules/syslog"
   root_domain    = local.root_domain
-  syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.syslog_ca_certs_bundle
 
   role_name          = "bind"
   public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name

@@ -1,20 +1,7 @@
-terraform {
-  backend "s3" {
-  }
-}
-
-module "providers" {
-  source = "../../modules/dark_providers"
-}
-
-provider "aws" {
-}
-
 data "aws_region" "current" {
 }
 
 locals {
-  trusted_with_additional_ca_certs = "${data.aws_s3_bucket_object.trusted_ca_certs.body}${data.aws_s3_bucket_object.additional_trusted_ca_certs.body}"
   bucket_prefix                    = replace(local.env_name_prefix, " ", "-")
   reporting_bucket_name            = "${local.bucket_prefix}-reporting-bucket"
   public_bucket_name               = "${local.bucket_prefix}-public-bucket"
@@ -377,7 +364,7 @@ module "amazon2_clam_av_client_config" {
 
 module "amazon2_system_certs_user_data" {
   source             = "../../modules/cloud_init/certs"
-  ca_chain           = local.trusted_with_additional_ca_certs
+  ca_chain           = local.system_ca_certs_bundle
   public_bucket_name = aws_s3_bucket.public_bucket.bucket
   public_bucket_url  = local.public_bucket_url
 }
@@ -590,6 +577,16 @@ variable "check_cloud_init" {
   default = true
 }
 
+variable "ubuntu_operating_system_tag" {
+  type    = string
+  default = "Ubuntu Xenial"
+}
+
+variable "amazon_operating_system_tag" {
+  type    = string
+  default = "Amazon Linux 2"
+}
+
 data "aws_s3_bucket_object" "ldap_password" {
   bucket = var.cert_bucket
   key    = var.ldap_password_s3_path
@@ -601,30 +598,6 @@ variable "root_ca_cert_s3_path" {
 data "aws_s3_bucket_object" "root_ca_cert" {
   bucket = var.cert_bucket
   key    = var.root_ca_cert_s3_path
-}
-
-variable "router_trusted_ca_certs_s3_path" {
-}
-
-data "aws_s3_bucket_object" "router_trusted_ca_certs" {
-  bucket = var.cert_bucket
-  key    = var.router_trusted_ca_certs_s3_path
-}
-
-variable "trusted_ca_certs_s3_path" {
-}
-
-data "aws_s3_bucket_object" "trusted_ca_certs" {
-  bucket = var.cert_bucket
-  key    = var.trusted_ca_certs_s3_path
-}
-
-variable "additional_trusted_ca_certs_s3_path" {
-}
-
-data "aws_s3_bucket_object" "additional_trusted_ca_certs" {
-  bucket = var.cert_bucket
-  key    = var.additional_trusted_ca_certs_s3_path
 }
 
 variable "rds_ca_cert_s3_path" {
@@ -747,7 +720,7 @@ variable "enable_loki" {
 variable "loki_config" {
   type = object({
     loki_role_name                          = string
-    loki_client_cert_signer_ca_cert_s3_path = string
+    loki_client_cert_signer_ca_certs        = set(string)
     loki_client_cert_s3_path                = string
     loki_client_key_s3_path                 = string
     loki_server_cert_s3_path                = string
@@ -756,18 +729,12 @@ variable "loki_config" {
 
   default = {
     loki_role_name                          = ""
-    loki_client_cert_signer_ca_cert_s3_path = ""
+    loki_client_cert_signer_ca_certs        = []
     loki_client_cert_s3_path                = ""
     loki_client_key_s3_path                 = ""
     loki_server_cert_s3_path                = ""
     loki_server_key_s3_path                 = ""
   }
-}
-
-data "aws_s3_bucket_object" "loki_client_cert_signer_ca_cert" {
-  count  = var.enable_loki ? 1 : 0
-  bucket = var.cert_bucket
-  key    = var.loki_config.loki_client_cert_signer_ca_cert_s3_path
 }
 
 data "aws_s3_bucket_object" "loki_client_cert" {
@@ -882,6 +849,14 @@ variable "log_forwarder_region" {
   default = ""
 }
 
+output "ubuntu_operating_system_tag" {
+  value = var.ubuntu_operating_system_tag
+}
+
+output "amazon_operating_system_tag" {
+  value = var.amazon_operating_system_tag
+}
+
 output "foundation_name" {
   value = var.foundation_name
 }
@@ -956,6 +931,19 @@ output "amzn_ami_id" {
 data "aws_s3_bucket_object" "cap_root_ca" {
   bucket = var.cert_bucket
   key    = var.cap_root_ca_s3_path
+}
+
+variable "iaas_trusted_ca_certs_s3_path" {
+  type = string
+}
+
+data "aws_s3_bucket_object" "iaas_trusted_ca_certs" {
+  bucket = var.cert_bucket
+  key    = var.iaas_trusted_ca_certs_s3_path
+}
+
+output "iaas_trusted_ca_certs" {
+  value = data.aws_s3_bucket_object.iaas_trusted_ca_certs.body
 }
 
 # This key is used to distinguish between metrics domains in grafana.
@@ -1075,26 +1063,6 @@ output "root_ca_cert_path" {
   value = data.aws_s3_bucket_object.root_ca_cert.key
 }
 
-output "additional_trusted_ca_certs" {
-  value = data.aws_s3_bucket_object.additional_trusted_ca_certs.body
-}
-
-output "additional_trusted_ca_certs_path" {
-  value = data.aws_s3_bucket_object.additional_trusted_ca_certs.key
-}
-
-output "router_trusted_ca_certs" {
-  value = data.aws_s3_bucket_object.router_trusted_ca_certs.body
-}
-
-output "trusted_ca_certs" {
-  value = data.aws_s3_bucket_object.trusted_ca_certs.body
-}
-
-output "trusted_with_additional_ca_certs" {
-  value = local.trusted_with_additional_ca_certs
-}
-
 output "rds_ca_cert" {
   value = data.aws_s3_bucket_object.rds_ca_cert.body
 }
@@ -1172,10 +1140,6 @@ output "loki_role_name" {
   value = var.loki_config.loki_role_name
 }
 
-output "loki_client_cert_signer_ca_cert" {
-  value = var.enable_loki ? data.aws_s3_bucket_object.loki_client_cert_signer_ca_cert[0].body : ""
-}
-
 output "loki_client_cert" {
   value = var.enable_loki ? data.aws_s3_bucket_object.loki_client_cert[0].body : ""
 }
@@ -1192,6 +1156,11 @@ output "loki_server_cert" {
 output "loki_server_key" {
   value     = var.enable_loki ? data.aws_s3_bucket_object.loki_server_key[0].body : ""
   sensitive = true
+}
+
+output "enable_loki" {
+  # used in ssh_config layer to conditionally include loki
+  value = var.enable_loki
 }
 
 output "control_plane_star_server_cert" {

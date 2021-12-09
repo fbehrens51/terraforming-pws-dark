@@ -1,15 +1,3 @@
-provider "aws" {
-}
-
-module "providers" {
-  source = "../../modules/dark_providers"
-}
-
-terraform {
-  backend "s3" {
-  }
-}
-
 locals {
   env_name      = var.global_vars.env_name
   modified_name = "${local.env_name} sjb"
@@ -251,7 +239,7 @@ module "syslog_config" {
   source = "../../modules/syslog"
 
   root_domain    = local.root_domain
-  syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.syslog_ca_certs_bundle
 
   role_name          = "sjb"
   public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name
@@ -391,6 +379,7 @@ module "sjb" {
   tags                 = local.modified_tags
   bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
   check_cloud_init     = false
+  operating_system     = data.terraform_remote_state.paperwork.outputs.amazon_operating_system_tag
 
   root_block_device = {
     tags = { "Name" = "${local.modified_name} root" }

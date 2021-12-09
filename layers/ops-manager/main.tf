@@ -1,15 +1,3 @@
-provider "aws" {
-}
-
-module "providers" {
-  source = "../../modules/dark_providers"
-}
-
-terraform {
-  backend "s3" {
-  }
-}
-
 data "terraform_remote_state" "paperwork" {
   backend = "s3"
 
@@ -115,6 +103,7 @@ module "ops_manager" {
   user_data            = module.ops_manager_user_data.cloud_config
   bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
   cloud_init_timeout   = 600
+  operating_system     = data.terraform_remote_state.paperwork.outputs.ubuntu_operating_system_tag
 
   root_block_device = {
     volume_type = "gp2"

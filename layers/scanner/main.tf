@@ -1,15 +1,3 @@
-provider "aws" {
-}
-
-module "providers" {
-  source = "../../modules/dark_providers"
-}
-
-terraform {
-  backend "s3" {
-  }
-}
-
 data "terraform_remote_state" "paperwork" {
   backend = "s3"
 
@@ -110,7 +98,7 @@ module "syslog_config" {
   source = "../../modules/syslog"
 
   root_domain    = data.terraform_remote_state.paperwork.outputs.root_domain
-  syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.syslog_ca_certs_bundle
 
   role_name          = "scanner"
   public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name
@@ -228,6 +216,7 @@ module "scanner" {
   instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
   scale_vpc_key        = "control-plane"
   scale_service_key    = "scanner"
+  operating_system     = data.terraform_remote_state.paperwork.outputs.amazon_operating_system_tag
 
   tags = local.modified_tags
 

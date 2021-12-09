@@ -1,8 +1,3 @@
-terraform {
-  backend "s3" {
-  }
-}
-
 data "terraform_remote_state" "paperwork" {
   backend = "s3"
 
@@ -47,10 +42,6 @@ data "terraform_remote_state" "bootstrap_control_plane" {
   }
 }
 
-module "providers" {
-  source = "../../modules/dark_providers"
-}
-
 locals {
   secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
   hyphenated_name     = lower(replace(var.name, " ", "-"))
@@ -81,14 +72,14 @@ module "config" {
 
   router_cert_pem                = data.terraform_remote_state.paperwork.outputs.router_server_cert
   router_private_key_pem         = data.terraform_remote_state.paperwork.outputs.router_server_key
-  router_trusted_ca_certificates = data.terraform_remote_state.paperwork.outputs.router_trusted_ca_certs
+  router_trusted_ca_certificates = data.terraform_remote_state.paperwork.outputs.router_trusted_ca_certs_bundle
 
   pas_subnet_availability_zones = data.terraform_remote_state.pas.outputs.pas_subnet_availability_zones
   singleton_availability_zone   = var.singleton_availability_zone
 
   syslog_host    = module.domains.fluentd_fqdn
   syslog_port    = module.syslog_ports.syslog_port
-  syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.syslog_ca_certs_bundle
 
   env_name = var.global_vars.env_name
 }
