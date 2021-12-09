@@ -88,6 +88,7 @@ data "terraform_remote_state" "fluentd" {
 
 data "terraform_remote_state" "loki" {
   backend = "s3"
+  defaults {}
 
   config = {
     bucket  = var.remote_state_bucket
