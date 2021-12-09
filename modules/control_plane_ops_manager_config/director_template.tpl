@@ -118,6 +118,7 @@ properties-configuration:
         type: dns
     %{~ endfor ~}
   security_configuration:
+    clear_default_trusted_certificates_store: true
     generate_vm_passwords: true
     opsmanager_root_ca_trusted_certs: true
     trusted_certificates: |

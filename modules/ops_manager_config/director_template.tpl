@@ -95,6 +95,7 @@ properties-configuration:
       ${indent(6, chomp(env_name))}
     job_configuration_on_tmpfs: false
     keep_unreachable_vms: false
+    leaf_certificate_duration: 730
     %{~ if director_blobstore_location == "local" ~}
     local_blobstore_options:
       tls_enabled: true
@@ -134,6 +135,7 @@ properties-configuration:
         type: dns
     %{~ endfor ~}
   security_configuration:
+    clear_default_trusted_certificates_store: true
     generate_vm_passwords: true
     opsmanager_root_ca_trusted_certs: true
     trusted_certificates: |
