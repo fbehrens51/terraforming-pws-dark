@@ -231,8 +231,6 @@ module "runtime_config_config" {
   s3_endpoint = var.s3_endpoint
   region      = var.region
 
-  extra_users = []
-
   vpc_dns = cidrhost(data.aws_vpc.cp_vpc.cidr_block, 2)
 }
 
