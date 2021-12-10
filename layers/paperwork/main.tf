@@ -2,9 +2,9 @@ data "aws_region" "current" {
 }
 
 locals {
-  bucket_prefix                    = replace(local.env_name_prefix, " ", "-")
-  reporting_bucket_name            = "${local.bucket_prefix}-reporting-bucket"
-  public_bucket_name               = "${local.bucket_prefix}-public-bucket"
+  bucket_prefix         = replace(local.env_name_prefix, " ", "-")
+  reporting_bucket_name = "${local.bucket_prefix}-reporting-bucket"
+  public_bucket_name    = "${local.bucket_prefix}-public-bucket"
 
   s3_service_name = "com.amazonaws.${data.aws_region.current.name}.s3"
   bot_user_data   = <<DOC
@@ -322,7 +322,6 @@ resource "tls_private_key" "scanner_private_key" {
   rsa_bits  = "4096"
 }
 
-
 resource "aws_s3_bucket_object" "scanner_public_key" {
   bucket  = var.cert_bucket
   key     = "scanner_public_key"
@@ -333,6 +332,177 @@ module "bot_host_key_pair" {
   source   = "../../modules/key_pair"
   key_name = "${local.env_name_prefix}-bot"
 }
+
+resource "aws_s3_bucket_object" "cf_uaa_users" {
+  bucket       = var.cert_bucket
+  key          = "pas/cf_users.json"
+  content_type = "application/json"
+  content = jsonencode(
+    {
+      "credential" : {
+        "credential_reference" : ".uaa.admin_client_credentials",
+        "product_name" : "cf",
+        "target" : module.domains.system_fqdn,
+        "type" : "uaa"
+      },
+      "groups" : [
+        {
+          "group_name" : "tas.admin",
+          "scopes" : [
+            "cloud_controller.admin",
+            "healthwatch.admin",
+            "scim.read",
+            "scim.write",
+            "tas.noop",
+            "uaa.admin"
+          ],
+          "users" : [
+            "mark.admin"
+          ]
+        },
+        {
+          "group_name" : "tas.read",
+          "ignore" : true,
+          "scopes" : [
+            "console.support",
+            "doppler.firehose",
+            "healthwatch.read",
+            "routing.router_groups.read",
+            "scim.read",
+            "usage_service.audit"
+          ],
+          "users" : [
+            "mark.read",
+            "mark.dummy"
+          ]
+        }
+      ],
+      "users" : var.uaa_users
+    }
+  )
+}
+
+resource "aws_s3_bucket_object" "cp_om_uaa_users" {
+  bucket       = var.cert_bucket
+  key          = "control_plane/om_users.json"
+  content_type = "application/json"
+  content = jsonencode(
+    {
+      "credential" : {
+        "target" : "https://${module.domains.control_plane_om_fqdn}",
+        "type" : "om"
+      },
+      "groups" : [
+        {
+          "group_name" : "om.admin",
+          "scopes" : [
+            "opsman.admin",
+            "clients.admin",
+            "uaa.admin"
+          ],
+          "users" : [
+            "mark.admin"
+          ]
+        },
+        {
+          "group_name" : "om.read",
+          "scopes" : [
+            "opsman.restricted_view"
+          ],
+          "users" : [
+            "mark.read"
+          ]
+        }
+      ],
+      "users" : var.uaa_users
+    }
+  )
+}
+
+resource "aws_s3_bucket_object" "cp_uaa_users" {
+  bucket       = var.cert_bucket
+  key          = "control_plane/cp_users.json"
+  content_type = "application/json"
+  content = jsonencode(
+    {
+      "credential" : {
+        "credential_reference" : ".properties.uaa_admin_client_credentials",
+        "product_name" : "pws-dark-concourse-tile",
+        "target" : "https://${module.domains.control_plane_uaa_fqdn}",
+        "type" : "uaa"
+      },
+      "groups" : [
+        {
+          "group_name" : "tas.admin",
+          "scopes" : [
+            "cloud_controller.admin",
+            "healthwatch.admin",
+            "scim.read",
+            "scim.write",
+            "uaa.admin"
+          ],
+          "users" : [
+            "mark.admin"
+          ]
+        },
+        {
+          "group_name" : "tas.read",
+          "scopes" : [
+            "cloud_controller.read",
+            "console.support",
+            "doppler.firehose",
+            "healthwatch.read",
+            "routing.router_groups.read",
+            "scim.read",
+            "usage_service.audit"
+          ],
+          "users" : [
+            "mark.read"
+          ]
+        }
+      ],
+      "users" : var.uaa_users
+    }
+  )
+}
+
+resource "aws_s3_bucket_object" "om_uaa_users" {
+  bucket       = var.cert_bucket
+  key          = "pas/om_users.json"
+  content_type = "application/json"
+  content = jsonencode(
+    {
+      "credential" : {
+        "target" : "https://${module.domains.om_fqdn}",
+        "type" : "om"
+      },
+      "groups" : [
+        {
+          "group_name" : "om.admin",
+          "scopes" : [
+            "opsman.admin",
+            "clients.admin",
+            "uaa.admin"
+          ],
+          "users" : [
+            "mark.admin"
+          ]
+        },
+        {
+          "group_name" : "om.read",
+          "scopes" : [
+            "opsman.restricted_view"
+          ],
+          "users" : [
+            "mark.read"
+          ]
+        }
+      ],
+      "users" : var.uaa_users
+    }
+  )
+}
+
 
 module "bind_exporter_client_config" {
   source                 = "../../modules/bind_exporter"
@@ -420,6 +590,11 @@ module "tag_completion_config_om" {
   source             = "../../modules/cloud_init/completion_tag_om"
   public_bucket_name = aws_s3_bucket.public_bucket.bucket
   public_bucket_url  = local.public_bucket_url
+}
+
+variable "uaa_users" {
+  type    = list(any)
+  default = []
 }
 
 variable "foundation_name" {
@@ -719,21 +894,21 @@ variable "enable_loki" {
 
 variable "loki_config" {
   type = object({
-    loki_role_name                          = string
-    loki_client_cert_signer_ca_certs        = set(string)
-    loki_client_cert_s3_path                = string
-    loki_client_key_s3_path                 = string
-    loki_server_cert_s3_path                = string
-    loki_server_key_s3_path                 = string
+    loki_role_name                   = string
+    loki_client_cert_signer_ca_certs = set(string)
+    loki_client_cert_s3_path         = string
+    loki_client_key_s3_path          = string
+    loki_server_cert_s3_path         = string
+    loki_server_key_s3_path          = string
   })
 
   default = {
-    loki_role_name                          = ""
-    loki_client_cert_signer_ca_certs        = []
-    loki_client_cert_s3_path                = ""
-    loki_client_key_s3_path                 = ""
-    loki_server_cert_s3_path                = ""
-    loki_server_key_s3_path                 = ""
+    loki_role_name                   = ""
+    loki_client_cert_signer_ca_certs = []
+    loki_client_cert_s3_path         = ""
+    loki_client_key_s3_path          = ""
+    loki_server_cert_s3_path         = ""
+    loki_server_key_s3_path          = ""
   }
 }
 
