@@ -25,7 +25,7 @@ runcmd:
     popd
     rm -rf pkg
     # fix the home dir perms for clamupdate user created by the rpm
-    chmod 750 $(awk -F: '/clamupdate/ {print $6}' /etc/passwd)
+    # chmod 750 $(awk -F: '/clamupdate/ {print $6}' /etc/passwd)
     # Next two lines fix the perms as installed by the rpm, and then during logrotation
     chmod 660 /var/log/freshclam.log
     augtool set /files/etc/logrotate.d/clamav-update/rule/create/mode 660
