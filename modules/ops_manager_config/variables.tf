@@ -538,3 +538,17 @@ variable "forwarders" {
     forwarder_ips = list(string)
   }))
 }
+
+variable "extra_users" {
+  description = "extra users to add to all bosh managed vms"
+  type = list(object({
+    username       = string
+    public_ssh_key = string
+    sudo_priv      = bool
+  }))
+}
+
+variable "disk_type" {
+  description = "disk type to use for bosh VMs"
+  type        = string
+}

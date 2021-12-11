@@ -44,7 +44,6 @@ resource "aws_s3_bucket_object" "runtime_config_template" {
       concat(var.no_ipsec_subnet_cidrs, [local.vpc_dns_subnet]),
     )
     ssh_banner  = var.custom_ssh_banner
-    extra_users = var.extra_users
   })
 }
 
@@ -53,12 +52,4 @@ variable "secrets_bucket_name" {
   type        = string
 }
 
-variable "extra_users" {
-  description = "extra users to add to all bosh managed vms"
-  type = list(object({
-    username       = string
-    public_ssh_key = string
-    sudo_priv      = bool
-  }))
-}
 
