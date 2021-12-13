@@ -1,3 +1,24 @@
+// TODO: Does this have network access to user_data?
+// TODO: Completion lifecycle?
+// TODO: No evidence that cloud-init is even running
+// TODO: Setup without cloud-init, just get ssh setup
+
+locals {
+  env_name      = var.global_vars.env_name
+  modified_name = "${local.env_name} tkgjb"
+  modified_tags = merge(
+    var.global_vars["global_tags"],
+    var.global_vars["instance_tags"],
+    {
+      "Name"            = local.modified_name
+      "MetricsKey"      = data.terraform_remote_state.paperwork.outputs.metrics_key
+      "foundation_name" = data.terraform_remote_state.paperwork.outputs.foundation_name
+      "job"             = "tkgjb"
+    },
+  )
+  root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
+}
+
 data "terraform_remote_state" "paperwork" {
   backend = "s3"
 
@@ -15,17 +36,6 @@ data "terraform_remote_state" "scaling-params" {
   config = {
     bucket  = var.remote_state_bucket
     key     = "scaling-params"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
-data "terraform_remote_state" "bootstrap_control_plane" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "bootstrap_control_plane"
     region  = var.remote_state_region
     encrypt = true
   }
@@ -53,20 +63,26 @@ data "terraform_remote_state" "bootstrap_tkgjb" {
   }
 }
 
-locals {
-  env_name      = var.global_vars.env_name
-  modified_name = "${local.env_name} tkgjb"
-  modified_tags = merge(
-    var.global_vars["global_tags"],
-    var.global_vars["instance_tags"],
-    {
-      "Name"            = local.modified_name
-      "MetricsKey"      = data.terraform_remote_state.paperwork.outputs.metrics_key
-      "foundation_name" = data.terraform_remote_state.paperwork.outputs.foundation_name
-      "job"             = "tkgjb"
-    },
-  )
-  root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
+data "terraform_remote_state" "bootstrap_control_plane" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bootstrap_control_plane"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
+data "terraform_remote_state" "bootstrap_control_plane_foundation" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bootstrap_control_plane_foundation"
+    region  = var.remote_state_region
+    encrypt = true
+  }
 }
 
 locals {
@@ -201,7 +217,7 @@ runcmd:
     for user in $(awk -F: '$3 ~ /1[0-9]{3,3}/{print $1}' /etc/passwd | sort | grep -Ev 'ec2-user|security_scanner' ); do
       home="$( awk -v user=$user -F: '$1 == user { print $6 }' /etc/passwd )"
       sudo -u $user PATH=$PATH -i install-artifact.sh pcf-eagle-automation
-      sudo -u $user PATH=$PATH -i $home/workspace/pcf-eagle-automation/scripts/tkgjb/setup_user.sh
+      sudo -u $user PATH=$PATH -i $home/workspace/pcf-eagle-automation/scripts/sjb/setup_user.sh
     done
 EOF
 }
@@ -216,10 +232,6 @@ bootcmd:
   - |
     set -ex
     while [ ! -e /dev/sdf ] ; do echo "Waiting for device /dev/sdf"; sleep 1 ; done
-    #old code won't mkfs an existing fs
-    #if [ "$(file -b -s -L /dev/sdf)" == "data" ]; then mkfs -t ext4 /dev/sdf; fi
-
-    # new code will always mkfs a volume to start fresh with the correct verisions.
     # we have to mount an external volume because the base image has partitioned FS
     mkfs -t ext4 /dev/sdf
 
@@ -239,7 +251,7 @@ module "syslog_config" {
   source = "../../modules/syslog"
 
   root_domain    = local.root_domain
-  syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.trusted_ca_certs
+  syslog_ca_cert = data.terraform_remote_state.paperwork.outputs.syslog_ca_certs_bundle
 
   role_name          = "tkgjb"
   public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name
@@ -287,51 +299,51 @@ data "template_cloudinit_config" "user_data" {
     content_type = "text/x-include-url"
     content      = data.terraform_remote_state.paperwork.outputs.amazon2_system_certs_user_data
   }
-
-  part {
-    filename     = "clamav.cfg"
-    content_type = "text/x-include-url"
-    content      = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
-  }
-
-  part {
-    filename     = "node_exporter.cfg"
-    content_type = "text/x-include-url"
-    content      = data.terraform_remote_state.paperwork.outputs.node_exporter_user_data
-  }
-
-  part {
-    filename     = "banner.cfg"
-    content_type = "text/x-include-url"
-    content      = data.terraform_remote_state.paperwork.outputs.custom_banner_user_data
-  }
-
+//
+//  part {
+//    filename     = "clamav.cfg"
+//    content_type = "text/x-include-url"
+//    content      = data.terraform_remote_state.paperwork.outputs.amazon2_clamav_user_data
+//  }
+//
+//  part {
+//    filename     = "node_exporter.cfg"
+//    content_type = "text/x-include-url"
+//    content      = data.terraform_remote_state.paperwork.outputs.node_exporter_user_data
+//  }
+//
+//  part {
+//    filename     = "banner.cfg"
+//    content_type = "text/x-include-url"
+//    content      = data.terraform_remote_state.paperwork.outputs.custom_banner_user_data
+//  }
+//
   part {
     filename     = "iptables.cfg"
     content_type = "text/cloud-config"
     content      = module.iptables_rules.iptables_user_data
     merge_type   = "list(append)+dict(no_replace,recurse_list)"
   }
-
-  part {
-    filename     = "dnsmasq.cfg"
-    content_type = "text/cloud-config"
-    content      = module.dnsmasq.dnsmasq_user_data
-    merge_type   = "list(append)+dict(no_replace,recurse_list)"
-  }
-
-  part {
-    filename     = "postfix_client.cfg"
-    content_type = "text/x-include-url"
-    content      = data.terraform_remote_state.paperwork.outputs.postfix_client_user_data
-  }
-
-  # This must be last - updates the AIDE DB after all installations/configurations are complete.
-  part {
-    filename     = "hardening.cfg"
-    content_type = "text/x-include-url"
-    content      = data.terraform_remote_state.paperwork.outputs.server_hardening_user_data
-  }
+//
+//  part {
+//    filename     = "dnsmasq.cfg"
+//    content_type = "text/cloud-config"
+//    content      = module.dnsmasq.dnsmasq_user_data
+//    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+//  }
+//
+//  part {
+//    filename     = "postfix_client.cfg"
+//    content_type = "text/x-include-url"
+//    content      = data.terraform_remote_state.paperwork.outputs.postfix_client_user_data
+//  }
+//
+//  # This must be last - updates the AIDE DB after all installations/configurations are complete.
+//  part {
+//    filename     = "hardening.cfg"
+//    content_type = "text/x-include-url"
+//    content      = data.terraform_remote_state.paperwork.outputs.server_hardening_user_data
+//  }
 }
 
 data "aws_vpc" "vpc" {
@@ -352,9 +364,14 @@ module "dnsmasq" {
   ]
 }
 
+//module "iptables_rules" {
+//  source                     = "../../modules/iptables"
+//  control_plane_subnet_cidrs = data.terraform_remote_state.bootstrap_tkg.outputs.tkg_subnet_cidrs
+//}
+
 module "iptables_rules" {
   source                     = "../../modules/iptables"
-  control_plane_subnet_cidrs = data.terraform_remote_state.bootstrap_tkg.outputs.tkgjb_cidr_block
+  control_plane_subnet_cidrs = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs
 }
 
 resource "aws_ebs_volume" "tkgjb_home" {
@@ -378,6 +395,7 @@ module "tkgjb" {
   scale_service_key    = "tkgjb"
   tags                 = local.modified_tags
   bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
+  // unchecked instance
   check_cloud_init     = false
   operating_system     = data.terraform_remote_state.paperwork.outputs.amazon_operating_system_tag
 
@@ -410,7 +428,8 @@ resource "null_resource" "tkgjb_status" {
         exit 1
       fi
       if [[ $COUNTER -gt 0 ]]; then
-        echo "$completed_tag not set, sleeping for 10s"
+        echo "$completed_tag not set, sleeping for 10s ($COUNTER / $LOOP_LIMIT)"
+        echo "This is the tkgjb status script"
         sleep 10s
       fi
       tags="$($poll_tags)"
@@ -425,6 +444,11 @@ resource "null_resource" "tkgjb_status" {
     [[ $tags == false ]] && exit 1 || exit 0
     EOF
   }
+}
+
+output "user_data" {
+  sensitive = true
+  value = data.template_cloudinit_config.user_data
 }
 
 output "ssh_host_ips" {
