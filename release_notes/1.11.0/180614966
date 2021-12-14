@@ -1,0 +1,17 @@
+This information is copied from https://pivotal.lightning.force.com/lightning/r/KnowledgeArticle__kav/ka04y000000TuRGAA0/view
+
+Public URL: https://community.pivotal.io/s/article/TAS-upgrade-to-version-including-cf-networking-release-2-40-0-may-fail-policy-server-job-pre-start-job
+
+1. run terraform output in live/<ENV>/pas layer to obtain hostname and password for rds (mysql).
+2. ssh to ops_manager
+3. connect to mysql: mysql -u admin -h <HOST> -p
+Run the following mysql commands:
+
+select * from networkpolicyserver.gorp_migrations order by applied_at;
+
+if the last row has an id == 66, there is no work to do, proceed with the deployment.
+if the last row has an id == 65; then insert a row with the following command:
+
+insert into networkpolicyserver.gorp_migrations (id, applied_at) values ('66', now());
+
+Run the select again to verify and exit mysql, log off ops manager, and proceed with the deployment.
