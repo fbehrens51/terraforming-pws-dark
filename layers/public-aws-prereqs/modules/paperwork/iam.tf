@@ -1532,24 +1532,29 @@ data "aws_iam_policy_document" "tkg_controllers" {
     actions = [
       "ec2:AllocateAddress",
       "ec2:AssociateRouteTable",
-      "ec2:AttachInternetGateway",
+      // Denied on-site
+      // "ec2:AttachInternetGateway",
       "ec2:AuthorizeSecurityGroupIngress",
-      "ec2:CreateInternetGateway",
+      // Denied on-site
+      // "ec2:CreateInternetGateway",
       "ec2:CreateNatGateway",
       "ec2:CreateRoute",
       "ec2:CreateRouteTable",
       "ec2:CreateSecurityGroup",
       "ec2:CreateSubnet",
       "ec2:CreateTags",
-      "ec2:CreateVpc",
+      // Denied on-site
+      // "ec2:CreateVpc",
       "ec2:ModifyVpcAttribute",
-      "ec2:DeleteInternetGateway",
+      // Denied on-site
+      // "ec2:DeleteInternetGateway",
       "ec2:DeleteNatGateway",
       "ec2:DeleteRouteTable",
       "ec2:DeleteSecurityGroup",
       "ec2:DeleteSubnet",
       "ec2:DeleteTags",
-      "ec2:DeleteVpc",
+      // Denied on-site
+      // "ec2:DeleteVpc",
       "ec2:DescribeAccountAttributes",
       "ec2:DescribeAddresses",
       "ec2:DescribeAvailabilityZones",
@@ -1565,7 +1570,8 @@ data "aws_iam_policy_document" "tkg_controllers" {
       "ec2:DescribeVpcs",
       "ec2:DescribeVpcAttribute",
       "ec2:DescribeVolumes",
-      "ec2:DetachInternetGateway",
+      // Denied on-site
+      // "ec2:DetachInternetGateway",
       "ec2:DisassociateRouteTable",
       "ec2:DisassociateAddress",
       "ec2:ModifyInstanceAttribute",
