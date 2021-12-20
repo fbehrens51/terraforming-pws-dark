@@ -147,20 +147,15 @@ resource "aws_route_table" "public_route_table" {
 }
 
 resource "aws_route" "default_route" {
+  count                  = var.internetless ? 0 : 1
   route_table_id         = aws_route_table.public_route_table.id
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id = element(
-    concat(
-      data.aws_internet_gateway.igw.*.internet_gateway_id,
-      data.aws_vpn_gateway.vgw.*.id,
-    ),
-    0,
-  )
-
+  gateway_id             = data.aws_internet_gateway.igw.0.internet_gateway_id
   timeouts {
     create = "5m"
   }
 }
+
 
 resource "aws_vpc_endpoint_route_table_association" "iso_seg" {
   route_table_id  = aws_route_table.public_route_table.id
