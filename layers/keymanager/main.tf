@@ -2,7 +2,7 @@ data "aws_caller_identity" "my_account" {}
 
 data "template_file" "keymanager_output_variables" {
   template = file("${path.module}/keymanager_output.tfvars.tpl")
-  vars = {
+  vars     = {
     kms_key_id       = module.keys.kms_key_id
     kms_key_arn      = module.keys.kms_key_arn
     transfer_key_arn = aws_kms_key.transfer_kms_key.arn
@@ -20,22 +20,22 @@ module "keys" {
   source = "../../modules/kms/create"
 
   key_name                           = var.pas_kms_key_name
+
   director_role_arn                  = var.director_role_arn
   pas_bucket_role_arn                = var.pas_bucket_role_arn
   sjb_role_arn                       = var.sjb_role_arn
   concourse_role_arn                 = var.concourse_role_arn
   om_role_arn                        = var.om_role_arn
   bosh_role_arn                      = var.bosh_role_arn
-  deletion_window                    = "7"
-  additional_bootstrap_principal_arn = data.aws_caller_identity.my_account.arn
-  logs_service_name                  = var.logs_service_name
-
+  tkg_control_plane_role_arn         = var.tkg_control_plane_role_arn
+  tkg_nodes_role_arn                 = var.tkg_nodes_role_arn
+  tkg_controllers_role_arn           = var.tkg_controllers_role_arn
   bootstrap_role_arn  = var.bootstrap_role_arn
   foundation_role_arn = var.foundation_role_arn
 
-  tkg_control_plane_role_arn = var.tkg_control_plane_role_arn
-  tkg_nodes_role_arn = var.tkg_nodes_role_arn
-  tkg_controllers_role_arn = var.tkg_controllers_role_arn
+  deletion_window                    = "7"
+  additional_bootstrap_principal_arn = data.aws_caller_identity.my_account.arn
+  logs_service_name                  = var.logs_service_name
 }
 
 data "aws_iam_policy_document" "kms_key_policy_document" {
@@ -49,15 +49,15 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
       type = "AWS"
 
       identifiers = sort(
-        [
-          var.director_role_arn,
-          var.sjb_role_arn,
-          var.concourse_role_arn,
-          var.om_role_arn,
-          var.bosh_role_arn,
-          var.bootstrap_role_arn,
-          var.foundation_role_arn,
-        ]
+      [
+        var.director_role_arn,
+        var.sjb_role_arn,
+        var.concourse_role_arn,
+        var.om_role_arn,
+        var.bosh_role_arn,
+        var.bootstrap_role_arn,
+        var.foundation_role_arn,
+      ]
       )
     }
 
@@ -79,16 +79,16 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
       type = "AWS"
 
       identifiers = sort(
-        [
-          var.director_role_arn,
-          var.sjb_role_arn,
-          var.concourse_role_arn,
-          var.om_role_arn,
-          var.bosh_role_arn,
-          var.promoter_role_arn,
-          var.bootstrap_role_arn,
-          var.foundation_role_arn,
-        ]
+      [
+        var.director_role_arn,
+        var.sjb_role_arn,
+        var.concourse_role_arn,
+        var.om_role_arn,
+        var.bosh_role_arn,
+        var.promoter_role_arn,
+        var.bootstrap_role_arn,
+        var.foundation_role_arn,
+      ]
       )
     }
 
@@ -117,7 +117,7 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
       ]
     }
 
-    actions = [
+    actions   = [
       "kms:Create*",
       "kms:Describe*",
       "kms:Enable*",
