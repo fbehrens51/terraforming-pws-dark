@@ -87,6 +87,7 @@ data "terraform_remote_state" "fluentd" {
 }
 
 data "terraform_remote_state" "loki" {
+  count   = (data.terraform_remote_state.paperwork.outputs.enable_loki == true ? 1 : 0)
   backend = "s3"
 
   config = {
@@ -154,7 +155,7 @@ locals {
   sjb_ip              = data.terraform_remote_state.sjb.outputs.ssh_host_ips[local.sjb_name]
   sjb_name            = one(keys(data.terraform_remote_state.sjb.outputs.ssh_host_ips))
   ssh_key_path        = var.ssh_key_path
-  loki_ssh_host_ips   = data.terraform_remote_state.paperwork.outputs.enable_loki == true ? data.terraform_remote_state.loki.outputs.ssh_host_ips : {}
+  loki_ssh_host_ips   = data.terraform_remote_state.paperwork.outputs.enable_loki == true ? data.terraform_remote_state.loki[0].outputs.ssh_host_ips : {}
   sshconfig_host_ips = merge(
     data.terraform_remote_state.bind.outputs.ssh_host_ips,
     data.terraform_remote_state.bootstrap_isolation_segment_vpc_1.outputs.ssh_host_ips,
