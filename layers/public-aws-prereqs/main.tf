@@ -164,6 +164,10 @@ data "template_file" "paperwork_variables" {
 
     bootstrap_role_name  = var.bootstrap_role_name
     foundation_role_name = var.foundation_role_name
+
+    tkg_control_plane_role_name = var.tkg_control_plane_role_name
+    tkg_nodes_role_name = var.tkg_nodes_role_name
+    tkg_controllers_role_name = var.tkg_controllers_role_name
   }
 }
 
