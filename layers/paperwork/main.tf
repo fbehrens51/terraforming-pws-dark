@@ -342,7 +342,7 @@ resource "aws_s3_bucket_object" "pas_cf_users" {
       "credential" : {
         "credential_reference" : ".uaa.admin_client_credentials",
         "product_name" : "cf",
-        "target" : module.domains.system_fqdn,
+        "target" : "uaa.${module.domains.system_fqdn}",
         "type" : "uaa"
       },
       "groups" : [
@@ -358,7 +358,6 @@ resource "aws_s3_bucket_object" "pas_cf_users" {
         },
         {
           "group_name" : "cf.read",
-          "ignore" : true,
           "scopes" : [
             "console.support",
             "doppler.firehose",
