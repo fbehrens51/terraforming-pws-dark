@@ -168,7 +168,7 @@ module "postgres" {
   # RDS decided to upgrade the mysql patch version automatically from 10.1.31 to
   # 10.1.34, which makes terraform see this as a change. Use a prefix version to
   # prevent this from happening with postgres.
-  engine_version = "9.6"
+  engine_version = var.pas_postgres_engine_version
 
   db_port      = 5432
   sg_rule_desc = "postgres/5432"
@@ -582,4 +582,9 @@ resource "aws_s3_bucket_object" "postgres-rds-password" {
   content_type = "text/plain"
   key          = "pas/postgres-rds-password"
   content      = module.postgres.rds_password
+}
+
+variable "pas_postgres_engine_version" {
+  default = "9.6"
+  description = "version prefix for posgtres rds instance available in pas VPC"
 }
