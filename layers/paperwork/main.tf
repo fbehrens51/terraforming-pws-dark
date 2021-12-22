@@ -333,7 +333,7 @@ module "bot_host_key_pair" {
   key_name = "${local.env_name_prefix}-bot"
 }
 
-resource "aws_s3_bucket_object" "cf_uaa_users" {
+resource "aws_s3_bucket_object" "pas_cf_users" {
   bucket       = var.cert_bucket
   key          = "pas/cf_users.json"
   content_type = "application/json"
@@ -347,21 +347,17 @@ resource "aws_s3_bucket_object" "cf_uaa_users" {
       },
       "groups" : [
         {
-          "group_name" : "tas.admin",
+          "group_name" : "cf.admin",
           "scopes" : [
             "cloud_controller.admin",
             "healthwatch.admin",
             "scim.read",
             "scim.write",
-            "tas.noop",
             "uaa.admin"
-          ],
-          "users" : [
-            "mark.admin"
           ]
         },
         {
-          "group_name" : "tas.read",
+          "group_name" : "cf.read",
           "ignore" : true,
           "scopes" : [
             "console.support",
@@ -370,26 +366,22 @@ resource "aws_s3_bucket_object" "cf_uaa_users" {
             "routing.router_groups.read",
             "scim.read",
             "usage_service.audit"
-          ],
-          "users" : [
-            "mark.read",
-            "mark.dummy"
           ]
         }
       ],
-      "users" : var.uaa_users
+      "users" : var.pas_cf_users
     }
   )
 }
 
-resource "aws_s3_bucket_object" "cp_om_uaa_users" {
+resource "aws_s3_bucket_object" "cp_om_users" {
   bucket       = var.cert_bucket
   key          = "control_plane/om_users.json"
   content_type = "application/json"
   content = jsonencode(
     {
       "credential" : {
-        "target" : "https://${module.domains.control_plane_om_fqdn}",
+        "target" : "https://${module.domains.control_plane_om_fqdn}/uaa",
         "type" : "om"
       },
       "groups" : [
@@ -399,27 +391,21 @@ resource "aws_s3_bucket_object" "cp_om_uaa_users" {
             "opsman.admin",
             "clients.admin",
             "uaa.admin"
-          ],
-          "users" : [
-            "mark.admin"
           ]
         },
         {
           "group_name" : "om.read",
           "scopes" : [
             "opsman.restricted_view"
-          ],
-          "users" : [
-            "mark.read"
           ]
         }
       ],
-      "users" : var.uaa_users
+      "users" : var.cp_om_users
     }
   )
 }
 
-resource "aws_s3_bucket_object" "cp_uaa_users" {
+resource "aws_s3_bucket_object" "cp_concourse_users" {
   bucket       = var.cert_bucket
   key          = "control_plane/cp_users.json"
   content_type = "application/json"
@@ -433,47 +419,25 @@ resource "aws_s3_bucket_object" "cp_uaa_users" {
       },
       "groups" : [
         {
-          "group_name" : "tas.admin",
+          "group_name" : "cp.admin",
           "scopes" : [
-            "cloud_controller.admin",
-            "healthwatch.admin",
-            "scim.read",
-            "scim.write",
-            "uaa.admin"
-          ],
-          "users" : [
-            "mark.admin"
-          ]
-        },
-        {
-          "group_name" : "tas.read",
-          "scopes" : [
-            "cloud_controller.read",
-            "console.support",
-            "doppler.firehose",
-            "healthwatch.read",
-            "routing.router_groups.read",
-            "scim.read",
-            "usage_service.audit"
-          ],
-          "users" : [
-            "mark.read"
+            "concourse.admins"
           ]
         }
       ],
-      "users" : var.uaa_users
+      "users" : var.cp_concourse_users
     }
   )
 }
 
-resource "aws_s3_bucket_object" "om_uaa_users" {
+resource "aws_s3_bucket_object" "pas_om_users" {
   bucket       = var.cert_bucket
   key          = "pas/om_users.json"
   content_type = "application/json"
   content = jsonencode(
     {
       "credential" : {
-        "target" : "https://${module.domains.om_fqdn}",
+        "target" : "https://${module.domains.om_fqdn}/uaa",
         "type" : "om"
       },
       "groups" : [
@@ -483,22 +447,16 @@ resource "aws_s3_bucket_object" "om_uaa_users" {
             "opsman.admin",
             "clients.admin",
             "uaa.admin"
-          ],
-          "users" : [
-            "mark.admin"
           ]
         },
         {
           "group_name" : "om.read",
           "scopes" : [
             "opsman.restricted_view"
-          ],
-          "users" : [
-            "mark.read"
           ]
         }
       ],
-      "users" : var.uaa_users
+      "users" : var.pas_om_users
     }
   )
 }
@@ -592,7 +550,22 @@ module "tag_completion_config_om" {
   public_bucket_url  = local.public_bucket_url
 }
 
-variable "uaa_users" {
+variable "cp_om_users" {
+  type    = list(any)
+  default = []
+}
+
+variable "cp_concourse_users" {
+  type    = list(any)
+  default = []
+}
+
+variable "pas_om_users" {
+  type    = list(any)
+  default = []
+}
+
+variable "pas_cf_users" {
   type    = list(any)
   default = []
 }
