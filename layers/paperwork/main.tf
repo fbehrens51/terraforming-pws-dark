@@ -414,7 +414,7 @@ resource "aws_s3_bucket_object" "cp_concourse_users" {
       "credential" : {
         "credential_reference" : ".properties.uaa_admin_client_credentials",
         "product_name" : "pws-dark-concourse-tile",
-        "target" : "https://${module.domains.control_plane_uaa_fqdn}",
+        "target" : "https://${module.domains.control_plane_uaa_fqdn}:8443",
         "type" : "uaa"
       },
       "groups" : [
