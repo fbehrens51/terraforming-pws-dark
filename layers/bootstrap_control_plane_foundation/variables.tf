@@ -57,3 +57,12 @@ variable "concourse_postgres_backup_window" {
   type    = string
   default = "10:00-10:30"
 }
+
+variable "concourse_db_engine" {
+  default = "postgres"
+}
+
+variable "concourse_db_engine_version" {
+  default = "9.6"
+  description = "prefix version (e.g. 9.6, not 9.6.3) since we allow patch updates."
+}
