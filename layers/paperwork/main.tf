@@ -404,6 +404,7 @@ resource "aws_s3_bucket_object" "cp_om_users" {
   )
 }
 
+# groupname "concourse.admins" is hard coded in the pws-dark-concourse-tile
 resource "aws_s3_bucket_object" "cp_concourse_users" {
   bucket       = var.cert_bucket
   key          = "control_plane/cp_users.json"
@@ -418,10 +419,8 @@ resource "aws_s3_bucket_object" "cp_concourse_users" {
       },
       "groups" : [
         {
-          "group_name" : "cp.admin",
-          "scopes" : [
-            "concourse.admins"
-          ]
+          "group_name" : "concourse.admins",
+          "scopes" : []
         }
       ],
       "users" : var.cp_concourse_users
