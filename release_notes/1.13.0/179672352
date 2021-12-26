@@ -1,0 +1,42 @@
+The canned set of roles is now located in the paperwork layer that creates/manages 4 json objects
+Two for the foundation (OM + TAS UAA)
+Two for the controlplane (OM + Concourse UAA)
+
+Add the following variables to the environment paperwork/terragrunt.hcl
+
+The variables are all optional, and default to empty arrays
+The group_names are hard coded in the four json objects.
+
+```hcl
+# passwords have to be strong once all of the UAA password policies are set
+  # pw and reset_pw are observed when the account is initially created, and ignored if the account exists.
+  # users groups memberships are idempotent
+  cp_om_users = [
+    { "id" : "bryan",  "pw" : "ChangeMe2day!", "reset_pw" : false, "groups" : ["om.admin"] },
+    { "id" : "fritz",  "pw" : "ChangeMe2day!", "reset_pw" : false, "groups" : ["om.admin"] },
+    { "id" : "janice", "pw" : "ChangeMe2day!", "reset_pw" : false, "groups" : ["om.admin"] },
+    { "id" : "mark",   "pw" : "ChangeMe2day!", "reset_pw" : false, "groups" : ["om.admin"] },
+    { "id" : "quanda", "pw" : "ChangeMe2day!", "reset_pw" : false, "groups" : ["om.admin"] },
+  ]
+  cp_concourse_users = [
+    { "id" : "bryan",  "pw" : "ChangeMe2day!", "reset_pw" : false, "groups" : ["concourse.admins"] },
+    { "id" : "fritz",  "pw" : "ChangeMe2day!", "reset_pw" : false, "groups" : ["concourse.admins"] },
+    { "id" : "janice", "pw" : "ChangeMe2day!", "reset_pw" : false, "groups" : ["concourse.admins"] },
+    { "id" : "mark",   "pw" : "ChangeMe2day!", "reset_pw" : false, "groups" : ["concourse.admins"] },
+    { "id" : "quanda", "pw" : "ChangeMe2day!", "reset_pw" : false, "groups" : ["concourse.admins"] },
+  ]
+  pas_om_users = [
+    { "id" : "bryan",  "pw" : "ChangeMe2day!", "reset_pw" : false, "groups" : ["om.admin"] },
+    { "id" : "fritz",  "pw" : "ChangeMe2day!", "reset_pw" : false, "groups" : ["om.admin"] },
+    { "id" : "janice", "pw" : "ChangeMe2day!", "reset_pw" : false, "groups" : ["om.admin"] },
+    { "id" : "mark",   "pw" : "ChangeMe2day!", "reset_pw" : false, "groups" : ["om.admin"] },
+    { "id" : "quanda", "pw" : "ChangeMe2day!", "reset_pw" : false, "groups" : ["om.admin"] },
+  ]
+  pas_cf_users = [
+    { "id" : "bryan",  "pw" : "ChangeMe2day!", "reset_pw" : false, "groups" : ["cf.admin"] },
+    { "id" : "fritz",  "pw" : "ChangeMe2day!", "reset_pw" : false, "groups" : ["cf.admin"] },
+    { "id" : "janice", "pw" : "ChangeMe2day!", "reset_pw" : false, "groups" : ["cf.admin"] },
+    { "id" : "mark",   "pw" : "ChangeMe2day!", "reset_pw" : false, "groups" : ["cf.admin"] },
+    { "id" : "quanda", "pw" : "ChangeMe2day!", "reset_pw" : false, "groups" : ["cf.admin"] },
+  ]
+```
