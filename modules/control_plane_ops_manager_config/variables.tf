@@ -98,6 +98,34 @@ variable "credhub_elb_names" {
   description = "List of elb names which UAA should be attached to."
 }
 
+variable "password_policies_expires_after_months" {
+  type = string
+}
+
+variable "password_policies_max_retry" {
+  type = string
+}
+
+variable "password_policies_min_length" {
+  type = string
+}
+
+variable "password_policies_min_lowercase" {
+  type = string
+}
+
+variable "password_policies_min_numeric" {
+  type = string
+}
+
+variable "password_policies_min_special" {
+  type = string
+}
+
+variable "password_policies_min_uppercase" {
+  type = string
+}
+
 variable "web_tg_names" {
   type        = list(string)
   description = "List of nlb target group names which ATC / TSA should be attached to."
@@ -207,6 +235,9 @@ variable "om_create_db_config" {
 }
 
 variable "om_syslog_config" {
+}
+
+variable "om_uaa_password_policy_config" {
 }
 
 variable "om_tokens_expiration_config" {

@@ -103,6 +103,7 @@ module "om_config" {
   om_tokens_expiration_config             = var.om_tokens_expiration_config
   om_ssl_config                           = var.om_ssl_config
   om_ssh_banner_config                    = var.om_ssh_banner_config
+  om_uaa_password_policy_config           = var.om_uaa_password_policy_config
   control_plane_subnet_ids                = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_ids
   vms_security_group_id                   = data.terraform_remote_state.bootstrap_control_plane.outputs.vms_security_group_id
   control_plane_subnet_availability_zones = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_availability_zones
@@ -141,6 +142,14 @@ module "om_config" {
   credhub_elb_names              = [data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.credhub_elb_id]
   credhub_tg_names               = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.credhub_tg_ids
   concourse_lb_security_group_id = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.concourse_lb_security_group_id
+
+  password_policies_max_retry            = var.password_policies_max_retry
+  password_policies_expires_after_months = var.password_policies_expires_after_months
+  password_policies_min_length           = var.password_policies_min_length
+  password_policies_min_lowercase        = var.password_policies_min_lowercase
+  password_policies_min_numeric          = var.password_policies_min_numeric
+  password_policies_min_special          = var.password_policies_min_special
+  password_policies_min_uppercase        = var.password_policies_min_uppercase
 
   smtp_host       = module.domains.smtp_fqdn
   smtp_user       = data.terraform_remote_state.bootstrap_postfix.outputs.smtp_client_user

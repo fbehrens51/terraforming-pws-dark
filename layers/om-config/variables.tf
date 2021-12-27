@@ -77,6 +77,11 @@ variable "om_syslog_config" {
   default     = "pas/om_syslog_config.yml"
 }
 
+variable "om_uaa_password_policy_config" {
+  description = "om uaa password policy configuration file"
+  default     = "pas/om_uaa_password_policy_config.yml"
+}
+
 variable "om_tokens_expiration_config" {
   description = "om tokens expiration configuration file"
   default     = "pas/om_tokens_expiration_config.yml"

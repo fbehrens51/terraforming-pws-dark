@@ -31,6 +31,16 @@ locals {
       "ssh_banner_contents" : var.custom_ssh_banner
     }
   })
+  om_uaa_password_policy_conf = yamlencode({
+    "password_policy" : {
+      "password_min_uppercase" : var.password_policies_min_uppercase,
+      "password_min_lowercase" : var.password_policies_min_lowercase,
+      "password_min_numeric" : var.password_policies_min_numeric,
+      "password_min_special" : var.password_policies_min_special,
+      "password_expires_after_months" : var.password_policies_expires_after_months,
+      "password_min_length" : var.password_policies_min_length
+    }
+  })
 }
 
 data "template_file" "pas_vpc_azs" {
@@ -295,6 +305,12 @@ resource "aws_s3_bucket_object" "om_ssl_config" {
   bucket  = var.secrets_bucket_name
   key     = var.om_ssl_config
   content = local.om_ssl_conf
+}
+
+resource "aws_s3_bucket_object" "om_uaa_password_policy_config" {
+  bucket  = var.secrets_bucket_name
+  key     = var.om_uaa_password_policy_config
+  content = local.om_uaa_password_policy_conf
 }
 
 resource "aws_s3_bucket_object" "om_tokens_expiration_config" {

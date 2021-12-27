@@ -355,6 +355,9 @@ variable "om_drop_db_config" {
 variable "om_syslog_config" {
 }
 
+variable "om_uaa_password_policy_config" {
+}
+
 variable "om_tokens_expiration_config" {
 }
 

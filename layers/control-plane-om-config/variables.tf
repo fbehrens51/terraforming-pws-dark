@@ -69,6 +69,11 @@ variable "om_syslog_config" {
   default     = "control_plane/om_syslog_config.yml"
 }
 
+variable "om_uaa_password_policy_config" {
+  description = "om uaa password policy configuration file"
+  default     = "control_plane/om_uaa_password_policy_config.yml"
+}
+
 variable "om_tokens_expiration_config" {
   description = "om tokens_expiration configuration file"
   default     = "control_plane/om_tokens_expiration_config.yml"
@@ -125,6 +130,41 @@ variable "clamav_release_url" {
 
 variable "clamav_release_sha1" {
   description = "sha1 sum of clamav_release_url"
+}
+
+variable "password_policies_expires_after_months" {
+  type    = string
+  default = "0"
+}
+
+variable "password_policies_max_retry" {
+  type    = string
+  default = "5"
+}
+
+variable "password_policies_min_length" {
+  type    = string
+  default = "0"
+}
+
+variable "password_policies_min_lowercase" {
+  type    = string
+  default = "0"
+}
+
+variable "password_policies_min_numeric" {
+  type    = string
+  default = "0"
+}
+
+variable "password_policies_min_special" {
+  type    = string
+  default = "0"
+}
+
+variable "password_policies_min_uppercase" {
+  type    = string
+  default = "0"
 }
 
 variable "disk_type" {
