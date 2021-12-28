@@ -79,7 +79,7 @@ variable "om_syslog_config" {
 
 variable "om_uaa_password_policy_config" {
   description = "om uaa password policy configuration file"
-  default     = "pas/om_uaa_password_policy_config.yml"
+  default     = "pas/om_uaa_password_policy_config.json"
 }
 
 variable "om_tokens_expiration_config" {
