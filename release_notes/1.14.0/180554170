@@ -1,0 +1,27 @@
+Deployment instructions to force password resets
+
+This ASSUMES all of the deployments for this release have completed successfully (policies are deployed, tiles updated, etc.).
+
+# SSH to the jump box.
+
+# command to expire a users password so they have to change it the next time they login.
+~/workspace/pcf-eagle-automation/scripts/utils/uaa_util -TU -c reset-user
+
+# command to view uaa idp configuration (includes the password policy)
+~/workspace/pcf-eagle-automation/scripts/utils/uaa_util -T (defaults to uaa idp configuration).
+
+# help.
+~/workspace/pcf-eagle-automation/scripts/utils/uaa_util -h for other supported commands.
+
+# To save the copying of env.yml and users.json files each time, copy the files files to a temp directory.
+export secret_bucket_name=<NAME OF THE SECRECT BUCKET>
+dir=<PATH TO A DIRECTORY TO STORE THE files>
+# Copy the files.
+~/workspace/pcf-eagle-automation/scripts/utils/ls3.sh -q1f 'users|env.yml' ${secret_bucket_name} | xargs -ri aws s3 cp s3://${secret_bucket_name}/{} ${dir}/{}
+
+export UAA_TMP_DIR=${dir}
+
+# run multiple uaa_util commands w/o the delay of copying the files from the secrets bucket each time.
+
+# Then cleanup afterwards 
+rm -rf ${UAA_TMP_DIR}
