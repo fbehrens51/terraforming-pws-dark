@@ -111,6 +111,8 @@ properties-configuration:
       backup_bucket_region: ${director_blobstore_s3_endpoint}
       backup_strategy: use_versioned_bucket
       bucket_name: ${director_blobstore_bucket}
+      ca_cert: |
+        ${indent(8, chomp(security_configuration_trusted_certificates))}
       credentials_source: env_or_profile
       enable_signed_urls: true
       endpoint: ${director_blobstore_s3_endpoint}
