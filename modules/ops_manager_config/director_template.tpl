@@ -112,7 +112,7 @@ properties-configuration:
       backup_strategy: use_versioned_bucket
       bucket_name: ${director_blobstore_bucket}
       ca_cert: |
-        ${indent(8, chomp(security_configuration_trusted_certificates))}
+        ${indent(8, chomp(iaas_configuration_endpoints_ca_cert))}
       credentials_source: env_or_profile
       enable_signed_urls: true
       endpoint: ${director_blobstore_s3_endpoint}
