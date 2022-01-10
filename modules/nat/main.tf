@@ -150,7 +150,7 @@ data "template_cloudinit_config" "user_data" {
     content = <<EOF
 bootcmd:
   - |
-    sysctl -w net.ipv4.ip_forward=1
+     sysctl -w net.ipv4.ip_forward=1
 EOF
 
   }

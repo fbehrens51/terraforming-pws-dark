@@ -56,7 +56,7 @@ data "aws_vpc" "bastion_vpc" {
 
 locals {
   env_name      = var.global_vars.env_name
-  modified_name = "${local.env_name} control plane"
+  modified_name = "${local.env_name} tkg"
   modified_tags = merge(
   var.global_vars["global_tags"],
   {
