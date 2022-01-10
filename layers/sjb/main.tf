@@ -430,30 +430,3 @@ resource "null_resource" "sjb_status" {
 output "ssh_host_ips" {
   value = zipmap(flatten(module.sjb.ssh_host_names), flatten(module.sjb.private_ips))
 }
-
-//
-//module "sjb2" {
-//  instance_count       = 1
-//  source               = "../../modules/launch"
-//  availability_zone    = var.singleton_availability_zone
-//  ami_id               = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
-//  user_data            = data.template_cloudinit_config.user_data.rendered
-//  // this
-//  eni_ids              = data.terraform_remote_state.bootstrap_sjb.outputs.sjb_eni_ids
-//  // this
-//  iam_instance_profile = data.terraform_remote_state.paperwork.outputs.bootstrap_role_name
-//  instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
-//  volume_ids           = [aws_ebs_volume.sjb_home.id]
-//  // this
-//  scale_vpc_key        = "control-plane"
-//  // this
-//  scale_service_key    = "sjb"
-//  tags                 = local.modified_tags
-//  bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
-//  check_cloud_init     = false
-//  operating_system     = data.terraform_remote_state.paperwork.outputs.amazon_operating_system_tag
-//
-//  root_block_device = {
-//    tags = { "Name" = "${local.modified_name} root" }
-//  }
-//}

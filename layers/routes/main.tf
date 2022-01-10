@@ -84,6 +84,7 @@ module "tkg_vpc_route_tables" {
   vpc_id             = local.tkg_vpc_id
   s3_vpc_endpoint_id = local.tkg_s3_vpc_endpoint_id
   availability_zones = var.availability_zones
+  enable_s3_vpc_endpoint = var.enable_tkg_s3_vpc_endpoint
 
   tags = {
     Name = "${local.env_name_prefix} | TKG"
@@ -237,6 +238,11 @@ variable "enable_bastion_s3_vpc_endpoint" {
 }
 
 variable "enable_pas_s3_vpc_endpoint" {
+  type    = bool
+  default = true
+}
+
+variable "enable_tkg_s3_vpc_endpoint" {
   type    = bool
   default = true
 }

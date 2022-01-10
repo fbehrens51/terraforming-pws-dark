@@ -105,6 +105,7 @@ data "aws_iam_policy_document" "public_bucket_policy" {
         aws_vpc_endpoint.es_s3.id,
         aws_vpc_endpoint.cp_s3.id,
         aws_vpc_endpoint.bastion_s3.id,
+        aws_vpc_endpoint.tkg_s3.id,
         ],
       aws_vpc_endpoint.iso_s3.*.id)
     }
