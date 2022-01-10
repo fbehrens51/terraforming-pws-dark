@@ -1,0 +1,100 @@
+
+add and update with appropriate kms key, state bucket name, and regions
+
+live/common/prod/terragrunt.hcl
+```
+remote_state {
+  backend = "s3"
+
+  config = {
+    bucket         = "pws-dark-staging-env-state"
+    key            = "${path_relative_to_include()}"
+    region         = "us-east-1"
+    encrypt        = true
+    kms_key_id     = "7a0c75b1-b2e1-490d-8519-0aa44f1ba647"
+    dynamodb_table = "pws-dark-staging-env-lock"
+  }
+}
+
+terraform {
+  source = "${run_cmd("../get_layer_name.sh")}"
+
+  extra_arguments "shared_variables" {
+    env_vars = {
+      AWS_DEFAULT_REGION = "us-east-1"
+    }
+
+    commands = "${get_terraform_commands_that_need_vars()}"
+
+    required_var_files = [
+      "${get_parent_terragrunt_dir()}/terraform.tfvars",
+    ]
+  }
+}
+
+skip = true
+
+generate "provider" {
+  path = "provider.tf"
+  if_exists = "overwrite_terragrunt"
+  contents = <<EOF
+# Configure the AWS Provider for all except the bastion
+provider "aws" {
+  ignore_tags { keys = ["cloud_init_done", "cloud_init_output"] }
+}
+
+# Configure the bastion AWS Provider
+provider "aws" {
+  alias  = "bastion"
+
+  ignore_tags {
+    keys = ["cloud_init_done", "cloud_init_output"]
+    key_prefixes = ["dummy"]
+  }
+}
+
+module "providers" {
+  source = "../../modules/dark_providers"
+}
+
+terraform {
+  backend "s3" {
+  }
+}
+EOF
+}
+```
+
+add live/common/prod/get_layer_name.sh
+
+```
+#!/usr/bin/env bash
+
+TF_PWS_DARK_REPO=${TF_PWS_DARK_REPO:-"git::git@github.com:pivotal-cf/terraforming-pws-dark.git"}
+
+layer_name=$(basename $PWD)
+
+echo -n "$TF_PWS_DARK_REPO//layers/$layer_name"
+
+```
+
+add live/common/prod/terraform.tfvars
+
+```
+#Currently empty
+```
+
+add live/common/prod/artifact-repo/terragrunt.hcl and update with appropriate account IDs
+
+```
+include {
+  path = "${find_in_parent_folders()}"
+}
+inputs = {
+  artifact_repo_bucket_name = "pws-dark-artifact-repo"
+
+  read_write_arns = ["arn:aws:iam::<<623687983927>>:*"]
+  read_only_arns = ["arn:aws:iam::<<623687983927>>:*"]
+
+}
+```
