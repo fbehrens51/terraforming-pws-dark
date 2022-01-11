@@ -98,3 +98,10 @@ inputs = {
 
 }
 ```
+
+
+import existing bucket:
+`terragrunt import aws_s3_bucket.artifact_repo <<existing bucket>>`
+
+run layer (cd into newly created directory)
+`terragrunt apply`
