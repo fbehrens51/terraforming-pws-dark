@@ -1441,6 +1441,44 @@ output "tkg_control_plane_role_arn" {
   value = aws_iam_role.tkg_control_plane.arn
 }
 
+// TKG Bootstrapper Role
+resource "aws_iam_role" "tkg_bootstrapper" {
+  name = var.tkg_bootstrapper_role_name
+  assume_role_policy = data.aws_iam_policy_document.role_policy.json
+}
+
+resource "aws_iam_policy_attachment" "tkg_bootstrapper_cp" {
+  name       = var.tkg_bootstrapper_role_name
+  roles      = [aws_iam_role.tkg_bootstrapper.name]
+  policy_arn = aws_iam_policy.tkg_control_plane.arn
+}
+
+resource "aws_iam_policy_attachment" "tkg_bootstrapper_bootstrap" {
+  name       = var.bootstrap_role_name
+  roles      = [aws_iam_role.tkg_bootstrapper.name]
+  policy_arn = aws_iam_policy.bootstrap.arn
+}
+
+//resource "aws_iam_policy_attachment" "tkg_bootstrapper" {
+//  name       = var.bootstrap_role_name
+//  roles      = [aws_iam_role.tkg_bootstrapper.name]
+//  policy_arn = aws_iam_policy.bootstrap.arn
+//}
+
+resource "aws_iam_role_policy_attachment" "tkg_bootstrapper_ecr" {
+  role       = aws_iam_role.tkg_bootstrapper.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
+}
+
+resource "aws_iam_instance_profile" "tkg_bootstrapper" {
+  name = var.tkg_bootstrapper_role_name
+  role = aws_iam_role.tkg_bootstrapper.name
+}
+
+output "tkg_bootstrapper_role_arn" {
+  value = aws_iam_role.tkg_bootstrapper.arn
+}
+
 // Equivalent to nodes.tkg.cloud.vmware.com
 data "aws_iam_policy_document" "tkg_nodes" {
   version = "2012-10-17"

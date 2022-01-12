@@ -54,10 +54,15 @@ variable "root_domain" {
 variable "enable_tkg" {
 }
 
+variable "tkg_bootstrapper_role_name" {
+  type = string
+  description = "Used to bootstrap tkg from a TWS jumpbox"
+}
+
 variable "tkg_control_plane_role_name" {
   default = "control-plane.tkg.cloud.vmware.com"
   type = string
-  description = "Used to bootstrap tkg. Corresponds to control-plane.tkg.cloud.vmware.com"
+  description = "Corresponds to control-plane.tkg.cloud.vmware.com"
 }
 
 variable "tkg_nodes_role_name" {

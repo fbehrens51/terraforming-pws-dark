@@ -2,16 +2,16 @@ locals {
   env_name      = var.global_vars.env_name
   modified_name = "${local.env_name} tkg"
   modified_tags = merge(
-    var.global_vars["global_tags"],
-    var.global_vars["instance_tags"],
-    {
-      "Name"            = local.modified_name
-      "MetricsKey"      = data.terraform_remote_state.paperwork.outputs.metrics_key
-      "foundation_name" = data.terraform_remote_state.paperwork.outputs.foundation_name
-      "job"             = "jumpbox"
-    },
+  var.global_vars["global_tags"],
+  var.global_vars["instance_tags"],
+  {
+    "Name"            = local.modified_name
+    "MetricsKey"      = data.terraform_remote_state.paperwork.outputs.metrics_key
+    "foundation_name" = data.terraform_remote_state.paperwork.outputs.foundation_name
+    "job"             = "jumpbox"
+  },
   )
-  root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
+  root_domain   = data.terraform_remote_state.paperwork.outputs.root_domain
 }
 
 data "terraform_remote_state" "paperwork" {
@@ -126,8 +126,9 @@ write_files:
 
       echo "Downloading and extracting tools.zip"
 
-      region="$( aws s3api get-bucket-location --output=text --bucket $bucket 2> /dev/null )"
-      [[ $region == None ]] && region='us-east-1'
+      region='us-east-1'
+//      region="$( aws s3api get-bucket-location --output=text --bucket $bucket 2> /dev/null )"
+//      [[ $region == None ]] && region='us-east-1'
 
       latest="$(aws --region $region s3 ls s3://$bucket/cli-tools/ | awk '/ tools.*\.zip$/ {print $4}' | sort -n | tail -1)"
       aws --region "$region" s3 cp "s3://$bucket/cli-tools/$latest" . --no-progress
@@ -363,10 +364,10 @@ data "aws_vpc" "vpc" {
 module "dnsmasq" {
   source         = "../../modules/dnsmasq"
   enterprise_dns = data.terraform_remote_state.paperwork.outputs.enterprise_dns
-  forwarders = [{
+  forwarders     = [{
     domain        = var.endpoint_domain
     forwarder_ips = [cidrhost(data.aws_vpc.vpc.cidr_block, 2)]
-    },
+  },
     {
       domain        = ""
       forwarder_ips = data.terraform_remote_state.paperwork.outputs.enterprise_dns
@@ -393,7 +394,8 @@ module "tkgjb" {
   ami_id               = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
   user_data            = data.template_cloudinit_config.user_data.rendered
   eni_ids              = data.terraform_remote_state.bootstrap_tkgjb.outputs.tkgjb_eni_ids
-  iam_instance_profile = data.terraform_remote_state.paperwork.outputs.tkg_control_plane_role_name
+  //  iam_instance_profile = data.terraform_remote_state.paperwork.outputs.tkg_control_plane_role_name
+  iam_instance_profile = data.terraform_remote_state.paperwork.outputs.bootstrap_role_name
   instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
   volume_ids           = [aws_ebs_volume.tkgjb_home.id]
   scale_vpc_key        = "tkg"
@@ -404,12 +406,14 @@ module "tkgjb" {
   operating_system     = data.terraform_remote_state.paperwork.outputs.amazon_operating_system_tag
 
   root_block_device = {
-    tags = { "Name" = "${local.modified_name} root" }
+    tags = {
+      "Name" = "${local.modified_name} root"
+    }
   }
 }
 
 resource "null_resource" "tkgjb_status" {
-  count = 1
+  count    = 1
   triggers = {
     instance_id = module.tkgjb.instance_ids[count.index]
   }

@@ -42,6 +42,8 @@ bucket_role_name = "${bucket_role_name}"
 
 platform_automation_engine_worker_role_name = "${platform_automation_engine_worker_role_name}"
 
+tkg_bootstrapper_role_name = "${tkg_bootstrapper_role_name}"
+
 tkg_control_plane_role_name = "${tkg_control_plane_role_name}"
 
 tkg_nodes_role_name = "${tkg_nodes_role_name}"

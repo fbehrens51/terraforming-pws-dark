@@ -19,19 +19,20 @@ resource "local_file" "keymanager_output_variable_file" {
 module "keys" {
   source = "../../modules/kms/create"
 
-  key_name                           = var.pas_kms_key_name
+  key_name = var.pas_kms_key_name
 
-  director_role_arn                  = var.director_role_arn
-  pas_bucket_role_arn                = var.pas_bucket_role_arn
-  sjb_role_arn                       = var.sjb_role_arn
-  concourse_role_arn                 = var.concourse_role_arn
-  om_role_arn                        = var.om_role_arn
-  bosh_role_arn                      = var.bosh_role_arn
-  tkg_control_plane_role_arn         = var.tkg_control_plane_role_arn
-  tkg_nodes_role_arn                 = var.tkg_nodes_role_arn
-  tkg_controllers_role_arn           = var.tkg_controllers_role_arn
-  bootstrap_role_arn  = var.bootstrap_role_arn
-  foundation_role_arn = var.foundation_role_arn
+  director_role_arn          = var.director_role_arn
+  pas_bucket_role_arn        = var.pas_bucket_role_arn
+  sjb_role_arn               = var.sjb_role_arn
+  concourse_role_arn         = var.concourse_role_arn
+  om_role_arn                = var.om_role_arn
+  bosh_role_arn              = var.bosh_role_arn
+  tkg_bootstrapper_role_arn  = var.tkg_bootstrapper_role_arn
+  tkg_control_plane_role_arn = var.tkg_control_plane_role_arn
+  tkg_nodes_role_arn         = var.tkg_nodes_role_arn
+  tkg_controllers_role_arn   = var.tkg_controllers_role_arn
+  bootstrap_role_arn         = var.bootstrap_role_arn
+  foundation_role_arn        = var.foundation_role_arn
 
   deletion_window                    = "7"
   additional_bootstrap_principal_arn = data.aws_caller_identity.my_account.arn
@@ -151,6 +152,7 @@ variable "sjb_role_arn" {}
 variable "concourse_role_arn" {}
 variable "om_role_arn" {}
 variable "bosh_role_arn" {}
+variable "tkg_bootstrapper_role_arn" {}
 variable "tkg_control_plane_role_arn" {}
 variable "tkg_nodes_role_arn" {}
 variable "tkg_controllers_role_arn" {}

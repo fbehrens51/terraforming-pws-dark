@@ -59,6 +59,7 @@ module "paperwork" {
   tsdb_role_name              = var.tsdb_role_name
   isse_role_name              = var.isse_role_name
   enable_tkg                  = var.enable_tkg
+  tkg_bootstrapper_role_name  = var.tkg_bootstrapper_role_name
   tkg_control_plane_role_name = var.tkg_control_plane_role_name
   tkg_nodes_role_name         = var.tkg_nodes_role_name
   tkg_controllers_role_name   = var.tkg_controllers_role_name
@@ -165,9 +166,10 @@ data "template_file" "paperwork_variables" {
     bootstrap_role_name  = var.bootstrap_role_name
     foundation_role_name = var.foundation_role_name
 
+    tkg_bootstrapper_role_name  = var.tkg_bootstrapper_role_name
     tkg_control_plane_role_name = var.tkg_control_plane_role_name
-    tkg_nodes_role_name = var.tkg_nodes_role_name
-    tkg_controllers_role_name = var.tkg_controllers_role_name
+    tkg_nodes_role_name         = var.tkg_nodes_role_name
+    tkg_controllers_role_name   = var.tkg_controllers_role_name
   }
 }
 
@@ -184,6 +186,7 @@ data "template_file" "keymanager_variables" {
     bootstrap_role_arn  = module.paperwork.bootstrap_role_arn
     foundation_role_arn = module.paperwork.foundation_role_arn
 
+    tkg_bootstrapper_role_arn  = module.paperwork.tkg_bootstrapper_role_arn
     tkg_control_plane_role_arn = module.paperwork.tkg_control_plane_role_arn
     tkg_nodes_role_arn         = module.paperwork.tkg_nodes_role_arn
     tkg_controllers_role_arn   = module.paperwork.tkg_controllers_role_arn
@@ -281,6 +284,10 @@ variable "smtp_to" {
 variable "enable_tkg" {
   type    = string
   default = false
+}
+
+variable "tkg_bootstrapper_role_name" {
+  type = string
 }
 
 variable "tkg_control_plane_role_name" {

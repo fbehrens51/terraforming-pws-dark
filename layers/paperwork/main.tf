@@ -1623,6 +1623,17 @@ output "endpoint_domain" {
 /*******
  * TKG
  *******/
+variable "tkg_bootstrapper_role_name" {
+}
+
+data "aws_iam_role" "tkg_bootstrapper" {
+  name = var.tkg_bootstrapper_role_name
+}
+
+output "tkg_bootstrapper_role_name" {
+  value = var.tkg_bootstrapper_role_name
+}
+
 // control-plane.tkg.cloud.vmware.com
 variable "tkg_control_plane_role_name" {
 }

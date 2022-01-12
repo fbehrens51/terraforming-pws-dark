@@ -26,6 +26,7 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
           var.bosh_role_arn,
           var.bootstrap_role_arn,
           var.foundation_role_arn,
+          var.tkg_bootstrapper_role_arn,
           var.tkg_control_plane_role_arn,
           var.tkg_nodes_role_arn,
           var.tkg_controllers_role_arn,
@@ -61,6 +62,7 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
           var.additional_bootstrap_principal_arn,
           var.bootstrap_role_arn,
           var.foundation_role_arn,
+          var.tkg_bootstrapper_role_arn,
           var.tkg_control_plane_role_arn,
           var.tkg_nodes_role_arn,
           var.tkg_controllers_role_arn,
@@ -164,6 +166,8 @@ variable "concourse_role_arn" {}
 variable "bootstrap_role_arn" {}
 
 variable "foundation_role_arn" {}
+
+variable tkg_bootstrapper_role_arn {}
 
 variable tkg_control_plane_role_arn {}
 
