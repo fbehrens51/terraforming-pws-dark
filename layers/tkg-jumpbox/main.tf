@@ -1,6 +1,6 @@
 locals {
   env_name      = var.global_vars.env_name
-  modified_name = "${local.env_name} tkg"
+  modified_name = "${local.env_name} tkg jumpbox"
   modified_tags = merge(
   var.global_vars["global_tags"],
   var.global_vars["instance_tags"],
@@ -8,7 +8,7 @@ locals {
     "Name"            = local.modified_name
     "MetricsKey"      = data.terraform_remote_state.paperwork.outputs.metrics_key
     "foundation_name" = data.terraform_remote_state.paperwork.outputs.foundation_name
-    "job"             = "jumpbox"
+    "job"             = "tkg jumpbox"
   },
   )
   root_domain   = data.terraform_remote_state.paperwork.outputs.root_domain
@@ -127,8 +127,6 @@ write_files:
       echo "Downloading and extracting tools.zip"
 
       region='us-east-1'
-//      region="$( aws s3api get-bucket-location --output=text --bucket $bucket 2> /dev/null )"
-//      [[ $region == None ]] && region='us-east-1'
 
       latest="$(aws --region $region s3 ls s3://$bucket/cli-tools/ | awk '/ tools.*\.zip$/ {print $4}' | sort -n | tail -1)"
       aws --region "$region" s3 cp "s3://$bucket/cli-tools/$latest" . --no-progress
@@ -258,6 +256,22 @@ mounts:
 EOF
 }
 
+data "template_file" "install_tanzu" {
+  template = <<EOF
+write_files:
+  - path: /usr/local/bin/install-tanzu.sh
+    permissions: '0755'
+    owner: root:root
+    content: |
+      echo "Installing Tanzu"
+runcmd:
+  - |
+    echo "Installing up system tools and utilities"
+    yum install docker -y
+    install-tanzu.sh
+EOF
+}
+
 module "syslog_config" {
   source = "../../modules/syslog"
 
@@ -349,6 +363,13 @@ data "template_cloudinit_config" "user_data" {
     content      = data.terraform_remote_state.paperwork.outputs.postfix_client_user_data
   }
 
+//  part {
+//    filename     = "tanzu.cfg"
+//    content_type = "text/cloud-config"
+//    content      = data.template_file.install_tanzu.rendered
+//    merge_type   = "list(append)+dict(no_replace,recurse_list)"
+//  }
+
   # This must be last - updates the AIDE DB after all installations/configurations are complete.
   part {
     filename     = "hardening.cfg"
@@ -394,9 +415,9 @@ module "tkgjb" {
   ami_id               = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
   user_data            = data.template_cloudinit_config.user_data.rendered
   eni_ids              = data.terraform_remote_state.bootstrap_tkgjb.outputs.tkgjb_eni_ids
-  //  iam_instance_profile = data.terraform_remote_state.paperwork.outputs.tkg_control_plane_role_name
+//  iam_instance_profile = data.terraform_remote_state.paperwork.outputs.tkg_bootstrapper_role_name
   iam_instance_profile = data.terraform_remote_state.paperwork.outputs.bootstrap_role_name
-  instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
+  instance_types        = data.terraform_remote_state.scaling-params.outputs.instance_types
   volume_ids           = [aws_ebs_volume.tkgjb_home.id]
   scale_vpc_key        = "tkg"
   scale_service_key    = "tkgjb"
