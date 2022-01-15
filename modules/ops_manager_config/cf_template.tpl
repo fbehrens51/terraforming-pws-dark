@@ -55,6 +55,8 @@ product-properties:
     value: 0
   .nfs_server.blobstore_internal_access_rules:
     value: allow 10.0.0.0/8;,allow 172.16.0.0/12;,allow 192.168.0.0/16;
+  .properties.allow_certs_without_san:
+    value: false
   .properties.app_graceful_shutdown_period_in_seconds:
     value: 10
   .properties.app_log_rate_limiting:
@@ -83,6 +85,8 @@ product-properties:
     value: 3600
   .properties.ccdb_read_timeout:
     value: 3600
+  .properties.ccng_monit_http_healthcheck_timeout_per_retry:
+    value: 6
   .properties.cf_networking_database_connection_timeout:
     value: 120
   .properties.cf_networking_enable_space_developer_self_service:
@@ -129,6 +133,8 @@ product-properties:
         secret: ${credhub_encryption_password}
       name: credhub
       primary: true
+  .properties.default_loggregator_drain_metadata:
+    value: true
   .properties.diego_database_max_open_connections:
     value: 100
   .properties.disable_logs_in_firehose:
@@ -278,12 +284,12 @@ product-properties:
   .properties.routing_log_client_ips:
     selected_option: log_client_ips
     value: log_client_ips
-  .properties.routing_minimum_tls_version:
-    selected_option: tls_v1_2
-    value: tls_v1_2
   .properties.routing_tls_termination:
     selected_option: router
     value: router
+  .properties.routing_tls_version_range:
+    selected_option: tls_v1_2
+    value: tls_v1_2
   .properties.saml_signature_algorithm:
     value: SHA256
   .properties.secure_service_instance_credentials:
@@ -338,16 +344,14 @@ product-properties:
     value: ${syslog_port}
   .properties.syslog_protocol:
     value: tcp
-  .properties.syslog_drop_debug:
-    value: true
   .properties.syslog_tls:
     selected_option: enabled
     value: enabled
-  .properties.syslog_tls.enabled.tls_permitted_peer:
-    value: ${syslog_host}
   .properties.syslog_tls.enabled.tls_ca_cert:
     value: |
       ${indent(6, syslog_ca_cert)}
+  .properties.syslog_tls.enabled.tls_permitted_peer:
+    value: ${syslog_host}
   .properties.syslog_use_tcp_for_file_forwarding_local_transport:
     value: false
   .properties.system_blobstore:
@@ -369,6 +373,8 @@ product-properties:
     value: true
   .properties.system_blobstore.external.packages_bucket:
     value: ${pas_packages_bucket}
+  .properties.system_blobstore.external.path_style_s3_urls:
+    value: true
   .properties.system_blobstore.external.region:
     value: ${region}
   .properties.system_blobstore.external.resources_bucket:
@@ -438,8 +444,6 @@ product-properties:
       secret: ${rds_password}
   .properties.system_database.external.networkpolicyserver_username:
     value: ${rds_username}
-  .properties.system_database.external.nfsvolume_password:
-    value: {}
   .properties.system_database.external.notifications_password:
     value:
       secret: ${rds_password}
@@ -499,6 +503,8 @@ product-properties:
     value: 900
   .router.drain_wait:
     value: 20
+  .router.enable_http2:
+    value: true
   .router.enable_isolated_routing:
     value: false
   .router.enable_write_access_logs:

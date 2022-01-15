@@ -14,6 +14,8 @@ product-properties:
     value: 20
   .isolated_router_${iso_seg_tile_suffix_underscore}.request_timeout_in_seconds:
     value: 900
+  .properties.allow_certs_without_san:
+    value: false
   .properties.app_graceful_shutdown_period_in_seconds:
     value: 10
   .properties.app_log_rate_limiting:
@@ -107,7 +109,7 @@ product-properties:
   .properties.routing_log_client_ips:
     selected_option: log_client_ips
     value: log_client_ips
-  .properties.routing_minimum_tls_version:
+  .properties.routing_tls_version_range:
     selected_option: tls_v1_2
     value: tls_v1_2
   .properties.routing_table_sharding_mode:
