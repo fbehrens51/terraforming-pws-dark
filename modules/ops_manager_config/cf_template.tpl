@@ -55,6 +55,8 @@ product-properties:
     value: 0
   .nfs_server.blobstore_internal_access_rules:
     value: allow 10.0.0.0/8;,allow 172.16.0.0/12;,allow 192.168.0.0/16;
+  .properties.allow_certs_without_san:
+    value: false
   .properties.app_graceful_shutdown_period_in_seconds:
     value: 10
   .properties.app_log_rate_limiting:
@@ -129,6 +131,8 @@ product-properties:
         secret: ${credhub_encryption_password}
       name: credhub
       primary: true
+  .properties.default_loggregator_drain_metadata:
+    value: true
   .properties.diego_database_max_open_connections:
     value: 100
   .properties.disable_logs_in_firehose:
@@ -278,7 +282,7 @@ product-properties:
   .properties.routing_log_client_ips:
     selected_option: log_client_ips
     value: log_client_ips
-  .properties.routing_minimum_tls_version:
+  .properties.routing_tls_version_range:
     selected_option: tls_v1_2
     value: tls_v1_2
   .properties.routing_tls_termination:
@@ -338,8 +342,6 @@ product-properties:
     value: ${syslog_port}
   .properties.syslog_protocol:
     value: tcp
-  .properties.syslog_drop_debug:
-    value: true
   .properties.syslog_tls:
     selected_option: enabled
     value: enabled
