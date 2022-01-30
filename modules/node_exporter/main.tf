@@ -67,12 +67,12 @@ write_files:
       EnvironmentFile=/etc/sysconfig/node_exporter
       ExecStart=/usr/sbin/node_exporter $OPTIONS
       Restart=always
-
-      [Install]
-      WantedBy=multi-user.target
       RestartSec = 5sec
       StartLimitBurst = 4
       StartLimitInterval = 30
+
+      [Install]
+      WantedBy=multi-user.target
     path: /usr/lib/systemd/system/node_exporter.service
     permissions: '0644'
     owner: root:root
