@@ -66,7 +66,7 @@ bootcmd:
   # Disable SSL in postgres.  Otherwise, postgres will fail to start since the
   # snakeoil certificate is missing.  Note that OM connect to postgres over the
   # unix socket.
-  - sed -i 's/^ssl = on/#ssl = on/' /etc/postgresql/*/main/postgresql.conf
+  #- sed -i 's/^ssl = on/#ssl = on/' /etc/postgresql/*/main/postgresql.conf
   CLOUDINIT
   }
 }
