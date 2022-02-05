@@ -87,6 +87,8 @@ runcmd:
     set -exo pipefail
 
     amazon-linux-extras install -y nginx1
+    # rpm installs /varlib/nginx 770 which is too permissive for security scanners
+    chmod 750 /var/lib/nginx
     systemctl enable nginx.service
     # disable the default server listening on port 80 as part of server hardening
     pushd /etc/nginx
