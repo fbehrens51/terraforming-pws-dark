@@ -19,7 +19,7 @@ write_files:
 
       export INSTANCE_ID=$(ec2metadata --instance-id)
       export AWS_REGION=$(ec2metadata --availability-zone | awk '{print substr($1, 1, length($1)-1)}')
-      export GEM_PATH=/home/tempest-web/./tempest/web/vendor/bundle/ruby/2.6.0/
+      export GEM_PATH=/home/tempest-web/./tempest/web/vendor/bundle/ruby/2.7.0/
 
       [[ $exit_code == 0 ]] && STATUS=true || STATUS=false
 
