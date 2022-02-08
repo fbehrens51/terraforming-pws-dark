@@ -102,6 +102,12 @@ product-properties:
     value: 60
   .properties.cloud_controller_temporary_disable_deployments:
     value: false
+  .properties.cloud_controller_worker_alert_if_above_mb:
+    value: 384
+  .properties.cloud_controller_worker_restart_if_above_mb:
+    value: 512
+  .properties.cloud_controller_worker_restart_if_consistently_above_mb:
+    value: 384
   .properties.container_networking:
     selected_option: enable
     value: enable
