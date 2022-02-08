@@ -71,7 +71,7 @@ module "domains" {
 
 
 locals {
-  credhub_vars_key = "tf-generated-credhub-vars.yml"
+  credhub_vars_key = "concourse/generated-credhub-vars.yml"
 
   credhub_vars = templatefile("${path.module}/credhub_vars.tpl", {
     CA_CERT_BUCKET = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
