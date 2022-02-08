@@ -354,7 +354,7 @@ module "isolation_segment_3" {
 }
 
 module "route_isolation_segment_pas" {
-  source           = "../routes/modules/routing"
+  source           = "../../modules/routing"
   accepter_vpc_id  = var.vpc_id
   requester_vpc_id = local.pas_vpc_id
   accepter_route_table_ids = concat(
@@ -372,7 +372,7 @@ module "route_isolation_segment_pas" {
 }
 
 module "route_isolation_segment_es" {
-  source           = "../routes/modules/routing"
+  source           = "../../modules/routing"
   accepter_vpc_id  = var.vpc_id
   requester_vpc_id = local.es_vpc_id
   accepter_route_table_ids = concat(
@@ -390,7 +390,7 @@ module "route_isolation_segment_es" {
 }
 
 module "route_isolation_segment_control_plane" {
-  source           = "../routes/modules/routing"
+  source           = "../../modules/routing"
   accepter_vpc_id  = var.vpc_id
   requester_vpc_id = local.cp_vpc_id
   accepter_route_table_ids = concat(
