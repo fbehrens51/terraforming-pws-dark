@@ -11,7 +11,12 @@ data "terraform_remote_state" "paperwork" {
 
 locals {
   env_name_prefix = var.global_vars.name_prefix
-
+  modified_tags = merge(
+    var.global_vars["global_tags"],
+    {
+      "foundation_name" = data.terraform_remote_state.paperwork.outputs.foundation_name
+    },
+  )
   pas_vpc_id     = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
   es_vpc_id      = data.terraform_remote_state.paperwork.outputs.es_vpc_id
   cp_vpc_id      = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
@@ -31,9 +36,12 @@ module "pas_vpc_route_tables" {
   availability_zones     = var.availability_zones
   enable_s3_vpc_endpoint = var.enable_pas_s3_vpc_endpoint
 
-  tags = {
-    Name = "${local.env_name_prefix} | PAS"
-  }
+  tags = merge(
+    local.modified_tags,
+    {
+      Name = "${local.env_name_prefix} | PAS"
+    }
+  )
 }
 
 module "bastion_vpc_route_tables" {
@@ -44,9 +52,12 @@ module "bastion_vpc_route_tables" {
   availability_zones     = var.availability_zones
   enable_s3_vpc_endpoint = var.enable_bastion_s3_vpc_endpoint
 
-  tags = {
-    Name = "${local.env_name_prefix} | BASTION"
-  }
+  tags = merge(
+    local.modified_tags,
+    {
+      Name = "${local.env_name_prefix} | BASTION"
+    }
+  )
 }
 
 module "es_vpc_route_tables" {
@@ -57,9 +68,13 @@ module "es_vpc_route_tables" {
   availability_zones     = var.availability_zones
   enable_s3_vpc_endpoint = var.enable_es_s3_vpc_endpoint
 
-  tags = {
-    Name = "${local.env_name_prefix} | ENT SVCS"
-  }
+  tags = merge(
+    local.modified_tags,
+    {
+      Name = "${local.env_name_prefix} | ENT SVCS"
+    }
+  )
+
 }
 
 module "cp_vpc_route_tables" {
@@ -70,9 +85,13 @@ module "cp_vpc_route_tables" {
   availability_zones     = var.availability_zones
   enable_s3_vpc_endpoint = var.enable_cp_s3_vpc_endpoint
 
-  tags = {
-    Name = "${local.env_name_prefix} | CP"
-  }
+
+  tags = merge(
+    local.modified_tags,
+    {
+      Name = "${local.env_name_prefix} | CP"
+    }
+  )
 }
 
 module "route_bastion_cp" {
@@ -80,12 +99,12 @@ module "route_bastion_cp" {
   accepter_vpc_id  = local.bastion_vpc_id
   requester_vpc_id = local.cp_vpc_id
   accepter_route_table_ids = concat(
-  module.bastion_vpc_route_tables.private_route_table_ids,
-  [module.bastion_vpc_route_tables.public_route_table_id],
+    module.bastion_vpc_route_tables.private_route_table_ids,
+    [module.bastion_vpc_route_tables.public_route_table_id],
   )
   requester_route_table_ids = concat(
-  module.cp_vpc_route_tables.private_route_table_ids,
-  [module.cp_vpc_route_tables.public_route_table_id],
+    module.cp_vpc_route_tables.private_route_table_ids,
+    [module.cp_vpc_route_tables.public_route_table_id],
   )
   availability_zones = var.availability_zones
 }
@@ -95,12 +114,12 @@ module "route_cp_pas" {
   accepter_vpc_id  = local.cp_vpc_id
   requester_vpc_id = local.pas_vpc_id
   accepter_route_table_ids = concat(
-  module.cp_vpc_route_tables.private_route_table_ids,
-  [module.cp_vpc_route_tables.public_route_table_id],
+    module.cp_vpc_route_tables.private_route_table_ids,
+    [module.cp_vpc_route_tables.public_route_table_id],
   )
   requester_route_table_ids = concat(
-  module.pas_vpc_route_tables.private_route_table_ids,
-  [module.pas_vpc_route_tables.public_route_table_id],
+    module.pas_vpc_route_tables.private_route_table_ids,
+    [module.pas_vpc_route_tables.public_route_table_id],
   )
   availability_zones = var.availability_zones
 }
@@ -110,12 +129,12 @@ module "route_cp_es" {
   accepter_vpc_id  = local.cp_vpc_id
   requester_vpc_id = local.es_vpc_id
   accepter_route_table_ids = concat(
-  module.cp_vpc_route_tables.private_route_table_ids,
-  [module.cp_vpc_route_tables.public_route_table_id],
+    module.cp_vpc_route_tables.private_route_table_ids,
+    [module.cp_vpc_route_tables.public_route_table_id],
   )
   requester_route_table_ids = concat(
-  module.es_vpc_route_tables.private_route_table_ids,
-  [module.es_vpc_route_tables.public_route_table_id],
+    module.es_vpc_route_tables.private_route_table_ids,
+    [module.es_vpc_route_tables.public_route_table_id],
   )
   availability_zones = var.availability_zones
 }
@@ -125,12 +144,12 @@ module "route_pas_es" {
   accepter_vpc_id  = local.pas_vpc_id
   requester_vpc_id = local.es_vpc_id
   accepter_route_table_ids = concat(
-  module.pas_vpc_route_tables.private_route_table_ids,
-  [module.pas_vpc_route_tables.public_route_table_id],
+    module.pas_vpc_route_tables.private_route_table_ids,
+    [module.pas_vpc_route_tables.public_route_table_id],
   )
   requester_route_table_ids = concat(
-  module.es_vpc_route_tables.private_route_table_ids,
-  [module.es_vpc_route_tables.public_route_table_id],
+    module.es_vpc_route_tables.private_route_table_ids,
+    [module.es_vpc_route_tables.public_route_table_id],
   )
   availability_zones = var.availability_zones
 }
