@@ -9,15 +9,14 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
-data "terraform_remote_state" "routes" {
-  backend = "s3"
+data "aws_route_tables" "es_route_tables"{
+  vpc_id = local.es_vpc_id
+  tags = var.global_vars["global_tags"]
+}
 
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "base-routes"
-    region  = var.remote_state_region
-    encrypt = true
-  }
+data "aws_route_tables" "cp_route_tables"{
+  vpc_id = local.cp_vpc_id
+  tags = var.global_vars["global_tags"]
 }
 
 locals {
@@ -56,10 +55,7 @@ module "route_cp_pas" {
   source           = "../../modules/routing"
   accepter_vpc_id  = local.cp_vpc_id
   requester_vpc_id = local.pas_vpc_id
-  accepter_route_table_ids = concat(
-    data.terraform_remote_state.routes.outputs.cp_private_vpc_route_table_ids,
-    [data.terraform_remote_state.routes.outputs.cp_public_vpc_route_table_id],
-  )
+  accepter_route_table_ids = data.aws_route_tables.cp_route_tables.ids
   requester_route_table_ids = concat(
     module.pas_vpc_route_tables.private_route_table_ids,
     [module.pas_vpc_route_tables.public_route_table_id],
@@ -75,10 +71,7 @@ module "route_pas_es" {
     module.pas_vpc_route_tables.private_route_table_ids,
     [module.pas_vpc_route_tables.public_route_table_id],
   )
-  requester_route_table_ids = concat(
-    data.terraform_remote_state.routes.outputs.es_private_vpc_route_table_ids,
-    [data.terraform_remote_state.routes.outputs.es_public_vpc_route_table_id],
-  )
+  requester_route_table_ids = data.aws_route_tables.es_route_tables.ids
   availability_zones = var.availability_zones
 }
 
