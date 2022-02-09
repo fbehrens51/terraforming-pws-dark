@@ -143,7 +143,10 @@ data "aws_vpn_gateway" "vgw" {
 resource "aws_route_table" "public_route_table" {
   vpc_id = var.vpc_id
 
-  tags = local.modified_tags
+  tags = merge(
+    local.modified_tags,
+    { "Type" = "PUBLIC" }
+  )
 }
 
 resource "aws_route" "default_route" {
