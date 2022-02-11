@@ -20,17 +20,6 @@ data "terraform_remote_state" "scaling-params" {
   }
 }
 
-data "terraform_remote_state" "routes" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "routes"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 data "terraform_remote_state" "bootstrap_control_plane" {
   backend = "s3"
 
@@ -40,6 +29,17 @@ data "terraform_remote_state" "bootstrap_control_plane" {
     region  = var.remote_state_region
     encrypt = true
   }
+}
+
+
+data "aws_route_tables" "es_private_route_tables"{
+  vpc_id = data.terraform_remote_state.paperwork.outputs.es_vpc_id
+  tags = merge(var.global_vars["global_tags"],{"Type"="PRIVATE"})
+}
+
+data "aws_route_table" "es_public_route_table"{
+  vpc_id = data.terraform_remote_state.paperwork.outputs.es_vpc_id
+  tags = merge(var.global_vars["global_tags"],{"Type"="PUBLIC"})
 }
 
 locals {
@@ -85,7 +85,7 @@ module "public_subnets" {
 resource "aws_route_table_association" "public_route_table_assoc" {
   count          = length(var.availability_zones)
   subnet_id      = module.public_subnets.subnet_ids[count.index]
-  route_table_id = data.terraform_remote_state.routes.outputs.es_public_vpc_route_table_id
+  route_table_id = data.aws_route_table.es_public_route_table.id
 }
 
 module "private_subnets" {
@@ -104,7 +104,7 @@ module "private_subnets" {
 resource "aws_route_table_association" "private_route_table_assoc" {
   count          = length(var.availability_zones)
   subnet_id      = module.private_subnets.subnet_ids[count.index]
-  route_table_id = data.terraform_remote_state.routes.outputs.es_private_vpc_route_table_ids[count.index]
+  route_table_id = tolist(data.aws_route_tables.es_private_route_tables.ids)[count.index]
 }
 
 data "template_cloudinit_config" "nat_user_data" {
@@ -171,7 +171,7 @@ module "iptables_rules" {
 module "nat" {
   source                     = "../../modules/nat"
   ami_id                     = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
-  private_route_table_ids    = data.terraform_remote_state.routes.outputs.es_private_vpc_route_table_ids
+  private_route_table_ids    = data.aws_route_tables.es_private_route_tables.ids
   ingress_cidr_blocks        = [data.aws_vpc.this_vpc.cidr_block]
   metrics_ingress_cidr_block = data.aws_vpc.pas_vpc.cidr_block
   tags                       = { tags = local.modified_tags, instance_tags = var.global_vars["instance_tags"] }
