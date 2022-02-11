@@ -209,7 +209,7 @@ module "iptables_rules" {
     "iptables -A INPUT -p tcp --dport ${module.syslog_ports.loki_grpc_port}        -m state --state NEW -j ACCEPT",
     "iptables -A INPUT -p tcp --dport ${module.syslog_ports.loki_bind_port}        -m state --state NEW -j ACCEPT",
   ]
-  control_plane_subnet_cidrs = data.aws_vpc.cp_vpc.cidr_block
+  control_plane_subnet_cidrs = [data.aws_vpc.cp_vpc.cidr_block]
 }
 
 module "loki_instance" {
