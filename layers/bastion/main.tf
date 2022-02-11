@@ -20,15 +20,9 @@ data "terraform_remote_state" "scaling-params" {
   }
 }
 
-data "terraform_remote_state" "routes" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "routes"
-    region  = var.remote_state_region
-    encrypt = true
-  }
+data "aws_route_table" "bastion_public_route_table"{
+  vpc_id = data.terraform_remote_state.paperwork.outputs.bastion_vpc_id
+  tags = merge(var.global_vars["global_tags"],{"Type"="PUBLIC"})
 }
 
 locals {
@@ -49,7 +43,7 @@ locals {
     },
   )
 
-  derived_route_table_id = var.route_table_id != null ? var.route_table_id : data.terraform_remote_state.routes.outputs.bastion_public_vpc_route_table_id
+  derived_route_table_id = var.route_table_id != null ? var.route_table_id : data.aws_route_table.bastion_public_route_table.id
 
   bot_user_data = <<DOC
 #cloud-config

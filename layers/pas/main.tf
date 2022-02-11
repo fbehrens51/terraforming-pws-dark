@@ -20,17 +20,6 @@ data "terraform_remote_state" "scaling-params" {
   }
 }
 
-data "terraform_remote_state" "routes" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "routes"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 data "terraform_remote_state" "bootstrap_control_plane" {
   backend = "s3"
 
@@ -97,6 +86,17 @@ data "template_cloudinit_config" "nat_user_data" {
   }
 }
 
+data "aws_route_table" "pas_public_route_table"{
+  vpc_id = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
+  tags = merge(var.global_vars["global_tags"],{"Type"="PUBLIC"})
+}
+
+
+data "aws_route_tables" "pas_private_route_tables"{
+  vpc_id = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
+  tags = merge(var.global_vars["global_tags"],{"Type"="PRIVATE"})
+}
+
 module "iptables_rules" {
   source                     = "../../modules/iptables"
   nat                        = true
@@ -118,7 +118,7 @@ module "infra" {
   public_route_table_id         = local.route_table_id
   ssh_cidr_blocks               = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs
   bot_key_pem                   = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  private_route_table_ids       = data.terraform_remote_state.routes.outputs.pas_private_vpc_route_table_ids
+  private_route_table_ids       = data.aws_route_tables.pas_private_route_tables.ids
   root_domain                   = data.terraform_remote_state.paperwork.outputs.root_domain
   instance_types                = data.terraform_remote_state.scaling-params.outputs.instance_types
   syslog_ca_cert                = data.terraform_remote_state.paperwork.outputs.syslog_ca_certs_bundle
@@ -147,7 +147,7 @@ module "pas" {
   dns_suffix                   = ""
   env_name                     = var.global_vars.name_prefix
   public_subnet_ids            = module.infra.public_subnet_ids
-  route_table_ids              = data.terraform_remote_state.routes.outputs.pas_private_vpc_route_table_ids
+  route_table_ids              = data.aws_route_tables.pas_private_route_tables.ids
   tags                         = local.modified_tags
   vpc_id                       = local.vpc_id
   zone_id                      = module.infra.zone_id
@@ -322,7 +322,7 @@ locals {
   secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
   cp_vpc_id           = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
   vpc_id              = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
-  route_table_id      = data.terraform_remote_state.routes.outputs.pas_public_vpc_route_table_id
+  route_table_id      = data.aws_route_table.pas_public_route_table.id
   bucket_suffix       = random_integer.bucket.result
   bucket_suffix_name  = "pas"
   root_domain         = data.terraform_remote_state.paperwork.outputs.root_domain

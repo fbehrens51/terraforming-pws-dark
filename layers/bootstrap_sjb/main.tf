@@ -20,17 +20,6 @@ data "terraform_remote_state" "bootstrap_control_plane" {
   }
 }
 
-data "terraform_remote_state" "routes" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "routes"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 data "aws_vpc" "vpc" {
   id = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
 }
@@ -41,6 +30,11 @@ data "aws_vpc" "pas_vpc" {
 
 data "aws_vpc" "bastion_vpc" {
   id = data.terraform_remote_state.paperwork.outputs.bastion_vpc_id
+}
+
+data "aws_route_tables" "cp_private_route_tables" {
+  vpc_id = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
+  tags = merge(var.global_vars["global_tags"],{"Type"="PRIVATE"})
 }
 
 locals {
@@ -90,7 +84,7 @@ module "sjb_subnet" {
 resource "aws_route_table_association" "sjb_route_table_assoc" {
   count          = "1"
   subnet_id      = module.sjb_subnet.subnet_ids[count.index]
-  route_table_id = data.terraform_remote_state.routes.outputs.cp_private_vpc_route_table_ids[count.index]
+  route_table_id = tolist(data.aws_route_tables.cp_private_route_tables.ids)[count.index]
 }
 
 module "sjb_bootstrap" {

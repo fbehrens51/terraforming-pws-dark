@@ -20,17 +20,6 @@ data "terraform_remote_state" "scaling-params" {
   }
 }
 
-data "terraform_remote_state" "routes" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "routes"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 data "terraform_remote_state" "bootstrap_control_plane" {
   backend = "s3"
 
@@ -105,6 +94,11 @@ data "template_cloudinit_config" "nat_user_data" {
   }
 }
 
+data "aws_route_tables" "cp_private_route_tables" {
+  vpc_id = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
+  tags = merge(var.global_vars["global_tags"],{"Type"="PRIVATE"})
+}
+
 module "iptables_rules" {
   source                     = "../../modules/iptables"
   nat                        = true
@@ -126,7 +120,7 @@ locals {
 module "nat" {
   source                     = "../../modules/nat"
   ami_id                     = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
-  private_route_table_ids    = data.terraform_remote_state.routes.outputs.cp_private_vpc_route_table_ids
+  private_route_table_ids    = data.aws_route_tables.cp_private_route_tables.ids
   ingress_cidr_blocks        = [data.aws_vpc.vpc.cidr_block]
   metrics_ingress_cidr_block = data.aws_vpc.pas_vpc.cidr_block
   tags                       = { tags = local.modified_tags, instance_tags = var.global_vars["instance_tags"] }

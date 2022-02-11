@@ -42,17 +42,6 @@ data "terraform_remote_state" "pas" {
   }
 }
 
-data "terraform_remote_state" "routes" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "routes"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 data "aws_vpc" "vpc" {
   id = var.vpc_id
 }
@@ -356,6 +345,21 @@ module "isolation_segment_3" {
   tags               = local.modified_tags
 }
 
+data "aws_route_tables" "pas_route_tables" {
+  vpc_id = local.pas_vpc_id
+  tags   = var.global_vars["global_tags"]
+}
+
+data "aws_route_tables" "es_route_tables" {
+  vpc_id = local.es_vpc_id
+  tags   = var.global_vars["global_tags"]
+}
+
+data "aws_route_tables" "cp_route_tables" {
+  vpc_id = local.cp_vpc_id
+  tags   = var.global_vars["global_tags"]
+}
+
 module "route_isolation_segment_pas" {
   source           = "../../modules/routing"
   accepter_vpc_id  = var.vpc_id
@@ -367,11 +371,8 @@ module "route_isolation_segment_pas" {
     module.isolation_segment_2.private_route_table_ids,
     module.isolation_segment_3.private_route_table_ids,
   )
-  requester_route_table_ids = concat(
-    [data.terraform_remote_state.routes.outputs.pas_public_vpc_route_table_id],
-    data.terraform_remote_state.routes.outputs.pas_private_vpc_route_table_ids,
-  )
-  availability_zones = var.availability_zones
+  requester_route_table_ids = data.aws_route_tables.pas_route_tables.ids
+  availability_zones        = var.availability_zones
 }
 
 module "route_isolation_segment_es" {
@@ -385,11 +386,8 @@ module "route_isolation_segment_es" {
     module.isolation_segment_2.private_route_table_ids,
     module.isolation_segment_3.private_route_table_ids,
   )
-  requester_route_table_ids = concat(
-    [data.terraform_remote_state.routes.outputs.es_public_vpc_route_table_id],
-    data.terraform_remote_state.routes.outputs.es_private_vpc_route_table_ids,
-  )
-  availability_zones = var.availability_zones
+  requester_route_table_ids = data.aws_route_tables.es_route_tables.ids
+  availability_zones        = var.availability_zones
 }
 
 module "route_isolation_segment_control_plane" {
@@ -403,11 +401,8 @@ module "route_isolation_segment_control_plane" {
     module.isolation_segment_2.private_route_table_ids,
     module.isolation_segment_3.private_route_table_ids,
   )
-  requester_route_table_ids = concat(
-    [data.terraform_remote_state.routes.outputs.cp_public_vpc_route_table_id],
-    data.terraform_remote_state.routes.outputs.cp_private_vpc_route_table_ids,
-  )
-  availability_zones = var.availability_zones
+  requester_route_table_ids = data.aws_route_tables.cp_route_tables.ids
+  availability_zones        = var.availability_zones
 }
 
 resource "aws_s3_bucket_object" "blocked-vpc" {
