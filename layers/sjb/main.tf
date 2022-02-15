@@ -215,22 +215,22 @@ data "template_file" "home_directory" {
 bootcmd:
   - |
     set -ex
-    while [ ! -e /dev/sdf ] ; do echo "Waiting for device /dev/sdf"; sleep 1 ; done
+    while [ ! -e /dev/nvme1n1 ] ; do echo "Waiting for device /dev/nvme1n1"; sleep 1 ; done
     #old code won't mkfs an existing fs
-    #if [ "$(file -b -s -L /dev/sdf)" == "data" ]; then mkfs -t ext4 /dev/sdf; fi
+    #if [ "$(file -b -s -L /dev/nvme1n1)" == "data" ]; then mkfs -t ext4 /dev/nvme1n1; fi
 
-    # new code will always mkfs a volume to start fresh with the correct verisions.
+    # new code will always mkfs a volume to start fresh with the correct versions.
     # we have to mount an external volume because the base image has partitioned FS
-    mkfs -t ext4 /dev/sdf
+    mkfs -t ext4 /dev/nvme1n1
 
     if mountpoint -q /home; then
       umount /home
       sed -i '/^\/dev\/vg0\/home/d' /etc/fstab
     fi
-    mount -t ext4 -o 'defaults,nofail,nodev,comment=TF_user_data' /dev/sdf /home
+    mount -t ext4 -o 'defaults,nofail,nodev,comment=TF_user_data' /dev/nvme1n1 /home
 
 mounts:
-  - [ "/dev/sdf", "/home", "ext4", "defaults,nofail,nodev", "0", "2" ]
+  - [ "/dev/nvme1n1", "/home", "ext4", "defaults,nofail,nodev", "0", "2" ]
 
 EOF
 }
