@@ -596,6 +596,15 @@ output "portal_end_to_end_test_user_private_key_pem" {
   sensitive = true
 }
 
+output "portal_end_to_end_test_spaces_user_cert_pem" {
+  value = data.terraform_remote_state.ldap-server.outputs.portal_end_to_end_test_spaces_cert.cert_pem
+}
+
+output "portal_end_to_end_test_spaces_user_private_key_pem" {
+  value     = data.terraform_remote_state.ldap-server.outputs.portal_end_to_end_test_spaces_cert.private_key_pem
+  sensitive = true
+}
+
 output "portal_end_to_end_test_application_cert_pem" {
   value = data.terraform_remote_state.ldap-server.outputs.portal_end_to_end_test_application_cert.cert_pem
 }
