@@ -40,3 +40,13 @@ variable "credhub_vars_name" {
 variable "endpoint_domain" {
   type = string
 }
+
+variable "home_volume_size" {
+  type = number
+  default = 60
+}
+
+variable "cloud_init_timeout" {
+  type = number
+  default = 450
+}
