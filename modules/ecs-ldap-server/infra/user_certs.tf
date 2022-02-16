@@ -33,6 +33,12 @@ locals {
       roles       = ["POPULATED_BY_TESTS"]
     }
 
+    portal_test_spaces_people = {
+      common_name = "Portal EndToEnd TestUser"
+      ou          = "People"
+      roles       = ["POPULATED_BY_TESTS"]
+    }
+
     portal_test_apps_a = {
       common_name = "PortalEndToEndTestUser"
       ou          = "Applications"

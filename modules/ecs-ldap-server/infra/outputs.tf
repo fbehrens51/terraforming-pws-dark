@@ -45,6 +45,14 @@ output "portal_end_to_end_test_user_cert" {
   sensitive = true
 }
 
+output "portal_end_to_end_test_spaces_cert" {
+  value = {
+    private_key_pem = tls_private_key.user["portal_test_spaces_people"].private_key_pem
+    cert_pem        = tls_locally_signed_cert.user["portal_test_spaces_people"].cert_pem
+  }
+  sensitive = true
+}
+
 output "portal_end_to_end_test_application_cert" {
   value = {
     private_key_pem = tls_private_key.user["portal_test_apps_a"].private_key_pem
