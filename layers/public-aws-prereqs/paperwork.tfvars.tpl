@@ -92,7 +92,7 @@ ldap_client_key_s3_path = "${ldap_client_key_s3_path}"
 
 loki_config = {
     loki_role_name                          = "${loki_role_name}"
-    loki_client_cert_signer_ca_certs        = ["${loki_client_cert_signer_ca_cert_s3_path}"]
+    loki_client_cert_signer_ca_certs        = ["${root_ca_cert_s3_path}"]
     loki_client_cert_s3_path                = "${loki_client_cert_s3_path}"
     loki_client_key_s3_path                 = "${loki_client_key_s3_path}"
     loki_server_cert_s3_path                = "${loki_server_cert_s3_path}"
