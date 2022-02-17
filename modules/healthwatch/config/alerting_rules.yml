@@ -24,7 +24,7 @@ groups:
   - name: OpsManagerHealth
     rules:
       - alert: OpsManagerStatus
-        expr: 'probe_success{instance=~"https://om\\..*"} <= 0'
+        expr: 'probe_success{instance="<OPS_MANAGER_URL>"} <= 0'
         for: 45m
         annotations:
           summary: "The Ops Manager health check failed"
@@ -36,7 +36,7 @@ groups:
   - name: TanzuApplicationServiceSLOs
     rules:
       - alert: TanzuSLOCFPushErrorBudget
-        expr: '( (1 - (rate(pas_sli_task_failures_total{task="push"}[28d]) / rate(pas_sli_task_runs_total{task="push"}[28d]) ) ) - 0.99) * (28 * 24 * 60) <= 0'
+        expr: '( (1 - (rate(tas_sli_task_failures_total{task="push"}[28d]) / rate(tas_sli_task_runs_total{task="push"}[28d]) ) ) - 0.99) * (28 * 24 * 60) <= 0'
         for: 15m
         annotations:
           summary: "The `cf_push` command is unresponsive"
@@ -50,7 +50,7 @@ groups:
 
             Check the status of these components in order to diagnose the issue.
       - alert: TanzuSLOCFPushAvailability
-        expr: 'rate(pas_sli_task_failures_total{task="push"}[5m:15s]) * 300 > 0'
+        expr: 'rate(tas_sli_task_failures_total{task="push"}[5m:15s]) * 300 > 0'
         for: 10m
         annotations:
           summary: "The `cf_push` command is unresponsive"
@@ -64,7 +64,7 @@ groups:
 
             Check the status of these components in order to diagnose the issue.
       - alert: TanzuSLOCanaryAppErrorBudget
-        expr: '( (avg_over_time(probe_success{instance!~"https://om\\..*"}[28d]) - 0.999) * (28 * 24 * 60) ) <= 0'
+        expr: "( (avg_over_time(probe_success[28d]) - 0.999) * (28 * 24 * 60) ) <= 0"
         for: 10m
         annotations:
           summary: "Your Error Budget for your Canary URLs is below zero"
@@ -75,8 +75,7 @@ groups:
             Recommended troubleshooting steps:
             Check to see if your canary app(s) are running. Then check your foundation's networking, capacity, and VM health.
       - alert: TanzuSLOCanaryAppAvailability
-        # Alert if more than 10% of probes have failed in the last 30 minutes
-        expr: 'avg_over_time(probe_success{instance!~"https://om\\..*"}[30m]) < 0.9'
+        expr: "avg_over_time(probe_success[5m]) < 1"
         for: 1m
         annotations:
           summary: "Your Canary URL ({{ $labels.instance }}) is unresponsive"
@@ -89,7 +88,7 @@ groups:
   - name: TASCLIHealth
     rules:
       - alert: TASCLICommandStatus
-        expr: "increase(pas_sli_task_failures_total[10m]) > 0"
+        expr: "increase(tas_sli_task_failures_total[10m]) > 0"
         for: 10m
         annotations:
           summary: "Healthwatch Tanzu Application Service CLI tests are failing"
