@@ -58,7 +58,10 @@ resource "aws_route_table" "private_route_tables" {
   count  = length(var.availability_zones)
   vpc_id = var.vpc_id
 
-  tags = local.modified_tags
+  tags = merge(
+    local.modified_tags,
+    { "Type" = "PRIVATE" }
+  )
 }
 
 resource "aws_route_table_association" "private_route_table_associations" {

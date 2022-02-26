@@ -63,10 +63,12 @@ locals {
       cidr_blocks = "0.0.0.0/0"
     },
     {
+      # TODO: this should be open only internally
       description = "Allow http/${module.syslog_ports.loki_healthcheck_port} (healthcheck) from the load balancer"
-      port        = module.syslog_ports.loki_http_port
+      port        = module.syslog_ports.loki_healthcheck_port
       protocol    = "tcp"
-      cidr_blocks = join(",", data.aws_subnet.private_subnets.*.cidr_block)
+      cidr_blocks = "0.0.0.0/0"
+      #cidr_blocks = join(",", data.aws_subnet.private_subnets.*.cidr_block)
     },
     {
       // node_exporter metrics endpoint for grafana

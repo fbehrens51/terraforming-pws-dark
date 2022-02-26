@@ -55,17 +55,6 @@ data "terraform_remote_state" "bootstrap_loki" {
   }
 }
 
-data "terraform_remote_state" "bootstrap_control_plane" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "bootstrap_control_plane"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 locals {
   env_name      = var.global_vars.env_name
   modified_name = "${local.env_name} loki"
@@ -87,8 +76,8 @@ data "aws_vpc" "es_vpc" {
   id = data.terraform_remote_state.paperwork.outputs.es_vpc_id
 }
 
-data "aws_vpc" "pas_vpc" {
-  id = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
+data "aws_vpc" "cp_vpc" {
+  id = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
 }
 
 module "configuration" {
@@ -220,7 +209,7 @@ module "iptables_rules" {
     "iptables -A INPUT -p tcp --dport ${module.syslog_ports.loki_grpc_port}        -m state --state NEW -j ACCEPT",
     "iptables -A INPUT -p tcp --dport ${module.syslog_ports.loki_bind_port}        -m state --state NEW -j ACCEPT",
   ]
-  control_plane_subnet_cidrs = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs
+  control_plane_subnet_cidrs = [data.aws_vpc.cp_vpc.cidr_block]
 }
 
 module "loki_instance" {

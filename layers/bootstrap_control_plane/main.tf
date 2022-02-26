@@ -9,19 +9,18 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
-data "terraform_remote_state" "routes" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "routes"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 data "aws_vpc" "vpc" {
   id = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
+}
+
+data "aws_route_tables" "cp_private_route_tables" {
+  vpc_id = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
+  tags = merge(var.global_vars["global_tags"],{"Type"="PRIVATE"})
+}
+
+data "aws_route_table" "cp_public_route_table" {
+  vpc_id = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
+  tags = merge(var.global_vars["global_tags"],{"Type"="PUBLIC"})
 }
 
 module "public_subnets" {
@@ -40,7 +39,7 @@ module "public_subnets" {
 resource "aws_route_table_association" "public_route_table_assoc" {
   count          = length(var.availability_zones)
   subnet_id      = module.public_subnets.subnet_ids[count.index]
-  route_table_id = data.terraform_remote_state.routes.outputs.cp_public_vpc_route_table_id
+  route_table_id = data.aws_route_table.cp_public_route_table.id
 }
 
 module "private_subnets" {
@@ -59,7 +58,7 @@ module "private_subnets" {
 resource "aws_route_table_association" "private_route_table_assoc" {
   count          = length(var.availability_zones)
   subnet_id      = module.private_subnets.subnet_ids[count.index]
-  route_table_id = data.terraform_remote_state.routes.outputs.cp_private_vpc_route_table_ids[count.index]
+  route_table_id = tolist(data.aws_route_tables.cp_private_route_tables.ids)[count.index]
 }
 
 resource "aws_security_group" "vms_security_group" {

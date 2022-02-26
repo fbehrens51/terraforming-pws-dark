@@ -206,32 +206,14 @@ runcmd:
 EOF
 }
 
-#
-# Force the mount to occur during the "bootcmd".
-# else the user directories are created before the fs is mounted, and nobody can login.
-#
 data "template_file" "home_directory" {
   template = <<EOF
 bootcmd:
   - |
     set -ex
-    while [ ! -e /dev/sdf ] ; do echo "Waiting for device /dev/sdf"; sleep 1 ; done
-    #old code won't mkfs an existing fs
-    #if [ "$(file -b -s -L /dev/sdf)" == "data" ]; then mkfs -t ext4 /dev/sdf; fi
-
-    # new code will always mkfs a volume to start fresh with the correct verisions.
-    # we have to mount an external volume because the base image has partitioned FS
-    mkfs -t ext4 /dev/sdf
-
-    if mountpoint -q /home; then
-      umount /home
-      sed -i '/^\/dev\/vg0\/home/d' /etc/fstab
-    fi
-    mount -t ext4 -o 'defaults,nofail,nodev,comment=TF_user_data' /dev/sdf /home
-
-mounts:
-  - [ "/dev/sdf", "/home", "ext4", "defaults,nofail,nodev", "0", "2" ]
-
+    growpart /dev/nvme0n1 2
+    pvresize /dev/nvme0n1p2
+    lvextend -r -l +100%FREE /dev/vg0/home
 EOF
 }
 
@@ -357,13 +339,6 @@ module "iptables_rules" {
   control_plane_subnet_cidrs = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs
 }
 
-resource "aws_ebs_volume" "sjb_home" {
-  availability_zone = var.singleton_availability_zone
-  size              = 60
-  encrypted         = true
-  kms_key_id        = data.terraform_remote_state.paperwork.outputs.kms_key_arn
-}
-
 module "sjb" {
   instance_count       = 1
   source               = "../../modules/launch"
@@ -373,57 +348,20 @@ module "sjb" {
   eni_ids              = data.terraform_remote_state.bootstrap_sjb.outputs.sjb_eni_ids
   iam_instance_profile = data.terraform_remote_state.paperwork.outputs.bootstrap_role_name
   instance_types       = data.terraform_remote_state.scaling-params.outputs.instance_types
-  volume_ids           = [aws_ebs_volume.sjb_home.id]
   scale_vpc_key        = "control-plane"
   scale_service_key    = "sjb"
   tags                 = local.modified_tags
   bot_key_pem          = data.terraform_remote_state.paperwork.outputs.bot_private_key
-  check_cloud_init     = false
+  check_cloud_init     = true
+  cloud_init_timeout   = var.cloud_init_timeout
   operating_system     = data.terraform_remote_state.paperwork.outputs.amazon_operating_system_tag
 
   root_block_device = {
     tags = { "Name" = "${local.modified_name} root" }
-  }
-}
-
-resource "null_resource" "sjb_status" {
-  count = 1
-  triggers = {
-    instance_id = module.sjb.instance_ids[count.index]
-  }
-
-  provisioner "local-exec" {
-    on_failure  = fail
-    interpreter = ["/bin/bash", "-c"]
-    command     = <<-EOF
-    #!/usr/bin/env bash
-    set -e
-    completed_tag="cloud_init_done"
-    poll_tags="aws ec2 describe-tags --filters Name=resource-id,Values=${module.sjb.instance_ids[count.index]} Name=key,Values=$completed_tag --output text --query Tags[*].Value"
-    echo "running $poll_tags"
-    tags="$($poll_tags)"
-    COUNTER=0
-    LOOP_LIMIT=45
-    while [[ "$tags" == "" ]] ; do
-      if [[ $COUNTER -eq $LOOP_LIMIT ]]; then
-        echo "timed out waiting for $completed_tag to be set"
-        exit 1
-      fi
-      if [[ $COUNTER -gt 0 ]]; then
-        echo "$completed_tag not set, sleeping for 10s"
-        sleep 10s
-      fi
-      tags="$($poll_tags)"
-      let COUNTER=COUNTER+1
-    done
-    echo "$completed_tag = $tags"
-
-    if cloud_init_message="$( aws ec2 describe-tags --filters Name=resource-id,Values=${module.sjb.instance_ids[count.index]} Name=key,Values=cloud_init_output --output text --query Tags[*].Value )"; then
-      [[ ! -z $cloud_init_message ]] && echo -e "cloud_init_output: $( echo -ne "$cloud_init_message" | openssl enc -d -a | gunzip -qc - )"
-    fi
-
-    [[ $tags == false ]] && exit 1 || exit 0
-    EOF
+    volume_size = var.home_volume_size
+    encrypted   = true
+    kms_key_id  = data.terraform_remote_state.paperwork.outputs.kms_key_arn
+    volume_type = "gp2"
   }
 }
 

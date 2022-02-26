@@ -23,7 +23,8 @@ locals {
   public_tags = merge(
     var.tags,
     {
-      "Name" = local.public_name
+      "Name" = local.public_name,
+      "Type" = "PUBLIC"
     },
   )
 
@@ -31,7 +32,8 @@ locals {
   private_tags = merge(
     var.tags,
     {
-      "Name" = local.private_name
+      "Name" = local.private_name,
+      "Type" = "PRIVATE"
     },
   )
 }
