@@ -71,15 +71,14 @@ locals {
   })]
 
   loki_configuration = [for i, ip in var.loki_ips : templatefile("${path.module}/loki.yaml", {
-    bind_port         = module.ports.loki_bind_port
-    http_port         = module.ports.loki_http_port
-    grpc_port         = module.ports.loki_grpc_port
-    region            = var.region
-    local_ip          = ip
-    loki_ips          = var.loki_ips
-    storage_bucket    = var.storage_bucket
-    compactor_enabled = i == 0 # enable compactor on a single instance
-    retention_period  = var.retention_period
+    bind_port        = module.ports.loki_bind_port
+    http_port        = module.ports.loki_http_port
+    grpc_port        = module.ports.loki_grpc_port
+    region           = var.region
+    local_ip         = ip
+    loki_ips         = var.loki_ips
+    storage_bucket   = var.storage_bucket
+    retention_period = var.retention_period
   })]
 }
 
