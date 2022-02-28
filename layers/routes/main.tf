@@ -98,7 +98,7 @@ module "cp_vpc_route_tables" {
 
 module "tkg_vpc_route_tables" {
   count              = var.enable_tkg ? 1 : 0
-  source             = "./modules/vpc_route_tables"
+  source             = "../../modules/vpc_route_tables"
   internetless       = var.internetless
   vpc_id             = local.tkg_vpc_id
   s3_vpc_endpoint_id = local.tkg_s3_vpc_endpoint_id
@@ -157,7 +157,7 @@ module "route_cp_es" {
 
 module "route_cp_tkg" {
   count            = var.enable_tkg ? 1 : 0
-  source           = "./modules/routing"
+  source           = "../../modules/routing"
   accepter_vpc_id  = local.cp_vpc_id
   requester_vpc_id = local.tkg_vpc_id
   accepter_route_table_ids = concat(
@@ -188,7 +188,7 @@ module "route_pas_es" {
 
 module "route_pas_tkg" {
   count            = var.enable_tkg ? 1 : 0
-  source           = "./modules/routing"
+  source           = "../../modules/routing"
   accepter_vpc_id  = local.pas_vpc_id
   requester_vpc_id = local.tkg_vpc_id
   accepter_route_table_ids = concat(
@@ -204,7 +204,7 @@ module "route_pas_tkg" {
 
 module "route_es_tkg" {
   count            = var.enable_tkg ? 1 : 0
-  source           = "./modules/routing"
+  source           = "../../modules/routing"
   accepter_vpc_id  = local.es_vpc_id
   requester_vpc_id = local.tkg_vpc_id
   accepter_route_table_ids = concat(
