@@ -275,7 +275,7 @@ product-properties:
     selected_option: request
     value: request
   .properties.router_enable_proxy:
-    value: false
+    value: true
   .properties.router_keepalive_connections:
     selected_option: enable
     value: enable
@@ -779,3 +779,4 @@ errand-config:
     post-deploy-state: ${errands_smoke_tests}
   test-autoscaling:
     post-deploy-state: ${errands_test_autoscaling}
+

@@ -34,3 +34,7 @@ variable "health_check" {
   default = ""
 }
 
+variable "proxy_pass" {
+  type    = bool
+  default = false
+}

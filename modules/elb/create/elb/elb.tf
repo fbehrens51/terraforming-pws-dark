@@ -27,6 +27,12 @@ resource "aws_elb" "elb" {
   tags = var.elb_tag
 }
 
+resource "aws_proxy_protocol_policy" "proxy_policy" {
+  count          = var.proxy_pass == true ? 1 : 0
+  load_balancer  = aws_elb.elb[count.index].name
+  instance_ports = [var.instance_port]
+}
+
 variable "instance_port" {
 }
 
@@ -52,6 +58,9 @@ variable "name" {
 }
 
 variable "health_check" {
+}
+
+variable "proxy_pass" {
 }
 
 output "elb_id" {

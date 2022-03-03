@@ -19,5 +19,6 @@ module "my_elb" {
   public_subnet_ids = var.public_subnet_ids
   port              = var.port
   instance_port     = local.instance_listening_port
+  proxy_pass        = var.proxy_pass
 }
 

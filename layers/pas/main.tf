@@ -86,15 +86,15 @@ data "template_cloudinit_config" "nat_user_data" {
   }
 }
 
-data "aws_route_table" "pas_public_route_table"{
+data "aws_route_table" "pas_public_route_table" {
   vpc_id = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
-  tags = merge(var.global_vars["global_tags"],{"Type"="PUBLIC"})
+  tags   = merge(var.global_vars["global_tags"], { "Type" = "PUBLIC" })
 }
 
 
-data "aws_route_tables" "pas_private_route_tables"{
+data "aws_route_tables" "pas_private_route_tables" {
   vpc_id = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
-  tags = merge(var.global_vars["global_tags"],{"Type"="PRIVATE"})
+  tags   = merge(var.global_vars["global_tags"], { "Type" = "PRIVATE" })
 }
 
 module "iptables_rules" {
@@ -244,6 +244,7 @@ module "pas_elb" {
   egress_cidrs      = module.pas.pas_subnet_cidrs
   short_name        = "pas"
   health_check      = "HTTP:8080/health" # Gorouter healthcheck
+  proxy_pass        = true
 }
 
 data "aws_vpc" "cp_vpc" {
@@ -585,6 +586,6 @@ resource "aws_s3_bucket_object" "postgres-rds-password" {
 }
 
 variable "pas_postgres_engine_version" {
-  default = "9.6"
+  default     = "9.6"
   description = "version prefix for posgtres rds instance available in pas VPC"
 }
