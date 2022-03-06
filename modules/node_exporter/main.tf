@@ -61,6 +61,7 @@ write_files:
   - content: |
       [Unit]
       Description=Node Exporter
+      After = network-online.target
 
       [Service]
       User=node_exporter

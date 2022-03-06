@@ -52,7 +52,6 @@ write_files:
       [Unit]
       Description = Grafana Loki
       After = network-online.target
-      After = syslog.target
 
       [Service]
       User=loki

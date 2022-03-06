@@ -61,6 +61,7 @@ write_files:
   - content: |
       [Unit]
       Description=Bind Exporter
+      After = network-online.target
 
       [Service]
       User=bind_exporter
@@ -94,8 +95,8 @@ runcmd:
     rm bind_exporter_config
 
     systemctl daemon-reload
-    systemctl start bind_exporter
     systemctl enable bind_exporter.service
+    systemctl start bind_exporter
 EOF
 
 }
