@@ -50,12 +50,15 @@ write_files:
 
   - content: |
       [Unit]
-      Description=Grafana Loki
+      Description = Grafana Loki
+      After = network-online.target
+      After = syslog.target
 
       [Service]
       User=loki
       EnvironmentFile=/etc/sysconfig/loki
       ExecStart=/usr/sbin/loki $OPTIONS
+      ExecReload=/bin/kill -HUP $MAINPID
       Restart=always
 
       [Install]
