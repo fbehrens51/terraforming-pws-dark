@@ -32,6 +32,8 @@ runcmd:
     chmod 660 /var/log/freshclam.log
     augtool set /files/etc/logrotate.d/clamav-update/rule/create/mode 660
     augtool set /files/etc/freshclam.conf/LogSyslog yes
+    augtool rm /files/etc/freshclam.conf/DNSDatabaseInfo
+    augtool set /files/etc/freshclam.conf/DNSDatabaseInfo disabled
     augtool rm /files/etc/freshclam.conf/DatabaseMirror
     augtool set /files/etc/freshclam.conf/PrivateMirror ${clam_database_mirror}
     augtool set /files/etc/freshclam.conf/Checks 24

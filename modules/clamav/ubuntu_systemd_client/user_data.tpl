@@ -14,12 +14,14 @@ runcmd:
   - |
     set -ex
     mkdir pkg
-    cd pkg
+    pushd pkg
     wget -q --no-check-certificate -O - "${deb_tgz_location}" | tar xzf -
     dpkg -i *.deb
-    cd ..
+    popd
     rm -rf pkg
     augtool set /files/etc/clamav/freshclam.conf/LogSyslog yes
+    augtool rm /files/etc/clamav/freshclam.conf/DNSDatabaseInfo
+    augtool set /files/etc/clamav/freshclam.conf/DNSDatabaseInfo disabled
     augtool rm /files/etc/clamav/freshclam.conf/DatabaseMirror
     augtool set /files/etc/clamav/freshclam.conf/PrivateMirror ${clam_database_mirror}
     augtool set /files/etc/clamav/freshclam.conf/Checks 24
