@@ -14,10 +14,10 @@ runcmd:
   - |
     set -ex
     mkdir pkg
-    pushd pkg
+    cd ./pkg
     wget -q --no-check-certificate -O - "${deb_tgz_location}" | tar xzf -
     dpkg -i *.deb
-    popd
+    cd ..
     rm -rf pkg
     augtool set /files/etc/clamav/freshclam.conf/LogSyslog yes
     augtool rm /files/etc/clamav/freshclam.conf/DNSDatabaseInfo
