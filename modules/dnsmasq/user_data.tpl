@@ -19,8 +19,8 @@ runcmd:
 
   # Configure /etc/dhcp/dhclient.conf and /etc/resolv.dnsmasq with the right DNS IP Address
   - bash -c "echo 'supersede domain-name-servers 127.0.0.1%{for server in enterprise_dns}, ${server}%{endfor};' >> /etc/dhcp/dhclient.conf && echo -e \"%{for server in enterprise_dns}nameserver ${server}\n%{endfor}\" > /etc/resolv.dnsmasq && chmod 644 /etc/resolv.dnsmasq";
-  # Restart dhclient
-  - bash -c "dhclient"
+  # Restart network
+  - systemctl restart network.service
 
 # Configure /etc/dnsmasq.conf accordingly
 write_files:
