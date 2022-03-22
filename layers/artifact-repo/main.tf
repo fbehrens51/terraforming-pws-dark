@@ -69,9 +69,7 @@ data "aws_iam_policy_document" "arn_bucket_policy" {
     sid     = "ARNwrite"
     effect  = "Allow"
     actions = [
-      "s3:GetObject",
-      "s3:PutObject",
-      "s3:PutObjectAcl"
+      "s3:*"
     ]
 
     principals {
@@ -96,7 +94,7 @@ resource "aws_s3_bucket" "artifact_repo" {
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
-        sse_algorithm = "aws:kms"
+        sse_algorithm = "AES256"
       }
     }
   }
