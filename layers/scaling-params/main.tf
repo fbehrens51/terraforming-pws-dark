@@ -5,7 +5,8 @@ locals {
       nat         = "t3.medium"
       sjb         = "m5.2xlarge"
       ops-manager = "m5.large"
-      r7-scanner  = "t3.2xlarge"
+      r7-console  = "m5.2xlarge"
+      r7-scanner  = "m5.xlarge"
       scanner     = "t3.xlarge"
       bind        = "t3.medium"
     }
