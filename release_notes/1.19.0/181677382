@@ -1,0 +1,4 @@
+# this command will search for a SI with a syslog_drain_url that points to our old [deleted] splunk.
+# login to cf with your admin credentails. 
+
+cf curl /v3/service_instances | gojq -r '.resources[] | select(.syslog_drain_url | match("splunk") ).guid' | xargs -ri cf curl -X DELETE /v3/service_instances/{}
