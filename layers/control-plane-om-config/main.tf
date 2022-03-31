@@ -137,11 +137,14 @@ module "om_config" {
 
   root_domain = local.root_domain
 
+  uaa_tg_names                   = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.uaa_tg_ids
   web_tg_names                   = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.web_tg_ids
   uaa_elb_names                  = [data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.uaa_elb_id]
   credhub_elb_names              = [data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.credhub_elb_id]
   credhub_tg_names               = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.credhub_tg_ids
   concourse_lb_security_group_id = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.concourse_lb_security_group_id
+  credhub_lb_security_group_id   = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.credhub_lb_security_group_id
+  uaa_lb_security_group_id       = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.uaa_lb_security_group_id
 
   password_policies_max_retry            = var.password_policies_max_retry
   password_policies_expires_after_months = var.password_policies_expires_after_months

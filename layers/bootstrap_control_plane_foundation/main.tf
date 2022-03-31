@@ -81,6 +81,7 @@ locals {
     },
   ]
 
+  default_cp_sg_id     = data.terraform_remote_state.bootstrap_control_plane.outputs.vms_security_group_id
   transfer_kms_key_arn = data.terraform_remote_state.paperwork.outputs.transfer_key_arn
 }
 
@@ -184,7 +185,7 @@ module "postgres" {
   rds_db_username    = var.rds_db_username
   rds_instance_class = var.rds_instance_class
 
-  engine = var.concourse_db_engine
+  engine         = var.concourse_db_engine
   engine_version = var.concourse_db_engine_version
 
   db_port      = 5432
@@ -243,6 +244,8 @@ module "rds_subnet_group" {
   tags               = local.modified_tags
 }
 
+# NLBs
+
 module "concourse_nlb" {
   source                     = "./modules/nlb/create"
   env_name                   = local.env_name
@@ -252,7 +255,43 @@ module "concourse_nlb" {
   vpc_id                     = data.aws_vpc.vpc.id
   metrics_ingress_cidr_block = data.aws_vpc.pas_vpc.cidr_block
   egress_cidrs               = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_private_subnet_cidrs
+  health_check_cidr_blocks   = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_public_cidrs
 }
+
+module "uaa_nlb" {
+  source            = "../../modules/nlb/create"
+  env_name          = local.env_name
+  internetless      = var.internetless
+  public_subnet_ids = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_public_subnet_ids
+  tags              = var.global_vars["global_tags"]
+  vpc_id            = data.aws_vpc.vpc.id
+  egress_cidrs      = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_private_subnet_cidrs
+  #  preserve_client_ip       = false
+  short_name               = "uaa"
+  port                     = 8443
+  health_check_port        = 8443
+  health_check_proto       = "HTTPS"
+  health_check_path        = "/healthz"
+  health_check_cidr_blocks = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_public_cidrs
+}
+
+module "credhub_nlb" {
+  source                   = "../../modules/nlb/create"
+  env_name                 = local.env_name
+  internetless             = var.internetless
+  public_subnet_ids        = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_public_subnet_ids
+  tags                     = var.global_vars["global_tags"]
+  vpc_id                   = data.aws_vpc.vpc.id
+  egress_cidrs             = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_private_subnet_cidrs
+  short_name               = "credhub"
+  port                     = 8844
+  health_check_port        = 8845
+  health_check_proto       = "HTTP"
+  health_check_path        = "/health"
+  health_check_cidr_blocks = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_public_cidrs
+}
+
+# ELBs
 
 module "uaa_elb" {
   source            = "../../modules/elb/create"
@@ -264,6 +303,7 @@ module "uaa_elb" {
   egress_cidrs      = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_private_subnet_cidrs
   short_name        = "uaa"
   port              = 8443
+  health_check      = "HTTPS:8443/healthz"
 }
 
 module "credhub_elb" {
@@ -276,7 +316,17 @@ module "credhub_elb" {
   egress_cidrs      = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_private_subnet_cidrs
   short_name        = "credhub"
   port              = 8844
-  health_check      = "TCP:8844"
+  health_check      = "HTTP:8845/health"
+}
+
+resource "aws_security_group_rule" "credhub_ingress_health_rule" {
+  description       = "Allow tcp/8845 from anywhere"
+  from_port         = 8845
+  to_port           = 8845
+  protocol          = "TCP"
+  type              = "ingress"
+  security_group_id = module.credhub_elb.security_group_id
+  cidr_blocks       = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_public_cidrs
 }
 
 module "om_key_pair" {

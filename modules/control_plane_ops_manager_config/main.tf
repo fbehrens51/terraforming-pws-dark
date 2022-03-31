@@ -105,6 +105,8 @@ locals {
     kms_key_arn                                 = var.volume_encryption_kms_key_arn
     concourse_worker_role_name                  = var.concourse_worker_role_name
     concourse_lb_security_group_id              = "[${join(",", var.concourse_lb_security_group_id)}]"
+    credhub_lb_security_group_id                = "[${join(",", var.credhub_lb_security_group_id)}]"
+    uaa_lb_security_group_id                    = "[${join(",", var.uaa_lb_security_group_id)}]"
     control_plane_subnets                       = indent(4, chomp(join("", data.template_file.control_plane_subnets.*.rendered)))
     control_plane_vpc_azs                       = indent(2, chomp(join("", data.template_file.control_plane_vpc_azs.*.rendered)))
     syslog_host                                 = var.syslog_host
@@ -166,9 +168,8 @@ locals {
       chomp(join("", data.template_file.control_plane_vpc_azs.*.rendered)),
     )
     web_tg_names              = "[${join(",", formatlist("alb:%s", var.web_tg_names))}]"
-    credhub_tg_names          = "[${join(",", formatlist("alb:%s", var.credhub_tg_names))}]"
-    uaa_elb_names             = "[${join(",", var.uaa_elb_names)}]"
-    credhub_elb_names         = "[${join(",", var.credhub_elb_names)}]"
+    uaa_elb_names             = "[${join(",", var.uaa_elb_names, formatlist("alb:%s", var.uaa_tg_names))}]"
+    credhub_elb_names         = "[${join(",", var.credhub_elb_names, formatlist("alb:%s", var.credhub_tg_names))}]"
     plane_endpoint            = module.domains.control_plane_plane_fqdn
     uaa_endpoint              = "${module.domains.control_plane_uaa_fqdn}:8443"
     concourse_cert_pem        = var.concourse_cert_pem

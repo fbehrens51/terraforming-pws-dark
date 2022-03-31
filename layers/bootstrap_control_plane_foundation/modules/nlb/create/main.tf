@@ -25,6 +25,9 @@ variable "vpc_id" {
 variable "metrics_ingress_cidr_block" {
 }
 
+variable "health_check_cidr_blocks" {
+}
+
 variable "egress_cidrs" {
   type = list(string)
 }
@@ -49,19 +52,7 @@ resource "aws_lb" "concourse_lb" {
   )
 }
 
-########## target_groups, 80/443/2222 on web vm, 8844 on credhub vm
-
-resource "aws_lb_target_group" "concourse_nlb_8080" {
-  name     = "${local.formatted_env_name}-concourse8080"
-  port     = 8080
-  protocol = "TCP"
-  vpc_id   = var.vpc_id
-
-  health_check {
-    port     = 8080
-    protocol = "TCP"
-  }
-}
+########## target_groups, 443/2222 on web vm
 
 resource "aws_lb_target_group" "concourse_nlb_443" {
   name     = "${local.formatted_env_name}-concourse443"
@@ -87,30 +78,7 @@ resource "aws_lb_target_group" "concourse_nlb_2222" {
   }
 }
 
-resource "aws_lb_target_group" "concourse_nlb_8844" {
-  name     = "${local.formatted_env_name}-concourse8844"
-  port     = 8844
-  protocol = "TCP"
-  vpc_id   = var.vpc_id
-
-  health_check {
-    port     = 8845
-    protocol = "TCP"
-  }
-}
-
 ########## listeners
-
-resource "aws_lb_listener" "concourse_nlb_80" {
-  load_balancer_arn = aws_lb.concourse_lb.arn
-  protocol          = "TCP"
-  port              = 80
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.concourse_nlb_8080.arn
-  }
-}
 
 resource "aws_lb_listener" "concourse_nlb_443" {
   load_balancer_arn = aws_lb.concourse_lb.arn
@@ -134,17 +102,6 @@ resource "aws_lb_listener" "concourse_nlb_2222" {
   }
 }
 
-resource "aws_lb_listener" "concourse_nlb_8844" {
-  load_balancer_arn = aws_lb.concourse_lb.arn
-  protocol          = "TCP"
-  port              = 8844
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.concourse_nlb_8844.arn
-  }
-}
-
 ########## Security Group and rules
 # see https://concourse-ci.org/internals.html
 
@@ -155,7 +112,7 @@ resource "aws_security_group" "concourse_nlb_security_group" {
 
   ingress {
     description = "Allow http/80 from everywhere - forwards to 443"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = var.health_check_cidr_blocks
     protocol    = "tcp"
     from_port   = 8080
     to_port     = 8080
@@ -185,14 +142,6 @@ resource "aws_security_group" "concourse_nlb_security_group" {
     to_port     = 443
   }
 
-  ingress {
-    description = "Allow https/8844 from everywhere - Credhub API"
-    cidr_blocks = ["0.0.0.0/0"]
-    protocol    = "tcp"
-    from_port   = 8844
-    to_port     = 8844
-  }
-
   egress {
     description = "Allow all protocols/ports to everywhere"
     cidr_blocks = ["0.0.0.0/0"]
@@ -216,17 +165,10 @@ output "concourse_nlb_security_group_id" {
   value = aws_security_group.concourse_nlb_security_group.id
 }
 
-output "credhub_tg_ids" {
-  value = [
-    aws_lb_target_group.concourse_nlb_8844.name
-  ]
-}
-
 output "web_tg_ids" {
   value = [
     aws_lb_target_group.concourse_nlb_443.name,
     aws_lb_target_group.concourse_nlb_2222.name,
-    aws_lb_target_group.concourse_nlb_8080.name,
   ]
 }
 

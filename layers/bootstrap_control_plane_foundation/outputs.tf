@@ -10,16 +10,20 @@ output "om_security_group_id" {
   value = module.ops_manager.security_group_id
 }
 
-output "credhub_tg_ids" {
-  value = module.concourse_nlb.credhub_tg_ids
-}
-
 output "uaa_elb_id" {
   value = module.uaa_elb.my_elb_id
 }
 
 output "credhub_elb_id" {
   value = module.credhub_elb.my_elb_id
+}
+
+output "credhub_tg_ids" {
+  value = module.credhub_nlb.nlb_tg_ids
+}
+
+output "uaa_tg_ids" {
+  value = module.uaa_nlb.nlb_tg_ids
 }
 
 output "web_tg_ids" {
@@ -89,11 +93,11 @@ output "ops_manager_ip" {
 }
 
 output "uaa_elb_dns" {
-  value = module.uaa_elb.dns_name
+  value = var.control_plane_uaa_nlb == true ? module.uaa_nlb.dns_name : module.uaa_elb.dns_name
 }
 
 output "credhub_elb_dns" {
-  value = module.credhub_elb.dns_name
+  value = var.control_plane_credhub_nlb == true ? module.credhub_nlb.dns_name : module.credhub_elb.dns_name
 }
 
 output "plane_elb_dns" {
@@ -103,7 +107,21 @@ output "plane_elb_dns" {
 output "concourse_lb_security_group_id" {
   value = [
     module.concourse_nlb.concourse_nlb_security_group_id,
-    data.terraform_remote_state.bootstrap_control_plane.outputs.vms_security_group_id
+    local.default_cp_sg_id
+  ]
+}
+
+output "credhub_lb_security_group_id" {
+  value = [
+    module.credhub_nlb.target_security_group_id,
+    local.default_cp_sg_id
+  ]
+}
+
+output "uaa_lb_security_group_id" {
+  value = [
+    module.uaa_nlb.target_security_group_id,
+    local.default_cp_sg_id
   ]
 }
 

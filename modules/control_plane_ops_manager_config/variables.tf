@@ -18,6 +18,14 @@ variable "admin_users" {
 variable "concourse_worker_role_name" {
 }
 
+variable "credhub_lb_security_group_id" {
+  type = list(string)
+}
+
+variable "uaa_lb_security_group_id" {
+  type = list(string)
+}
+
 variable "concourse_lb_security_group_id" {
   type = list(string)
 }
@@ -86,6 +94,11 @@ variable "root_domain" {
 variable "credhub_tg_names" {
   type        = list(string)
   description = "List of nlb target group names which CREDHUB should be attached to."
+}
+
+variable "uaa_tg_names" {
+  type        = list(string)
+  description = "List of nlb target group names which UAA should be attached to."
 }
 
 variable "uaa_elb_names" {

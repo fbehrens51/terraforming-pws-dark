@@ -63,6 +63,16 @@ variable "concourse_db_engine" {
 }
 
 variable "concourse_db_engine_version" {
-  default = "9.6"
+  default     = "9.6"
   description = "prefix version (e.g. 9.6, not 9.6.3) since we allow patch updates."
+}
+
+variable "control_plane_credhub_nlb" {
+  type    = bool
+  default = false
+}
+
+variable "control_plane_uaa_nlb" {
+  type    = bool
+  default = false
 }

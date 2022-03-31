@@ -163,6 +163,12 @@ vmextensions-configuration:
     iam_instance_profile: ${concourse_worker_role_name}
     metadata_options:
       http_put_response_hop_limit: 5
+- name: credhub-lb-security-group
+  cloud_properties:
+    security_groups: ${credhub_lb_security_group_id}
+- name: uaa-lb-security-group
+  cloud_properties:
+    security_groups: ${uaa_lb_security_group_id}
 - name: concourse-lb-security-group
   cloud_properties:
     security_groups: ${concourse_lb_security_group_id}
