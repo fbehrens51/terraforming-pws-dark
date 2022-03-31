@@ -83,6 +83,7 @@ resource-config:
       id: ${scale.credhub}
     internet_connected: false
     elb_names: ${credhub_elb_names}
+    additional_vm_extensions:
     - credhub-lb-security-group
   uaa:
     instances: automatic
@@ -90,6 +91,7 @@ resource-config:
       id: ${scale.uaa}
     internet_connected: false
     elb_names: ${uaa_elb_names}
+    additional_vm_extensions:
     - uaa-lb-security-group
   web:
     instances: automatic
