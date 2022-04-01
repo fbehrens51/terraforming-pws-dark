@@ -295,8 +295,8 @@ resource-config:
     additional_networks: []
     additional_vm_extensions:
     - tsdb_instance_profile
-    elb_names:
-    - ${grafana_elb_id}
+    - grafana_lb_security_group_id
+    elb_names: [${grafana_elb_id}]
     instance_type:
       id: ${scale.grafana}
     instances: automatic

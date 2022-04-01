@@ -498,6 +498,9 @@ variable "infrastructure_subnet_ids" {
 variable "vms_security_group_id" {
 }
 
+variable "grafana_lb_security_group_id" {
+}
+
 variable "ops_manager_ssh_public_key_name" {
 }
 

@@ -1,6 +1,9 @@
 variable "root_domain" {
 }
 
+variable "grafana_tg_names" {
+}
+
 variable "grafana_elb_id" {
 }
 
@@ -135,7 +138,7 @@ locals {
     hw_vpc_azs                           = indent(2, join("", data.template_file.hw_vpc_azs.*.rendered))
     singleton_availability_zone          = var.singleton_availability_zone
     region                               = var.region
-    grafana_elb_id                       = var.grafana_elb_id
+    grafana_elb_id                       = "${join(",", [var.grafana_elb_id], formatlist("alb:%s", var.grafana_tg_names))}"
     grafana_uaa_client_secret            = var.grafana_uaa_client_secret
     uaa_url                              = "https://uaa.${module.domains.system_fqdn}"
     smtp_enabled                         = var.smtp_from == "" ? false : true

@@ -180,6 +180,9 @@ vmextensions-configuration:
 - name: tsdb_instance_profile
   cloud_properties:
     iam_instance_profile: ${tsdb_instance_profile}
+- name: grafana_lb_security_group_id
+  cloud_properties:
+    security_groups: ${grafana_lb_security_group_id}
 %{ for vpc_id, security_group in isolation_segment_to_security_groups ~}
 - name: isolation-segment-${vpc_id}
   cloud_properties:

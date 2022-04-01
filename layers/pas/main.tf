@@ -221,6 +221,22 @@ module "rds_subnet_group" {
   tags               = local.modified_tags
 }
 
+module "grafana_nlb" {
+  source                   = "../../modules/nlb/create"
+  env_name                 = var.global_vars.name_prefix
+  internetless             = var.internetless
+  public_subnet_ids        = module.infra.public_subnet_ids
+  tags                     = local.modified_tags
+  vpc_id                   = local.vpc_id
+  egress_cidrs             = module.pas.pas_subnet_cidrs
+  short_name               = "grafana"
+  port                     = 443
+  health_check_path        = "/api/health"
+  health_check_port        = 443
+  health_check_proto       = "HTTPS"
+  health_check_cidr_blocks = module.infra.public_subnet_cidrs
+}
+
 module "grafana_elb" {
   source            = "../../modules/elb/create"
   env_name          = var.global_vars.name_prefix
@@ -307,6 +323,12 @@ variable "global_vars" {
   type = any
 }
 
+variable "pas_grafana_nlb" {
+  type        = bool
+  default     = false
+  description = "false = use elb, true = use nlb"
+}
+
 locals {
 
   env_name      = var.global_vars.env_name
@@ -379,11 +401,26 @@ output "pas_elb_id" {
 }
 
 output "grafana_elb_dns_name" {
-  value = module.grafana_elb.dns_name
+  value = var.pas_grafana_nlb == true ? module.grafana_nlb.dns_name : module.grafana_elb.dns_name
 }
 
 output "grafana_elb_id" {
   value = module.grafana_elb.my_elb_id
+}
+
+output "grafana_tg_names" {
+  value = module.grafana_nlb.nlb_tg_ids
+}
+
+output "grafana_nlb_id" {
+  value = module.grafana_nlb.my_nlb_id
+}
+
+output "grafana_lb_security_group_id" {
+  value = [
+    module.grafana_nlb.target_security_group_id,
+    module.infra.vms_security_group_id
+  ]
 }
 
 output "postgres_rds_address" {

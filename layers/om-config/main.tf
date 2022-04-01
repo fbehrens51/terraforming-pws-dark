@@ -243,6 +243,7 @@ module "om_config" {
   infrastructure_subnet_gateways           = data.terraform_remote_state.pas.outputs.infrastructure_subnet_gateways
   infrastructure_subnet_ids                = data.terraform_remote_state.pas.outputs.infrastructure_subnet_ids
   vms_security_group_id                    = data.terraform_remote_state.pas.outputs.vms_security_group_id
+  grafana_lb_security_group_id             = data.terraform_remote_state.pas.outputs.grafana_lb_security_group_id
   ops_manager_ssh_public_key_name          = local.om_key_name
   ops_manager_ssh_private_key              = data.terraform_remote_state.pas.outputs.om_private_key_pem
 
