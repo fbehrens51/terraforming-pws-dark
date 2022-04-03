@@ -1,0 +1,26 @@
+UAA and CREDHUB commands from the story.
+
+(aws elb describe-load-balancers | gojq -re '.LoadBalancerDescriptions[] | "\(.LoadBalancerName) \(.Scheme) \(.DNSName)"';aws elbv2 describe-load-balancers | gojq -re '.LoadBalancers[] | "\(.LoadBalancerName) \(.Scheme) \(.DNSName)"' ) |sort| column -t
+aws elbv2 describe-target-groups  | gojq -re '.TargetGroups| sort_by(.TargetGroupArn)[]               | select(.TargetGroupName  | test("credhub|uaa")) | .TargetGroupArn' | xargs -tri aws elbv2 describe-target-health --target-group-arn {} | gojq -ce .
+aws elb describe-load-balancers   | gojq -re '.LoadBalancerDescriptions| sort_by(.LoadBalancerName)[] | select(.LoadBalancerName | test("credhub|uaa")).LoadBalancerName'  | xargs -tri aws elb describe-instance-health --load-balancer-name {} | gojq -ce .
+aws elbv2 describe-load-balancers | gojq -re '.LoadBalancers[] | select(.DNSName | test("credhub")) | .DNSName' | xargs -tri openssl s_client -connect {}:8844 2> /dev/null | /usr/local/bin/step certificate inspect --short --bundle
+aws elbv2 describe-load-balancers | gojq -re '.LoadBalancers[] | select(.DNSName | test("uaa"))     | .DNSName' | xargs -tri openssl s_client -connect {}:8443 2> /dev/null | /usr/local/bin/step certificate inspect --short --bundle
+nslookup credhub.ci.pcfeagleblue.cf-app.com
+nslookup uaa.ci.pcfeagleblue.cf-app.com
+wget -qO - https://credhub.ci.pcfeagleblue.cf-app.com:8844/info --no-check-certificate | gojq -ce .
+wget -qO - https://uaa.ci.pcfeagleblue.cf-app.com:8443/info --no-check-certificate | gojq -ce .
+
+Grafana query The ident is uaa or credhub
+{ident="uaa"} |= "<YOUR WORKSTATION IP>" | json | line_format "{{.host}} {{.message}}"
+
+GRAFANA commands from the story.
+
+# get the LB name
+aws elbv2 describe-load-balancers | gojq -re '.LoadBalancers[] | select(.DNSName | test("grafana")) | .DNSName'
+aws elbv2 describe-load-balancers | gojq -re '.LoadBalancers[] | select(.DNSName | test("grafana")) | .DNSName' | xargs -tri openssl s_client -connect {}:443 2> /dev/null | /usr/local/bin/step certificate inspect --short
+wget -qO- https://pws-dark-dev-grafana-nlb-bcfcc4148dab641a.elb.us-east-2.amazonaws.com/ --no-check-certificate > /dev/null
+wget -qO- https://pws-dark-dev-grafana-nlb-bcfcc4148dab641a.elb.us-east-2.amazonaws.com/api/health --no-check-certificate --referer=mark_testing | gojq -ce .
+aws elbv2 describe-target-groups | gojq -re '.TargetGroups| sort_by(.TargetGroupArn)[] | select(.TargetGroupName | test("grafana")) | .TargetGroupArn' | xargs -tri aws elbv2 describe-target-health --target-group-arn {} | gojq -ce .
+
+Grafana query The ident is grafana
+{ident="grafana"} |= "<YOUR WORKSTATION IP>" | json | line_format "{{.host}} {{.message}}"
