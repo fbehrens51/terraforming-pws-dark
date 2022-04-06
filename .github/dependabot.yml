@@ -3,4 +3,7 @@ updates:
 - package-ecosystem: gomod
   directory: modules/download_certs
   schedule:
-    interval: daily
+    interval: weekly
+    day: wednesday
+    time: "00:01"
+    timezone: EST5EDT
