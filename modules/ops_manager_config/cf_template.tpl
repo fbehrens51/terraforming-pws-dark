@@ -55,8 +55,6 @@ product-properties:
     value: 0
   .nfs_server.blobstore_internal_access_rules:
     value: allow 10.0.0.0/8;,allow 172.16.0.0/12;,allow 192.168.0.0/16;
-  .properties.allow_certs_without_san:
-    value: false
   .properties.app_graceful_shutdown_period_in_seconds:
     value: 10
   .properties.app_log_rate_limiting:

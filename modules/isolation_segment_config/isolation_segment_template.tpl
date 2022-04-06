@@ -14,8 +14,6 @@ product-properties:
     value: 20
   .isolated_router_${iso_seg_tile_suffix_underscore}.request_timeout_in_seconds:
     value: 900
-  .properties.allow_certs_without_san:
-    value: false
   .properties.app_graceful_shutdown_period_in_seconds:
     value: 10
   .properties.app_log_rate_limiting:
