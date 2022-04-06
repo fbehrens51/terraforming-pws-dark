@@ -15,11 +15,6 @@ variable "internetless" {
   type = bool
 }
 
-variable "scanner_subnet_id" {
-  type    = string
-  default = ""
-}
-
 data "terraform_remote_state" "paperwork" {
   backend = "s3"
 
@@ -42,14 +37,13 @@ data "terraform_remote_state" "bootstrap_control_plane" {
   }
 }
 
-data "aws_vpc" "pas_vpc" {
-  id = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
-}
 
 locals {
 
   env_name      = var.global_vars.env_name
-  modified_name = "${local.env_name} rapid7 scanner"
+  modified_name = "${local.env_name} rapid7 sc"
+  formatted_name = replace(local.modified_name, " ", "-")
+  rapid7_sc_port = "3780"
   modified_tags = merge(
   var.global_vars["global_tags"],
   var.global_vars["instance_tags"],
@@ -61,6 +55,55 @@ locals {
   },
   )
 
+}
+
+resource "aws_lb" "rapid7_sc_lb" {
+  name                             = local.formatted_name
+  internal                         = false
+  load_balancer_type               = "network"
+  subnets                          = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_public_subnet_ids
+  enable_cross_zone_load_balancing = true
+  tags = merge(
+    local.modified_tags,
+    {
+      "Name" = local.modified_name
+    },
+  )
+}
+
+resource "aws_lb_target_group" "rapid7_sc_nlb_https" {
+  name_prefix = "r7sc"
+  port        = local.rapid7_sc_port
+  protocol    = "TCP"
+  vpc_id      = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
+
+  tags = {
+    Name = "${local.formatted_name}-${local.rapid7_sc_port}"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+#
+#  health_check {
+#    port = module.syslog_ports.loki_healthcheck_port
+#    path = "/ready"
+#  }
+}
+
+resource "aws_lb_listener" "rapid7_sc_nlb_https" {
+  load_balancer_arn = aws_lb.rapid7_sc_lb.arn
+  protocol          = "TCP"
+  port              = 443
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.rapid7_sc_nlb_https.arn
+  }
+}
+
+
+locals {
   scanner_egress_rules = [
     {
       description = "Allow all portocols/ports to everywhere"
@@ -72,10 +115,10 @@ locals {
 
   scanner_ingress_rules = [
     {
-      description = "Allow https to Security Console"
-      port        = "3780"
+      description = "Allow TCP from Rapid7SC"
+      port        = "40814"
       protocol    = "tcp"
-      cidr_blocks = "0.0.0.0/0"
+      cidr_blocks = join(",", data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs)
     },
     {
       description = "Allow ssh/22 from cp_vpc"
@@ -93,25 +136,26 @@ locals {
   ]
 }
 
-
-module "rapid7_eni" {
-  source        = "../../modules/eni_per_subnet"
-  create_eip    = !var.internetless
-  ingress_rules = local.scanner_ingress_rules
-  egress_rules  = local.scanner_egress_rules
-
-  tags = merge(
-  var.global_vars["global_tags"],
-  {
-    "Name" = "${local.env_name} rapid7"
-  },
-  )
-  eni_count    = 1
-  subnet_ids   = length(var.scanner_subnet_id) > 1 ? [var.scanner_subnet_id] : [data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_public_subnet_ids[2]]
-
+data "aws_vpc" "pas_vpc" {
+  id = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
 }
 
-output "eni_ids" {
-  value = module.rapid7_eni.eni_ids
+module "scanner_eni" {
+  source        = "../../modules/eni_per_subnet"
+  create_eip    = false
+  ingress_rules = local.scanner_ingress_rules
+  egress_rules  = local.scanner_egress_rules
+  tags = merge(
+    var.global_vars["global_tags"],
+    {
+      "Name" = "${local.env_name} r7-engine"
+    },
+  )
+  eni_count    = 2
+  subnet_ids   = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_ids
+}
+
+output "scanner_eni_ids" {
+  value = module.scanner_eni.eni_ids
 }
 
