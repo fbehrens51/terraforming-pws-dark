@@ -71,6 +71,10 @@ locals {
       oscap_store = "m5.large"
     }
 
+    p-scs = {
+      spring-cloud-services = "m5.large"
+    }
+
     p-healthwatch2 = {
       grafana   = "m5.large"
       pxc       = "m5.large"
