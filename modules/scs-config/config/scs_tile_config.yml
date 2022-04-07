@@ -1,0 +1,91 @@
+product-name: p_spring-cloud-services
+product-properties:
+  .properties.allow_paid_service_plans:
+    value: false
+  .properties.apply_open_security_group:
+    value: false
+  .properties.concurrent_service_instance_upgrade:
+    value: 5
+  .properties.config_server_access:
+    value: global
+  .properties.config_server_credhub_enabled:
+    value: true
+  .properties.java_buildpack:
+    value: java_buildpack_offline
+  .properties.org:
+    value: p-spring-cloud-services
+  .properties.service_completion_timeout_minutes:
+    value: 30
+  .properties.service_key_access:
+    value: false
+  .properties.service_registry_access:
+    value: global
+  .properties.space:
+    value: p-spring-cloud-services
+network-properties:
+  network:
+    name: pas
+  other_availability_zones: [{"name":"us-east-2a"},{"name":"us-east-2b"},{"name":"us-east-2c"}]
+  singleton_availability_zone:
+    name: us-east-2a
+resource-config:
+  spring-cloud-services:
+    max_in_flight: 1
+    additional_networks: []
+    additional_vm_extensions: []
+    elb_names: []
+    instance_type:
+      id: m5.large
+    instances: automatic
+    internet_connected: false
+    persistent_disk:
+      size_mb: automatic
+    swap_as_percent_of_memory_size: automatic
+errand-config:
+  destroy-brokers:
+    pre-delete-state: true
+  register-brokers:
+    post-deploy-state: true
+  upgrade-all-instances:
+    post-deploy-state: false
+syslog-properties:
+  address: fluentd.pcfeagledev.cf-app.com
+  custom_rsyslog_configuration: null
+  enabled: true
+  forward_debug_logs: false
+  permitted_peer: fluentd.pcfeagledev.cf-app.com
+  port: 8090
+  queue_size: null
+  ssl_ca_certificate: |-
+    -----BEGIN CERTIFICATE-----
+    MIIFODCCAyCgAwIBAgIQXnQysuhvARvNhEw7Fvc+CDANBgkqhkiG9w0BAQsFADA2
+    MRUwEwYDVQQKEwxwd3MgZGFyayBkZXYxHTAbBgNVBAMTFHB3cyBkYXJrIGRldiBS
+    b290IENBMB4XDTIyMDExOTE3MTkzOVoXDTIzMDExOTE3MTkzOVowNjEVMBMGA1UE
+    ChMMcHdzIGRhcmsgZGV2MR0wGwYDVQQDExRwd3MgZGFyayBkZXYgUm9vdCBDQTCC
+    AiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBANywfA/+ejmRXGjCEisCwSvg
+    ZkDBeQrtaVwgPpsC1V1p6cFDTHq3FGlNyVSq+ee8DL0xgVaKs10us9f+zaLPArKN
+    kM9EAT13mM+Ov6VFZEgq015LA0ZADwSiSbqARQGgkBvaz7XfbESJ4vh16MQQkQ7y
+    Wl3kG1Yjajrd8EQ3KHztI0+vw1cnz2Jf3TaAmQ5vZ9XE6H4O6A28V0ixV5skUXFI
+    KUObPq2KXpY7voLNPozf/FcMFHa7CFsRkCp/RmMTRqCluwUKAfK1CNCLpKiDSR9G
+    vmpE3csLoBPErZJpniwP0zcU16/CsymWh2SFeuJdPwpxffu4TG8corclYsqdd92J
+    ijkgXm1m6dNLfrueSPeGqjCHI4JDQ0DORgwaRouxkK5TXz4rTM6f2ZsRwqGFf4Fg
+    9/jjE5yvzwcd21qJAV73qd8CuK68c4m8NPKS+7FgSl3xkYWr+h7NdZWm3xgpAQLg
+    SMFQ4Q6zzEbn3Xw6a1GRO/vdyh5tjWF+ebVoPOBuwIIp39l27MpbEwfBpUdySO51
+    44DeY+oAMPl4Zy0AeHC942tPqHYez2kwp9W1b2E/FESatUHI6E40l6W/7nL05Oi9
+    Gc0ZNlPws/SZVVpPU/4HYMT8eJilQeVq1T9UwurHl13fcPVlzDhfg450QJp6SKMy
+    2HsxTiCN1PrOQEmKYfWRAgMBAAGjQjBAMA4GA1UdDwEB/wQEAwIChDAPBgNVHRMB
+    Af8EBTADAQH/MB0GA1UdDgQWBBTGnbv/cQUX3Tr3cgYsoKdAteQpDDANBgkqhkiG
+    9w0BAQsFAAOCAgEAvUfXSeoFfWqc7tY9g2vLwP5a7umnYrMbIPu5iM8osjGQikiS
+    sZKq0HBD0dokzbGlFpFdMkFDhPSyohD1G+5vAlG8j/Y8uJBeDqnMs6KHpmyUYf+K
+    1g8y1kUPLbIoyKhz4FV+/Z5KS9ZOl36ReCIc+FXeDMTmCQ+MjppZXMND2irl9pNZ
+    e0qcvfFz7nooYQPLohE9m4kaqL/sNz8NwU9doJl7vt6OsT9PtyvI+tMt+wftwLM0
+    WIQ6bg2ID6WeWLspKcPas2LCuIMcTE47urr3pmeJGJAUiBxX5CW1LDXjb8hZuMfx
+    BVDDRycrmMvvLI8IJ78JiKPgwqnrRjnhWgGD4bcBec+QcZAgGmb4a/T79VUUF0yg
+    T0Bd1JSHT5vYbgV4eA2MvxvWNeIgXpkFg4JgCTsrYZOOBmvcBUOvMdG6eaey8jdK
+    kDNjkk5OkWY8K+EIf5jFzHNuxwkgpx0OPiDivPXdzvlb/P+wRkQ3KZ2fMo4fkUAS
+    K+X22oZmVnAa8dXZL82C2Y7Qc6BmVRkUTC8qiAkapD/48H31d29by2Ot6s2pYU3g
+    26mnpSdL/2VhhNBcDBKNbHacVu4/8WvnwqCoFY01Mn1M+K3PrfYl6gL3tjt2Duow
+    UTnawY7YRj38AV1NdQv2LQzGJqZcds9h/fOUK8DOKAKuCBf6POIvbJuMNEA=
+    -----END CERTIFICATE-----
+  tls_enabled: true
+  transport_protocol: tcp
