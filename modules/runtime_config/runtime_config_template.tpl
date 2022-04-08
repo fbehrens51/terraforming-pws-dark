@@ -3,8 +3,6 @@ product-properties:
   .properties.ssh_banner:
     value: |
       ${indent(6, ssh_banner)}
-  .properties.stop_timeout:
-    value: 30
   .properties.users_to_add:
     value: %{if length(extra_users)<1}[]%{endif}
     %{~ for user in extra_users ~}
