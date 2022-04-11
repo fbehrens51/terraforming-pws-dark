@@ -220,3 +220,4 @@ module "domains" {
 //sha512sum -c Rapid7Setup-Linux64.bin.sha512sum
 //chmod +x Rapid7Setup-Linux64.bin
 //./Rapid7Setup-Linux64.bin -c
+//need to see if it will support using a response file or another way to answer it's prompts

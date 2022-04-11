@@ -159,3 +159,6 @@ output "scanner_eni_ids" {
   value = module.scanner_eni.eni_ids
 }
 
+output "console-tg-id" {
+  value = aws_lb_target_group.rapid7_sc_nlb_https.id
+}

@@ -1,0 +1,353 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Deploy of Security Console used by Rapid7 InsightVM or Nexpose --AWSMP::9077b9ec-84f0-40c1-a301-d930d84fdd61::005b2840-c027-4c7f-86bd-40aa1e04d039
+Parameters:
+  InstanceType:
+    Description: 'Which EC2 instance type would you like your Security Console to
+      run on? Must input an x86_64 instance type of size large or greater. Default:
+      m5.xlarge'
+    Type: String
+    Default: m5.xlarge
+    AllowedPattern: ^[a-z0-9]+.[0-9x]*large$
+    ConstraintDescription: Must be a valid EC2 instance type and its size must be
+      large or greater.
+  AllowSSHAccessToCIDR:
+    AllowedValues:
+    - 'Yes'
+    - 'No'
+    Default: 'No'
+    Description: Indicate whether or not you would like the Security Console to be
+      accessible by SSH from a given CIDR range. SSH access via CIDR will only work
+      if you have assigned a public IP address to your Security Console. If you select
+      'Yes', please include the CIDR block to allow SSH access from using the 'CIDR
+      Range to allow SSH from' field below. If you select 'No', you can later edit
+      the Console's EC2 Security Group ('R7SecurityConsoleSG') to allow ingress.
+    Type: String
+  CIDRToAllowSSH:
+    Type: String
+    Default: ''
+    Description: (Optional) This is only needed if you have selected 'Yes' in 'Allow
+      SSH Access From a CIDR Range?' Type in the CIDR range that will have SSH access
+      to your Security Console.
+  AllowSSHAccessToSG:
+    AllowedValues:
+    - 'Yes'
+    - 'No'
+    Default: 'No'
+    Description: Indicate whether or not you would like the Security Console to be
+      accessible by SSH from a given EC2 Security Group. This is useful for jumphost
+      setups. If you select 'Yes', please include the Security Group ID to allow SSH
+      access from using the 'Security group to allow SSH from' field below. If you
+      select 'No', you can later edit the Console's EC2 Security Group ('R7SecurityConsoleSG')
+      to allow ingress.
+    Type: String
+  SGToAllowSSH:
+    Type: String
+    Default: ''
+    Description: (Optional) This is only needed if you have selected 'Yes' in 'Allow
+      SSH Access from a Security Group?' Type in the EC2 Security Group ID that should
+      have SSH access to your console.
+  AllowUIAccessToCIDR:
+    AllowedValues:
+    - 'Yes'
+    - 'No'
+    Default: 'No'
+    Description: Indicate whether or not you would like the Security Console WebUI
+      to be accessible from a given CIDR range. WebUI access via CIDR will only work
+      if you have assigned a public IP address to your Security Console. If you select
+      'Yes', please include the CIDR block to allow UI access from using the 'CIDR
+      Block to allow WebUI Access from' field below. If you select 'No', you can later
+      edit the Console's EC2 Security Group ('R7SecurityConsoleSG') to allow ingress.
+    Type: String
+  CIDRToAllowUI:
+    Type: String
+    Default: ''
+    Description: (Optional) This is only needed if you have selected 'Yes' in 'Allow
+      WebUI Access from a CIDR Range?' Type in the CIDR range that will be able to
+      hit the WebUI of the Security Console through port 3780.
+  AllowUIAccessToSG:
+    AllowedValues:
+    - 'Yes'
+    - 'No'
+    Default: 'No'
+    Description: Indicate whether or not you would like the Security Console WebUI
+      to be accessible from a given EC2 Security Group. This is useful for port forwarding
+      setups. If you select 'Yes', please include the Security Group ID to allow WebUI
+      access from in the 'Security Group to allow WebUI Access from' parameter. If
+      you select 'No', you can later edit the Console's EC2 Security Group ('R7SecurityConsoleSG')
+      to allow ingress.
+    Type: String
+  SGToAllowUI:
+    Type: String
+    Default: ''
+    Description: (Optional) This is only needed if you have selected 'Yes' in 'Allow
+      WebUI Access from a Security Group?' Type in the Security Group ID that should
+      have WebUI access to your Security Console on port 3780.
+  RootVolumeSize:
+    Type: Number
+    Description: 'The size of the root disk (in gigabytes).  Default: 1024, Minimum:
+      100, Maximum: 8192'
+    MinValue: 100
+    Default: 1024
+    MaxValue: 8192
+    ConstraintDescription: Root Volume Size has to be a number between 100 and 8192
+  VPC:
+    Type: AWS::EC2::VPC::Id
+    Description: The VPC that you want to launch the Security Console into.
+    AllowedPattern: .+
+    ConstraintDescription: VPC ID cannot be empty.
+  Subnet:
+    Type: AWS::EC2::Subnet::Id
+    Description: The subnet that you want to launch the Security Console into. Make
+      sure you choose a subnet that is inside the VPC you have selected.
+    AllowedPattern: .+
+    ConstraintDescription: Subnet ID cannot be empty.
+  AssociateConsoleWithPublicIpAddress:
+    AllowedValues:
+    - 'True'
+    - 'False'
+    Default: 'True'
+    Description: Indicates whether a public IP address should be assigned to your
+      Security Console. Your Console will need a public IP address if you won't be
+      using a jumphost/port forwarding to access it.
+    Type: String
+  AccessKeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: The name for an EC2 Access Key which you can access. This will be
+      used to access the Security Console and is required for spinning up the instance.
+      If you don't already have access to an EC2 key pair, you should create a new
+      one in the EC2 page before deploying this template.
+    AllowedPattern: .+
+    ConstraintDescription: Key Pair Name cannot be empty.
+Mappings:
+  RegionMap:
+    us-east-1:
+      '64': ami-04aca9875f7b454f1
+    us-east-2:
+      '64': ami-06dfb7a6064cfa1bd
+    us-west-1:
+      '64': ami-00cbbff89246214c4
+    us-west-2:
+      '64': ami-0efbb88f8a59b5839
+    ca-central-1:
+      '64': ami-0695c81065f06ab1a
+    eu-central-1:
+      '64': ami-0f28422a33cbc860e
+    eu-west-1:
+      '64': ami-0506c7aa925fc95be
+    eu-west-2:
+      '64': ami-00504093e22636d28
+    eu-west-3:
+      '64': ami-09427b4f09e4c3ac0
+    eu-north-1:
+      '64': ami-088bd34abed364e19
+    eu-south-1:
+      '64': ami-0864c1effd4f7d781
+    ap-east-1:
+      '64': ami-0a30c6df0a727706d
+    ap-southeast-1:
+      '64': ami-02929cc57fb445ed0
+    ap-southeast-2:
+      '64': ami-0ea86dd6aae9d5048
+    ap-south-1:
+      '64': ami-0f948437cb8d162a3
+    ap-northeast-1:
+      '64': ami-0922063d78012db4e
+    ap-northeast-2:
+      '64': ami-0822592e6caf696dd
+    sa-east-1:
+      '64': ami-0cb8a3455cb86df56
+    me-south-1:
+      '64': ami-0dde5b0910331cabd
+Resources:
+  R7SecurityConsole:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !FindInMap [RegionMap, !Ref 'AWS::Region', '64']
+      KeyName: !Ref 'AccessKeyName'
+      InstanceType: !Ref 'InstanceType'
+      IamInstanceProfile: !Ref 'R7SecurityConsoleInstanceProfile'
+      BlockDeviceMappings:
+      - DeviceName: /dev/sda1
+        Ebs:
+          VolumeSize: !Ref 'RootVolumeSize'
+      NetworkInterfaces:
+      - AssociatePublicIpAddress: !Ref 'AssociateConsoleWithPublicIpAddress'
+        DeviceIndex: '0'
+        GroupSet:
+        - !Ref 'R7SecurityConsoleSG'
+        SubnetId: !Ref 'Subnet'
+      Tags:
+        - Key: "Name"
+          Value: "r7-console"
+  R7SecurityConsoleSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: SG for Rapid7 Security Console
+      VpcId: !Ref 'VPC'
+  R7SecurityConsoleSGEgress:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      GroupId: !Ref 'R7SecurityConsoleSG'
+      CidrIp: 0.0.0.0/0
+      FromPort: 0
+      ToPort: 65535
+      IpProtocol: '-1'
+  CIDRSSHIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Condition: CIDRSSHAccess
+    Properties:
+      Description: SSH Ingress from a CIDR block to the Security Console
+      GroupId: !Ref 'R7SecurityConsoleSG'
+      CidrIp: !Ref 'CIDRToAllowSSH'
+      FromPort: 22
+      ToPort: 22
+      IpProtocol: tcp
+  SGSSHIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Condition: SGSSHAccess
+    Properties:
+      Description: SSH Ingress from a Security Group to the Security Console
+      GroupId: !Ref 'R7SecurityConsoleSG'
+      SourceSecurityGroupId: !Ref 'SGToAllowSSH'
+      FromPort: 22
+      ToPort: 22
+      IpProtocol: tcp
+  CIDRUIIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Condition: CIDRUIAccess
+    Properties:
+      Description: WebUI access for the Security Console from a CIDR Range
+      GroupId: !Ref 'R7SecurityConsoleSG'
+      CidrIp: !Ref 'CIDRToAllowUI'
+      FromPort: 3780
+      ToPort: 3780
+      IpProtocol: tcp
+  SGUIIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Condition: SGUIAccess
+    Properties:
+      Description: WebUI access for the Security Console from a Security Group
+      GroupId: !Ref 'R7SecurityConsoleSG'
+      SourceSecurityGroupId: !Ref 'SGToAllowUI'
+      FromPort: 3780
+      ToPort: 3780
+      IpProtocol: tcp
+  R7SecurityConsoleRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - ec2.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: /
+      Policies:
+      - PolicyName: R7-AssetSync-Minimal-Permissions
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+          - Effect: Allow
+            Action:
+            - cloudtrail:LookupEvents
+            - cloudtrail:DescribeTrails
+            - ec2:DescribeInstances
+            - ec2:DescribeImages
+            - ec2:DescribeAddresses
+            - ec2:DescribeNetworkInterfaces
+            Resource: '*'
+      - PolicyName: R7-S3-Access
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - s3:*
+              Resource: '*'
+  R7SecurityConsoleInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+      - !Ref 'R7SecurityConsoleRole'
+Rules:
+  SubnetsInVPC:
+    Assertions:
+    - Assert: !EachMemberIn [!ValueOfAll ['AWS::EC2::Subnet::Id', VpcId], !RefAll 'AWS::EC2::VPC::Id']
+      AssertDescription: 'Error: Selected subnet is not in the VPC you have selected.'
+  PublicIPisAssigned:
+    RuleCondition: !Equals [!Ref 'AssociateConsoleWithPublicIpAddress', 'No']
+    Assertions:
+    - Assert: !Equals [!Ref 'AllowSSHAccessToCIDR', 'No']
+      AssertDescription: If you don't provide your security console with a public
+        IP address you should use security group ingress for SSH.
+    - Assert: !Equals [!Ref 'AllowUIAccessToCIDR', 'No']
+      AssertDescription: If you don't provide your security console with a public
+        IP address you should use security group ingress for the WebUI.
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+    - Label:
+        default: Instance Configuration
+      Parameters:
+      - InstanceType
+      - RootVolumeSize
+      - AccessKeyName
+    - Label:
+        default: Network Configuration
+      Parameters:
+      - VPC
+      - Subnet
+      - AssociateConsoleWithPublicIpAddress
+    - Label:
+        default: Security Group Configuration
+      Parameters:
+      - AllowSSHAccessToCIDR
+      - CIDRToAllowSSH
+      - AllowSSHAccessToSG
+      - SGToAllowSSH
+      - AllowUIAccessToCIDR
+      - CIDRToAllowUI
+      - AllowUIAccessToSG
+      - SGToAllowUI
+    ParameterLabels:
+      AllowSSHAccessToCIDR:
+        default: Allow SSH Access From a CIDR Range?
+      CIDRToAllowSSH:
+        default: CIDR Range to Allow SSH From
+      AllowSSHAccessToSG:
+        default: Allow SSH Access From a Security Group?
+      SGToAllowSSH:
+        default: Security Group to Allow SSH From
+      AllowUIAccessToCIDR:
+        default: Allow WebUI Access From a CIDR Range?
+      CIDRToAllowUI:
+        default: CIDR Block to Allow WebUI Access From
+      AllowUIAccessToSG:
+        default: Allow WebUI Access From a Security Group?
+      SGToAllowUI:
+        default: Security Group to Allow WebUI Access From
+      InstanceType:
+        default: Instance Type
+      RootVolumeSize:
+        default: Root Volume Size
+      VPC:
+        default: VPC ID
+      Subnet:
+        default: Subnet ID
+      AssociateConsoleWithPublicIpAddress:
+        default: Assign a public IP address to your Security Console?
+      AccessKeyName:
+        default: Key Pair Name
+Conditions:
+  CIDRSSHAccess: !Equals ['Yes', !Ref 'AllowSSHAccessToCIDR']
+  SGSSHAccess: !Equals ['Yes', !Ref 'AllowSSHAccessToSG']
+  CIDRUIAccess: !Equals ['Yes', !Ref 'AllowUIAccessToCIDR']
+  SGUIAccess: !Equals ['Yes', !Ref 'AllowUIAccessToSG']
+Outputs:
+  InstanceID:
+    Description: The Instance ID
+    Value: !Ref R7SecurityConsole

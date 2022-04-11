@@ -11,14 +11,3 @@ variable "global_vars" {
   type = any
 }
 
-variable "ConsoleSecurityGroupIDToUpdate" {
-  type = string
-}
-
-variable "SecurityConsoleHost" {
-  type = string
-}
-
-variable "SecurityConsoleSecret" {
-  type = string
-}
