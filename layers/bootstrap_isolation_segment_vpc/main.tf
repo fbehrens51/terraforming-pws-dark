@@ -86,21 +86,12 @@ data "aws_vpc" "pas_vpc" {
   id = local.pas_vpc_id
 }
 
-resource "null_resource" "vpc_tags" {
-  triggers = {
-    vpc_id   = var.vpc_id
-    name     = "${local.env_name} | isolation segment vpc"
-    env_name = local.env_name
-  }
-
-  provisioner "local-exec" {
-    command = "aws ec2 create-tags --resources ${self.triggers.vpc_id} --tags 'Key=Name,Value=${self.triggers.name}' 'Key=Purpose,Value=isolation-segment' 'Key=env_name,Value=${self.triggers.env_name}'"
-  }
-
-  provisioner "local-exec" {
-    when    = destroy
-    command = "aws ec2 delete-tags --resources ${self.triggers.vpc_id} --tags 'Key=Name,Value=${self.triggers.name}' 'Key=Purpose,Value=isolation-segment' 'Key=env_name,Value=${self.triggers.env_name}'"
-  }
+module "tag_vpc" {
+  source = "../../modules/vpc_tagging"
+  vpc_id = var.vpc_id
+  name = "isolation segment"
+  purpose = "isolation-segment"
+  env_name = local.env_name
 }
 
 // we can't use the subnet_per_az module because these subnets are not in a contiguous cidr block

@@ -72,6 +72,14 @@ data "aws_vpc" "vpc" {
   id = data.aws_route_table.route_table.vpc_id
 }
 
+module "tag_vpc" {
+  source = "../../modules/vpc_tagging"
+  vpc_id = data.aws_route_table.route_table.vpc_id
+  name = "bastion"
+  purpose = "bastion"
+  env_name = local.env_name
+}
+
 module "bootstrap_bastion" {
   source            = "../../modules/single_use_subnet"
   availability_zone = var.singleton_availability_zone

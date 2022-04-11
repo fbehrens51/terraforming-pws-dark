@@ -13,6 +13,14 @@ data "aws_vpc" "vpc" {
   id = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
 }
 
+module "tag_vpc" {
+  source = "../../modules/vpc_tagging"
+  vpc_id = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
+  name = "control plane"
+  purpose = "control-plane"
+  env_name = local.env_name
+}
+
 data "aws_route_tables" "cp_private_route_tables" {
   vpc_id = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
   tags = merge(var.global_vars["global_tags"],{"Type"="PRIVATE"})
