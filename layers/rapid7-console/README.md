@@ -14,6 +14,9 @@
 * OS username is `nexpose` and is using the env bot key
 
 ## Replacing the Console currently requires manual staps:
+
+https://docs.rapid7.com/insightvm/database-backuprestore-and-data-retention/
+
 1. Run a backup & copy out to S3
    * On existing/old instance:
      * Run Platform independent DB backup (via admin page)
