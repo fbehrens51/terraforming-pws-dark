@@ -65,6 +65,14 @@ data "aws_vpc" "this_vpc" {
   id = local.es_vpc_id
 }
 
+module "tag_vpc" {
+  source = "../../modules/vpc_tagging"
+  vpc_id = local.es_vpc_id
+  name = "enterprise services"
+  purpose = "enterprise-services"
+  env_name = local.env_name
+}
+
 data "aws_vpc" "pas_vpc" {
   id = local.pas_vpc_id
 }
