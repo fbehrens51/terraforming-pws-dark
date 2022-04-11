@@ -157,6 +157,16 @@ module "pas" {
   s3_logs_bucket               = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
 }
 
+
+module "tag_vpc" {
+  source = "../../modules/vpc_tagging"
+  vpc_id = local.vpc_id
+  name = "pas"
+  purpose = "pas"
+  env_name = local.env_name
+}
+
+
 module "postgres" {
   source = "../../modules/rds/instance"
 
