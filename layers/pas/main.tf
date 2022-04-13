@@ -159,10 +159,10 @@ module "pas" {
 
 
 module "tag_vpc" {
-  source = "../../modules/vpc_tagging"
-  vpc_id = local.vpc_id
-  name = "pas"
-  purpose = "pas"
+  source   = "../../modules/vpc_tagging"
+  vpc_id   = local.vpc_id
+  name     = "pas"
+  purpose  = "pas"
   env_name = local.env_name
 }
 
@@ -613,9 +613,9 @@ resource "aws_s3_bucket_object" "blocked-vpc" {
 
 resource "aws_s3_bucket_object" "allowed-cidr" {
   bucket       = local.secrets_bucket_name
-  content_type = "text/plain"
+  content_type = "application/json"
   key          = "allowed-cidrs/platform-public-cidr"
-  content      = module.calculated_subnets.public_cidr
+  content      = jsonencode({ "description" : "Allow access to foundation public subnet", "destination" : module.calculated_subnets.public_cidr, "protocol" : "all" })
 }
 
 resource "aws_s3_bucket_object" "rds-password" {

@@ -11,7 +11,7 @@ write_files:
       permissions: '0644'
       owner: root:root
   - content: |
-      20 04 * * * root clamscan -ir / --exclude-dir=/sys/ --exclude-dir=/proc/ --stdout | logger -i -t antivirus -p auth.alert
+      20 04 * * * root clamscan -ir / --exclude-dir=/sys/ --exclude-dir=/proc/ --exclude-dir=/opt/rapid7/ --stdout | logger -i -t antivirus -p auth.alert
     path: /etc/cron.d/antivirus
     permissions: '0644'
     owner: root:root
@@ -41,6 +41,7 @@ runcmd:
     augtool set /files/etc/clamd.d/scan.conf/LogSyslog yes
     augtool set /files/etc/clamd.d/scan.conf/ExtendedDetectionInfo yes
     augtool set /files/etc/clamd.d/scan.conf/LocalSocket /var/run/clamd.scan/clamd.sock
+    augtool set /files/etc/clamd.d/scan.conf/ExcludePath ^/opt/rapid7/
     systemctl daemon-reload
     systemctl start clam-freshclam
     systemctl enable clam-freshclam.service

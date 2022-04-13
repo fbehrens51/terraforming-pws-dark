@@ -37,9 +37,13 @@ data "terraform_remote_state" "scaling-params" {
   }
 }
 
+data "aws_vpc" "pas_vpc" {
+  id = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
+}
+
 module "domains" {
   source      = "../../modules/domains"
-  root_domain = local.root_domain
+  root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
 }
 
 module "syslog_ports" {
@@ -47,7 +51,6 @@ module "syslog_ports" {
 }
 
 locals {
-  root_domain         = data.terraform_remote_state.paperwork.outputs.root_domain
   secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
 }
 
@@ -62,4 +65,11 @@ module "scs_config" {
   syslog_host                 = module.domains.fluentd_fqdn
   syslog_port                 = module.syslog_ports.syslog_port
   syslog_ca_cert              = data.terraform_remote_state.paperwork.outputs.syslog_ca_certs_bundle
+}
+
+resource "aws_s3_bucket_object" "allowed-cidr" {
+  bucket       = local.secrets_bucket_name
+  content_type = "application/json"
+  key          = "allowed-cidrs/platform-credhub-scs"
+  content      = jsonencode({ "description" : "Allow application access to foundation credhub", "destination" : data.aws_vpc.pas_vpc.cidr_block, "ports" : "8844", "protocol" : "tcp" })
 }
