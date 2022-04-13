@@ -41,12 +41,13 @@ data "aws_s3_bucket_object" "allowed-cidrs" {
   bucket = data.aws_s3_bucket_objects.allowed-cidr-objects.bucket
 }
 
+# hack .. decode the json so it doesn't get encoded twice
 resource "aws_s3_bucket_object" "asg-tool-input" {
   bucket       = local.secrets_bucket_name
   content_type = "application/json"
   key          = "application-security-group-config.json"
   content = jsonencode({
-    allowed = data.aws_s3_bucket_object.allowed-cidrs.*.body,
+    allowed = [for json in data.aws_s3_bucket_object.allowed-cidrs.* : jsondecode(json.body)],
     blocked = data.aws_s3_bucket_object.blocked-cidrs.*.body,
   })
 }
