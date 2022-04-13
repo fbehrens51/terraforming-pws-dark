@@ -41,6 +41,7 @@ runcmd:
     augtool set /files/etc/clamd.d/scan.conf/LogSyslog yes
     augtool set /files/etc/clamd.d/scan.conf/ExtendedDetectionInfo yes
     augtool set /files/etc/clamd.d/scan.conf/LocalSocket /var/run/clamd.scan/clamd.sock
+    augtool set /files/etc/clamd.d/scan.conf/ExcludePath ^/opt/rapid7/
     systemctl daemon-reload
     systemctl start clam-freshclam
     systemctl enable clam-freshclam.service
