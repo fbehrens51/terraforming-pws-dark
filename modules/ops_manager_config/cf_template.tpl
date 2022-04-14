@@ -183,7 +183,7 @@ product-properties:
     selected_option: rfc3339
     value: rfc3339
   .properties.metric_registrar_blacklisted_tags:
-    value: deployment,job,index,id
+    value: deployment,job,index
   .properties.metric_registrar_enabled:
     value: true
   .properties.metric_registrar_scrape_interval_in_seconds:
