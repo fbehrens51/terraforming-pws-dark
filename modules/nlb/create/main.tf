@@ -21,11 +21,11 @@ module "my_nlb" {
 }
 
 resource "aws_lb_target_group" "my_nlb_tg" {
-  name               = "${local.formatted_env_name}-${var.short_name}-nlb-tg"
-  port               = var.port
-  protocol           = local.instance_protocol
-  vpc_id             = var.vpc_id
-  preserve_client_ip = var.preserve_client_ip
+  name     = "${local.formatted_env_name}-${var.short_name}-nlb-tg"
+  port     = var.port
+  protocol = local.instance_protocol
+  vpc_id   = var.vpc_id
+  #  preserve_client_ip = var.preserve_client_ip
 
   health_check {
     port     = local.health_check_port
