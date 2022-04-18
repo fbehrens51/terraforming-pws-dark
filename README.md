@@ -173,6 +173,7 @@ terraform destroy
 
 We have have other terraform templates:
 
+
 - [Azure](https://github.com/pivotal-cf/terraforming-azure)
 - [Google Cloud Platform](https://github.com/pivotal-cf/terraforming-gcp)
 - [vSphere](https://github.com/pivotal-cf/terraforming-vsphere)

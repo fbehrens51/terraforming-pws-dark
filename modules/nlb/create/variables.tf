@@ -41,10 +41,12 @@ variable "health_check_port" {
 variable "health_check_proto" {
   default = "TCP"
 }
+
 variable "health_check_cidr_blocks" {
   default = null
 }
-variable "preserve_client_ip" {
-  type    = bool
-  default = true
-}
+#
+#variable "preserve_client_ip" {
+#  type    = bool
+#  default = true
+#}
