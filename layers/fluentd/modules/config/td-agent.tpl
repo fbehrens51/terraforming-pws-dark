@@ -256,6 +256,11 @@
 
     <store>
       @type relabel
+      @label @credhub_admin
+    </store>
+
+    <store>
+      @type relabel
       @label @cf_events
     </store>
 
@@ -289,6 +294,33 @@
       timekey_use_utc true # use utc
       chunk_limit_size 1G
     </buffer>
+  </match>
+</label>
+
+# Monitor for credhub admin account access
+<label @credhub_admin>
+  <filter **>
+    @type grep
+    <regexp>
+      key ident
+      pattern /^credhub$/
+    </regexp>
+    <regexp>
+      key message
+      pattern /credhub_admin_client/
+    </regexp>
+  </filter>
+
+  <match **>
+    @type prometheus
+    <metric>
+      name credhub_admin_usage_detected
+      type counter
+      desc Reports the use of credhub_admin_client
+      <labels>
+        source_address $.source_address
+      </labels>
+    </metric>
   </match>
 </label>
 
