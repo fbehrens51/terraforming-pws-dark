@@ -78,6 +78,7 @@ locals {
   env_name       = var.global_vars.env_name
   slack_default  = var.slack_webhook != "" ? true : false
   log_group_name = data.terraform_remote_state.bootstrap_fluentd.outputs.log_group_name
+  loki_url       = data.terraform_remote_state.bootstrap_loki[0].outputs.loki_url
   region         = data.aws_region.current.name
   dashboard_name = replace("${local.env_name} AntiVirus", " ", "_")
 }
@@ -140,11 +141,29 @@ resource "grafana_alert_notification" "email" {
   }
 }
 
+resource "grafana_data_source" "promloki" {
+  count    = var.enable_loki ? 1 : 0
+  type     = "prometheus"
+  name     = "PromLoki"
+  url      = "${local.loki_url}/loki"
+  username = data.terraform_remote_state.bootstrap_loki[0].outputs.loki_username
+  password = data.terraform_remote_state.bootstrap_loki[0].outputs.loki_password
+
+  json_data {
+    tls_auth = true
+  }
+
+  secure_json_data {
+    tls_client_cert = data.terraform_remote_state.paperwork.outputs.loki_client_cert
+    tls_client_key  = data.terraform_remote_state.paperwork.outputs.loki_client_key
+  }
+}
+
 resource "grafana_data_source" "loki" {
   count    = var.enable_loki ? 1 : 0
   type     = "loki"
   name     = "Loki"
-  url      = data.terraform_remote_state.bootstrap_loki[0].outputs.loki_url
+  url      = local.loki_url
   username = data.terraform_remote_state.bootstrap_loki[0].outputs.loki_username
   password = data.terraform_remote_state.bootstrap_loki[0].outputs.loki_password
 
@@ -195,6 +214,14 @@ resource "grafana_dashboard" "concourse" {
 
 resource "grafana_dashboard" "server-metrics" {
   config_json = file("dashboards/server-metrics.json")
+}
+
+resource "grafana_dashboard" "lokiprom-demo" {
+  config_json = file("dashboards/lokiprom-demo.json")
+}
+
+resource "grafana_dashboard" "credhub-admin" {
+  config_json = file("dashboards/credhub-admin.json")
 }
 
 resource "grafana_dashboard" "events-logger" {
