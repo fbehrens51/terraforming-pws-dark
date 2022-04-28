@@ -78,7 +78,7 @@ module "syslog_ports" {
 data "aws_vpcs" "isolation_segment_vpcs" {
   tags = {
     Purpose  = "isolation-segment"
-    env_name = local.env_name_prefix
+    env_name = var.global_vars.env_name
   }
 }
 

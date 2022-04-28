@@ -71,6 +71,10 @@ locals {
       oscap_store = "m5.large"
     }
 
+    p-csb = {
+      credhub_service_broker = "t3.medium"
+    }
+
     p-scs = {
       spring-cloud-services = "m5.large"
     }

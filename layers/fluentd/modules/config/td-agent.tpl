@@ -141,12 +141,12 @@
 </source>
 
 <label @app_logs>
-  # Keep system application logs only
+  # Keep application logs in these orgs
   <filter **>
     @type grep
     <regexp>
       key host
-      pattern /^system\./
+      pattern /^(system|credhub-service-broker-org)\./
     </regexp>
   </filter>
 
