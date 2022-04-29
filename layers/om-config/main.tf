@@ -283,23 +283,13 @@ module "om_config" {
 }
 
 module "runtime_config_config" {
-  source = "../../modules/runtime_config"
-
-  ipsec_log_level = "0"
-
-  secrets_bucket_name   = local.secrets_bucket_name
-  runtime_config        = var.runtime_config
-  ipsec_subnet_cidrs    = local.ipsec_subnet_cidrs
-  no_ipsec_subnet_cidrs = local.no_ipsec_subnet_cidrs
-
-  custom_ssh_banner = data.terraform_remote_state.paperwork.outputs.custom_ssh_banner
-
-  s3_endpoint = var.s3_endpoint
-  region      = var.region
-
-  extra_users = data.terraform_remote_state.paperwork.outputs.extra_bosh_users
-
-  vpc_dns = cidrhost(data.aws_vpc.pas_vpc.cidr_block, 2)
+  source              = "../../modules/runtime_config"
+  secrets_bucket_name = local.secrets_bucket_name
+  runtime_config      = var.runtime_config
+  custom_ssh_banner   = data.terraform_remote_state.paperwork.outputs.custom_ssh_banner
+  s3_endpoint         = var.s3_endpoint
+  region              = var.region
+  extra_users         = data.terraform_remote_state.paperwork.outputs.extra_bosh_users
 }
 
 module "clamav_config" {
