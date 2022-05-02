@@ -53,6 +53,7 @@ locals {
       diego_cell                    = "r5.large"
       diego_database                = "t3.medium"
       doppler                       = "m5.large"
+      log_cache                     = "m5.large"
       loggregator_trafficcontroller = "t3.medium"
       nats                          = "t3.medium"
       router                        = "t3.medium"
