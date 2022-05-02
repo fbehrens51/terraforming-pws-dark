@@ -52,6 +52,12 @@ variable "scale" {
   type = map(map(string))
 }
 
+variable "instance_count" {
+  type = number
+  default = 5
+  description = "Number of Instances"
+}
+
 data "template_file" "pas_vpc_azs" {
   count = length(var.pas_subnet_availability_zones)
 
@@ -80,6 +86,7 @@ data "aws_subnet" "isolation_segment_subnets" {
 locals {
   tile_config = templatefile("${path.module}/isolation_segment_template.tpl", {
     scale                          = var.scale["p-isolation-segment"]
+    instance_count                 = var.instance_count
     vpc_id                         = data.aws_subnet.isolation_segment_subnets[0].vpc_id
     iso_seg_tile_suffix            = var.iso_seg_tile_suffix
     iso_seg_tile_suffix_underscore = replace(var.iso_seg_tile_suffix, "-", "_")

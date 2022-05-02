@@ -155,7 +155,7 @@ resource-config:
     # 4 r5.large instances is our standard 'Isolation segment' capacity @ 16
     # GB per instance, this value should also be updated in the isolation segment config
     # the 5th instance allows for upgrades/repaves while allowing for 100% customer utilization of 4 instances.
-    instances: 5
+    instances: ${instance_count}
     instance_type:
       id: ${scale.isolated_diego_cell}
     internet_connected: false

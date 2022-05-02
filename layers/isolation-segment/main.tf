@@ -57,10 +57,18 @@ module "syslog_ports" {
   source = "../../modules/syslog_ports"
 }
 
+locals {
+  scale = {
+    p-isolation-segment = {
+      isolated_diego_cell = var.instance_type
+    }
+  }
+}
 module "config" {
   source = "../../modules/isolation_segment_config"
 
-  scale                    = data.terraform_remote_state.scaling-params.outputs.instance_types
+  scale                    = var.instance_type != "" ? local.scale : data.terraform_remote_state.scaling-params.outputs.instance_types
+  instance_count           = var.instance_count
   iso_seg_name             = var.name
   iso_seg_tile_suffix      = local.hyphenated_name
   secrets_bucket_name      = local.secrets_bucket_name
