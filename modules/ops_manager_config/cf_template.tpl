@@ -98,6 +98,8 @@ product-properties:
     value: 31
   .properties.cloud_controller_default_health_check_timeout:
     value: 60
+  .properties.cloud_controller_post_bbr_healthcheck_timeout_in_seconds:
+    value: 60
   .properties.cloud_controller_temporary_disable_deployments:
     value: false
   .properties.cloud_controller_worker_alert_if_above_mb:
@@ -112,6 +114,8 @@ product-properties:
   .properties.container_networking_interface_plugin:
     selected_option: silk
     value: silk
+  .properties.container_networking_interface_plugin.silk.enable_dynamic_asgs:
+    value: false
   .properties.container_networking_interface_plugin.silk.enable_log_traffic:
     value: true
   .properties.container_networking_interface_plugin.silk.enable_policy_enforcement:
@@ -216,10 +220,15 @@ product-properties:
   .properties.nfs_volume_driver:
     selected_option: disable
     value: disable
+  .properties.policy_server_asg_syncer_interval:
+    value: 60
   .properties.push_apps_manager_app_poll_interval:
     value: 10
   .properties.push_apps_manager_buildpack:
     value: staticfile_buildpack
+  .properties.push_apps_manager_cf_cli_packages:
+    selected_option: cf_cli_v8
+    value: cf_cli_v8
   .properties.push_apps_manager_currency_lookup:
     value: '{ "usd": "$", "eur": "€" }'
   .properties.push_apps_manager_display_plan_prices:
@@ -389,6 +398,8 @@ product-properties:
     value: ${pas_droplets_backup_bucket}
   .properties.system_blobstore.external.packages_backup_bucket:
     value: ${pas_packages_backup_bucket}
+  .properties.system_blobstore.external.secret_key:
+    value: {}
   .properties.system_blobstore.external.signature_version:
     value: "4"
   .properties.system_blobstore.external.versioning:
@@ -501,6 +512,8 @@ product-properties:
     value: 28800
   .properties.uaa_session_idle_timeout:
     value: 1800
+  .properties.vxlan_policy_agent_asg_update_interval:
+    value: 60
   .router.disable_insecure_cookies:
     value: false
   .router.drain_timeout:
@@ -532,6 +545,8 @@ product-properties:
   .uaa.customize_username_label:
     value: Email
   .uaa.enable_uri_encoding_compatibility_mode:
+    value: true
+  .uaa.enforce_system_zone_policy_in_all_zones:
     value: true
   .uaa.proxy_ips_regex:
     value: 10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|169\.254\.\d{1,3}\.\d{1,3}|127\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.1[6-9]{1}\.\d{1,3}\.\d{1,3}|172\.2[0-9]{1}\.\d{1,3}\.\d{1,3}|172\.3[0-1]{1}\.\d{1,3}\.\d{1,3}
@@ -658,6 +673,16 @@ resource-config:
     instances: automatic
     internet_connected: false
     swap_as_percent_of_memory_size: automatic
+  log_cache:
+    max_in_flight: 20%
+    additional_networks: []
+    additional_vm_extensions: []
+    elb_names: []
+    instance_type:
+      id: ${scale.log_cache}
+    instances: automatic
+    internet_connected: false
+    swap_as_percent_of_memory_size: automatic
   loggregator_trafficcontroller:
     max_in_flight: 1
     additional_networks: []
@@ -766,7 +791,9 @@ errand-config:
   nfsbrokerpush:
     post-deploy-state: ${errands_nfsbrokerpush}
   push-apps-manager:
-    post-deploy-state: ${errands_push_apps_manager}
+    post-deploy-state: true
+  push-offline-docs:
+    post-deploy-state: false
   push-usage-service:
     post-deploy-state: ${errands_push_usage_service}
   rotate_cc_database_key:

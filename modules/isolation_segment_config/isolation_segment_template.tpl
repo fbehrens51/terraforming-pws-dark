@@ -107,15 +107,15 @@ product-properties:
   .properties.routing_log_client_ips:
     selected_option: log_client_ips
     value: log_client_ips
-  .properties.routing_tls_version_range:
-    selected_option: tls_v1_2
-    value: tls_v1_2
   .properties.routing_table_sharding_mode:
     selected_option: isolation_segment_only
     value: isolation_segment_only
   .properties.routing_tls_termination:
     selected_option: router
     value: router
+  .properties.routing_tls_version_range:
+    selected_option: tls_v1_2
+    value: tls_v1_2
   .properties.smoke_tests_isolation:
     selected_option: on_demand
     value: on_demand
