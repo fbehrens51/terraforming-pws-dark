@@ -11,6 +11,10 @@ resource "aws_vpc" "bastion_vpc" {
   tags = {
     Name = "${var.env_name} | bastion vpc"
   }
+  lifecycle {
+    ignore_changes = [tags]
+  }
+
 }
 
 resource "aws_vpn_gateway" "bastion_vgw" {
@@ -19,6 +23,9 @@ resource "aws_vpn_gateway" "bastion_vgw" {
   tags = {
     Name = "${var.env_name} | bastion vgw"
   }
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
 
 resource "aws_internet_gateway" "bastion_igw" {
@@ -26,6 +33,9 @@ resource "aws_internet_gateway" "bastion_igw" {
 
   tags = {
     Name = "${var.env_name} | bastion igw"
+  }
+  lifecycle {
+    ignore_changes = [tags]
   }
 }
 
@@ -38,6 +48,9 @@ resource "aws_vpc" "control_plane_vpc" {
   tags = {
     Name = "${var.env_name} | control plane vpc"
   }
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
 
 resource "aws_vpn_gateway" "control_plane_vgw" {
@@ -45,6 +58,9 @@ resource "aws_vpn_gateway" "control_plane_vgw" {
 
   tags = {
     Name = "${var.env_name} | control plane vgw"
+  }
+  lifecycle {
+    ignore_changes = [tags]
   }
 }
 
@@ -54,6 +70,9 @@ resource "aws_internet_gateway" "control_plane_igw" {
   tags = {
     Name = "${var.env_name} | control plane igw"
   }
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
 
 resource "aws_vpc" "pas_vpc" {
@@ -61,6 +80,9 @@ resource "aws_vpc" "pas_vpc" {
 
   tags = {
     Name = "${var.env_name} | pas vpc"
+  }
+  lifecycle {
+    ignore_changes = [tags]
   }
 }
 
@@ -70,6 +92,9 @@ resource "aws_vpn_gateway" "pas_vgw" {
   tags = {
     Name = "${var.env_name} | pas vgw"
   }
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
 
 resource "aws_internet_gateway" "pas_igw" {
@@ -77,6 +102,9 @@ resource "aws_internet_gateway" "pas_igw" {
 
   tags = {
     Name = "${var.env_name} | pas igw"
+  }
+  lifecycle {
+    ignore_changes = [tags]
   }
 }
 
@@ -86,6 +114,9 @@ resource "aws_vpc" "enterprise_services_vpc" {
   tags = {
     Name = "${var.env_name} | enterprise services vpc"
   }
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
 
 resource "aws_vpn_gateway" "enterprise_services_vgw" {
@@ -94,6 +125,9 @@ resource "aws_vpn_gateway" "enterprise_services_vgw" {
   tags = {
     Name = "${var.env_name} | enterprise services vgw"
   }
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
 
 resource "aws_internet_gateway" "enterprise_services_igw" {
@@ -101,6 +135,9 @@ resource "aws_internet_gateway" "enterprise_services_igw" {
 
   tags = {
     Name = "${var.env_name} | enterprise services igw"
+  }
+  lifecycle {
+    ignore_changes = [tags]
   }
 }
 
@@ -112,6 +149,9 @@ resource "aws_vpc_peering_connection" "bastion_control_plane" {
   tags = {
     Name = "${var.env_name} | bastion/control plane vpc peering"
   }
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
 
 resource "aws_vpc_peering_connection" "pas_enterprise_services" {
@@ -121,6 +161,9 @@ resource "aws_vpc_peering_connection" "pas_enterprise_services" {
 
   tags = {
     Name = "${var.env_name} | pas/enterprise services vpc peering"
+  }
+  lifecycle {
+    ignore_changes = [tags]
   }
 }
 
@@ -132,6 +175,9 @@ resource "aws_vpc_peering_connection" "control_plane_enterprise_services" {
   tags = {
     Name = "${var.env_name} | control plane/enterprise services vpc peering"
   }
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
 
 resource "aws_vpc_peering_connection" "control_plane_pas" {
@@ -142,6 +188,9 @@ resource "aws_vpc_peering_connection" "control_plane_pas" {
   tags = {
     Name = "${var.env_name} | control plane/pas vpc peering"
   }
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
 
 resource "aws_vpc_peering_connection" "control_plane_iso1" {
@@ -151,5 +200,8 @@ resource "aws_vpc_peering_connection" "control_plane_iso1" {
 
   tags = {
     Name = "${var.env_name} | control plane/iso1 vpc peering"
+  }
+  lifecycle {
+    ignore_changes = [tags]
   }
 }

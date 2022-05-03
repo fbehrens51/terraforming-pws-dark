@@ -296,23 +296,25 @@ resource "aws_s3_bucket_object" "root_ca_cert" {
   content_type = "text/plain"
 }
 
-
-module "download-iaas-ca-certs" {
-  source = "../../modules/download_certs"
-  hosts  = var.iaas_trusted_ca_cert_hosts
-}
+#commented out as this is not a reliable way to pull down the CAs from AWS since not all endpoints have the same CAs (they are migrating from one to another)
+#module "download-iaas-ca-certs" {
+#  source = "../../modules/download_certs"
+#  hosts  = var.iaas_trusted_ca_cert_hosts
+#}
 
 module "download-slack-ca-certs" {
   source = "../../modules/download_certs"
   hosts  = var.slack_trusted_ca_cert_hosts
 }
 
-resource "aws_s3_bucket_object" "iaas_trusted_ca_certs" {
-  key          = local.iaas_trusted_ca_certs_s3_path
-  bucket       = aws_s3_bucket.certs.bucket
-  content      = module.download-iaas-ca-certs.ca_certs
-  content_type = "text/plain"
-}
+
+#commented out as this is not a reliable way to pull down the CAs from AWS since not all endpoints have the same CAs (they are migrating from one to another)
+#resource "aws_s3_bucket_object" "iaas_trusted_ca_certs" {
+#  key          = local.iaas_trusted_ca_certs_s3_path
+#  bucket       = aws_s3_bucket.certs.bucket
+#  content      = module.download-iaas-ca-certs.ca_certs
+#  content_type = "text/plain"
+#}
 
 resource "aws_s3_bucket_object" "slack_trusted_ca_certs" {
   key          = local.slack_trusted_ca_certs_s3_path
