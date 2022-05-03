@@ -25,6 +25,10 @@ resource "aws_vpn_gateway" "isolation_segment_vgw" {
   tags = {
     Name = "${var.env_name} | isolation segment vgw"
   }
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
 
 resource "aws_internet_gateway" "isolation_segment_igw" {
@@ -32,6 +36,10 @@ resource "aws_internet_gateway" "isolation_segment_igw" {
 
   tags = {
     Name = "${var.env_name} | isolation_segment igw"
+  }
+
+  lifecycle {
+    ignore_changes = [tags]
   }
 }
 
@@ -43,6 +51,9 @@ resource "aws_vpc_peering_connection" "isolation_segment_cp" {
   tags = {
     Name = "${var.env_name} | isolation segment/cp vpc peering"
   }
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
 
 resource "aws_vpc_peering_connection" "isolation_segment_pas" {
@@ -53,6 +64,9 @@ resource "aws_vpc_peering_connection" "isolation_segment_pas" {
   tags = {
     Name = "${var.env_name} | isolation segment/pas vpc peering"
   }
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
 
 resource "aws_vpc_peering_connection" "isolation_segment_enterprise_services" {
@@ -62,5 +76,9 @@ resource "aws_vpc_peering_connection" "isolation_segment_enterprise_services" {
 
   tags = {
     Name = "${var.env_name} | isolation segment/enterprise services vpc peering"
+  }
+
+  lifecycle {
+    ignore_changes = [tags]
   }
 }
