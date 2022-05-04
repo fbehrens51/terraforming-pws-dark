@@ -1,0 +1,34 @@
+headers: { subject: "[{{ .Status | toUpper }}] {{ .CommonLabels.alertname }}\n" }
+html: |
+  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+  <html xmlns="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+     <meta name="viewport" content="width=device-width"/>
+     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+     <title>[{{ .Status | toUpper }}] {{ .CommonLabels.alertname }}</title>
+    </head>
+
+    <body>
+      <div>
+        <div style="margin: auto; width: 50%; padding: 10px;">
+          {{ with index .Alerts 0 }}
+            <p><a href='{{ .Annotations.grafanaUrlPrefix }}"{{printf "%d000" (.StartsAt.Add -1800000000000).Unix}}","{{printf "%d000" (.StartsAt.Add 1800000000000).Unix}}"{{ .Annotations.grafanaUrlSuffix }}'>View a Grafana graph of the expression that triggered this alert</a></p>
+            {{ if .Annotations.dashboard }} <p><a href='{{ printf "%s&from=%d000&to=%d000" .Annotations.dashboard (.StartsAt.Add -900000000000).Unix (.StartsAt.Add 900000000000).Unix }}'>Dashboard Link</a></p>{{ end }}
+          {{end}}
+          <p><a href='{{ template "slack.default.titlelink" . }}'>View this alert in Alertmanager</a> (Requires a <a href="https://docs.pivotal.io/healthwatch/2-0/troubleshooting.html#viewing-the-alertmanager-ui">BOSH SSH Tunnel</a>)</p>
+          {{ with index .Alerts 0 }}
+          <p><strong>Summary:</strong> {{ .Annotations.summary }}</p>
+          <div style="white-space: pre-wrap; padding-left: 22px; text-indent: -22px;"><p><strong>Description:</strong>
+            {{ .Annotations.description }}
+          </p></div>
+          {{ end }}
+          <div>
+            <strong>Details:</strong>
+            <ul>
+              {{ range .CommonLabels.SortedPairs }}<li><strong>{{ .Name }}:</strong> {{ .Value }}</li>{{ end }}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </body>
+  </html>
