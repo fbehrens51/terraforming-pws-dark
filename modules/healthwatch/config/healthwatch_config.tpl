@@ -246,6 +246,7 @@ product-properties:
         from: ${smtp_from}
         auth_username: ${smtp_user}
         smarthost: ${smtp_host}:${smtp_port}
+        ${indent(8, chomp(email_template_yml))}
       receiver_name: PWS Dark Alerts
       server_name: null
       tls_certificates: {}

@@ -54,3 +54,10 @@ module "csb_config" {
   availability_zones          = var.availability_zones
   singleton_availability_zone = var.singleton_availability_zone
 }
+
+resource "aws_s3_bucket_object" "allowed-cidr" {
+  bucket       = local.secrets_bucket_name
+  content_type = "application/json"
+  key          = "allowed-cidrs/platform-csb"
+  content      = jsonencode({ "description" : "Allow csb access to foundation credhub and uaa", "destination" : data.aws_vpc.pas_vpc.cidr_block, "ports" : "8844,8443", "protocol" : "tcp" })
+}

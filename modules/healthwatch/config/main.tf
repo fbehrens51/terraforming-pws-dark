@@ -162,10 +162,12 @@ locals {
     loki_client_cert                     = var.loki_client_cert
     loki_client_key                      = var.loki_client_key
 
+    email_template_yml = file("${path.module}/email_template.yml")
     alerting_rules_yml = templatefile("${path.module}/alerting_rules.yml", {
-      log_group_name = var.log_group_name
-      region         = var.region
-      dashboard_name = replace("${var.env_tag_name} AntiVirus", " ", "_")
+      grafana_root_url = "https://${module.domains.grafana_fqdn}"
+      log_group_name   = var.log_group_name
+      region           = var.region
+      dashboard_name   = replace("${var.env_tag_name} AntiVirus", " ", "_")
     })
   })
 }

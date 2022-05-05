@@ -256,6 +256,14 @@ groups:
   ##### BEGIN CUSTOM ALERTING RULES #####
   - name: CustomRules
     rules:
+      - alert: CredhubAdmin
+        expr: 'max(rate(credhub_admin_usage_detected[15m])) > 0'
+        for: 1m
+        annotations:
+          dashboard: "${grafana_root_url}/d/crsubGQ7z/credhub_admin_client-usage?orgId=1"
+          summary: "Credhub admin credentials usage detected"
+          description: "Credhub admin usage detected on host {{ $labels.source_address }}"
+
       - alert: TargetDown
         expr: 'up{name_tag!=""} == 0'
         for: 5m
