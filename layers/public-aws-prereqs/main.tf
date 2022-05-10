@@ -91,6 +91,30 @@ resource "aws_s3_bucket" "certs" {
   }
 }
 
+data "aws_iam_policy_document" "bucket_policy" {
+  statement {
+    sid     = "EnforceTls"
+    effect  = "Deny"
+    actions = ["s3:*"]
+
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+    condition {
+      test     = "NumericLessThan"
+      variable = "s3:TlsVersion"
+      values   = ["1.2"]
+    }
+    resources = [aws_s3_bucket.certs.arn, "${aws_s3_bucket.certs.arn}/*"]
+  }
+}
+
+resource "aws_s3_bucket_policy" "certs_bucket_policy_attachment" {
+  bucket = aws_s3_bucket.certs.bucket
+  policy = data.aws_iam_policy_document.bucket_policy.json
+}
+
 data "template_file" "paperwork_variables" {
   template = file("${path.module}/paperwork.tfvars.tpl")
 

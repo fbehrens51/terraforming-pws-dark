@@ -1,5 +1,5 @@
 variable "artifact_repo_bucket_name" {
-  type = string
+  type    = string
   default = "testing_repo_bucket"
 }
 
@@ -43,12 +43,12 @@ data "aws_iam_policy_document" "arn_bucket_policy" {
   //Read Only statement
   //Deny everyone except for read (& write) users to retrieve Objects
   statement {
-    sid     = "ARNread"
-    effect  = "Allow"
+    sid    = "ARNread"
+    effect = "Allow"
     actions = [
       "s3:GetBucketLocation",
       "s3:ListBucket",
-      "s3:GetObject*"]
+    "s3:GetObject*"]
 
     principals {
       type        = "AWS"
@@ -57,7 +57,7 @@ data "aws_iam_policy_document" "arn_bucket_policy" {
     condition {
       test     = "ArnLike"
       variable = "aws:PrincipalARN"
-      values   = concat(var.read_write_arns,var.read_only_arns)
+      values   = concat(var.read_write_arns, var.read_only_arns)
 
     }
     resources = [aws_s3_bucket.artifact_repo.arn, "${aws_s3_bucket.artifact_repo.arn}/*"]
@@ -66,8 +66,8 @@ data "aws_iam_policy_document" "arn_bucket_policy" {
   //Write statement
   //Deny everyone except write users.
   statement {
-    sid     = "ARNwrite"
-    effect  = "Allow"
+    sid    = "ARNwrite"
+    effect = "Allow"
     actions = [
       "s3:*"
     ]
@@ -83,11 +83,28 @@ data "aws_iam_policy_document" "arn_bucket_policy" {
     }
     resources = [aws_s3_bucket.artifact_repo.arn, "${aws_s3_bucket.artifact_repo.arn}/*"]
   }
+
+  statement {
+    sid     = "EnforceTls"
+    effect  = "Deny"
+    actions = ["s3:*"]
+
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+    condition {
+      test     = "NumericLessThan"
+      variable = "s3:TlsVersion"
+      values   = ["1.2"]
+    }
+    resources = [aws_s3_bucket.artifact_repo.arn, "${aws_s3_bucket.artifact_repo.arn}/*"]
+  }
 }
 
 
 resource "aws_s3_bucket" "artifact_repo" {
-  bucket = var.artifact_repo_bucket_name
+  bucket        = var.artifact_repo_bucket_name
   force_destroy = var.force_destroy_buckets
 
   //use account's default S3 encryption key
@@ -105,9 +122,9 @@ resource "aws_s3_bucket" "artifact_repo" {
   }
 
   tags = merge(
-  {
-    "Name" = var.artifact_repo_bucket_name
-  },
+    {
+      "Name" = var.artifact_repo_bucket_name
+    },
   )
 }
 
