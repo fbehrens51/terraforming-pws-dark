@@ -98,6 +98,8 @@ product-properties:
     value: 31
   .properties.cloud_controller_default_health_check_timeout:
     value: 60
+  .properties.cloud_controller_post_bbr_healthcheck_timeout_in_seconds:
+    value: 60
   .properties.cloud_controller_temporary_disable_deployments:
     value: false
   .properties.cloud_controller_worker_alert_if_above_mb:
@@ -292,8 +294,8 @@ product-properties:
     selected_option: router
     value: router
   .properties.routing_tls_version_range:
-    selected_option: tls_v1_2
-    value: tls_v1_2
+    selected_option: tls_v1_2_v1_3
+    value: tls_v1_2_v1_3
   .properties.saml_signature_algorithm:
     value: SHA256
   .properties.secure_service_instance_credentials:
@@ -532,6 +534,8 @@ product-properties:
   .uaa.customize_username_label:
     value: Email
   .uaa.enable_uri_encoding_compatibility_mode:
+    value: true
+  .uaa.enforce_system_zone_policy_in_all_zones:
     value: true
   .uaa.proxy_ips_regex:
     value: 10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|169\.254\.\d{1,3}\.\d{1,3}|127\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.1[6-9]{1}\.\d{1,3}\.\d{1,3}|172\.2[0-9]{1}\.\d{1,3}\.\d{1,3}|172\.3[0-1]{1}\.\d{1,3}\.\d{1,3}
