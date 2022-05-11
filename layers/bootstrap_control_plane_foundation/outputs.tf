@@ -80,6 +80,10 @@ output "director_blobstore_bucket" {
   value = module.ops_manager.director_blobstore_bucket
 }
 
+output "director_blobstore_bucket_arn" {
+  value = module.ops_manager.director_blobstore_bucket_arn
+}
+
 output "mirror_bucket_name" {
   value = aws_s3_bucket.mirror_bucket.bucket
 }

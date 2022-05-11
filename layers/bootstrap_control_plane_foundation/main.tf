@@ -127,6 +127,16 @@ resource "aws_s3_bucket" "transfer_bucket" {
   )
 }
 
+module "transfer_bucket_policy" {
+  source     = "../../modules/bucket/policy/default_tls"
+  bucket_arn = aws_s3_bucket.transfer_bucket.arn
+}
+
+resource "aws_s3_bucket_policy" "transfer_bucket_policy_attachment" {
+  bucket = aws_s3_bucket.transfer_bucket.bucket
+  policy = module.transfer_bucket_policy.json
+}
+
 resource "aws_s3_bucket" "import_bucket" {
   bucket        = local.import_bucket_name
   force_destroy = var.force_destroy_buckets
@@ -153,6 +163,16 @@ resource "aws_s3_bucket" "import_bucket" {
   )
 }
 
+module "import_bucket_policy" {
+  source     = "../../modules/bucket/policy/default_tls"
+  bucket_arn = aws_s3_bucket.import_bucket.arn
+}
+
+resource "aws_s3_bucket_policy" "import_bucket_policy_attachment" {
+  bucket = aws_s3_bucket.import_bucket.bucket
+  policy = module.import_bucket_policy.json
+}
+
 resource "aws_s3_bucket" "mirror_bucket" {
   bucket        = local.mirror_bucket_name
   force_destroy = var.force_destroy_buckets
@@ -177,6 +197,16 @@ resource "aws_s3_bucket" "mirror_bucket" {
       "Name" = "${local.env_name} Mirror Bucket"
     },
   )
+}
+
+module "mirror_bucket_policy" {
+  source     = "../../modules/bucket/policy/default_tls"
+  bucket_arn = aws_s3_bucket.mirror_bucket.arn
+}
+
+resource "aws_s3_bucket_policy" "mirror_bucket_policy_attachment" {
+  bucket = aws_s3_bucket.mirror_bucket.bucket
+  policy = module.mirror_bucket_policy.json
 }
 
 module "postgres" {

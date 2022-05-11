@@ -555,6 +555,10 @@ output "om_bucket_arn" {
   value = module.ops_manager.bucket_arn
 }
 
+output "director_blobstore_bucket_arn" {
+  value = module.ops_manager.director_blobstore_bucket_arn
+}
+
 output "om_eip_allocation" {
   value = module.ops_manager.om_eip_allocation
 }
