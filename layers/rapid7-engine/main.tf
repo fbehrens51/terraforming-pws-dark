@@ -45,17 +45,17 @@ data "terraform_remote_state" "bootstrap_rapid7" {
 }
 
 locals {
-  env_name         = var.global_vars.env_name
-  modified_name    = "${local.env_name} rapid7-engine"
+  env_name      = var.global_vars.env_name
+  modified_name = "${local.env_name} rapid7-engine"
   modified_tags = merge(
-  var.global_vars["global_tags"],
-  var.global_vars["instance_tags"],
-  {
-    "Name"            = local.modified_name
-    "MetricsKey"      = data.terraform_remote_state.paperwork.outputs.metrics_key
-    "foundation_name" = data.terraform_remote_state.paperwork.outputs.foundation_name
-    "job"             = "rapid7-enging"
-  }
+    var.global_vars["global_tags"],
+    var.global_vars["instance_tags"],
+    {
+      "Name"            = local.modified_name
+      "MetricsKey"      = data.terraform_remote_state.paperwork.outputs.metrics_key
+      "foundation_name" = data.terraform_remote_state.paperwork.outputs.foundation_name
+      "job"             = "rapid7-enging"
+    }
   )
 }
 
@@ -103,7 +103,7 @@ data "template_file" "root_directory" {
 bootcmd:
   - |
     set -ex
-    growpart /dev/nvme0n1 2
+    #growpart /dev/nvme0n1 2
     pvresize /dev/nvme0n1p2
     lvextend -r -l +100%FREE /dev/vg0/root
 EOF
