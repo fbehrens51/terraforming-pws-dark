@@ -1,51 +1,49 @@
 product-name: p-healthwatch2
 product-properties:
-  .grafana.additional_cipher:
+  .properties.canary_exporter_targets:
+    value:
+    - address: ${canary_url}
+  .properties.dashboard_discovery_tas:
+    selected_option: enabled
+    value: enabled
+  .properties.dashboard_discovery_tas.enabled.tas_version:
+    value: dynamic
+  .properties.dashboard_discovery_tkgi:
+    selected_option: disabled
+    value: disabled
+  .properties.dashboards_mysql:
+    selected_option: disabled
+    value: disabled
+  .properties.dashboards_rabbitmq:
+    selected_option: disabled
+    value: disabled
+  .properties.enable_basic_auth:
+    selected_option: enabled
+    value: enabled
+  .properties.grafana_authentication:
+    selected_option: uaa
+    value: uaa
+  .properties.grafana_proxy:
+    selected_option: disabled
+    value: disabled
+  .properties.grafana_route:
+    selected_option: manual
+    value: manual
+  .properties.grafana_route.manual.additional_cipher:
     value: ${grafana_additional_cipher_suites}
-  .grafana.enable_login_form:
-    value: true
-  .grafana.enable_mysql:
-    value: false
-  .grafana.enable_rabbitmq:
-    value: false
-  .grafana.root_url:
+  .properties.grafana_route.manual.root_url:
     value: ${grafana_root_url}
-  .grafana.ssl_ca_certificate:
+  .properties.grafana_route.manual.ssl_ca_certificate:
     value: |-
       ${indent(6, chomp(root_ca_cert))}
-  .grafana.ssl_certificates:
+  .properties.grafana_route.manual.ssl_certificates:
     value:
       cert_pem: |
         ${indent(8, chomp(grafana_server_cert))}
       private_key_pem: |
         ${indent(8, chomp(grafana_server_key))}
-  .properties.canary_exporter_targets:
-    value:
-    - address: ${canary_url}
-  .properties.dashboard_discovery:
-    selected_option: dynamic
-    value: dynamic
-  .properties.enable_telemetry:
-    value: false
-  .properties.grafana_authentication:
-    selected_option: uaa
-    value: uaa
-  .properties.grafana_authentication.uaa.client_id:
-    value: grafana
-  .properties.grafana_authentication.uaa.client_secret:
-    value:
-      secret: ${grafana_uaa_client_secret}
-  .properties.grafana_authentication.uaa.root_url:
-    value: ${uaa_url}
-  .properties.grafana_authentication.uaa.tls_skip_verify_insecure:
-    value: false
-  .properties.grafana_proxy:
-    selected_option: disabled
-    value: disabled
   .properties.opsman_skip_ssl_validation:
     value: false
-  .properties.opsman_url:
-    value: ${ops_canary_url}
   .properties.pks_cluster_discovery:
     selected_option: disabled
     value: disabled
@@ -80,7 +78,9 @@ product-properties:
           action: replace
       server_name: null
       tls_certificates: {}
-    - scrape_job: |
+    - ca: null
+      insecure_skip_verify: false
+      scrape_job: |
         job_name: 'concourse'
         scheme: http
         ec2_sd_configs:
@@ -229,9 +229,6 @@ product-properties:
   .properties.smtp.enabled.user:
     value: ${smtp_user}
 %{ endif ~}
-  .tsdb.alerting_rules:
-    value: |-
-      ${indent(6, chomp(alerting_rules_yml))}
 %{ if smtp_enabled == true ~}
   .tsdb.alerting_email_receiver_config:
     value:
@@ -267,6 +264,9 @@ product-properties:
         secret: ${slack_webhook}
       tls_certificates: {}
 %{ endif ~}
+  .tsdb.alerting_rules:
+    value: |-
+      ${indent(6, chomp(alerting_rules_yml))}
   .tsdb.canary_exporter_port:
     value: 9115
   .tsdb.disk_chunk_size:

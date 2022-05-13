@@ -8,6 +8,10 @@ product-properties:
     value: ${health_check_availability_zone}
   .bosh-health-exporter.health_check_vm_type:
     value: t3.medium
+  .cert-expiration-exporter.skip_ssl_validation:
+    value: false
+  .properties.opsman_skip_ssl_validation:
+    value: false
 network-properties:
   network:
     name: ${network_name}
@@ -78,18 +82,6 @@ resource-config:
     persistent_disk:
       size_mb: automatic
     swap_as_percent_of_memory_size: automatic
-  pas-exporter-timer:
-    max_in_flight: 5
-    additional_networks: []
-    additional_vm_extensions: []
-    elb_names: []
-    instance_type:
-      id: ${scale.pas-exporter-timer}
-    instances: automatic
-    internet_connected: false
-    persistent_disk:
-      size_mb: automatic
-    swap_as_percent_of_memory_size: automatic
   pas-sli-exporter:
     max_in_flight: 2
     additional_networks: []
@@ -116,6 +108,8 @@ resource-config:
     swap_as_percent_of_memory_size: automatic
 errand-config:
   bosh-cleanup-wait:
+    pre-delete-state: true
+  delete-cf-sli-user:
     pre-delete-state: true
   smoke-test:
     post-deploy-state: true

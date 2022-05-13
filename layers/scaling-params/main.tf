@@ -93,7 +93,6 @@ locals {
       cert-expiration-exporter  = "t3.medium"
       pas-exporter-counter      = "m5.large"
       pas-exporter-gauge        = "m5.large"
-      pas-exporter-timer        = "m5.large"
       pas-sli-exporter          = "t3.medium"
     }
 

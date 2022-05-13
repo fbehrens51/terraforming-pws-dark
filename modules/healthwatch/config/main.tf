@@ -89,9 +89,6 @@ variable "region" {
 variable "metrics_key" {
 }
 
-variable "grafana_uaa_client_secret" {
-}
-
 variable "grafana_additional_cipher_suites" {
   type = list(string)
 }
@@ -139,8 +136,6 @@ locals {
     singleton_availability_zone          = var.singleton_availability_zone
     region                               = var.region
     grafana_elb_id                       = "${join(",", [var.grafana_elb_id], formatlist("alb:%s", var.grafana_tg_names))}"
-    grafana_uaa_client_secret            = var.grafana_uaa_client_secret
-    uaa_url                              = "https://uaa.${module.domains.system_fqdn}"
     smtp_enabled                         = var.smtp_from == "" ? false : true
     smtp_from                            = var.smtp_from
     smtp_host                            = var.smtp_host
