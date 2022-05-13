@@ -10,6 +10,10 @@ output "director_blobstore_bucket" {
   value = aws_s3_bucket.director_blobstore_bucket.bucket
 }
 
+output "director_blobstore_bucket_arn" {
+  value = aws_s3_bucket.director_blobstore_bucket.arn
+}
+
 output "ip" {
   value = element(
     concat(

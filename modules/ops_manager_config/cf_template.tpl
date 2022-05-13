@@ -304,8 +304,8 @@ product-properties:
     selected_option: router
     value: router
   .properties.routing_tls_version_range:
-    selected_option: tls_v1_2
-    value: tls_v1_2
+    selected_option: tls_v1_2_v1_3
+    value: tls_v1_2_v1_3
   .properties.saml_signature_algorithm:
     value: SHA256
   .properties.secure_service_instance_credentials:

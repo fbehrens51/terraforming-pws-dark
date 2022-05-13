@@ -63,7 +63,6 @@ data "aws_iam_policy_document" "bucket_policy" {
       test     = "StringNotLike"
       variable = "aws:userid"
       values   = concat(local.read_write_role_wildcards, var.read_write_user_ids, local.read_only_role_wildcards, var.read_only_user_ids)
-
     }
     resources = ["${var.bucket_arn}/*"]
   }
@@ -86,6 +85,24 @@ data "aws_iam_policy_document" "bucket_policy" {
     }
     resources = [var.bucket_arn, "${var.bucket_arn}/*"]
   }
+
+  // Enforce min TLS version
+  statement {
+    sid     = "EnforceTls"
+    effect  = "Deny"
+    actions = ["s3:*"]
+
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+    condition {
+      test     = "NumericLessThan"
+      variable = "s3:TlsVersion"
+      values   = ["1.2"]
+    }
+    resources = [var.bucket_arn, "${var.bucket_arn}/*"]
+  }
 }
 
 data "aws_iam_policy_document" "deletion_disabled" {
@@ -104,6 +121,24 @@ data "aws_iam_policy_document" "deletion_disabled" {
     principals {
       type        = "AWS"
       identifiers = ["*"]
+    }
+    resources = [var.bucket_arn, "${var.bucket_arn}/*"]
+  }
+
+  // Enforce min TLS version
+  statement {
+    sid     = "EnforceTls"
+    effect  = "Deny"
+    actions = ["s3:*"]
+
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+    condition {
+      test     = "NumericLessThan"
+      variable = "s3:TlsVersion"
+      values   = ["1.2"]
     }
     resources = [var.bucket_arn, "${var.bucket_arn}/*"]
   }

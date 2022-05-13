@@ -114,8 +114,8 @@ product-properties:
     selected_option: router
     value: router
   .properties.routing_tls_version_range:
-    selected_option: tls_v1_2
-    value: tls_v1_2
+    selected_option: tls_v1_1_v1_3
+    value: tls_v1_1_v1_3
   .properties.smoke_tests_isolation:
     selected_option: on_demand
     value: on_demand

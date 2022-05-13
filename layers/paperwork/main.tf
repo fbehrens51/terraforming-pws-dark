@@ -124,6 +124,24 @@ data "aws_iam_policy_document" "public_bucket_policy" {
 
     resources = [aws_s3_bucket.public_bucket.arn, "${aws_s3_bucket.public_bucket.arn}/*"]
   }
+
+  // Enforce min TLS version
+  statement {
+    sid     = "EnforceTls"
+    effect  = "Deny"
+    actions = ["s3:*"]
+
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+    condition {
+      test     = "NumericLessThan"
+      variable = "s3:TlsVersion"
+      values   = ["1.2"]
+    }
+    resources = [aws_s3_bucket.public_bucket.arn, "${aws_s3_bucket.public_bucket.arn}/*"]
+  }
 }
 
 resource "aws_s3_bucket" "s3_logs_bucket" {
@@ -161,6 +179,24 @@ data "aws_iam_policy_document" "s3_logs_bucket_policy" {
       values = ["${data.aws_iam_role.isse_role.unique_id}:*", "${data.aws_iam_role.director_role.unique_id}:*",
       "${data.aws_iam_role.bootstrap_role.unique_id}:*", "${data.aws_iam_role.foundation_role.unique_id}:*"]
 
+    }
+    resources = [aws_s3_bucket.s3_logs_bucket.arn, "${aws_s3_bucket.s3_logs_bucket.arn}/*"]
+  }
+
+  // Enforce min TLS version
+  statement {
+    sid     = "EnforceTls"
+    effect  = "Deny"
+    actions = ["s3:*"]
+
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+    condition {
+      test     = "NumericLessThan"
+      variable = "s3:TlsVersion"
+      values   = ["1.2"]
     }
     resources = [aws_s3_bucket.s3_logs_bucket.arn, "${aws_s3_bucket.s3_logs_bucket.arn}/*"]
   }
@@ -1506,7 +1542,7 @@ output "bot_private_key" {
 }
 
 output "bot_key_name" {
-  value     = module.bot_host_key_pair.key_name
+  value = module.bot_host_key_pair.key_name
 }
 
 output "s3_logs_bucket" {

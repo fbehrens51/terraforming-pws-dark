@@ -55,7 +55,7 @@ func process(input Input) Output {
 		if err != nil {
 			fatal(err)
 		}
-		log.Println(fmt.Sprintf("%d roots found for %s", len(roots), host))
+		log.Printf("%d roots found for %s", len(roots), host)
 
 		allRoots = append(allRoots, roots...)
 	}

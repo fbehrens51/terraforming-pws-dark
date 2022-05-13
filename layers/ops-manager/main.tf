@@ -127,6 +127,16 @@ resource "aws_s3_bucket_policy" "ops_manager_backup_bucket_policy_attachment" {
   policy = module.ops_manager_backup_bucket_policy.json
 }
 
+module "director_blobstore_bucket_policy" {
+  source     = "../../modules/bucket/policy/default_tls"
+  bucket_arn = data.terraform_remote_state.pas.outputs.director_blobstore_bucket_arn
+}
+
+resource "aws_s3_bucket_policy" "director_blobstore_bucket_policy_attachment" {
+  bucket = data.terraform_remote_state.pas.outputs.director_blobstore_bucket
+  policy = module.director_blobstore_bucket_policy.json
+}
+
 output "ops_manager_private_ip" {
   value = module.ops_manager.private_ips[0]
 }

@@ -39,6 +39,16 @@ resource "aws_s3_bucket" "buildpacks_bucket" {
   )
 }
 
+module "buildpacks_bucket_policy" {
+  source     = "../../modules/bucket/policy/default_tls"
+  bucket_arn = aws_s3_bucket.buildpacks_bucket[0].arn
+}
+
+resource "aws_s3_bucket_policy" "buildpacks_bucket_policy_attachment" {
+  bucket = aws_s3_bucket.buildpacks_bucket[0].bucket
+  policy = module.buildpacks_bucket_policy.json
+}
+
 resource "aws_s3_bucket" "droplets_bucket" {
   count = 1
 
@@ -78,6 +88,16 @@ resource "aws_s3_bucket" "droplets_bucket" {
       "Name" = "Elastic Runtime S3 Droplets Bucket"
     },
   )
+}
+
+module "droplets_bucket_policy" {
+  source     = "../../modules/bucket/policy/default_tls"
+  bucket_arn = aws_s3_bucket.droplets_bucket[0].arn
+}
+
+resource "aws_s3_bucket_policy" "droplets_bucket_policy_attachment" {
+  bucket = aws_s3_bucket.droplets_bucket[0].bucket
+  policy = module.droplets_bucket_policy.json
 }
 
 resource "aws_s3_bucket" "packages_bucket" {
@@ -122,6 +142,16 @@ resource "aws_s3_bucket" "packages_bucket" {
   )
 }
 
+module "packages_bucket_policy" {
+  source     = "../../modules/bucket/policy/default_tls"
+  bucket_arn = aws_s3_bucket.packages_bucket[0].arn
+}
+
+resource "aws_s3_bucket_policy" "packages_bucket_policy_attachment" {
+  bucket = aws_s3_bucket.packages_bucket[0].bucket
+  policy = module.packages_bucket_policy.json
+}
+
 resource "aws_s3_bucket" "resources_bucket" {
   count = 1
 
@@ -163,6 +193,16 @@ resource "aws_s3_bucket" "resources_bucket" {
     },
   )
 
+}
+
+module "resources_bucket_policy" {
+  source     = "../../modules/bucket/policy/default_tls"
+  bucket_arn = aws_s3_bucket.resources_bucket[0].arn
+}
+
+resource "aws_s3_bucket_policy" "resources_bucket_policy_attachment" {
+  bucket = aws_s3_bucket.resources_bucket[0].bucket
+  policy = module.resources_bucket_policy.json
 }
 
 # BBR Buckets
