@@ -1,5 +1,5 @@
 az-configuration:
-  ${control_plane_vpc_azs}
+  ${indent(2, chomp(control_plane_vpc_azs))}
 iaas-configurations:
 - additional_cloud_properties:
     connection_options:
@@ -16,7 +16,7 @@ iaas-configurations:
   region: ${iaas_configuration_region}
   security_group: ${iaas_configuration_security_group}
   ssh_private_key: |
-    ${indent(4, iaas_configuration_ssh_private_key)}
+    ${indent(4, chomp(iaas_configuration_ssh_private_key))}
 network-assignment:
   network:
     name: control-plane-subnet
@@ -28,7 +28,7 @@ networks-configuration:
   networks:
   - name: control-plane-subnet
     subnets:
-    ${control_plane_subnets}
+    ${indent(4, chomp(control_plane_subnets))}
 properties-configuration:
   director_configuration:
     additional_ssh_users: %{if length(extra_users)<1}[]%{endif}
@@ -79,6 +79,7 @@ properties-configuration:
       ${indent(6, chomp(env_name))}
     job_configuration_on_tmpfs: false
     keep_unreachable_vms: false
+    leaf_certificate_duration: 730
     %{~ if director_blobstore_location == "local" ~}
     local_blobstore_options:
       tls_enabled: true
@@ -94,6 +95,8 @@ properties-configuration:
       backup_bucket_region: ${director_blobstore_s3_endpoint}
       backup_strategy: use_versioned_bucket
       bucket_name: ${director_blobstore_bucket}
+      ca_cert: |
+        ${indent(8, chomp(iaas_configuration_endpoints_ca_cert))}
       credentials_source: env_or_profile
       enable_signed_urls: true
       endpoint: ${director_blobstore_s3_endpoint}
@@ -173,3 +176,4 @@ vmextensions-configuration:
   cloud_properties:
     security_groups: ${concourse_lb_security_group_id}
 vmtypes-configuration: {}
+
