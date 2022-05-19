@@ -10,6 +10,8 @@ product-properties:
     value: t3.medium
   .cert-expiration-exporter.skip_ssl_validation:
     value: false
+  .pas-sli-exporter.cf_cli_version:
+    value: "7"
   .properties.opsman_skip_ssl_validation:
     value: false
 network-properties:
