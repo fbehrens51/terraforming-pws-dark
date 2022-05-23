@@ -114,6 +114,8 @@ product-properties:
   .properties.container_networking_interface_plugin:
     selected_option: silk
     value: silk
+  .properties.container_networking_interface_plugin.silk.enable_dynamic_asgs:
+    value: false
   .properties.container_networking_interface_plugin.silk.enable_log_traffic:
     value: true
   .properties.container_networking_interface_plugin.silk.enable_policy_enforcement:
@@ -218,10 +220,15 @@ product-properties:
   .properties.nfs_volume_driver:
     selected_option: disable
     value: disable
+  .properties.policy_server_asg_syncer_interval:
+    value: 60
   .properties.push_apps_manager_app_poll_interval:
     value: 10
   .properties.push_apps_manager_buildpack:
     value: staticfile_buildpack
+  .properties.push_apps_manager_cf_cli_packages:
+    selected_option: cf_cli_v8
+    value: cf_cli_v8
   .properties.push_apps_manager_currency_lookup:
     value: '{ "usd": "$", "eur": "€" }'
   .properties.push_apps_manager_display_plan_prices:
@@ -250,6 +257,9 @@ product-properties:
       name: About
     - href: ${apps_manager_docs_url}/support/
       name: Support
+  .properties.push_apps_manager_offline_tools:
+    value:
+    - enable_offline_tools
   .properties.push_apps_manager_poll_interval:
     value: 30
   .properties.push_apps_manager_search_server_buildpack:
@@ -391,6 +401,8 @@ product-properties:
     value: ${pas_droplets_backup_bucket}
   .properties.system_blobstore.external.packages_backup_bucket:
     value: ${pas_packages_backup_bucket}
+  .properties.system_blobstore.external.secret_key:
+    value: {}
   .properties.system_blobstore.external.signature_version:
     value: "4"
   .properties.system_blobstore.external.versioning:
@@ -503,6 +515,8 @@ product-properties:
     value: 28800
   .properties.uaa_session_idle_timeout:
     value: 1800
+  .properties.vxlan_policy_agent_asg_update_interval:
+    value: 60
   .router.disable_insecure_cookies:
     value: false
   .router.drain_timeout:
@@ -662,6 +676,16 @@ resource-config:
     instances: automatic
     internet_connected: false
     swap_as_percent_of_memory_size: automatic
+  log_cache:
+    max_in_flight: 20%
+    additional_networks: []
+    additional_vm_extensions: []
+    elb_names: []
+    instance_type:
+      id: ${scale.log_cache}
+    instances: automatic
+    internet_connected: false
+    swap_as_percent_of_memory_size: automatic
   loggregator_trafficcontroller:
     max_in_flight: 1
     additional_networks: []
@@ -770,7 +794,9 @@ errand-config:
   nfsbrokerpush:
     post-deploy-state: ${errands_nfsbrokerpush}
   push-apps-manager:
-    post-deploy-state: ${errands_push_apps_manager}
+    post-deploy-state: true
+  push-offline-docs:
+    post-deploy-state: false
   push-usage-service:
     post-deploy-state: ${errands_push_usage_service}
   rotate_cc_database_key:
