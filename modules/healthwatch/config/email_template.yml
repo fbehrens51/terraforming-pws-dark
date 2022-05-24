@@ -15,7 +15,7 @@ html: |
         <div style="margin: auto; width: 50%; padding: 10px;">
           {{ with index .Alerts 0 }}
             <p><a href='{{ .Annotations.grafanaUrlPrefix }}"{{(.StartsAt.Add -1800000000000).Unix}}000","{{(.StartsAt.Add  1800000000000).Unix}}000"{{ .Annotations.grafanaUrlSuffix }}'>View a Grafana graph of the expression that triggered {{ if gt (len .Alerts.Firing) 1 }}these alerts{{ else }}this alert{{ end }}</a></p>
-            {{ if .Annotations.dashboard }}
+            {{ if index .Annotations "dashboard" }}
               <p><a href='{{ printf "%s&from=%d000&to=%d000" .Annotations.dashboard (.StartsAt.Add -900000000000).Unix (.StartsAt.Add 900000000000).Unix }}'>Dashboard Link</a></p>
             {{ end }}
           {{end}}
