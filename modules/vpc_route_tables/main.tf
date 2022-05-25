@@ -50,11 +50,6 @@ data "aws_internet_gateway" "igw" {
   }
 }
 
-data "aws_vpn_gateway" "vgw" {
-  count           = var.internetless ? 1 : 0
-  attached_vpc_id = var.vpc_id
-}
-
 resource "aws_route" "default_route" {
   count                  = var.internetless ? 0 : 1
   route_table_id         = aws_route_table.public_route_table[0].id
@@ -66,10 +61,9 @@ resource "aws_route" "default_route" {
 }
 
 resource "aws_route_table" "public_route_table" {
-  count            = 1
-  vpc_id           = var.vpc_id
-  tags             = local.public_tags
-  propagating_vgws = var.internetless ? [data.aws_vpn_gateway.vgw.0.id] : []
+  count  = 1
+  vpc_id = var.vpc_id
+  tags   = local.public_tags
 }
 
 resource "aws_vpc_endpoint_route_table_association" "public_s3_vpc_endpoint" {

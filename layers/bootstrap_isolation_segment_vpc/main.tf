@@ -87,10 +87,10 @@ data "aws_vpc" "pas_vpc" {
 }
 
 module "tag_vpc" {
-  source = "../../modules/vpc_tagging"
-  vpc_id = var.vpc_id
-  name = "isolation segment"
-  purpose = "isolation-segment"
+  source   = "../../modules/vpc_tagging"
+  vpc_id   = var.vpc_id
+  name     = "isolation segment"
+  purpose  = "isolation-segment"
   env_name = local.env_name
 }
 
@@ -112,12 +112,6 @@ data "aws_internet_gateway" "igw" {
     name   = "attachment.vpc-id"
     values = [var.vpc_id]
   }
-}
-
-data "aws_vpn_gateway" "vgw" {
-  count = var.internetless ? 1 : 0
-
-  attached_vpc_id = var.vpc_id
 }
 
 resource "aws_route_table" "public_route_table" {
