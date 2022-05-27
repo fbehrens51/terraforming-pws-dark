@@ -19,18 +19,6 @@ resource "aws_vpc" "isolation_segment_vpc" {
   }
 }
 
-resource "aws_vpn_gateway" "isolation_segment_vgw" {
-  vpc_id = aws_vpc.isolation_segment_vpc.id
-
-  tags = {
-    Name = "${var.env_name} | isolation segment vgw"
-  }
-
-  lifecycle {
-    ignore_changes = [tags]
-  }
-}
-
 resource "aws_internet_gateway" "isolation_segment_igw" {
   vpc_id = aws_vpc.isolation_segment_vpc.id
 

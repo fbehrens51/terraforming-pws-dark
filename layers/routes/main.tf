@@ -86,7 +86,6 @@ module "cp_vpc_route_tables" {
   availability_zones     = var.availability_zones
   enable_s3_vpc_endpoint = var.enable_cp_s3_vpc_endpoint
 
-
   tags = merge(
     local.modified_tags,
     {
