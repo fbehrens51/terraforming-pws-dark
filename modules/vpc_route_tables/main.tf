@@ -4,6 +4,11 @@ variable "vpc_id" {
 variable "s3_vpc_endpoint_id" {
 }
 
+variable "create_private_route_tables" {
+  type    = bool
+  default = true
+}
+
 variable "enable_s3_vpc_endpoint" {
   type    = bool
   default = true
@@ -72,13 +77,13 @@ resource "aws_vpc_endpoint_route_table_association" "public_s3_vpc_endpoint" {
 }
 
 resource "aws_route_table" "private_route_table" {
-  count  = length(var.availability_zones)
+  count  = var.create_private_route_tables == true ? length(var.availability_zones) : 0
   vpc_id = var.vpc_id
   tags   = local.private_tags
 }
 
 resource "aws_vpc_endpoint_route_table_association" "private_s3_vpc_endpoint" {
-  count           = var.enable_s3_vpc_endpoint ? length(var.availability_zones) : 0
+  count           = (var.enable_s3_vpc_endpoint && var.create_private_route_tables) ? length(var.availability_zones) : 0
   vpc_endpoint_id = var.s3_vpc_endpoint_id
   route_table_id  = element(aws_route_table.private_route_table.*.id, count.index)
 }
