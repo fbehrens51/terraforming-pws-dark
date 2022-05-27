@@ -27,12 +27,13 @@ locals {
 }
 
 module "bastion_vpc_route_tables" {
-  source                 = "../../modules/vpc_route_tables"
-  internetless           = var.internetless
-  vpc_id                 = local.bastion_vpc_id
-  s3_vpc_endpoint_id     = local.bastion_s3_vpc_endpoint_id
-  availability_zones     = var.availability_zones
-  enable_s3_vpc_endpoint = var.enable_bastion_s3_vpc_endpoint
+  source                      = "../../modules/vpc_route_tables"
+  internetless                = var.internetless
+  vpc_id                      = local.bastion_vpc_id
+  s3_vpc_endpoint_id          = local.bastion_s3_vpc_endpoint_id
+  availability_zones          = var.availability_zones
+  enable_s3_vpc_endpoint      = var.enable_bastion_s3_vpc_endpoint
+  create_private_route_tables = false
 
   tags = merge(
     local.modified_tags,
