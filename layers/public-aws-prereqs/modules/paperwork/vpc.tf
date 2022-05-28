@@ -5,6 +5,18 @@ locals {
   enterprise_services_vpc_cidr = "10.3.0.0/24"
 }
 
+resource "aws_ec2_transit_gateway" "tgw" {
+  default_route_table_association = "enable"
+  default_route_table_propagation = "enable"
+
+  tags = {
+    Name = "${var.env_name} | tgw"
+  }
+  lifecycle {
+    ignore_changes = [tags]
+  }
+}
+
 resource "aws_vpc" "bastion_vpc" {
   cidr_block = local.bastion_vpc_cidr
 
