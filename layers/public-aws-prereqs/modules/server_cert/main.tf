@@ -28,7 +28,6 @@ resource "tls_private_key" "server_private_key" {
 }
 
 resource "tls_cert_request" "server_cert_request" {
-  key_algorithm   = "RSA"
   private_key_pem = tls_private_key.server_private_key[0].private_key_pem
 
   subject {
@@ -44,7 +43,6 @@ resource "tls_locally_signed_cert" "server_cert" {
   count = 1
 
   cert_request_pem   = tls_cert_request.server_cert_request.cert_request_pem
-  ca_key_algorithm   = "RSA"
   ca_private_key_pem = var.ca_private_key_pem
   ca_cert_pem        = var.ca_cert_pem
 

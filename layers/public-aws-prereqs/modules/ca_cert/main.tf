@@ -11,7 +11,6 @@ resource "tls_private_key" "root_private_key" {
 resource "tls_self_signed_cert" "root_cert" {
   count = 1
 
-  key_algorithm   = "RSA"
   private_key_pem = tls_private_key.root_private_key[0].private_key_pem
 
   subject {
