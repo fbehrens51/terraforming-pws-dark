@@ -58,6 +58,7 @@ module "paperwork" {
   instance_tagger_role_name = var.instance_tagger_role_name
   tsdb_role_name            = var.tsdb_role_name
   isse_role_name            = var.isse_role_name
+  internetless              = var.internetless
 
   env_name    = var.env_name
   root_domain = var.root_domain
@@ -199,6 +200,11 @@ data "template_file" "keymanager_variables" {
     bootstrap_role_arn  = module.paperwork.bootstrap_role_arn
     foundation_role_arn = module.paperwork.foundation_role_arn
   }
+}
+
+variable "internetless" {
+  type    = bool
+  default = false
 }
 
 variable "force_destroy_buckets" {

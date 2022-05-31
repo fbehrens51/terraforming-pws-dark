@@ -2,6 +2,9 @@ variable "env_name" {
   type = string
 }
 
+variable "internetless" {
+}
+
 variable "fluentd_role_name" {
 }
 
