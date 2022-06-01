@@ -1,0 +1,16 @@
+# get rid of the cache files - it will cause problems.
+find ~/workspace/pws-dark-environments -type d -name .terragrunt-cache | xargs rm -rf
+
+# show what files will be modified
+grep -lr 'remote_state {' ~/workspace/pws-dark-environments/live/staging*  #| xargs -tri git add {
+
+# insert the "disable_bucket_update" after the dynamodb_table line
+grep -lr 'remote_state {' ~/workspace/pws-dark-environments/live/staging* | xargs -tri sed -i '/dynamodb_table/a\    disable_bucket_update = true' {}
+
+# OPTIONAL diff the files
+grep -lr 'remote_state {' ~/workspace/pws-dark-environments/live/staging*  | xargs -tri git diff {}
+
+# add the files
+grep -lr 'remote_state {' ~/workspace/pws-dark-environments/live/staging*  | xargs -tri git add {}
+
+git commit -m 'add disable_bucket_update to terragrunt remote state configuration blocks'
