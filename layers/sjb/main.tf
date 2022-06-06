@@ -58,17 +58,6 @@ data "terraform_remote_state" "bootstrap_sjb" {
   }
 }
 
-data "terraform_remote_state" "bootstrap_control_plane_foundation" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "bootstrap_control_plane_foundation"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 locals {
   release_channel             = data.terraform_remote_state.paperwork.outputs.release_channel
   secret_bucket_name          = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
