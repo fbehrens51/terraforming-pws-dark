@@ -145,7 +145,7 @@ data "aws_iam_policy_document" "public_bucket_policy" {
 }
 
 resource "aws_s3_bucket" "s3_logs_bucket" {
-  bucket        = "${local.bucket_prefix}-s3-logs"
+  bucket_prefix = "${local.bucket_prefix}-s3-logs"
   acl           = "log-delivery-write"
   force_destroy = var.force_destroy_buckets
 
@@ -153,7 +153,7 @@ resource "aws_s3_bucket" "s3_logs_bucket" {
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
-        sse_algorithm = "aws:kms"
+        sse_algorithm = "AES256"
       }
     }
   }

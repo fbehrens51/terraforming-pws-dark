@@ -19,7 +19,7 @@ variable "read_write_arns" {
 }
 
 resource "aws_s3_bucket" "s3_logs_bucket" {
-  bucket        = "${var.artifact_repo_bucket_name}-s3-logs"
+  bucket_prefix = "${var.artifact_repo_bucket_name}-s3-logs"
   acl           = "log-delivery-write"
   force_destroy = var.force_destroy_buckets
 
@@ -27,7 +27,7 @@ resource "aws_s3_bucket" "s3_logs_bucket" {
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
-        sse_algorithm = "aws:kms"
+        sse_algorithm = "AES256"
       }
     }
   }
