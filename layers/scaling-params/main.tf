@@ -35,7 +35,7 @@ locals {
     // BOSH VMS
     p-bosh = {
       compilation = "automatic"
-      director    = "m5.large"
+      director    = "m5.xlarge"
     }
 
     appMetrics = {
