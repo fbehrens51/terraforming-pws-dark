@@ -20,8 +20,8 @@
           "/proc/",
           "/sys/"
         ],
-        "first_scheduled_scan_time": "\"00:00\"",
-        "last_scheduled_scan_time": "\"23:59\"",
+        "first_scheduled_scan_time": "\"04:00\"",
+        "last_scheduled_scan_time": "\"10:00\"",
         "memory_limit": 1610612736,
         "move_action_destination": "/var/vcap/data/clamav/found",
         "on_access": ${on_access_scanning},
