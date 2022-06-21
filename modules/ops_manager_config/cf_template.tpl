@@ -796,7 +796,7 @@ errand-config:
   push-apps-manager:
     post-deploy-state: true
   push-offline-docs:
-    post-deploy-state: false
+    post-deploy-state: true
   push-usage-service:
     post-deploy-state: ${errands_push_usage_service}
   rotate_cc_database_key:
