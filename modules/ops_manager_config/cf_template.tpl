@@ -253,8 +253,6 @@ product-properties:
       name: Custom Documentation
     - href: ${apps_manager_tools_url}
       name: Tools
-    - href: /marketplace
-      name: Marketplace
     - href: ${apps_manager_about_url}
       name: About
     - href: ${apps_manager_docs_url}/support/
