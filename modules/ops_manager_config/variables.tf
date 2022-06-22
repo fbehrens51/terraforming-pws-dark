@@ -333,6 +333,11 @@ variable "apps_manager_docs_url" {
   description = "URL to allow users to read docs"
 }
 
+variable "apps_manager_offline_docs_url" {
+  type        = string
+  description = "URL to allow users to read offline-docs"
+}
+
 variable "apps_manager_about_url" {
   type        = string
   description = "URL to allow users to learn more about the platform"

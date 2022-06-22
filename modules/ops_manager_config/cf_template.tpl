@@ -247,8 +247,10 @@ product-properties:
     value: nodejs_buildpack
   .properties.push_apps_manager_nav_links:
     value:
+    - href: ${apps_manager_offline_docs_url}
+      name: Public Documentation
     - href: ${apps_manager_docs_url}
-      name: Docs
+      name: Custom Documentation
     - href: ${apps_manager_tools_url}
       name: Tools
     - href: /marketplace

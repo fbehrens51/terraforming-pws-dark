@@ -212,6 +212,7 @@ module "om_config" {
   apps_manager_global_wrapper_footer_content           = var.apps_manager_global_wrapper_footer_content
   apps_manager_global_wrapper_header_content           = var.apps_manager_global_wrapper_header_content
   apps_manager_tools_url                               = local.default_apps_manager_tools_url
+  apps_manager_offline_docs_url                        = local.default_apps_manager_offline_docs_url
   apps_manager_docs_url                                = local.default_apps_manager_docs_url
   apps_manager_about_url                               = local.default_apps_manager_about_url
 
@@ -339,6 +340,12 @@ locals {
     "docs",
     data.terraform_remote_state.paperwork.outputs.system_domain,
   )
+  default_apps_manager_offline_docs_url = format(
+    "https://%s.%s",
+    "offline-docs",
+    data.terraform_remote_state.paperwork.outputs.apps_domain,
+  )
+
   default_apps_manager_about_url = format(
     "https://%s.%s",
     "home",
