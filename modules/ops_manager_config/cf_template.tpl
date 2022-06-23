@@ -250,7 +250,7 @@ product-properties:
     - href: ${apps_manager_offline_docs_url}
       name: Public Documentation
     - href: ${apps_manager_docs_url}
-      name: Custom Documentation
+      name: Internal Documentation
     - href: ${apps_manager_tools_url}
       name: Tools
     - href: ${apps_manager_about_url}
