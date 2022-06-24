@@ -215,12 +215,3 @@ module "domains" {
 
   root_domain = data.terraform_remote_state.paperwork.outputs.root_domain
 }
-
-//TODO:script???
-//https://docs.rapid7.com/insightvm/configuring-distributed-scan-engines
-//wget https://download2.rapid7.com/download/InsightVM/Rapid7Setup-Linux64.bin
-//wget https://download2.rapid7.com/download/InsightVM/Rapid7Setup-Linux64.bin.sha512sum
-//sha512sum -c Rapid7Setup-Linux64.bin.sha512sum
-//chmod +x Rapid7Setup-Linux64.bin
-//./Rapid7Setup-Linux64.bin -c
-//need to see if it will support using a response file or another way to answer it's prompts
