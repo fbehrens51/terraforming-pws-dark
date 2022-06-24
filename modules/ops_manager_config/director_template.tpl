@@ -68,7 +68,9 @@ properties-configuration:
       keys: []
       providers: []
     external_database_options:
-      connection_options: {}
+      connection_options:
+        max_connections: 32
+        pool_timeout: 10
       database: ${rds_database}
       host: ${rds_address}
       password: ${rds_password}
