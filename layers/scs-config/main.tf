@@ -73,3 +73,10 @@ resource "aws_s3_bucket_object" "allowed-cidr" {
   key          = "allowed-cidrs/platform-credhub-scs"
   content      = jsonencode({ "description" : "Allow application access to foundation credhub", "destination" : data.aws_vpc.pas_vpc.cidr_block, "ports" : "8844", "protocol" : "tcp" })
 }
+
+resource "aws_s3_bucket_object" "scs-asg" {
+  bucket       = local.secrets_bucket_name
+  content_type = "application/json"
+  key          = "custom-asgs/scs-asg.json"
+  content      = jsonencode([{ "description" : "Allow config-server access to git mirror", "destination" : data.aws_vpc.pas_vpc.cidr_block, "ports" : "22", "protocol" : "tcp" }])
+}
