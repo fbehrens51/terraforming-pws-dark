@@ -234,3 +234,11 @@ module "syslog_config" {
 output "ssh_host_ips" {
   value = zipmap(flatten(module.postfix_master_host.ssh_host_names), flatten(module.postfix_master_host.private_ips))
 }
+
+module "sshconfig" {
+  source         = "../../modules/ssh_config"
+  foundation_name = data.terraform_remote_state.paperwork.outputs.foundation_name
+  host_ips = zipmap(flatten(module.postfix_master_host.ssh_host_names), flatten(module.postfix_master_host.private_ips))
+  host_type = "postfix"
+  secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
+}

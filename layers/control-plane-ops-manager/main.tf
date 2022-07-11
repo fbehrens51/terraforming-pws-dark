@@ -144,3 +144,11 @@ output "ops_manager_private_ip" {
 output "ssh_host_ips" {
   value = zipmap(flatten(module.ops_manager.ssh_host_names), flatten(module.ops_manager.private_ips))
 }
+
+module "sshconfig" {
+  source         = "../../modules/ssh_config"
+  foundation_name = data.terraform_remote_state.paperwork.outputs.foundation_name
+  host_ips = zipmap(flatten(module.ops_manager.ssh_host_names), flatten(module.ops_manager.private_ips))
+  host_type = "cp_om"
+  secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
+}

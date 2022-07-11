@@ -357,3 +357,11 @@ module "sjb" {
 output "ssh_host_ips" {
   value = zipmap(flatten(module.sjb.ssh_host_names), flatten(module.sjb.private_ips))
 }
+
+module "sshconfig" {
+  source         = "../../modules/ssh_config"
+  foundation_name = data.terraform_remote_state.paperwork.outputs.foundation_name
+  host_ips = zipmap(flatten(module.sjb.ssh_host_names), flatten(module.sjb.private_ips))
+  host_type = "sjb"
+  secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
+}

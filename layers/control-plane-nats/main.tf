@@ -145,3 +145,11 @@ module "nat" {
 output "ssh_host_ips" {
   value = module.nat.ssh_host_ips
 }
+
+module "sshconfig" {
+  source         = "../../modules/ssh_config"
+  foundation_name = data.terraform_remote_state.paperwork.outputs.foundation_name
+  host_ips = module.nat.ssh_host_ips
+  host_type = "cp_nat"
+  secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
+}

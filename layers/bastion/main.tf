@@ -198,3 +198,11 @@ variable "bastion_operating_system_tag" {
   type    = string
   default = "varies"
 }
+
+module "sshconfig" {
+  source         = "../../modules/ssh_config"
+  foundation_name = data.terraform_remote_state.paperwork.outputs.foundation_name
+  host_ips = zipmap(flatten(module.bastion_host.ssh_host_names), [element(concat(module.bootstrap_bastion.public_ips, [module.bootstrap_bastion.private_ip]), 0)])
+  host_type = "bastion"
+  secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
+}

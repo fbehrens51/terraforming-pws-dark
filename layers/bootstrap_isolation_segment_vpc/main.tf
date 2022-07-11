@@ -421,3 +421,16 @@ output "iso_seg_2_nats" {
 output "iso_seg_3_nats" {
   value = module.isolation_segment_3.ssh_host_ips
 }
+
+module "sshconfig" {
+  source         = "../../modules/ssh_config"
+  foundation_name = data.terraform_remote_state.paperwork.outputs.foundation_name
+  host_ips = merge(
+    module.isolation_segment_0.ssh_host_ips,
+    module.isolation_segment_1.ssh_host_ips,
+    module.isolation_segment_2.ssh_host_ips,
+    module.isolation_segment_3.ssh_host_ips,
+  )
+  host_type = "isolation_segment_nat"
+  secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
+}

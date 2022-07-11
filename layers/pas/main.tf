@@ -640,3 +640,12 @@ variable "pas_postgres_engine_version" {
   default     = "9.6"
   description = "version prefix for posgtres rds instance available in pas VPC"
 }
+
+
+module "sshconfig" {
+  source         = "../../modules/ssh_config"
+  foundation_name = data.terraform_remote_state.paperwork.outputs.foundation_name
+  host_ips = module.infra.ssh_host_ips
+  host_type = "pas_nat"
+  secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
+}
