@@ -12,13 +12,13 @@ Host ${host}
 %{ endif ~}
 
 %{ endfor ~}
+%{ if include_base_config == true ~}
 %{ if enable_sjb_proxyjump == true ~}
 Host ${foundation_name}_* !*bosh !*sjb !*bastion
    ProxyJump ${sjb_name}
-%{ endif ~}
 
-%{ if include_base_config == true ~}
-   Host ${foundation_name}_*
+%{ endif ~}
+Host ${foundation_name}_*
    LogLevel ERROR
    ConnectTimeout 10
    StrictHostKeyChecking no

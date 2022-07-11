@@ -12,32 +12,34 @@ locals {
     ssh_host_prefix = var.host_type
     ssh_key_path    = var.ssh_key_path,
     custom_ssh_key  = var.custom_ssh_key,
-    include_base_config = var.include_base_config,
-    enable_sjb_proxyjump = var.enable_sjb_proxyjump
+    include_base_config = var.include_base_config
   }
+
   is_sjb = (var.host_type=="sjb" ? true : false)
   is_bastion = (var.host_type=="bastion" ? true : false)
+  is_base = (var.host_type=="base" ? true : false)
 
   sshconfig_outside = templatefile("${path.module}/sshconfig.tpl",
     merge(local.common_params,
-      {
-        proxy_jump = (local.is_bastion ? "" : (var.host_type=="sjb" ? local.bastion_name : (var.custom_inner_proxy!="" ? var.custom_inner_proxy : local.sjb_name)))
-      }
+          {
+            proxy_jump = (local.is_sjb ? local.bastion_name : var.custom_inner_proxy),
+            enable_sjb_proxyjump = (local.is_base ? true : false),
+          }
     )
   )
-
   sshconfig_bastion = templatefile("${path.module}/sshconfig.tpl",
     merge(local.common_params,
-      {
-        proxy_jump = (var.host_type=="sjb" ? "" : (local.is_bastion ? "" : (var.custom_inner_proxy!="" ? var.custom_inner_proxy : local.sjb_name)))
-      }
+        {
+          proxy_jump = var.custom_inner_proxy,
+          enable_sjb_proxyjump = (local.is_base ? true : false),
+        }
     )
   )
-
   sshconfig_sjb = templatefile("${path.module}/sshconfig.tpl",
     merge(local.common_params,
       {
-        proxy_jump = var.custom_inner_proxy
+        proxy_jump = var.custom_inner_proxy,
+        enable_sjb_proxyjump = false,
       }
     )
   )
@@ -79,6 +81,7 @@ variable "host_type" {
 
 variable "host_ips" {
   description = "list of hostname, IP address(es)"
+  default = []
 }
 
 variable "custom_ssh_key" {

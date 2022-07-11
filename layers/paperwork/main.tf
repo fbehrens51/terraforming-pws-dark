@@ -369,6 +369,21 @@ module "bot_host_key_pair" {
   key_name = "${local.env_name_prefix}-bot"
 }
 
+resource "aws_s3_bucket_object" "bot_key" {
+  bucket       = var.cert_bucket
+  key          = "sshconfig/${var.foundation_name}_bot_key.pem"
+  content      = module.bot_host_key_pair.private_key_pem
+  content_type = "text/plain"
+}
+
+module "sshconfig" {
+  source              = "../../modules/ssh_config"
+  host_type           = "base"
+  foundation_name     = var.foundation_name
+  include_base_config = true
+  secrets_bucket_name = var.cert_bucket
+}
+
 resource "aws_s3_bucket_object" "pas_cf_users" {
   bucket       = var.cert_bucket
   key          = "pas/cf_users.json"

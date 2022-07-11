@@ -288,3 +288,11 @@ output "loki_ip" {
 output "ssh_host_ips" {
   value = zipmap(flatten(module.loki_instance.*.ssh_host_names), flatten(module.loki_instance.*.private_ips))
 }
+
+module "sshconfig" {
+  source              = "../../modules/ssh_config"
+  foundation_name     = data.terraform_remote_state.paperwork.outputs.foundation_name
+  host_ips            = zipmap(flatten(module.loki_instance.*.ssh_host_names), flatten(module.loki_instance.*.private_ips))
+  host_type           = "loki"
+  secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
+}
