@@ -150,8 +150,8 @@ module "om_config" {
   isolation_segment_to_security_groups = data.aws_security_group.isolation_segment_security_groups
 
   errands_deploy_autoscaler           = "true"
-  errands_deploy_notifications        = "true"
-  errands_deploy_notifications_ui     = "true"
+  errands_deploy_notifications        = "false"
+  errands_deploy_notifications_ui     = "false"
   errands_metric_registrar_smoke_test = "false"
   errands_nfsbrokerpush               = "false"
   errands_push_apps_manager           = "true"
