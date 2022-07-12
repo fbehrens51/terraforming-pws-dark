@@ -65,7 +65,7 @@ product-properties:
   .properties.autoscale_api_instance_count:
     value: 1
   .properties.autoscale_enable_notifications:
-    value: true
+    value: false
   .properties.autoscale_enable_verbose_logging:
     value: false
   .properties.autoscale_instance_count:
