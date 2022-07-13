@@ -34,25 +34,25 @@ variable "ssh_name_prefix" {
 }
 
 locals{
-  ssh_key_name = (var.ssh_name_prefix == "" ? "sshconfig/${data.terraform_remote_state.paperwork.outputs.foundation_name}_bbr_key.pem" : "sshconfig/${data.terraform_remote_state.paperwork.outputs.foundation_name}_${var.ssh_name_prefix}_bbr_key.pem")
+  ssh_key_name = (var.ssh_name_prefix == "" ? "${data.terraform_remote_state.paperwork.outputs.foundation_name}_bbr_key.pem" : "${data.terraform_remote_state.paperwork.outputs.foundation_name}_${var.ssh_name_prefix}_bbr_key.pem")
   proxy_name   = (var.ssh_name_prefix == "" ? "om" : "${var.ssh_name_prefix}_om")
+  host_type = (var.ssh_name_prefix == "" ? "bosh_director" : "${var.ssh_name_prefix}_bosh_director")
 }
 
 module "sshconfig" {
   source         = "../../modules/ssh_config"
   foundation_name = data.terraform_remote_state.paperwork.outputs.foundation_name
   host_ips = zipmap(flatten([var.host_name]), [var.host_ip])
-  host_type = "bosh_director"
+  host_type = local.host_type
   secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
   custom_inner_proxy = local.proxy_name
   ssh_user = "bbr"
+  custom_ssh_key = local.ssh_key_name
 }
-
-
 
 resource "aws_s3_bucket_object" "bbr_key" {
   bucket       = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
-  key          = local.ssh_key_name
+  key          = "sshconfig/${local.ssh_key_name}"
   content      = var.ssh_key_pem
   content_type = "text/plain"
 }

@@ -112,25 +112,27 @@ output "ssh_config_sjb" {
   value = local.sshconfig_outside
 }
 
+locals{
+  key = ("${var.foundation_name}_${var.host_type}_sshconfig")
+}
+
 resource "aws_s3_bucket_object" "sshconfig_outside" {
   bucket       = var.secrets_bucket_name
-  key          = "sshconfig/outside/${var.foundation_name}_${var.host_type}_sshconfig"
+  key          = "sshconfig/outside/${local.key}"
   content      = local.sshconfig_outside
   content_type = "text/plain"
 }
 
 resource "aws_s3_bucket_object" "sshconfig_bastion" {
-  count        = (local.is_bastion ? 0 : 1)
   bucket       = var.secrets_bucket_name
-  key          = "sshconfig/bastion/${var.foundation_name}_${var.host_type}_sshconfig"
+  key          = "sshconfig/bastion/${local.key}"
   content      = local.sshconfig_bastion
   content_type = "text/plain"
 }
 
 resource "aws_s3_bucket_object" "sshconfig_sjb" {
-  count        = (local.is_sjb ? 0 : (local.is_bastion ? 0 : 1))
   bucket       = var.secrets_bucket_name
-  key          = "sshconfig/sjb/${var.foundation_name}_${var.host_type}_sshconfig"
+  key          = "sshconfig/sjb/${local.key}"
   content      = local.sshconfig_sjb
   content_type = "text/plain"
 }
