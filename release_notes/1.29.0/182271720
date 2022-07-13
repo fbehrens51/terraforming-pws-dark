@@ -1,0 +1,5 @@
+#Authenticate to the platform with admin privs
+cf target -o system -s system
+cf delete p-invitations-blue -r -f
+cf delete p-invitations-green -r -f
+
