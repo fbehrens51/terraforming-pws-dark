@@ -532,11 +532,11 @@ product-properties:
   .router.enable_zipkin:
     value: true
   .router.frontend_idle_timeout:
-    value: 900
+    value: ${gorouter_frontend_idle_timeout}
   .router.lb_healthy_threshold:
     value: 20
   .router.request_timeout_in_seconds:
-    value: 900
+    value: ${gorouter_request_timeout_in_seconds}
   .uaa.apps_manager_access_token_lifetime:
     value: 3600
   .uaa.cf_cli_access_token_lifetime:

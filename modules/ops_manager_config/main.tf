@@ -213,6 +213,8 @@ locals {
     syslog_port                                          = var.syslog_port
     apps_syslog_port                                     = var.apps_syslog_port
     syslog_ca_cert                                       = var.syslog_ca_cert
+    gorouter_frontend_idle_timeout                       = var.gorouter_frontend_idle_timeout
+    gorouter_request_timeout_in_seconds                  = var.gorouter_request_timeout_in_seconds
   })
 }
 

@@ -563,3 +563,13 @@ variable "disk_type" {
   description = "disk type to use for bosh VMs"
   type        = string
 }
+
+variable "gorouter_frontend_idle_timeout" {
+  type = number
+  default = 900
+}
+
+variable "gorouter_request_timeout_in_seconds" {
+  type = number
+  default = 900
+}

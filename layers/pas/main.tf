@@ -271,6 +271,7 @@ module "pas_elb" {
   short_name        = "pas"
   health_check      = "HTTP:8080/health" # Gorouter healthcheck
   proxy_pass        = true
+  idle_timeout      = var.pas_elb_idle_timeout
 }
 
 data "aws_vpc" "cp_vpc" {
@@ -337,6 +338,12 @@ variable "pas_grafana_nlb" {
   type        = bool
   default     = false
   description = "false = use elb, true = use nlb"
+}
+
+variable "pas_elb_idle_timeout" {
+  type = number
+  default = 600
+  description = "idle timeout in seconds for the pas elb"
 }
 
 locals {

@@ -20,5 +20,6 @@ module "my_elb" {
   port              = var.port
   instance_port     = local.instance_listening_port
   proxy_pass        = var.proxy_pass
+  idle_timeout      = var.idle_timeout
 }
 

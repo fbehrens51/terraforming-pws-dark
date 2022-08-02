@@ -30,6 +30,12 @@ variable "instance_port" {
   default = ""
 }
 
+variable "idle_timeout" {
+  type = number
+  default = 600
+  description = "idle timeout in seconds for the elb"
+}
+
 variable "health_check" {
   default = ""
 }

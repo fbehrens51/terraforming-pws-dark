@@ -281,6 +281,9 @@ module "om_config" {
   extra_users = data.terraform_remote_state.paperwork.outputs.extra_bosh_users
   disk_type   = var.disk_type
 
+  gorouter_frontend_idle_timeout      = var.gorouter_frontend_idle_timeout
+  gorouter_request_timeout_in_seconds = var.gorouter_request_timeout_in_seconds
+
 }
 
 module "runtime_config_config" {

@@ -30,6 +30,12 @@ variable "instance_port" {
   default = null
 }
 
+variable "idle_timeout" {
+  type = number
+  default = 600
+  description = "idle timeout in seconds for the nlb"
+}
+
 variable "health_check_path" {
   default = null
 }

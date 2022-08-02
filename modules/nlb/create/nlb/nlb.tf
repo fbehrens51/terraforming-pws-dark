@@ -6,7 +6,7 @@ resource "aws_lb" "nlb" {
   internal                         = var.internetless
   load_balancer_type               = "network"
   subnets                          = var.public_subnet_ids
-  idle_timeout                     = 600
+  idle_timeout                     = var.idle_timeout
   tags                             = var.nlb_tag
 }
 
@@ -29,6 +29,12 @@ variable "nlb_tag" {
 }
 
 variable "name" {
+}
+
+variable "idle_timeout" {
+  type = number
+  default = 600
+  description = "idle timeout in seconds for the nlb"
 }
 
 output "nlb_name" {

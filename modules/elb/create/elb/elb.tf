@@ -7,7 +7,7 @@ resource "aws_elb" "elb" {
   subnets                   = var.public_subnet_ids
 
   security_groups = [var.elb_sg_id]
-  idle_timeout    = 600
+  idle_timeout    = var.idle_timeout
 
   listener {
     instance_port     = var.instance_port
@@ -38,6 +38,12 @@ variable "instance_port" {
 
 variable "port" {
   type = string
+}
+
+variable "idle_timeout" {
+  type = number
+  default = 600
+  description = "idle timeout in seconds for the elb"
 }
 
 variable "internetless" {

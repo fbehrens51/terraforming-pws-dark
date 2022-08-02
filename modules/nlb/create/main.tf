@@ -18,6 +18,7 @@ module "my_nlb" {
   public_subnet_ids = var.public_subnet_ids
   port              = var.port
   instance_port     = local.instance_listening_port
+  idle_timeout      = var.idle_timeout
 }
 
 resource "aws_lb_target_group" "my_nlb_tg" {
