@@ -1,19 +1,19 @@
 output "bastion_ip" {
   value = element(
     concat(
-      module.bootstrap_bastion.public_ips,
-      [module.bootstrap_bastion.private_ip],
+      module.bootstrap.public_ips,
+      [module.bootstrap.eni_ips[0]],
     ),
     0,
   )
 }
 
 output "bastion_private_ip" {
-  value = module.bootstrap_bastion.private_ip
+  value = module.bootstrap.eni_ips[0]
 }
 
 output "bastion_cidr_block" {
-  value = module.bootstrap_bastion.cidr_block
+  value = data.aws_vpc.vpc.cidr_block
 }
 
 output "bot_user_on_bastion" {
@@ -25,5 +25,5 @@ output "bastion_route_table_id" {
 }
 
 output "ssh_host_ips" {
-  value = zipmap(flatten(module.bastion_host.ssh_host_names), [element(concat(module.bootstrap_bastion.public_ips, [module.bootstrap_bastion.private_ip]), 0)])
+  value = zipmap(flatten(module.bastion_host.ssh_host_names), [element(concat(module.bootstrap.public_ips, [module.bootstrap.eni_ips[0]]), 0)])
 }

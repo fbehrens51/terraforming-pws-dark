@@ -80,15 +80,23 @@ module "tag_vpc" {
   env_name = local.env_name
 }
 
-module "bootstrap_bastion" {
-  source            = "../../modules/single_use_subnet"
-  availability_zone = var.singleton_availability_zone
-  cidr_block        = data.aws_vpc.vpc.cidr_block
-  route_table_id    = local.derived_route_table_id
-  ingress_rules     = var.ingress_rules
-  egress_rules      = var.egress_rules
-  tags              = local.modified_tags
-  create_eip        = !var.internetless
+module "public_subnets" {
+  source             = "../../modules/subnet_per_az"
+  availability_zones = var.availability_zones
+  vpc_id             = data.aws_vpc.vpc.id
+  cidr_block         = data.aws_vpc.vpc.cidr_block
+  tags = merge(
+    local.modified_tags,
+    {
+      "Name" = "${local.modified_name}-public"
+    },
+  )
+}
+
+resource "aws_route_table_association" "public_route_table_assoc" {
+  count          = length(var.availability_zones)
+  subnet_id      = module.public_subnets.subnet_ids[count.index]
+  route_table_id = data.aws_route_table.bastion_public_route_table.id
 }
 
 data "template_cloudinit_config" "bot_user_data" {
@@ -121,6 +129,16 @@ data "template_cloudinit_config" "user_data" {
 }
 
 
+module "bootstrap" {
+  source        = "../../modules/eni_per_subnet"
+  ingress_rules = var.ingress_rules
+  egress_rules  = var.egress_rules
+  subnet_ids    = module.public_subnets.subnet_ids
+  eni_count     = "1"
+  create_eip    = var.internetless ? false : true
+  tags          = local.modified_tags
+}
+
 module "bastion_host" {
   providers = {
     aws = aws.bastion
@@ -133,7 +151,7 @@ module "bastion_host" {
   scale_service_key    = "bastion"
   ami_id               = local.ami_filter_provided ? data.aws_ami.bastion_ami.0.image_id : data.terraform_remote_state.paperwork.outputs.amzn_ami_id
   user_data            = var.add_bot_user_to_user_data ? data.template_cloudinit_config.bot_user_data.rendered : data.template_cloudinit_config.user_data.rendered
-  eni_ids              = [module.bootstrap_bastion.eni_id]
+  eni_ids              = module.bootstrap.eni_ids
   tags                 = local.instance_tags
   iam_instance_profile = local.ami_filter_provided ? "" : data.terraform_remote_state.paperwork.outputs.instance_tagger_role_name
   operating_system     = var.bastion_operating_system_tag
@@ -166,6 +184,10 @@ variable "remote_state_region" {
 }
 
 variable "remote_state_bucket" {
+}
+
+variable "availability_zones" {
+  type = list(string)
 }
 
 variable "singleton_availability_zone" {
@@ -202,7 +224,7 @@ variable "bastion_operating_system_tag" {
 module "sshconfig" {
   source         = "../../modules/ssh_config"
   foundation_name = data.terraform_remote_state.paperwork.outputs.foundation_name
-  host_ips = zipmap(flatten(module.bastion_host.ssh_host_names), [element(concat(module.bootstrap_bastion.public_ips, [module.bootstrap_bastion.private_ip]), 0)])
+  host_ips = zipmap(flatten(module.bastion_host.ssh_host_names), [element(concat(module.bootstrap.public_ips, [module.bootstrap.eni_ips[0]]), 0)])
   host_type = "bastion"
   secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
 }
