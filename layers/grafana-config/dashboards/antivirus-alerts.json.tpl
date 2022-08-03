@@ -3,21 +3,44 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
         "type": "dashboard"
       }
     ]
   },
   "editable": false,
-  "gnetId": null,
+  "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 29,
+  "id": 20,
   "links": [],
+  "liveNow": false,
   "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 6,
+      "panels": [],
+      "title": "Antivirus",
+      "type": "row"
+    },
     {
       "alert": {
         "alertRuleTags": {},
@@ -78,38 +101,77 @@
         "noDataState": "keep_state",
         "notifications": []
       },
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "Infected Files",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "line+area"
+            }
+          },
+          "decimals": 0,
+          "links": [
+            {
+              "title": "",
+              "url": ""
+            }
+          ],
+          "mappings": [],
+          "max": 10,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "transparent",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "short"
         },
         "overrides": []
       },
-      "fill": 1,
-      "fillGradient": 0,
       "gridPos": {
         "h": 8,
-        "w": 12,
+        "w": 24,
         "x": 0,
         "y": 0
       },
-      "hiddenSeries": false,
       "id": 2,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
       "links": [
         {
           "targetBlank": true,
@@ -122,23 +184,18 @@
           "url": "https://${region}.console.${aws_base_domain}/cloudwatch/home?region=${region}#logsV2:log-groups/log-group/${log_group_name}/log-events$3FfilterPattern$3D$2522+FOUND$255C$2522$2522"
         }
       ],
-      "nullPointMode": "null as zero",
       "options": {
-        "dataLinks": [
-          {
-            "title": "",
-            "url": ""
+        "legend": {
+          "calcs": [],
+          "displayMode": "hidden",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
           }
-        ]
       },
-      "percentage": false,
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
+      "pluginVersion": "8.5.2",
       "targets": [
         {
           "expr": " fluentd_clamav_infected_files unless on (source_address) (label_join(system_healthy{origin=\"system_metrics_agent\"}, \"source_address\", \"\", \"ip\") < 1)",
@@ -160,61 +217,50 @@
           "refId": "B"
         }
       ],
-      "thresholds": [
-        {
-          "colorMode": "critical",
-          "fill": true,
-          "line": true,
-          "op": "gt",
-          "value": 0,
-          "yaxis": "left"
-        }
-      ],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
       "title": "AntiVirus Infections",
-      "tooltip": {
-        "shared": true,
-        "sort": 2,
-        "value_type": "individual"
-      },
       "transparent": true,
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
+      "type": "timeseries"
       },
-      "yaxes": [
         {
-          "decimals": 0,
-          "format": "short",
-          "label": "Infected Files",
-          "logBase": 1,
-          "max": "10",
-          "min": "0",
-          "show": true
+      "datasource": {
+        "type": "loki",
+        "uid": "UWRG7kB7z"
+      },
+      "gridPos": {
+        "h": 13,
+        "w": 24,
+        "x": 0,
+        "y": 9
+      },
+      "id": 4,
+      "options": {
+        "dedupStrategy": "none",
+        "enableLogDetails": true,
+        "prettifyLogMessage": false,
+        "showCommonLabels": false,
+        "showLabels": false,
+        "showTime": false,
+        "sortOrder": "Descending",
+        "wrapLogMessage": false
         },
+      "targets": [
         {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
+          "datasource": {
+            "type": "loki",
+            "uid": "UWRG7kB7z"
+          },
+          "expr": "{ident=\"antivirus\"} |= \"FOUND\" | json | line_format \"{{.source_address}} {{.message}}\"",
+          "queryType": "range",
+          "refId": "A"
         }
       ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
+      "title": "Antivirus Logs",
+      "transparent": true,
+      "type": "logs"
     }
   ],
-  "refresh": "10s",
-  "schemaVersion": 25,
+  "refresh": false,
+  "schemaVersion": 36,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -241,4 +287,5 @@
   "title": "ClamAV Virus Detections",
   "uid": "RLGLyeeZz",
   "version": 11
+  "weekStart": ""
 }
