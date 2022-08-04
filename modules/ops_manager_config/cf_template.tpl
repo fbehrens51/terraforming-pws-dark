@@ -238,9 +238,9 @@ product-properties:
   .properties.push_apps_manager_global_wrapper_bg_color:
     value: '#FFFF00'
   .properties.push_apps_manager_global_wrapper_footer_content:
-    value: classification footer
+    ${apps_manager_global_wrapper_footer_content}
   .properties.push_apps_manager_global_wrapper_header_content:
-    value: classification header
+    ${apps_manager_global_wrapper_header_content}
   .properties.push_apps_manager_global_wrapper_text_color:
     value: '#000000'
   .properties.push_apps_manager_invitations_buildpack:
