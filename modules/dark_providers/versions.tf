@@ -43,7 +43,7 @@ terraform {
 
     grafana = {
       source  = "grafana/grafana"
-      version = "~> 1.13.4"
+      version = "~> 1"
     }
   }
 }
