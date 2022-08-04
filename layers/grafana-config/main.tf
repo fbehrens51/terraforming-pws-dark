@@ -145,17 +145,18 @@ resource "grafana_data_source" "promloki" {
   count    = var.enable_loki ? 1 : 0
   type     = "prometheus"
   name     = "PromLoki"
+  uid      = "twsPromLokiDataSource"
   url      = "${local.loki_url}/loki"
   username = data.terraform_remote_state.bootstrap_loki[0].outputs.loki_username
-  password = data.terraform_remote_state.bootstrap_loki[0].outputs.loki_password
 
   json_data {
     tls_auth = true
   }
 
   secure_json_data {
-    tls_client_cert = data.terraform_remote_state.paperwork.outputs.loki_client_cert
-    tls_client_key  = data.terraform_remote_state.paperwork.outputs.loki_client_key
+    basic_auth_password = data.terraform_remote_state.bootstrap_loki[0].outputs.loki_password
+    tls_client_cert     = data.terraform_remote_state.paperwork.outputs.loki_client_cert
+    tls_client_key      = data.terraform_remote_state.paperwork.outputs.loki_client_key
   }
 }
 
@@ -163,23 +164,25 @@ resource "grafana_data_source" "loki" {
   count    = var.enable_loki ? 1 : 0
   type     = "loki"
   name     = "Loki"
+  uid      = "twsLokiDataSource"
   url      = local.loki_url
   username = data.terraform_remote_state.bootstrap_loki[0].outputs.loki_username
-  password = data.terraform_remote_state.bootstrap_loki[0].outputs.loki_password
 
   json_data {
     tls_auth = true
   }
 
   secure_json_data {
-    tls_client_cert = data.terraform_remote_state.paperwork.outputs.loki_client_cert
-    tls_client_key  = data.terraform_remote_state.paperwork.outputs.loki_client_key
+    basic_auth_password = data.terraform_remote_state.bootstrap_loki[0].outputs.loki_password
+    tls_client_cert     = data.terraform_remote_state.paperwork.outputs.loki_client_cert
+    tls_client_key      = data.terraform_remote_state.paperwork.outputs.loki_client_key
   }
 }
 
 resource "grafana_data_source" "cloudwatch" {
   type = "cloudwatch"
   name = "cloudwatch"
+  uid  = "twsCloudWatchDataSource"
 
   json_data {
     auth_type                 = ""
@@ -192,6 +195,7 @@ resource "grafana_dashboard" "vm-resources" {
   config_json = file("dashboards/vm-resources.json")
 }
 
+# Internal
 resource "grafana_dashboard" "cloudwatch-log-forwarder" {
   config_json = file("dashboards/cloudwatch-log-forwarder.json")
 }
@@ -200,10 +204,12 @@ resource "grafana_dashboard" "vm-health" {
   config_json = file("dashboards/vm-health.json")
 }
 
+# Internal
 resource "grafana_dashboard" "fluentd" {
   config_json = file("dashboards/fluentd.json")
 }
 
+# Prometheus 2.0 Overview by jeremy b, id=3662
 resource "grafana_dashboard" "prometheus" {
   config_json = file("dashboards/prometheus.json")
 }
@@ -212,27 +218,33 @@ resource "grafana_dashboard" "concourse" {
   config_json = file("dashboards/concourse.json")
 }
 
+# Node Exporter Server Metrics by Knut Ytterhaug, id=405
 resource "grafana_dashboard" "server-metrics" {
   config_json = file("dashboards/server-metrics.json")
 }
 
+# Internal
 resource "grafana_dashboard" "lokiprom-demo" {
   config_json = file("dashboards/lokiprom-demo.json")
 }
 
+# Internal
 resource "grafana_dashboard" "credhub-admin" {
   config_json = file("dashboards/credhub-admin.json")
 }
 
+# Internal
 resource "grafana_dashboard" "events-logger" {
   config_json = file("dashboards/events-logger.json")
 }
 
+# Loki & Promtail by zakkg3, id=10880
 resource "grafana_dashboard" "loki" {
   count       = var.enable_loki ? 1 : 0
   config_json = file("dashboards/loki.json")
 }
 
+# Bind9 Exporter DNS by Paulo Castro, id=12309
 resource "grafana_dashboard" "bind" {
   config_json = file("dashboards/bind.json")
 }
