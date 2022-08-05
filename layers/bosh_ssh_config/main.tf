@@ -20,11 +20,6 @@ variable "host_ip" {
   type = string
 }
 
-variable "host_name" {
-  type = string
-}
-
-
 variable "ssh_key_pem" {
 
 }
@@ -34,15 +29,17 @@ variable "ssh_name_prefix" {
 }
 
 locals{
+  foundation_name = data.terraform_remote_state.paperwork.outputs.foundation_name
   ssh_key_name = (var.ssh_name_prefix == "" ? "${data.terraform_remote_state.paperwork.outputs.foundation_name}_bbr_key.pem" : "${data.terraform_remote_state.paperwork.outputs.foundation_name}_${var.ssh_name_prefix}_bbr_key.pem")
-  proxy_name   = (var.ssh_name_prefix == "" ? "om" : "${var.ssh_name_prefix}_om")
+  proxy_name   = (var.ssh_name_prefix == "" ? "${data.terraform_remote_state.paperwork.outputs.foundation_name}_om" : "${data.terraform_remote_state.paperwork.outputs.foundation_name}_${var.ssh_name_prefix}_om")
   host_type = (var.ssh_name_prefix == "" ? "bosh_director" : "${var.ssh_name_prefix}_bosh_director")
+  host_name = (var.ssh_name_prefix == "" ? "${data.terraform_remote_state.paperwork.outputs.foundation_name}_bosh" : "${data.terraform_remote_state.paperwork.outputs.foundation_name}_${var.ssh_name_prefix}_bosh")
 }
 
 module "sshconfig" {
   source         = "../../modules/ssh_config"
   foundation_name = data.terraform_remote_state.paperwork.outputs.foundation_name
-  host_ips = zipmap(flatten([var.host_name]), [var.host_ip])
+  host_ips = zipmap(flatten([local.host_name]), [var.host_ip])
   host_type = local.host_type
   secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
   custom_inner_proxy = local.proxy_name
