@@ -283,6 +283,7 @@ groups:
         expr: 'fluentd_clamav_infected_files > 0'
         for: 1m
         annotations:
+          dashboard: "${grafana_root_url}/d/RLGLyeeZz/clamav-virus-detections?orgId=1"
           summary: "ClamAV Infection Found"
           description: |
             ClamAV has identified an infection at {{ $labels.source_address }}
