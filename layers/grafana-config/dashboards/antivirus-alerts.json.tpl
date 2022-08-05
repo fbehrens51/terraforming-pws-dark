@@ -188,7 +188,7 @@
       "type": "logs"
     }
   ],
-  "refresh": "10s",
+  "refresh": "",
   "schemaVersion": 36,
   "style": "dark",
   "tags": [],
