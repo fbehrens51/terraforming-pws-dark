@@ -22,8 +22,10 @@ product-properties:
   .properties.compute_isolation:
     selected_option: ${compute_isolation}
     value: ${compute_isolation}
+%{ if compute_enabled == true ~}
   .properties.compute_isolation.enabled.isolation_segment_name:
     value: ${iso_seg_tile_suffix}
+%{ endif ~}
   .properties.container_networking:
     selected_option: enable
     value: enable
