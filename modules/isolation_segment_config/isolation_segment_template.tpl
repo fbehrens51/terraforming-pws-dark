@@ -20,8 +20,8 @@ product-properties:
     selected_option: disable
     value: disable
   .properties.compute_isolation:
-    selected_option: enabled
-    value: enabled
+    selected_option: ${compute_isolation}
+    value: ${compute_isolation}
   .properties.compute_isolation.enabled.isolation_segment_name:
     value: ${iso_seg_tile_suffix}
   .properties.container_networking:
@@ -89,13 +89,16 @@ product-properties:
     selected_option: request
     value: request
   .properties.router_enable_proxy:
-    value: false
+    value: true
   .properties.router_keepalive_connections:
     selected_option: enable
     value: enable
   .properties.router_only_trust_client_ca_certs:
-    selected_option: disable
-    value: disable
+    selected_option: enable
+    value: enable
+  .properties.router_only_trust_client_ca_certs.enable.client_ca_certs:
+    value: |
+      ${indent(6, router_trusted_ca_certificates)}
   .properties.router_sticky_session_cookie_names:
     value:
     - name: JSESSIONID
@@ -108,14 +111,14 @@ product-properties:
     selected_option: log_client_ips
     value: log_client_ips
   .properties.routing_table_sharding_mode:
-    selected_option: isolation_segment_only
-    value: isolation_segment_only
+    selected_option: ${routing_table_sharding_mode}
+    value: ${routing_table_sharding_mode}
   .properties.routing_tls_termination:
     selected_option: router
     value: router
   .properties.routing_tls_version_range:
-    selected_option: tls_v1_1_v1_3
-    value: tls_v1_1_v1_3
+    selected_option: tls_v1_2_v1_3
+    value: tls_v1_2_v1_3
   .properties.smoke_tests_isolation:
     selected_option: on_demand
     value: on_demand
@@ -141,7 +144,7 @@ product-properties:
     value: false
 network-properties:
   network:
-    name: isolation-segment-${iso_seg_tile_suffix}
+    name: ${network_name}
   other_availability_zones:
     ${pas_vpc_azs}
   singleton_availability_zone:
@@ -150,7 +153,7 @@ resource-config:
   isolated_diego_cell_${iso_seg_tile_suffix_underscore}:
     max_in_flight: 4%
     additional_networks: []
-    additional_vm_extensions: [isolation-segment-${vpc_id}]
+    additional_vm_extensions: %{if compute_enabled == true ~}[isolation-segment-${vpc_id}]%{else}[]%{endif}
     elb_names: []
     # 4 r5.large instances is our standard 'Isolation segment' capacity @ 16
     # GB per instance, this value should also be updated in the isolation segment config
@@ -174,13 +177,13 @@ resource-config:
     max_in_flight: 1
     additional_networks: []
     additional_vm_extensions: []
-    elb_names: []
+    elb_names: %{if elb_name == "" ~}[]%{else}[${elb_name}]%{endif}
     instance_type:
-      id: automatic
-    instances: 0
+      id: ${scale.router}
+    instances: %{if router_enabled == true ~}3%{else}0%{endif}
     internet_connected: false
     swap_as_percent_of_memory_size: automatic
 errand-config:
   smoke_tests_isolation:
-    post-deploy-state: true
+    post-deploy-state: %{if compute_enabled == true ~}true%{else}false%{endif}
 

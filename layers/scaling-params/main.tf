@@ -98,6 +98,7 @@ locals {
 
     p-isolation-segment = {
       isolated_diego_cell = "r5.large"
+      router              = "t3.medium"
     }
 
     pws-dark-concourse-tile = {

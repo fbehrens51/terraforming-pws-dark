@@ -130,7 +130,7 @@ locals {
   om_public_ip                = data.terraform_remote_state.pas.outputs.ops_manager_ip
   control_plane_om_public_ip  = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.ops_manager_ip
   control_plane_plane_elb_dns = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.plane_elb_dns
-  pas_elb_dns                 = data.terraform_remote_state.pas.outputs.pas_elb_dns_name
+  pas_elb_dns                 = var.use_iso_router ? data.terraform_remote_state.pas.outputs.iso_router_elb_dns_name : data.terraform_remote_state.pas.outputs.pas_elb_dns_name
   postfix_private_ip          = data.terraform_remote_state.bootstrap_postfix.outputs.postfix_eni_ips[0]
   fluentd_dns_name            = data.terraform_remote_state.bootstrap_fluentd.outputs.fluentd_lb_dns_name
   loki_config = var.enable_loki ? {
@@ -333,6 +333,11 @@ variable "internet" {
 }
 
 variable "enable_loki" {
+  type    = bool
+  default = false
+}
+
+variable "use_iso_router" {
   type    = bool
   default = false
 }

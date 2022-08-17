@@ -274,6 +274,20 @@ module "pas_elb" {
   idle_timeout      = var.pas_elb_idle_timeout
 }
 
+module "iso_router_elb" {
+  source            = "../../modules/elb/create"
+  env_name          = var.global_vars.name_prefix
+  internetless      = var.internetless
+  public_subnet_ids = module.infra.public_subnet_ids
+  tags              = local.modified_tags
+  vpc_id            = local.vpc_id
+  egress_cidrs      = module.pas.pas_subnet_cidrs
+  short_name        = "pas-iso"
+  health_check      = "HTTP:8080/health" # Gorouter healthcheck
+  proxy_pass        = true
+  idle_timeout      = var.pas_elb_idle_timeout
+}
+
 data "aws_vpc" "cp_vpc" {
   id = local.cp_vpc_id
 }
@@ -415,6 +429,14 @@ output "pas_elb_dns_name" {
 
 output "pas_elb_id" {
   value = module.pas_elb.my_elb_id
+}
+
+output "iso_router_elb_dns_name" {
+  value = module.iso_router_elb.dns_name
+}
+
+output "iso_router_elb_id" {
+  value = module.iso_router_elb.my_elb_id
 }
 
 output "grafana_elb_dns_name" {
