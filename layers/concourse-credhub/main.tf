@@ -61,7 +61,8 @@ variable "remote_state_bucket" {
 variable "remote_state_region" {
 }
 
-
+data "aws_caller_identity" "current" {
+}
 
 
 module "domains" {
@@ -74,25 +75,25 @@ locals {
   credhub_vars_key = "concourse/generated-credhub-vars.yml"
 
   credhub_vars = templatefile("${path.module}/credhub_vars.tpl", {
-    CA_CERT_BUCKET = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
-    OM_PRIVATE_IP = data.terraform_remote_state.ops-manager.outputs.ops_manager_private_ip
-    CP_OM_PRIVATE_IP = data.terraform_remote_state.control-plane-ops-manager.outputs.ops_manager_private_ip
-    BOT_KEY_PEM = data.terraform_remote_state.paperwork.outputs.bot_private_key
-    REGION = data.terraform_remote_state.paperwork.outputs.region
-    REPORTING_BUCKET = data.terraform_remote_state.paperwork.outputs.reporting_bucket
-    ENV_NAME = data.terraform_remote_state.paperwork.outputs.env_name
-    PAS_BACKUP_BUCKET = data.terraform_remote_state.pas.outputs.ops_manager_bucket
-    PUBLIC_BUCKET = data.terraform_remote_state.paperwork.outputs.public_bucket_name
-    S3_ENDPOINT = data.terraform_remote_state.paperwork.outputs.s3_endpoint
-    MIRROR_BUCKET = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.mirror_bucket_name
-    KMS_KEY_ID = data.terraform_remote_state.paperwork.outputs.kms_key_arn
-    ROOT_CA_CERT_FILE = data.terraform_remote_state.paperwork.outputs.root_ca_cert_path
-    IAAS_CA_CERT_FILE = data.terraform_remote_state.paperwork.outputs.iaas_trusted_ca_certs
+    ACCOUNT_ID         = data.aws_caller_identity.current.account_id
+    BOT_KEY_PEM        = data.terraform_remote_state.paperwork.outputs.bot_private_key
+    CA_CERT_BUCKET     = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
+    CP_OM_PRIVATE_IP   = data.terraform_remote_state.control-plane-ops-manager.outputs.ops_manager_private_ip
+    ENV_NAME           = data.terraform_remote_state.paperwork.outputs.env_name
+    IAAS_CA_CERT_FILE  = data.terraform_remote_state.paperwork.outputs.iaas_trusted_ca_certs
+    KMS_KEY_ID         = data.terraform_remote_state.paperwork.outputs.kms_key_arn
+    MIRROR_BUCKET      = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.mirror_bucket_name
+    OM_PRIVATE_IP      = data.terraform_remote_state.ops-manager.outputs.ops_manager_private_ip
     OPS_MANAGER_BUCKET = data.terraform_remote_state.bootstrap_control_plane_foundation.outputs.ops_manager_bucket_name
-    SMTP_DOMAIN = data.terraform_remote_state.paperwork.outputs.smtp_domain
-    SMTP_FROM = data.terraform_remote_state.paperwork.outputs.smtp_from
-    SMTP_TO = data.terraform_remote_state.paperwork.outputs.smtp_to
-
+    PAS_BACKUP_BUCKET  = data.terraform_remote_state.pas.outputs.ops_manager_bucket
+    PUBLIC_BUCKET      = data.terraform_remote_state.paperwork.outputs.public_bucket_name
+    REGION             = data.terraform_remote_state.paperwork.outputs.region
+    REPORTING_BUCKET   = data.terraform_remote_state.paperwork.outputs.reporting_bucket
+    ROOT_CA_CERT_FILE  = data.terraform_remote_state.paperwork.outputs.root_ca_cert_path
+    S3_ENDPOINT        = data.terraform_remote_state.paperwork.outputs.s3_endpoint
+    SMTP_DOMAIN        = data.terraform_remote_state.paperwork.outputs.smtp_domain
+    SMTP_FROM          = data.terraform_remote_state.paperwork.outputs.smtp_from
+    SMTP_TO            = data.terraform_remote_state.paperwork.outputs.smtp_to
   })
 }
 

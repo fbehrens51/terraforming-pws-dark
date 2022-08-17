@@ -11,6 +11,9 @@ credentials:
 - name: /concourse/compliance/control_plane_opsman_ssh_target
   type: value
   value: ${CP_OM_PRIVATE_IP}
+- name: /concourse/main/account_id
+  type: value
+  value: ${ACCOUNT_ID}
 - name: /concourse/main/opsman_ssh_private_key
   type: ssh
   value:
