@@ -123,7 +123,7 @@ module "infra" {
   instance_types                = data.terraform_remote_state.scaling-params.outputs.instance_types
   syslog_ca_cert                = data.terraform_remote_state.paperwork.outputs.syslog_ca_certs_bundle
   ops_manager_security_group_id = module.ops_manager.security_group_id
-  elb_security_group_id         = module.pas_elb.security_group_id
+  elb_security_group_ids        = [module.pas_elb.security_group_id, module.iso_router_elb.security_group_id]
   grafana_elb_security_group_id = module.grafana_elb.security_group_id
   operating_system              = data.terraform_remote_state.paperwork.outputs.amazon_operating_system_tag
 

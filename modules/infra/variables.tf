@@ -100,7 +100,8 @@ variable "public_bucket_name" {
 variable "public_bucket_url" {
 }
 
-variable "elb_security_group_id" {
+variable "elb_security_group_ids" {
+  type = list(string)
 }
 
 variable "grafana_elb_security_group_id" {
