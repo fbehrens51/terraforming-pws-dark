@@ -130,7 +130,7 @@ bosh_vms_system_ca_certs = ["${root_ca_cert_s3_path}","${iaas_trusted_ca_certs_s
 
 system_ca_certs = ["${root_ca_cert_s3_path}","${iaas_trusted_ca_certs_s3_path}"]
 
-router_trusted_ca_certs = ["${router_trusted_ca_certs_s3_path}"]
+router_trusted_ca_certs = ["${root_ca_cert_s3_path}","${router_trusted_ca_certs_s3_path}"]
 
 syslog_ca_certs = ["${root_ca_cert_s3_path}"]
 
