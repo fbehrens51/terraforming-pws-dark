@@ -218,6 +218,30 @@ locals {
   })
 }
 
+
+
+locals {
+  haproxy_template = templatefile("${path.module}/haproxy_template.tpl", {
+    haproxy_backend_servers                              = var.haproxy_backend_servers
+    scale                                                = var.scale["cf"]
+    region                                               = var.region
+    pas_vpc_azs                                          = indent(4, join("", data.template_file.pas_vpc_azs.*.rendered))
+    s3_endpoint                                          = "https://${var.s3_endpoint}"
+    haproxy_elb_names                                     = "[${join(",", var.haproxy_elb_names)}]"
+    system_domain                                        = var.system_domain
+    vanity_cert_pem                                      = var.vanity_cert_pem
+    vanity_private_key_pem                               = var.vanity_private_key_pem
+    vanity_cert_enabled                                  = var.vanity_cert_enabled
+    router_cert_pem                                      = var.router_cert_pem
+    router_private_key_pem                               = var.router_private_key_pem
+    router_trusted_ca_certificates                       = var.router_trusted_ca_certificates
+    singleton_availability_zone                          = var.singleton_availability_zone
+    syslog_host                                          = var.syslog_host
+    syslog_port                                          = var.syslog_port
+    syslog_ca_cert                                       = var.syslog_ca_cert
+  })
+}
+
 resource "tls_private_key" "jwt" {
   algorithm = "RSA"
   rsa_bits  = "2048"
@@ -347,4 +371,10 @@ resource "aws_s3_bucket_object" "cf_template" {
   bucket  = var.secrets_bucket_name
   key     = var.cf_config
   content = local.cf_template
+}
+
+resource "aws_s3_bucket_object" "haproxy_template" {
+  bucket  = var.secrets_bucket_name
+  key     = var.haproxy_config
+  content = local.haproxy_template
 }

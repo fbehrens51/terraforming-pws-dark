@@ -189,6 +189,16 @@ variable "router_elb_names" {
   description = "List of elb names which GoRouter should be attached to."
 }
 
+variable "haproxy_elb_names" {
+  type        = list(string)
+  description = "List of elb names which haproxy should be attached to."
+}
+
+variable "haproxy_backend_servers" {
+  type        = string
+  description = "comma separated list of backend servers"
+}
+
 variable "vanity_cert_enabled" {
   type        = string
   description = "String boolean to include the vanity certificate in the CF configuration"
@@ -379,6 +389,9 @@ variable "om_server_key" {
 }
 
 variable "cf_config" {
+}
+
+variable "haproxy_config" {
 }
 
 variable "cf_tools_config" {

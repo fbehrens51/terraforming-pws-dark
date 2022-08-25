@@ -102,6 +102,17 @@ variable "cf_config" {
   default     = "pas/cf_config.yml"
 }
 
+variable "haproxy_config" {
+  description = "haproxy configuration file"
+  default     = "pas/haproxy_config.yml"
+}
+
+variable "haproxy_backend_servers" {
+  type        = string
+  description = "comma separated list of backend servers"
+  default     = ""
+}
+
 variable "cf_tools_config" {
   description = "cf_tools tile configuration file"
   default     = "pas/cf_tools_config.yml"

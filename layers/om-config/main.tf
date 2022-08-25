@@ -125,6 +125,8 @@ module "om_config" {
   scale                         = data.terraform_remote_state.scaling-params.outputs.instance_types
   secrets_bucket_name           = local.secrets_bucket_name
   cf_config                     = var.cf_config
+  haproxy_config                = var.haproxy_config
+  haproxy_backend_servers       = var.haproxy_backend_servers
   cf_tools_config               = var.cf_tools_config
   director_config               = var.director_config
   portal_config                 = var.portal_config
@@ -181,7 +183,9 @@ module "om_config" {
   router_elb_names = [
     data.terraform_remote_state.pas.outputs.pas_elb_id,
   ]
-
+  haproxy_elb_names = [
+    data.terraform_remote_state.pas.outputs.haproxy_elb_id,
+  ]
   director_blobstore_bucket   = data.terraform_remote_state.pas.outputs.director_blobstore_bucket
   director_blobstore_location = var.director_blobstore_location
 
