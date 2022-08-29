@@ -12,12 +12,6 @@ product-properties:
   .properties.haproxy_ca_certificate:
     value: |
       ${indent(6, router_trusted_ca_certificates)}
-  .properties.haproxy_tls_cert:
-    value:
-      cert_pem: |
-        ${indent(8, chomp(router_cert_pem))}
-      private_key_pem: |
-        ${indent(8, chomp(router_private_key_pem))}
   .properties.networking_poe_ssl_certs:
     value:
     - certificate:
