@@ -288,6 +288,8 @@ module "om_config" {
   gorouter_frontend_idle_timeout      = var.gorouter_frontend_idle_timeout
   gorouter_request_timeout_in_seconds = var.gorouter_request_timeout_in_seconds
 
+  use_external_haproxy_endpoint = var.use_external_haproxy_endpoint
+
 }
 
 module "runtime_config_config" {

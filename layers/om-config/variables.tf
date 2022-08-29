@@ -198,11 +198,16 @@ variable "disk_type" {
 }
 
 variable "gorouter_frontend_idle_timeout" {
-  type = number
+  type    = number
   default = 900
 }
 
 variable "gorouter_request_timeout_in_seconds" {
-  type = number
+  type    = number
   default = 900
+}
+
+variable "use_external_haproxy_endpoint" {
+  type    = bool
+  default = false
 }

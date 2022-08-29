@@ -301,8 +301,13 @@ product-properties:
     selected_option: log_client_ips
     value: log_client_ips
   .properties.routing_tls_termination:
+%{ if use_external_haproxy_endpoint ~}
+    selected_option: load_balancer
+    value: load_balancer
+%{ else ~}
     selected_option: router
     value: router
+%{ endif ~}
   .properties.routing_tls_version_range:
     selected_option: tls_v1_2_v1_3
     value: tls_v1_2_v1_3
