@@ -542,6 +542,10 @@ product-properties:
     value: 20
   .router.request_timeout_in_seconds:
     value: ${gorouter_request_timeout_in_seconds}
+%{ if use_external_haproxy_endpoint ~}
+  .router.static_ips:
+    value: ${haproxy_backend_servers}
+%{ endif ~}
   .uaa.apps_manager_access_token_lifetime:
     value: 3600
   .uaa.cf_cli_access_token_lifetime:
