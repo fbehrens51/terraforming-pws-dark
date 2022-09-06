@@ -25,8 +25,10 @@ Host ${foundation_name}_*
    #   User bot
    #   IdentityFile ${ssh_key_path}/${foundation_name}_bot_key.pem
    # edit
-   User <USER>
    GSSAPIAuthentication no
    IdentitiesOnly yes
    UserKnownHostsFile /dev/null
+
+Host ${foundation_name}_* !*bosh
+   User <USER>
 %{ endif ~}
