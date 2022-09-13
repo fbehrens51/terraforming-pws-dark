@@ -96,7 +96,7 @@ module "public_subnets" {
 resource "aws_route_table_association" "public_route_table_assoc" {
   count          = length(var.availability_zones)
   subnet_id      = module.public_subnets.subnet_ids[count.index]
-  route_table_id = data.aws_route_table.bastion_public_route_table.id
+  route_table_id = local.derived_route_table_id
 }
 
 data "template_cloudinit_config" "bot_user_data" {
