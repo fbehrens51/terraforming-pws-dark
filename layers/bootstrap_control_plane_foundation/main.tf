@@ -323,30 +323,46 @@ module "credhub_nlb" {
 
 # ELBs
 
+locals {
+
+  uaa_listener_to_instance_ports = [{
+    port                = 8443
+    instance_port       = 8443
+    enable_proxy_policy = false
+  }]
+
+  credhub_listener_to_instance_ports = [{
+    port                = 8844
+    instance_port       = 8844
+    enable_proxy_policy = false
+  }]
+
+}
+
 module "uaa_elb" {
-  source            = "../../modules/elb/create"
-  env_name          = local.env_name
-  internetless      = var.internetless
-  public_subnet_ids = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_public_subnet_ids
-  tags              = var.global_vars["global_tags"]
-  vpc_id            = data.aws_vpc.vpc.id
-  egress_cidrs      = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_private_subnet_cidrs
-  short_name        = "uaa"
-  port              = 8443
-  health_check      = "HTTPS:8443/healthz"
+  source                     = "../../modules/elb/create"
+  env_name                   = local.env_name
+  internetless               = var.internetless
+  public_subnet_ids          = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_public_subnet_ids
+  tags                       = var.global_vars["global_tags"]
+  vpc_id                     = data.aws_vpc.vpc.id
+  egress_cidrs               = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_private_subnet_cidrs
+  short_name                 = "uaa"
+  health_check               = "HTTPS:8443/healthz"
+  listener_to_instance_ports = local.uaa_listener_to_instance_ports
 }
 
 module "credhub_elb" {
-  source            = "../../modules/elb/create"
-  env_name          = local.env_name
-  internetless      = var.internetless
-  public_subnet_ids = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_public_subnet_ids
-  tags              = var.global_vars["global_tags"]
-  vpc_id            = data.aws_vpc.vpc.id
-  egress_cidrs      = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_private_subnet_cidrs
-  short_name        = "credhub"
-  port              = 8844
-  health_check      = "HTTP:8845/health"
+  source                     = "../../modules/elb/create"
+  env_name                   = local.env_name
+  internetless               = var.internetless
+  public_subnet_ids          = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_public_subnet_ids
+  tags                       = var.global_vars["global_tags"]
+  vpc_id                     = data.aws_vpc.vpc.id
+  egress_cidrs               = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_private_subnet_cidrs
+  short_name                 = "credhub"
+  health_check               = "HTTP:8845/health"
+  listener_to_instance_ports = local.credhub_listener_to_instance_ports
 }
 
 resource "aws_security_group_rule" "credhub_ingress_health_rule" {

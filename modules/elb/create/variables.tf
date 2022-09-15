@@ -22,17 +22,9 @@ variable "egress_cidrs" {
   type = list(string)
 }
 
-variable "port" {
-  default = 443
-}
-
-variable "instance_port" {
-  default = ""
-}
-
 variable "idle_timeout" {
-  type = number
-  default = 600
+  type        = number
+  default     = 600
   description = "idle timeout in seconds for the elb"
 }
 
@@ -43,4 +35,12 @@ variable "health_check" {
 variable "proxy_pass" {
   type    = bool
   default = false
+}
+
+variable "listener_to_instance_ports" {
+  type = list(object({
+    port                = string
+    instance_port       = string
+    enable_proxy_policy = bool
+  }))
 }

@@ -1,3 +1,7 @@
+locals {
+  proxy_instance_ports = [for i, v in var.listener_to_instance_ports : v.instance_port if v.enable_proxy_policy]
+}
+
 resource "aws_elb" "elb" {
   count = 1
 
@@ -9,11 +13,14 @@ resource "aws_elb" "elb" {
   security_groups = [var.elb_sg_id]
   idle_timeout    = var.idle_timeout
 
-  listener {
-    instance_port     = var.instance_port
-    instance_protocol = "TCP"
-    lb_port           = var.port
-    lb_protocol       = "TCP"
+  dynamic "listener" {
+    for_each = var.listener_to_instance_ports
+    content {
+      instance_port     = listener.value["instance_port"]
+      instance_protocol = "TCP"
+      lb_port           = listener.value["port"]
+      lb_protocol       = "TCP"
+    }
   }
 
   health_check {
@@ -30,19 +37,13 @@ resource "aws_elb" "elb" {
 resource "aws_proxy_protocol_policy" "proxy_policy" {
   count          = var.proxy_pass == true ? 1 : 0
   load_balancer  = aws_elb.elb[count.index].name
-  instance_ports = [var.instance_port]
+  instance_ports = local.proxy_instance_ports
 }
 
-variable "instance_port" {
-}
-
-variable "port" {
-  type = string
-}
 
 variable "idle_timeout" {
-  type = number
-  default = 600
+  type        = number
+  default     = 600
   description = "idle timeout in seconds for the elb"
 }
 
@@ -67,6 +68,14 @@ variable "health_check" {
 }
 
 variable "proxy_pass" {
+}
+
+variable "listener_to_instance_ports" {
+  type = list(object({
+    port                = string
+    instance_port       = string
+    enable_proxy_policy = bool
+  }))
 }
 
 output "elb_id" {

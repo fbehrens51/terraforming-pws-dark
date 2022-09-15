@@ -11,10 +11,15 @@ resource "aws_security_group" "my_elb_sg" {
   )
 }
 
+locals {
+  lb_ports = [for i, v in var.listener_to_instance_ports : v.port]
+}
+
 resource "aws_security_group_rule" "ingress_rule" {
-  description       = "Allow tcp/${var.port} from anywhere"
-  from_port         = var.port
-  to_port           = var.port
+  count             = length(local.lb_ports)
+  description       = "Allow tcp/${local.lb_ports[count.index]} from anywhere"
+  from_port         = local.lb_ports[count.index]
+  to_port           = local.lb_ports[count.index]
   protocol          = "TCP"
   type              = "ingress"
   security_group_id = aws_security_group.my_elb_sg.id

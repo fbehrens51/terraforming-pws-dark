@@ -247,60 +247,96 @@ module "grafana_nlb" {
   health_check_cidr_blocks = module.infra.public_subnet_cidrs
 }
 
+
+locals {
+
+  grafana_listener_to_instance_ports = [{
+    port                = 443
+    instance_port       = 443
+    enable_proxy_policy = false
+  }]
+
+  pas_listener_to_instance_ports = [{
+    port                = 443
+    instance_port       = 443
+    enable_proxy_policy = true
+  }]
+
+  haproxy_listener_to_instance_ports = [{
+    port                = 443
+    instance_port       = 443
+    enable_proxy_policy = true
+    }, {
+    port                = 80
+    instance_port       = 80
+    enable_proxy_policy = false
+  }]
+
+  iso_router_listener_to_instance_ports = [{
+    port                = 443
+    instance_port       = 443
+    enable_proxy_policy = true
+  }]
+}
+
 module "grafana_elb" {
-  source            = "../../modules/elb/create"
-  env_name          = var.global_vars.name_prefix
-  internetless      = var.internetless
-  public_subnet_ids = module.infra.public_subnet_ids
-  tags              = local.modified_tags
-  vpc_id            = local.vpc_id
-  egress_cidrs      = module.pas.pas_subnet_cidrs
-  short_name        = "grafana"
-  port              = 443
-  health_check      = "HTTPS:443/api/health"
+  source                     = "../../modules/elb/create"
+  env_name                   = var.global_vars.name_prefix
+  internetless               = var.internetless
+  public_subnet_ids          = module.infra.public_subnet_ids
+  tags                       = local.modified_tags
+  vpc_id                     = local.vpc_id
+  egress_cidrs               = module.pas.pas_subnet_cidrs
+  short_name                 = "grafana"
+  health_check               = "HTTPS:443/api/health"
+  listener_to_instance_ports = local.grafana_listener_to_instance_ports
 }
 
 module "pas_elb" {
-  source            = "../../modules/elb/create"
-  env_name          = var.global_vars.name_prefix
-  internetless      = var.internetless
-  public_subnet_ids = module.infra.public_subnet_ids
-  tags              = local.modified_tags
-  vpc_id            = local.vpc_id
-  egress_cidrs      = module.pas.pas_subnet_cidrs
-  short_name        = "pas"
-  health_check      = "HTTP:8080/health" # Gorouter healthcheck
-  proxy_pass        = true
-  idle_timeout      = var.pas_elb_idle_timeout
+  source                     = "../../modules/elb/create"
+  env_name                   = var.global_vars.name_prefix
+  internetless               = var.internetless
+  public_subnet_ids          = module.infra.public_subnet_ids
+  tags                       = local.modified_tags
+  vpc_id                     = local.vpc_id
+  egress_cidrs               = module.pas.pas_subnet_cidrs
+  short_name                 = "pas"
+  health_check               = "HTTP:8080/health" # Gorouter healthcheck
+  proxy_pass                 = true
+  idle_timeout               = var.pas_elb_idle_timeout
+  listener_to_instance_ports = local.pas_listener_to_instance_ports
 }
 
 module "iso_router_elb" {
-  source            = "../../modules/elb/create"
-  env_name          = var.global_vars.name_prefix
-  internetless      = var.internetless
-  public_subnet_ids = module.infra.public_subnet_ids
-  tags              = local.modified_tags
-  vpc_id            = local.vpc_id
-  egress_cidrs      = module.pas.pas_subnet_cidrs
-  short_name        = "pas-iso"
-  health_check      = "HTTP:8080/health" # Gorouter healthcheck
-  proxy_pass        = true
-  idle_timeout      = var.pas_elb_idle_timeout
+  source                     = "../../modules/elb/create"
+  env_name                   = var.global_vars.name_prefix
+  internetless               = var.internetless
+  public_subnet_ids          = module.infra.public_subnet_ids
+  tags                       = local.modified_tags
+  vpc_id                     = local.vpc_id
+  egress_cidrs               = module.pas.pas_subnet_cidrs
+  short_name                 = "pas-iso"
+  health_check               = "HTTP:8080/health" # Gorouter healthcheck
+  proxy_pass                 = true
+  idle_timeout               = var.pas_elb_idle_timeout
+  listener_to_instance_ports = local.iso_router_listener_to_instance_ports
 }
 
 module "haproxy_elb" {
-  source            = "../../modules/elb/create"
-  env_name          = var.global_vars.name_prefix
-  internetless      = var.internetless
-  public_subnet_ids = module.infra.public_subnet_ids
-  tags              = local.modified_tags
-  vpc_id            = local.vpc_id
-  egress_cidrs      = module.pas.pas_subnet_cidrs
-  short_name        = "pas-ha"
-  health_check      = "HTTP:8080/health" # Gorouter healthcheck
-  proxy_pass        = true
-  idle_timeout      = var.pas_elb_idle_timeout
+  source                     = "../../modules/elb/create"
+  env_name                   = var.global_vars.name_prefix
+  internetless               = var.internetless
+  public_subnet_ids          = module.infra.public_subnet_ids
+  tags                       = local.modified_tags
+  vpc_id                     = local.vpc_id
+  egress_cidrs               = module.pas.pas_subnet_cidrs
+  short_name                 = "pas-ha"
+  health_check               = "HTTP:8080/health" # Gorouter healthcheck
+  proxy_pass                 = true
+  idle_timeout               = var.pas_elb_idle_timeout
+  listener_to_instance_ports = local.haproxy_listener_to_instance_ports
 }
+
 data "aws_vpc" "cp_vpc" {
   id = local.cp_vpc_id
 }
@@ -368,8 +404,8 @@ variable "pas_grafana_nlb" {
 }
 
 variable "pas_elb_idle_timeout" {
-  type = number
-  default = 600
+  type        = number
+  default     = 600
   description = "idle timeout in seconds for the pas elb"
 }
 
@@ -694,9 +730,9 @@ variable "pas_postgres_engine_version" {
 
 
 module "sshconfig" {
-  source         = "../../modules/ssh_config"
-  foundation_name = data.terraform_remote_state.paperwork.outputs.foundation_name
-  host_ips = module.infra.ssh_host_ips
-  host_type = "pas_nat"
+  source              = "../../modules/ssh_config"
+  foundation_name     = data.terraform_remote_state.paperwork.outputs.foundation_name
+  host_ips            = module.infra.ssh_host_ips
+  host_type           = "pas_nat"
   secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
 }
