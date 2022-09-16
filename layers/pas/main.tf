@@ -123,7 +123,7 @@ module "infra" {
   instance_types                = data.terraform_remote_state.scaling-params.outputs.instance_types
   syslog_ca_cert                = data.terraform_remote_state.paperwork.outputs.syslog_ca_certs_bundle
   ops_manager_security_group_id = module.ops_manager.security_group_id
-  elb_security_group_ids        = [module.pas_elb.security_group_id, module.iso_router_elb.security_group_id, module.haproxy_elb.security_group_id]
+  elb_security_group_ids        = [module.pas_elb.security_group_id, module.haproxy_elb.security_group_id]
   grafana_elb_security_group_id = module.grafana_elb.security_group_id
   operating_system              = data.terraform_remote_state.paperwork.outputs.amazon_operating_system_tag
 
@@ -272,11 +272,6 @@ locals {
     enable_proxy_policy = false
   }]
 
-  iso_router_listener_to_instance_ports = [{
-    port                = 443
-    instance_port       = 443
-    enable_proxy_policy = true
-  }]
 }
 
 module "grafana_elb" {
@@ -305,21 +300,6 @@ module "pas_elb" {
   proxy_pass                 = true
   idle_timeout               = var.pas_elb_idle_timeout
   listener_to_instance_ports = local.pas_listener_to_instance_ports
-}
-
-module "iso_router_elb" {
-  source                     = "../../modules/elb/create"
-  env_name                   = var.global_vars.name_prefix
-  internetless               = var.internetless
-  public_subnet_ids          = module.infra.public_subnet_ids
-  tags                       = local.modified_tags
-  vpc_id                     = local.vpc_id
-  egress_cidrs               = module.pas.pas_subnet_cidrs
-  short_name                 = "pas-iso"
-  health_check               = "HTTP:8080/health" # Gorouter healthcheck
-  proxy_pass                 = true
-  idle_timeout               = var.pas_elb_idle_timeout
-  listener_to_instance_ports = local.iso_router_listener_to_instance_ports
 }
 
 module "haproxy_elb" {
@@ -479,15 +459,6 @@ output "pas_elb_dns_name" {
 output "pas_elb_id" {
   value = module.pas_elb.my_elb_id
 }
-
-output "iso_router_elb_dns_name" {
-  value = module.iso_router_elb.dns_name
-}
-
-output "iso_router_elb_id" {
-  value = module.iso_router_elb.my_elb_id
-}
-
 
 output "haproxy_elb_dns_name" {
   value = module.haproxy_elb.dns_name
