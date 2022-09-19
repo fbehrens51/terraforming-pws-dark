@@ -211,3 +211,13 @@ variable "use_external_haproxy_endpoint" {
   type    = bool
   default = false
 }
+
+variable "haproxy_http_to_https_redirect" {
+  type    = bool
+  default = false
+}
+
+variable "haproxy_disable_http" {
+  type    = bool
+  default = true
+}

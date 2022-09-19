@@ -262,14 +262,19 @@ locals {
     enable_proxy_policy = true
   }]
 
-  haproxy_listener_to_instance_ports = [{
+  disable_haproxy_http = var.haproxy_http_to_https_redirect ? false : var.haproxy_disable_http
+
+  haproxy_listener_to_instance_ports = local.disable_haproxy_http ? local.haproxy_tls_listener_to_instance_ports : concat(local.haproxy_tls_listener_to_instance_ports, local.haproxy_http_listener_to_instance_ports)
+
+  haproxy_tls_listener_to_instance_ports = [{
     port                = 443
     instance_port       = 443
     enable_proxy_policy = true
-    }, {
+  }]
+  haproxy_http_listener_to_instance_ports = [{
     port                = 80
     instance_port       = 80
-    enable_proxy_policy = false
+    enable_proxy_policy = true
   }]
 
 }
@@ -699,6 +704,15 @@ variable "pas_postgres_engine_version" {
   description = "version prefix for posgtres rds instance available in pas VPC"
 }
 
+variable "haproxy_http_to_https_redirect" {
+  type    = bool
+  default = false
+}
+
+variable "haproxy_disable_http" {
+  type    = bool
+  default = true
+}
 
 module "sshconfig" {
   source              = "../../modules/ssh_config"

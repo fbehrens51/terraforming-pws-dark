@@ -241,6 +241,8 @@ locals {
     syslog_host                    = var.syslog_host
     syslog_port                    = var.syslog_port
     syslog_ca_cert                 = var.syslog_ca_cert
+    disable_http                   = var.http_to_https_redirect ? false : var.disable_http
+    http_to_https_redirect         = var.http_to_https_redirect
   })
 }
 

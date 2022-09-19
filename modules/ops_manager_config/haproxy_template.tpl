@@ -6,12 +6,24 @@ product-properties:
     value: false
   .properties.backend_servers_list:
     value: ${haproxy_backend_servers}
+  .properties.disable_http:
+%{ if disable_http ~}
+    value: true
+%{ else ~}
+    value: false
+%{ endif ~}
   .properties.haproxy_backend_ca_certificate:
     value: |
       ${indent(6, router_trusted_ca_certificates)}
   .properties.haproxy_ca_certificate:
     value: |
       ${indent(6, router_trusted_ca_certificates)}
+  .properties.http_to_https_redirect:
+%{ if http_to_https_redirect ~}
+    value: true
+%{ else ~}
+    value: false
+%{ endif ~}
   .properties.networking_poe_ssl_certs:
     value:
     - certificate:

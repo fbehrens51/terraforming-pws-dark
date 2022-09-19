@@ -289,6 +289,8 @@ module "om_config" {
   gorouter_request_timeout_in_seconds = var.gorouter_request_timeout_in_seconds
 
   use_external_haproxy_endpoint = var.use_external_haproxy_endpoint
+  http_to_https_redirect        = var.haproxy_http_to_https_redirect
+  disable_http                  = var.haproxy_disable_http
 
 }
 
