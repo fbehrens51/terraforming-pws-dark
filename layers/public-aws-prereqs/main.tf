@@ -37,6 +37,8 @@ locals {
   portal_end_to_end_test_user_private_key_pem_path = "portal_end_to_end_test_user_key.pem"
   vanity_server_cert_s3_path                       = "vanity_cert.pem"
   vanity_server_key_s3_path                        = "vanity_key.pem"
+  vanity2_server_cert_s3_path                      = "vanity2_cert.pem"
+  vanity2_server_key_s3_path                       = "vanity2_key.pem"
 
   basedn = "dc=${join(",dc=", split(".", var.root_domain))}"
   admin  = "cn=admin,dc=${join(",dc=", split(".", var.root_domain))}"
@@ -179,6 +181,8 @@ data "template_file" "paperwork_variables" {
     portal_smoke_test_key_s3_path               = local.portal_smoke_test_key_s3_path
     vanity_server_cert_s3_path                  = local.vanity_server_cert_s3_path
     vanity_server_key_s3_path                   = local.vanity_server_key_s3_path
+    vanity2_server_cert_s3_path                 = local.vanity2_server_cert_s3_path
+    vanity2_server_key_s3_path                  = local.vanity2_server_key_s3_path
     iaas_trusted_ca_certs_s3_path               = local.iaas_trusted_ca_certs_s3_path
     slack_trusted_ca_certs_s3_path              = local.slack_trusted_ca_certs_s3_path
 
@@ -541,6 +545,20 @@ resource "aws_s3_bucket_object" "vanity_server_key" {
   bucket       = aws_s3_bucket.certs.bucket
   content_type = "text/plain"
   content      = module.paperwork.vanity_server_key
+}
+
+resource "aws_s3_bucket_object" "vanity2_server_cert" {
+  key          = local.vanity2_server_cert_s3_path
+  bucket       = aws_s3_bucket.certs.bucket
+  content      = module.paperwork.vanity2_server_cert
+  content_type = "text/plain"
+}
+
+resource "aws_s3_bucket_object" "vanity2_server_key" {
+  key          = local.vanity2_server_key_s3_path
+  bucket       = aws_s3_bucket.certs.bucket
+  content_type = "text/plain"
+  content      = module.paperwork.vanity2_server_key
 }
 
 resource "aws_s3_bucket_object" "portal_smoke_test_cert" {

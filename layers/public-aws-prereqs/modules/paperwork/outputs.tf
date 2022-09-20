@@ -117,6 +117,14 @@ output "vanity_server_key" {
   sensitive = true
 }
 
+output "vanity2_server_cert" {
+  value = module.vanity2_server_cert.cert_pem
+}
+
+output "vanity2_server_key" {
+  value     = module.vanity2_server_cert.private_key_pem
+  sensitive = true
+}
 output "isolation_segment_vpc_1_id" {
   value = aws_vpc.isolation_segment_vpc.id
 }

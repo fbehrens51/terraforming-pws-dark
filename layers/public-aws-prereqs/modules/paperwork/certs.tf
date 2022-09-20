@@ -19,6 +19,15 @@ module "vanity_server_cert" {
   domains            = ["*.eagle"]
 }
 
+module "vanity2_server_cert" {
+  source             = "../server_cert"
+  ca_cert_pem        = module.ca_cert.cert_pem
+  ca_private_key_pem = module.ca_cert.private_key_pem
+  env_name           = var.env_name
+  common_name        = "vanity2"
+  domains            = ["*.web.eagle"]
+}
+
 module "fluentd_server_cert" {
   source             = "../server_cert"
   ca_cert_pem        = module.ca_cert.cert_pem

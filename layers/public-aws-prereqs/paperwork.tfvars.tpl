@@ -113,6 +113,8 @@ vanity_server_cert_s3_path = "${vanity_server_cert_s3_path}"
 
 vanity_server_key_s3_path = "${vanity_server_key_s3_path}"
 
+vanity_cert_paths = [{key="${vanity_server_key_s3_path}", cert="${vanity_server_cert_s3_path}"},{key="${vanity2_server_key_s3_path}", cert="${vanity2_server_cert_s3_path}"}]
+
 // We force this to us-east-1 because combine only supports us-east-1.
 // Using a different region for log forwarding would prevent using the CAP
 // authentication mechanism.
