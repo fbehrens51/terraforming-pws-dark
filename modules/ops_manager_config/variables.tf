@@ -199,19 +199,12 @@ variable "haproxy_backend_servers" {
   description = "comma separated list of backend servers"
 }
 
-variable "vanity_cert_enabled" {
-  type        = string
-  description = "String boolean to include the vanity certificate in the CF configuration"
-}
-
-variable "vanity_cert_pem" {
-  type        = string
-  description = "Server certificate used by the GoRouter. Must be valid for *.<VANITY_DOMAIN>"
-}
-
-variable "vanity_private_key_pem" {
-  type        = string
-  description = "Server key used by the GoRouter. Must be valid for *.<VANITY_DOMAIN>"
+variable "vanity_certs" {
+  type = list(object({
+    key = string
+    cert = string
+  }))
+  default = []
 }
 
 variable "router_cert_pem" {

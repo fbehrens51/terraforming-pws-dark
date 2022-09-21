@@ -205,14 +205,14 @@ product-properties:
         private_key_pem: |
           ${indent(10, chomp(router_private_key_pem))}
       name: router
-%{ if vanity_cert_enabled == "true" ~}
+%{~ for index, vanity_cert in vanity_certs }
     - certificate:
         cert_pem: |
-          ${indent(10, chomp(vanity_cert_pem))}
+          ${indent(10, chomp(vanity_cert.cert))}
         private_key_pem: |
-          ${indent(10, chomp(vanity_private_key_pem))}
-      name: vanity
-%{ endif ~}
+          ${indent(10, chomp(vanity_cert.key))}
+      name: ${format("vanity-%02d", index+1)}
+%{~ endfor }
   .properties.networkpolicyserver_database_max_open_connections:
     value: 200
   .properties.networkpolicyserverinternal_database_max_open_connections:

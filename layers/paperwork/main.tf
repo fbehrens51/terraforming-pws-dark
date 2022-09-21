@@ -869,20 +869,30 @@ data "aws_s3_bucket_object" "uaa_server_key" {
   key    = var.uaa_server_key_s3_path
 }
 
-variable "vanity_server_cert_s3_path" {
+variable "vanity_cert_paths" {
+  type = list(object({
+    key  = string
+    cert = string
+  }))
+  default = []
 }
 
-data "aws_s3_bucket_object" "vanity_server_cert" {
+data "aws_s3_bucket_object" "vanity_cert_keys" {
+  for_each = {
+    for index, v in var.vanity_cert_paths :
+    v.key => v
+  }
   bucket = var.cert_bucket
-  key    = var.vanity_server_cert_s3_path
+  key    = each.value.key
 }
 
-variable "vanity_server_key_s3_path" {
-}
-
-data "aws_s3_bucket_object" "vanity_server_key" {
+data "aws_s3_bucket_object" "vanity_cert_certs" {
+  for_each = {
+    for index, v in var.vanity_cert_paths :
+    v.cert => v
+  }
   bucket = var.cert_bucket
-  key    = var.vanity_server_key_s3_path
+  key    = each.value.cert
 }
 
 variable "ldap_ca_cert_s3_path" {
@@ -1299,14 +1309,6 @@ output "uaa_server_key" {
   sensitive = true
 }
 
-output "vanity_server_cert" {
-  value = data.aws_s3_bucket_object.vanity_server_cert.body
-}
-
-output "vanity_server_key" {
-  value     = data.aws_s3_bucket_object.vanity_server_key.body
-  sensitive = true
-}
 
 output "ldap_ca_cert" {
   value = data.aws_s3_bucket_object.ldap_ca_cert.body
@@ -1650,4 +1652,17 @@ output "s3_endpoint" {
 
 output "endpoint_domain" {
   value = var.endpoint_domain
+}
+
+locals {
+  vanity_certs_output = [for i, v in var.vanity_cert_paths : {
+    key  = data.aws_s3_bucket_object.vanity_cert_keys[v.key].body
+    cert = data.aws_s3_bucket_object.vanity_cert_certs[v.cert].body
+    }
+  ]
+}
+
+output "vanity_certs" {
+  sensitive = false
+  value     = local.vanity_certs_output
 }
