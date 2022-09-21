@@ -4,15 +4,6 @@ variable "iso_seg_name" {
 variable "iso_seg_tile_suffix" {
 }
 
-variable "vanity_cert_enabled" {
-}
-
-variable "vanity_cert_pem" {
-}
-
-variable "vanity_private_key_pem" {
-}
-
 variable "router_cert_pem" {
 }
 
@@ -82,6 +73,15 @@ variable "override_vpc_id" {
   description = "what vpc to use if not finding based on subnet tags"
 }
 
+
+variable "vanity_certs" {
+  type = list(object({
+    key = string
+    cert = string
+  }))
+  default = []
+}
+
 data "template_file" "pas_vpc_azs" {
   count = length(var.pas_subnet_availability_zones)
 
@@ -125,12 +125,10 @@ locals {
     vpc_id                         = local.vpc_id
     iso_seg_tile_suffix            = var.iso_seg_tile_suffix
     iso_seg_tile_suffix_underscore = replace(var.iso_seg_tile_suffix, "-", "_")
-    vanity_cert_pem                = var.vanity_cert_pem
-    vanity_private_key_pem         = var.vanity_private_key_pem
-    vanity_cert_enabled            = var.vanity_cert_enabled
     router_cert_pem                = var.router_cert_pem
     router_private_key_pem         = var.router_private_key_pem
     router_trusted_ca_certificates = var.router_trusted_ca_certificates
+    vanity_certs                   = var.vanity_certs
     syslog_host                    = var.syslog_host
     syslog_port                    = var.syslog_port
     syslog_ca_cert                 = var.syslog_ca_cert
