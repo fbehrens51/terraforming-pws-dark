@@ -334,6 +334,7 @@ data "aws_iam_policy_document" "fluentd" {
     actions = [
       "logs:*",
       "s3:*",
+      "sqs:*",
       "ec2:CreateTags",
       "ec2:DescribeTags",
     ]

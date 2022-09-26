@@ -163,6 +163,15 @@ resource "aws_s3_bucket" "s3_logs_bucket" {
   }
 }
 
+resource "aws_sqs_queue" "s3_logs_notification_queue" {
+  name_prefix               = "${local.bucket_prefix}-s3-logs-sqs"
+  receive_wait_time_seconds = 3
+
+  tags = {
+    "Name" = "${local.env_name_prefix} S3 Logs Bucket"
+  }
+}
+
 data "aws_iam_policy_document" "s3_logs_bucket_policy" {
   //Read Only statement
   statement {
