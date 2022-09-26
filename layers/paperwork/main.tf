@@ -234,14 +234,15 @@ resource "aws_s3_bucket" "reporting_bucket" {
   }
 }
 
-resource "aws_s3_bucket_notification" "reporting_bucket_notification" {
-  bucket = aws_s3_bucket.reporting_bucket.id
-  queue {
-    id        = "reporting-bucket-notification"
-    queue_arn = aws_sqs_queue.s3_logs_notification_queue.arn
-    events    = ["s3:ObjectCreated:*"]
-  }
-}
+//resource "aws_s3_bucket_notification" "reporting_bucket_notification" {
+//  bucket = aws_s3_bucket.reporting_bucket.id
+//  queue {
+//    id            = local.reporting_bucket_name
+//    queue_arn     = aws_sqs_queue.s3_logs_notification_queue.arn
+//    events        = ["s3:ObjectCreated:*"]
+//    filter_prefix = "${local.reporting_bucket_name}/"
+//  }
+//}
 
 resource "null_resource" "secrets_logging" {
   provisioner "local-exec" {
