@@ -166,9 +166,10 @@ resource "aws_s3_bucket" "s3_logs_bucket" {
 resource "aws_sqs_queue" "s3_logs_notification_queue" {
   name_prefix               = "${local.bucket_prefix}-s3-logs-sqs"
   receive_wait_time_seconds = 3
+  sqs_managed_sse_enabled   = true
 
   tags = {
-    "Name" = "${local.env_name_prefix} S3 Logs Bucket"
+    "Name" = "${local.env_name_prefix} S3 Access Logs Notification Queue"
   }
 }
 
@@ -230,6 +231,15 @@ resource "aws_s3_bucket" "reporting_bucket" {
   logging {
     target_bucket = aws_s3_bucket.s3_logs_bucket.bucket
     target_prefix = "${local.reporting_bucket_name}/"
+  }
+}
+
+resource "aws_s3_bucket_notification" "reporting_bucket_notification" {
+  bucket = aws_s3_bucket.reporting_bucket.id
+  queue {
+    id        = "reporting-bucket-notification"
+    queue_arn = aws_sqs_queue.s3_logs_notification_queue.arn
+    events    = ["s3:ObjectCreated:*"]
   }
 }
 
