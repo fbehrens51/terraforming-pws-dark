@@ -163,6 +163,14 @@ resource "aws_s3_bucket" "s3_logs_bucket" {
   }
 }
 
+resource "aws_s3_bucket_notification" "s3_logs_bucket_notification" {
+  bucket = aws_s3_bucket.s3_logs_bucket.id
+  queue {
+    queue_arn = aws_sqs_queue.s3_logs_notification_queue.arn
+    events    = ["s3:ObjectCreated:*"]
+  }
+}
+
 resource "aws_sqs_queue" "s3_logs_notification_queue" {
   name_prefix               = "${local.bucket_prefix}-s3-logs-sqs"
   receive_wait_time_seconds = 3
@@ -171,6 +179,28 @@ resource "aws_sqs_queue" "s3_logs_notification_queue" {
   tags = {
     "Name" = "${local.env_name_prefix} S3 Access Logs Notification Queue"
   }
+}
+
+resource "aws_sqs_queue_policy" "s3_logs_notification_queue_policy" {
+  queue_url = aws_sqs_queue.s3_logs_notification_queue.url
+  policy    = <<POLICY
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": "*",
+          "Action": "sqs:SendMessage",
+          "Resource": "${aws_sqs_queue.s3_logs_notification_queue.arn}",
+          "Condition": {
+            "ArnEquals": {
+              "aws:SourceArn": "${aws_s3_bucket.s3_logs_bucket.arn}"
+            }
+          }
+        }
+      ]
+    }
+    POLICY
 }
 
 data "aws_iam_policy_document" "s3_logs_bucket_policy" {
@@ -233,16 +263,6 @@ resource "aws_s3_bucket" "reporting_bucket" {
     target_prefix = "${local.reporting_bucket_name}/"
   }
 }
-
-//resource "aws_s3_bucket_notification" "reporting_bucket_notification" {
-//  bucket = aws_s3_bucket.reporting_bucket.id
-//  queue {
-//    id            = local.reporting_bucket_name
-//    queue_arn     = aws_sqs_queue.s3_logs_notification_queue.arn
-//    events        = ["s3:ObjectCreated:*"]
-//    filter_prefix = "${local.reporting_bucket_name}/"
-//  }
-//}
 
 resource "null_resource" "secrets_logging" {
   provisioner "local-exec" {
