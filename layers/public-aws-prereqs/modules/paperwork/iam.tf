@@ -37,6 +37,7 @@ data "aws_iam_policy_document" "bootstrap" {
       "rds:DownloadCompleteDBLogFile",
       "rds:PurchaseReservedDBInstancesOffering",
       "s3:*",
+      "sqs:*",
     ]
 
     resources = ["*"]
@@ -113,6 +114,7 @@ data "aws_iam_policy_document" "director" {
       "iam:GetUser",
       "iam:GetPolicy",
       "s3:*",
+      "sqs:*",
       "iam:ListServerCertificates",
       "iam:ListEntitiesForPolicy",
       "rds:DescribeEngineDefaultParameters",
@@ -927,6 +929,7 @@ data "aws_iam_policy_document" "sjb" {
       "iam:GetUser",
       "iam:GetPolicy",
       "s3:*",
+      "sqs:*",
       "iam:ListServerCertificates",
       "iam:ListEntitiesForPolicy",
       "rds:DescribeEngineDefaultParameters",
@@ -1031,6 +1034,7 @@ data "aws_iam_policy_document" "concourse" {
       "iam:GetUser",
       "iam:GetPolicy",
       "s3:*",
+      "sqs:*",
       "iam:ListServerCertificates",
       "iam:ListEntitiesForPolicy",
       "rds:DescribeEngineDefaultParameters",
