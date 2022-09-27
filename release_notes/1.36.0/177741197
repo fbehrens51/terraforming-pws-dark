@@ -1,0 +1,10 @@
+add sqs:* to the following IAM profiles:
+
+#fluentd needs to interact with SQS
+data "aws_iam_policy_document" "fluentd"
+
+#Terraform can be run from these to create the queue
+data "aws_iam_policy_document" "bootstrap"
+data "aws_iam_policy_document" "director"
+data "aws_iam_policy_document" "sjb"
+data "aws_iam_policy_document" "concourse"
