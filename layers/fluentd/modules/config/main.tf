@@ -4,6 +4,8 @@ locals {
 
   td_agent_configuration = templatefile("${path.module}/td-agent.tpl", {
     syslog_port                     = module.ports.syslog_port
+    s3_logs_queue                   = var.s3_logs_queue
+    s3_access_logs                  = var.s3_access_logs
     s3_logs_bucket                  = var.s3_logs_bucket
     region                          = var.region
     cloudwatch_audit_log_group_name = var.cloudwatch_audit_log_group_name
