@@ -26,7 +26,7 @@
   tag s3
 
   s3_bucket ${s3_access_logs}
-  region ${region}
+  s3_region ${region}
   store_as json
 
   <sqs>
