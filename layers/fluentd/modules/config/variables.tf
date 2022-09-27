@@ -6,6 +6,8 @@ variable "fluentd_bundle_key" {
 }
 variable "server_key" {}
 variable "server_cert" {}
+variable "s3_logs_queue" {}
+variable "s3_access_logs" {}
 variable "s3_logs_bucket" {}
 variable "cloudwatch_audit_log_group_name" {}
 variable "cloudwatch_log_group_name" {}

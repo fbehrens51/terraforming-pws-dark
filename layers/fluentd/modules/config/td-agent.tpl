@@ -19,6 +19,47 @@
   bind 0.0.0.0
 </source>
 
+# s3 access logs
+<source>
+  @type s3
+  @label @s3_logs
+  tag s3
+
+  s3_bucket ${s3_access_logs}
+  region ${region}
+  store_as json
+
+  <sqs>
+    queue_name ${s3_logs_queue}
+  </sqs>
+  <parse>
+    @type regexp
+    expression /^(?<bucketowner>[^ ]*) (?<bucket>[^ ]*) \[(?<time>.*?)\] (?<remote_ip>[^ ]*) (?<requester>[^ ]*) (?<request_id>[^ ]*) (?<operation>[^ ]*) (?<key>[^ ]*) (?<request_uri>\"[^\"]*\"|-) (?<http_status>-|[0-9]*) (?<error_code>[^ ]*) (?<bytes_sent>[^ ]*) (?<object_size>[^ ]*) (?<total_time>[^ ]*) (?<turn_around_time>[^ ]*) (?<referrer>[^ ]*) (?<user_agent>\"[^\"]*\"|-) (?<version_id>[^ ]*)(?: (?<host_id>[^ ]*) (?<sigv>[^ ]*) (?<cipher_suite>[^ ]*) (?<auth_type>[^ ]*) (?<end_point>[^ ]*) (?<tls_version>[^ ]*))?.*$/
+    types bytes_sent:integer,object_size:integer
+    time_key time
+    time_format %d/%b/%Y:%T %z
+    keep_time_key true
+  </parse>
+</source>
+
+<label @s3_logs>
+  <filter>
+    @type record_transformer
+    <record>
+      ident s3_access_logs
+      host ${s3_access_logs}
+    </record>
+  </filter>
+  <match **>
+    @type copy
+
+    <store>
+      @type relabel
+      @label @all_logs
+    </store>
+  </match>
+</label>
+
 # Fluentd's internal error logs
 <label @ERROR>
   <filter>

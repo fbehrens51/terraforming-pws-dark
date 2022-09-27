@@ -139,6 +139,8 @@ module "configuration" {
   cloudwatch_audit_log_group_name = local.audit_log_group_name
   cloudwatch_log_group_name       = local.log_group_name
   cloudwatch_log_stream_name      = local.log_stream_name
+  s3_logs_queue                   = data.terraform_remote_state.paperwork.outputs.s3_logs_queue
+  s3_access_logs                  = data.terraform_remote_state.paperwork.outputs.s3_logs_bucket
   s3_logs_bucket                  = data.terraform_remote_state.bootstrap_fluentd.outputs.s3_bucket_syslog_archive
   s3_audit_logs_bucket            = data.terraform_remote_state.bootstrap_fluentd.outputs.s3_bucket_syslog_audit_archive
   region                          = var.region

@@ -1602,6 +1602,10 @@ output "bot_key_name" {
   value = module.bot_host_key_pair.key_name
 }
 
+output "s3_logs_queue" {
+  value = aws_sqs_queue.s3_logs_notification_queue.name
+}
+
 output "s3_logs_bucket" {
   value = aws_s3_bucket.s3_logs_bucket.bucket
 }
