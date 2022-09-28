@@ -27,7 +27,7 @@ ingester:
     final_sleep: 0s
   # https://grafana.com/docs/loki/latest/best-practices/#use-chunk_target_size
   chunk_target_size: 153600
-  max_chunk_age: 1h
+  max_chunk_age: 4h
   flush_check_period: 5s
   flush_op_timeout: 5m
   chunk_idle_period: 30m
