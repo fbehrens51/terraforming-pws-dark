@@ -49,7 +49,7 @@ locals {
       cloud_controller              = "m5.large"
       cloud_controller_worker       = "t3.medium"
       credhub                       = "r5.large"
-      diego_brain                   = "t3.small"
+      diego_brain                   = "t3.medium"
       diego_cell                    = "r5.large"
       diego_database                = "t3.medium"
       doppler                       = "m5.large"
