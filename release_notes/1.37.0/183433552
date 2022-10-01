@@ -1,0 +1,6 @@
+~/workspace/pcf-eagle-automation/scripts/utils/create_admin_user -U -e ~/workspace/pws-dark-environments/live/blue/env.yml
+uaa add-member doppler.firehose mark
+uaa add-member doppler.firehose fritz
+uaa add-member doppler.firehose quanda
+uaa add-member doppler.firehose janice
+
