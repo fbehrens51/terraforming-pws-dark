@@ -3,6 +3,7 @@ Host ${host}
    Hostname ${ip}
 %{ if custom_ssh_key != "" ~}
    IdentityFile ${ssh_key_path}/${custom_ssh_key}
+   IdentitiesOnly yes
 %{ endif ~}
 %{ if ssh_user != "" ~}
    User ${ssh_user}
@@ -20,13 +21,13 @@ Host ${foundation_name}_* !*bosh !*sjb !*bastion
 %{ endif ~}
 Host ${foundation_name}_*
    LogLevel ERROR
+   ForwardAgent yes
    ConnectTimeout 10
    StrictHostKeyChecking no
    #   User bot
    #   IdentityFile ${ssh_key_path}/${foundation_name}_bot_key.pem
    # edit
    GSSAPIAuthentication no
-   IdentitiesOnly yes
    UserKnownHostsFile /dev/null
 
 Host ${foundation_name}_* !*bosh
