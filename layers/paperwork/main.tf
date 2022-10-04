@@ -441,12 +441,18 @@ resource "aws_s3_bucket_object" "pas_cf_users" {
           "group_name" : "cf.admin",
           "scopes" : [
             "cloud_controller.admin",
+            "console.admin",
             "doppler.firehose",
             "healthwatch.admin",
             "network.admin",
+            "notifications.manage",
+            "routing.router_groups.read",
+            "routing.router_groups.write",
             "scim.read",
             "scim.write",
-            "uaa.admin"
+            "uaa.admin",
+            "zones.read",
+            "zones.write"
           ]
         },
         {
