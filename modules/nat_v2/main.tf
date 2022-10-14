@@ -141,7 +141,7 @@ EOF
 }
 
 module "nat_host" {
-  source = "../launch"
+  source = "./launch"
 
   internetless          = var.internetless
   instance_count        = length(var.private_route_table_ids)
