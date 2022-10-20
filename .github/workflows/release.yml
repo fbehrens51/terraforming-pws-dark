@@ -8,24 +8,24 @@ jobs:
     runs-on: "ubuntu-latest"
 
     steps:
-      - name: "Checkout source code"
-        uses: "actions/checkout@v2.3.4"
+      - name: Checkout Source Code
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      - name: Extract branch name
+      - name: Extract Branch
         id: extract_branch
         shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        run: echo "BRANCH=${GITHUB_REF#refs/heads/}"
 
       - name: Bump version and push tag
         id: version_bump
-        uses: anothrNick/github-tag-action@9885a4f9af674ba472de91fb3c0cb033ecb32b7e
+        uses: anothrNick/github-tag-action@v1
         env:
           WITH_V: false
           INITIAL_VERSION: 0.0.0
           DRY_RUN: true
-          PRERELEASE_SUFFIX: "${{ steps.extract_branch.outputs.branch }}"
+          PRERELEASE_SUFFIX: "${{ steps.extract_branch.outputs.BRANCH }}"
 
       - name: Zip Source
         id: zip_source
@@ -33,12 +33,12 @@ jobs:
           zip -r ${{ github.event.repository.name }}-${{ steps.version_bump.outputs.new_tag }}.zip .
 
       - name: Release
-        uses: softprops/action-gh-release@9729932bfb75c05ad1f6e3a729294e05abaa7001
+        uses: softprops/action-gh-release@v1
         with:
           files: "${{ github.event.repository.name }}-${{ steps.version_bump.outputs.new_tag }}.zip"
           tag_name: "${{ steps.version_bump.outputs.new_tag }}"
-          target_commitish: "${{ steps.extract_branch.outputs.branch }}"
-          prerelease: "${{ steps.extract_branch.outputs.branch != 'master' }}"
+          target_commitish: "${{ steps.extract_branch.outputs.BRANCH }}"
+          prerelease: "${{ steps.extract_branch.outputs.BRANCH != 'master' }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
