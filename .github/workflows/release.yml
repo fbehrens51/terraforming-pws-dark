@@ -16,7 +16,7 @@ jobs:
       - name: Extract Branch
         id: extract_branch
         shell: bash
-        run: echo "BRANCH=${GITHUB_REF#refs/heads/}"
+        run: echo "::set-output name=BRANCH::${GITHUB_REF#refs/heads/}"
 
       - name: Bump version and push tag
         id: version_bump
