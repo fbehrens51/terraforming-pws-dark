@@ -55,7 +55,7 @@ data "aws_route_table" "es_public_route_table" {
 
 locals {
   env_name      = var.global_vars.env_name
-  modified_name = "${local.env_name} enterprise services nat"
+  modified_name = "${local.env_name} enterprise services"
   modified_tags = merge(
     var.global_vars["global_tags"],
     {
@@ -139,55 +139,6 @@ module "iptables_rules" {
   control_plane_subnet_cidrs = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs
 }
 
-locals {
-
-    ingress_rules = [
-      {
-        description = "Allow ssh/22 from cp hosts"
-        port        = "22"
-        protocol    = "tcp"
-        cidr_blocks = join(",", data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs)
-      },
-      {
-        description = "Allow all protocols/ports from ${join(",", [data.aws_vpc.this_vpc.cidr_block])}"
-        port        = "0"
-        protocol    = "-1"
-        cidr_blocks = join(",", [data.aws_vpc.this_vpc.cidr_block])
-      },
-      {
-        description = "Allow node_exporter/9100 from pas_vpc"
-        port        = "9100"
-        protocol    = "tcp"
-        cidr_blocks = data.aws_vpc.pas_vpc.cidr_block
-      },
-    ]
-
-    egress_rules = [
-      {
-        description = "Allow all protocols/ports to everywhere"
-        port        = "0"
-        protocol    = "-1"
-        cidr_blocks = "0.0.0.0/0"
-      },
-    ]
-
-    eni_count  = length(data.aws_route_tables.es_private_route_tables.ids) * 2
-    tags = merge(
-      local.modified_tags,
-      {
-        "Name" = "${local.modified_name} nat"
-      }
-    )
-
-}
-
-module "security_group" {
-  source         = "../../modules/single_use_subnet/security_group"
-  ingress_rules  = local.ingress_rules
-  egress_rules   = local.egress_rules
-  tags           = local.tags
-  vpc_id         = data.aws_vpc.this_vpc.id
-}
 
 module "nat" {
   source                     = "../../modules/nat_v2"
@@ -211,7 +162,6 @@ module "nat" {
   public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url
   role_name          = data.terraform_remote_state.paperwork.outputs.instance_tagger_role_name
-  security_group_ids = [module.security_group.security_group_id]
 }
 
 variable "internetless" {

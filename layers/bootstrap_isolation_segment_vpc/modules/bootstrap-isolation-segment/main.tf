@@ -77,49 +77,6 @@ resource "aws_route_table_association" "private_route_table_associations" {
 locals {
   env_name      = var.global_vars.env_name
   modified_name = "${local.env_name} ${var.name} iso seg"
-  ingress_rules = [
-    {
-      description = "Allow ssh/22 from cp hosts"
-      port        = "22"
-      protocol    = "tcp"
-      cidr_blocks = join(",", var.nat_ssh_cidrs)
-    },
-    {
-      description = "Allow all protocols/ports from ${join(",", module.isolation_segment_subnets_0.subnet_cidr_blocks)}"
-      port        = "0"
-      protocol    = "-1"
-      cidr_blocks = join(",", module.isolation_segment_subnets_0.subnet_cidr_blocks)
-    },
-    {
-      description = "Allow node_exporter/9100 from pas_vpc"
-      port        = "9100"
-      protocol    = "tcp"
-      cidr_blocks = var.pas_vpc_cidr_block
-    },
-  ]
-
-  egress_rules = [
-    {
-      description = "Allow all protocols/ports to everywhere"
-      port        = "0"
-      protocol    = "-1"
-      cidr_blocks = "0.0.0.0/0"
-    },
-  ]
-  tags = merge(
-    local.modified_tags,
-    {
-      "Name" = "${local.modified_name} nat"
-    }
-  )
-}
-
-module "security_group" {
-  source         = "../../../../modules/single_use_subnet/security_group"
-  ingress_rules  = local.ingress_rules
-  egress_rules   = local.egress_rules
-  tags           = local.modified_tags
-  vpc_id         = var.vpc_id
 }
 
 module "nat" {
@@ -146,7 +103,6 @@ module "nat" {
   role_name                  = var.default_instance_role_name
   iso_seg_name               = var.name
 
-  security_group_ids = [module.security_group.security_group_id]
 }
 
 output "private_route_table_ids" {

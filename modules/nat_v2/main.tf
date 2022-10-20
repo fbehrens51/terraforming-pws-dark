@@ -70,12 +70,13 @@ variable "operating_system" {
   description = "operating system of nat instance"
 }
 
-variable "security_group_ids" {
-  type = list(string)
-}
+#variable "security_group_ids" {
+#  type = list(string)
+#}
 
 locals {
-  modified_name = var.tags.tags["Name"]
+
+  modified_name = "${var.tags.tags["Name"]} nat"
   modified_tags = merge(
     var.tags.tags,
     {
@@ -140,6 +141,52 @@ EOF
   }
 }
 
+locals {
+
+  ingress_rules = [
+    {
+      description = "Allow ssh/22 from cp hosts"
+      port        = "22"
+      protocol    = "tcp"
+      cidr_blocks = join(",", var.ssh_cidr_blocks)
+    },
+    {
+      description = "Allow all protocols/ports from ${join(",", var.ingress_cidr_blocks)}"
+      port        = "0"
+      protocol    = "-1"
+      cidr_blocks = join(",", var.ingress_cidr_blocks)
+    },
+    {
+      description = "Allow node_exporter/9100 from pas_vpc"
+      port        = "9100"
+      protocol    = "tcp"
+      cidr_blocks = var.metrics_ingress_cidr_block
+    },
+  ]
+
+  egress_rules = [
+    {
+      description = "Allow all protocols/ports to everywhere"
+      port        = "0"
+      protocol    = "-1"
+      cidr_blocks = "0.0.0.0/0"
+    },
+  ]
+
+}
+
+data "aws_subnet" "subnet" {
+  id = var.public_subnet_ids[0]
+}
+
+module "security_group" {
+  source         = "../../modules/single_use_subnet/security_group"
+  ingress_rules  = local.ingress_rules
+  egress_rules   = local.egress_rules
+  tags           = local.modified_tags
+  vpc_id         = data.aws_subnet.subnet.vpc_id
+}
+
 module "nat_host" {
   source = "./launch"
 
@@ -158,7 +205,7 @@ module "nat_host" {
   operating_system      = var.operating_system
   create_before_destroy = true
   subnet_ids            = var.public_subnet_ids
-  security_group_ids    = var.security_group_ids
+  security_group_ids    = [module.security_group.security_group_id]
   source_dest_check     = false
 }
 

@@ -27,7 +27,7 @@
 
 locals {
 
-  modified_name = "${var.tags.tags["Name"]} nat"
+  modified_name = "${var.tags.tags["Name"]}"
   modified_tags = merge(
     var.tags.tags,
     {
@@ -41,43 +41,6 @@ locals {
       "job" = "nat"
     }
   )
-  ingress_rules = [
-    {
-      description = "Allow ssh/22 from cp hosts"
-      port        = "22"
-      protocol    = "tcp"
-      cidr_blocks = join(",", var.ssh_cidr_blocks)
-    },
-    {
-      description = "Allow all protocols/ports from ${join(",", [data.aws_vpc.vpc.cidr_block])}"
-      port        = "0"
-      protocol    = "-1"
-      cidr_blocks = join(",", [data.aws_vpc.vpc.cidr_block])
-    },
-    {
-      description = "Allow node_exporter/9100 from pas_vpc"
-      port        = "9100"
-      protocol    = "tcp"
-      cidr_blocks = data.aws_vpc.vpc.cidr_block
-    },
-  ]
-
-  egress_rules = [
-    {
-      description = "Allow all protocols/ports to everywhere"
-      port        = "0"
-      protocol    = "-1"
-      cidr_blocks = "0.0.0.0/0"
-    },
-  ]
-}
-
-module "security_group" {
-  source        = "../../modules/single_use_subnet/security_group"
-  ingress_rules = local.ingress_rules
-  egress_rules  = local.egress_rules
-  tags          = local.modified_tags
-  vpc_id        = data.aws_vpc.vpc.id
 }
 
 module "nat" {
@@ -102,6 +65,4 @@ module "nat" {
   public_bucket_name = var.public_bucket_name
   public_bucket_url  = var.public_bucket_url
   role_name          = var.default_instance_role_name
-
-  security_group_ids = [module.security_group.security_group_id]
 }

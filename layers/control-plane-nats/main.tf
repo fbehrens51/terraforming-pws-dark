@@ -116,53 +116,6 @@ locals {
       "foundation_name" = data.terraform_remote_state.paperwork.outputs.foundation_name
     },
   )
-  tags = merge(
-    local.modified_tags,
-    {
-      "Name" = "${local.modified_name} nat"
-    }
-  )
-}
-
-locals {
-
-  ingress_rules = [
-    {
-      description = "Allow ssh/22 from cp hosts"
-      port        = "22"
-      protocol    = "tcp"
-      cidr_blocks = join(",", data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs)
-    },
-    {
-      description = "Allow all protocols/ports from ${join(",", [data.aws_vpc.vpc.cidr_block])}"
-      port        = "0"
-      protocol    = "-1"
-      cidr_blocks = join(",", [data.aws_vpc.vpc.cidr_block])
-    },
-    {
-      description = "Allow node_exporter/9100 from pas_vpc"
-      port        = "9100"
-      protocol    = "tcp"
-      cidr_blocks = data.aws_vpc.pas_vpc.cidr_block
-    },
-  ]
-
-  egress_rules = [
-    {
-      description = "Allow all protocols/ports to everywhere"
-      port        = "0"
-      protocol    = "-1"
-      cidr_blocks = "0.0.0.0/0"
-    },
-  ]
-}
-
-module "security_group" {
-  source         = "../../modules/single_use_subnet/security_group"
-  ingress_rules  = local.ingress_rules
-  egress_rules   = local.egress_rules
-  tags           = local.tags
-  vpc_id         = data.aws_vpc.vpc.id
 }
 
 module "nat" {
@@ -188,7 +141,6 @@ module "nat" {
   public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url
   role_name          = data.terraform_remote_state.paperwork.outputs.instance_tagger_role_name
 
-  security_group_ids = [module.security_group.security_group_id]
 }
 
 output "ssh_host_ips" {
