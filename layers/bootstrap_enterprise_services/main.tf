@@ -85,6 +85,7 @@ module "public_subnets" {
     local.modified_tags,
     {
       "Name" = "${local.modified_name}-public"
+      "Type" = "PUBLIC"
     },
   )
 }
@@ -104,6 +105,7 @@ module "private_subnets" {
     local.modified_tags,
     {
       "Name" = "${local.modified_name}-private"
+      "Type" = "PRIVATE"
     },
   )
 }

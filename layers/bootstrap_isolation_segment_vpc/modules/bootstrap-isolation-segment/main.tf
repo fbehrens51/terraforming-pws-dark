@@ -74,31 +74,6 @@ resource "aws_route_table_association" "private_route_table_associations" {
   route_table_id = aws_route_table.private_route_tables[count.index].id
 }
 
-#module "nat" {
-#  source                  = "../../../../modules/nat"
-#  private_route_table_ids = aws_route_table.private_route_tables.*.id
-#
-#  ingress_cidr_blocks        = module.isolation_segment_subnets_0.subnet_cidr_blocks
-#  metrics_ingress_cidr_block = var.pas_vpc_cidr_block
-#  public_subnet_ids          = var.public_subnet_ids
-#  tags                       = { tags = local.modified_tags, instance_tags = var.tags.instance_tags }
-#  ami_id                     = var.ami_id
-#  internetless               = var.internetless
-#  ssh_cidr_blocks            = var.nat_ssh_cidrs
-#  bot_key_pem                = var.bot_key_pem
-#  instance_types             = var.instance_types
-#  scale_vpc_key              = "isolation-segment"
-#  user_data                  = var.user_data
-#  root_domain                = var.root_domain
-#  syslog_ca_cert             = var.syslog_ca_cert
-#  public_bucket_name         = var.public_bucket_name
-#  public_bucket_url          = var.public_bucket_url
-#  role_name                  = var.default_instance_role_name
-#  check_cloud_init           = var.check_cloud_init
-#  iso_seg_name               = var.name
-#  operating_system           = var.operating_system
-#}
-
 locals {
   env_name      = var.global_vars.env_name
   modified_name = "${local.env_name} ${var.name} iso seg"
