@@ -25,8 +25,7 @@ variable "user_data" {
 }
 
 variable "eni_ids" {
-  type    = list(string)
-  default = []
+  type = list(string)
 }
 
 variable "iam_instance_profile" {
@@ -109,17 +108,17 @@ locals {
   #    cloud_init_done   = "" cloud_init_output = ""
   iso_nat_name = var.scale_vpc_key == "isolation-segment" ? "${replace(var.scale_vpc_key, "-", "_")}_${lower(replace(var.iso_seg_name, "/[ -]/", "_"))}" : "${replace(var.scale_vpc_key, "-", "_")}"
   om_name = (var.scale_service_key != "ops-manager" ? "" :
-    var.scale_vpc_key == "pas" ? "om" : "cp_om"
+  var.scale_vpc_key == "pas" ? "om" : "cp_om"
   )
   key = (
-    var.scale_service_key == "nat" ? "${local.iso_nat_name}_${var.scale_service_key}" :
-    var.scale_service_key == "ops-manager" ? local.om_name :
-    var.scale_service_key
+  var.scale_service_key == "nat" ? "${local.iso_nat_name}_${var.scale_service_key}" :
+  var.scale_service_key == "ops-manager" ? local.om_name :
+  var.scale_service_key
   )
   ssh_host_names = (
-    var.module_instance_count != 9999 ? formatlist("%s_%s_%d", var.tags["foundation_name"], local.key, [var.module_instance_count + 1]) :
-    var.instance_count != 1 ? formatlist("%s_%s_%d", var.tags["foundation_name"], local.key, range(1, var.instance_count + 1)) :
-    formatlist("%s_%s", var.tags["foundation_name"], local.key)
+  var.module_instance_count != 9999 ? formatlist("%s_%s_%d", var.tags["foundation_name"], local.key, [var.module_instance_count + 1]) :
+  var.instance_count != 1 ? formatlist("%s_%s_%d", var.tags["foundation_name"], local.key, range(1, var.instance_count + 1)) :
+  formatlist("%s_%s", var.tags["foundation_name"], local.key)
   )
 }
 
@@ -140,105 +139,10 @@ variable "availability_zone" {
   default = null
 }
 
-variable "create_before_destroy" {
-  type    = bool
-  default = false
-}
-
-variable "internetless" {
-  type = bool
-  default = null
-}
-
-variable "subnet_ids" {
-  type    = list(string)
-  default = []
-}
-
-variable "security_group_ids" {
-  type    = list(string)
-  default = []
-}
-
-variable "source_dest_check" {
-  type    = bool
-  default = false
-}
-
-// pas_nats, enterprise_nats, iso_seg_nats
-
-resource "aws_instance" "cbd_instance" {
-  count = var.ignore_tag_changes == false && var.check_cloud_init == true && var.create_before_destroy == true ? var.instance_count : 0
-
-  associate_public_ip_address = !var.internetless
-
-  ami                    = var.ami_id
-  instance_type          = local.instance_type
-  user_data              = var.user_data
-  iam_instance_profile   = var.iam_instance_profile
-  subnet_id              = var.subnet_ids[count.index]
-  vpc_security_group_ids = var.security_group_ids
-  source_dest_check      = var.source_dest_check
-
-  tags = merge(var.tags, local.computed_instance_tags, { "ssh_host_name" = local.ssh_host_names[count.index] })
-  dynamic "root_block_device" {
-    for_each = [var.root_block_device]
-    content {
-      delete_on_termination = lookup(root_block_device.value, "delete_on_termination", null)
-      encrypted             = lookup(root_block_device.value, "encrypted", null)
-      iops                  = lookup(root_block_device.value, "iops", null)
-      tags                  = lookup(root_block_device.value, "tags", {})
-      kms_key_id            = lookup(root_block_device.value, "kms_key_id", null)
-      volume_size           = lookup(root_block_device.value, "volume_size", null)
-      volume_type           = lookup(root_block_device.value, "volume_type", null)
-    }
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
-  provisioner "local-exec" {
-    on_failure  = fail
-    interpreter = ["/bin/bash", "-c"]
-    command     = <<-EOF
-    #!/usr/bin/env bash
-    set -e
-    completed_tag="cloud_init_done"
-    poll_tags="aws ec2 describe-tags --filters Name=resource-id,Values=${self.id} Name=key,Values=$completed_tag --output text --query Tags[*].Value"
-    echo "running $poll_tags"
-    tags="$($poll_tags)"
-    COUNTER=0
-    LOOP_LIMIT=${var.cloud_init_timeout / 10}
-    while [[ "$tags" == "" ]] ; do
-      if [[ $COUNTER -eq $LOOP_LIMIT ]]; then
-        echo "timed out waiting for $completed_tag to be set"
-        exit 1
-      fi
-      if [[ $COUNTER -gt 0 ]]; then
-        echo "$completed_tag not set, sleeping for 10s"
-        sleep 10s
-      fi
-      tags="$($poll_tags)"
-      let COUNTER=COUNTER+1
-    done
-    echo "$completed_tag = $tags"
-
-    if cloud_init_message="$( aws ec2 describe-tags --filters Name=resource-id,Values=${self.id} Name=key,Values=cloud_init_output --output text --query Tags[*].Value )"; then
-      [[ ! -z $cloud_init_message ]] && echo -e "cloud_init_output: $( echo -ne "$cloud_init_message" | openssl enc -d -a | gunzip -qc - )"
-    fi
-
-    [[ $tags == false ]] && exit 1 || exit 0
-    EOF
-  }
-
-}
-
-
-// postfix, bind, ldap, ops-manager, control-plane-ops-manager
+//postfix, bind, ldap, ops-manager, control-plane-ops-manager
 
 resource "aws_instance" "instance" {
-  count = var.ignore_tag_changes == false && var.check_cloud_init == true && var.create_before_destroy == false ? var.instance_count : 0
+  count = var.ignore_tag_changes == false && var.check_cloud_init == true ? var.instance_count : 0
 
   network_interface {
     device_index         = 0
@@ -302,7 +206,7 @@ resource "aws_instance" "instance" {
 
 // fluentd VMs, control_plane_nats, SJB (last two allow bootstraping an environment).
 resource "aws_instance" "unchecked_instance" {
-  count = var.ignore_tag_changes == false && var.check_cloud_init == false && var.create_before_destroy == false ? var.instance_count : 0
+  count = var.ignore_tag_changes == false && var.check_cloud_init == false ? var.instance_count : 0
 
   network_interface {
     device_index         = 0
@@ -373,11 +277,11 @@ resource "aws_instance" "instance_ignoring_tags" {
 }
 
 output "instance_ids" {
-  value = concat(aws_instance.instance.*.id, aws_instance.unchecked_instance.*.id, aws_instance.instance_ignoring_tags.*.id, aws_instance.cbd_instance.*.id)
+  value = concat(aws_instance.instance.*.id, aws_instance.unchecked_instance.*.id, aws_instance.instance_ignoring_tags.*.id)
 }
 
 output "private_ips" {
-  value = concat(aws_instance.instance.*.private_ip, aws_instance.unchecked_instance.*.private_ip, aws_instance.instance_ignoring_tags.*.private_ip, aws_instance.cbd_instance.*.private_ip)
+  value = concat(aws_instance.instance.*.private_ip, aws_instance.unchecked_instance.*.private_ip, aws_instance.instance_ignoring_tags.*.private_ip)
 }
 
 output "ssh_host_names" {
