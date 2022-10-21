@@ -25,6 +25,7 @@ jobs:
           WITH_V: false
           INITIAL_VERSION: 0.0.0
           DRY_RUN: true
+          PRERELEASE: "${{ steps.extract_branch.outputs.BRANCH != 'master' }}"
           PRERELEASE_SUFFIX: "${{ steps.extract_branch.outputs.BRANCH }}"
           PRERELEASE: "${{ steps.extract_branch.outputs.BRANCH != 'master' }}"
 
