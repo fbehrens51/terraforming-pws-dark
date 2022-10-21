@@ -31,12 +31,51 @@ data "terraform_remote_state" "bootstrap_control_plane" {
   }
 }
 
-data "aws_vpc" "vpc" {
-  id = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
+data "terraform_remote_state" "es" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.remote_state_bucket
+    key     = "bootstrap_enterprise_services"
+    region  = var.remote_state_region
+    encrypt = true
+  }
+}
+
+data "aws_route_tables" "es_private_route_tables" {
+  vpc_id = local.es_vpc_id
+  tags   = merge(var.global_vars["global_tags"], { "Type" = "PRIVATE" })
+}
+
+data "aws_route_table" "es_public_route_table" {
+  vpc_id = local.es_vpc_id
+  tags   = merge(var.global_vars["global_tags"], { "Type" = "PUBLIC" })
+}
+
+
+locals {
+  env_name      = var.global_vars.env_name
+  modified_name = "${local.env_name} enterprise services"
+  modified_tags = merge(
+    var.global_vars["global_tags"],
+    {
+      "Name"            = local.modified_name
+      "MetricsKey"      = data.terraform_remote_state.paperwork.outputs.metrics_key,
+      "foundation_name" = data.terraform_remote_state.paperwork.outputs.foundation_name
+    },
+  )
+
+  es_vpc_id  = data.terraform_remote_state.paperwork.outputs.es_vpc_id
+  pas_vpc_id = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
+
+}
+
+data "aws_vpc" "this_vpc" {
+  id = local.es_vpc_id
 }
 
 data "aws_vpc" "pas_vpc" {
-  id = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
+  id = local.pas_vpc_id
 }
 
 data "template_cloudinit_config" "nat_user_data" {
@@ -94,42 +133,25 @@ data "template_cloudinit_config" "nat_user_data" {
   }
 }
 
-data "aws_route_tables" "cp_private_route_tables" {
-  vpc_id = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
-  tags = merge(var.global_vars["global_tags"],{"Type"="PRIVATE"})
-}
-
 module "iptables_rules" {
   source                     = "../../modules/iptables"
   nat                        = true
-  control_plane_subnet_cidrs = [data.aws_vpc.vpc.cidr_block]
+  control_plane_subnet_cidrs = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs
 }
 
-locals {
-  env_name      = var.global_vars.env_name
-  modified_name = "${local.env_name} control plane"
-  modified_tags = merge(
-    var.global_vars["global_tags"],
-    {
-      "Name"            = local.modified_name
-      "MetricsKey"      = data.terraform_remote_state.paperwork.outputs.metrics_key,
-      "foundation_name" = data.terraform_remote_state.paperwork.outputs.foundation_name
-    },
-  )
-}
 
 module "nat" {
   source                     = "../../modules/nat_v2"
   ami_id                     = data.terraform_remote_state.paperwork.outputs.amzn_ami_id
-  private_route_table_ids    = data.aws_route_tables.cp_private_route_tables.ids
-  ingress_cidr_blocks        = [data.aws_vpc.vpc.cidr_block]
+  private_route_table_ids    = data.aws_route_tables.es_private_route_tables.ids
+  ingress_cidr_blocks        = [data.aws_vpc.this_vpc.cidr_block]
   metrics_ingress_cidr_block = data.aws_vpc.pas_vpc.cidr_block
   tags                       = { tags = local.modified_tags, instance_tags = var.global_vars["instance_tags"] }
-  public_subnet_ids          = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_public_subnet_ids
-  ssh_cidr_blocks            = [data.aws_vpc.vpc.cidr_block]
+  public_subnet_ids          = data.terraform_remote_state.es.outputs.public_subnet_ids
+  ssh_cidr_blocks            = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs
   internetless               = var.internetless
   instance_types             = data.terraform_remote_state.scaling-params.outputs.instance_types
-  scale_vpc_key              = "control-plane"
+  scale_vpc_key              = "enterprise-services"
   user_data                  = data.template_cloudinit_config.nat_user_data.rendered
   root_domain                = data.terraform_remote_state.paperwork.outputs.root_domain
   syslog_ca_cert             = data.terraform_remote_state.paperwork.outputs.syslog_ca_certs_bundle
@@ -140,7 +162,19 @@ module "nat" {
   public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url
   role_name          = data.terraform_remote_state.paperwork.outputs.instance_tagger_role_name
+}
 
+variable "internetless" {
+}
+
+variable "remote_state_region" {
+}
+
+variable "remote_state_bucket" {
+}
+
+variable "global_vars" {
+  type = any
 }
 
 output "ssh_host_ips" {
@@ -148,9 +182,9 @@ output "ssh_host_ips" {
 }
 
 module "sshconfig" {
-  source         = "../../modules/ssh_config"
-  foundation_name = data.terraform_remote_state.paperwork.outputs.foundation_name
-  host_ips = module.nat.ssh_host_ips
-  host_type = "cp_nat"
+  source              = "../../modules/ssh_config"
+  foundation_name     = data.terraform_remote_state.paperwork.outputs.foundation_name
+  host_ips            = module.nat.ssh_host_ips
+  host_type           = "enterprise_services_nat"
   secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
 }

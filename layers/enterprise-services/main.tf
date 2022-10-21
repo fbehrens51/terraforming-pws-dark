@@ -32,14 +32,14 @@ data "terraform_remote_state" "bootstrap_control_plane" {
 }
 
 
-data "aws_route_tables" "es_private_route_tables"{
+data "aws_route_tables" "es_private_route_tables" {
   vpc_id = data.terraform_remote_state.paperwork.outputs.es_vpc_id
-  tags = merge(var.global_vars["global_tags"],{"Type"="PRIVATE"})
+  tags   = merge(var.global_vars["global_tags"], { "Type" = "PRIVATE" })
 }
 
-data "aws_route_table" "es_public_route_table"{
+data "aws_route_table" "es_public_route_table" {
   vpc_id = data.terraform_remote_state.paperwork.outputs.es_vpc_id
-  tags = merge(var.global_vars["global_tags"],{"Type"="PUBLIC"})
+  tags   = merge(var.global_vars["global_tags"], { "Type" = "PUBLIC" })
 }
 
 locals {
@@ -66,10 +66,10 @@ data "aws_vpc" "this_vpc" {
 }
 
 module "tag_vpc" {
-  source = "../../modules/vpc_tagging"
-  vpc_id = local.es_vpc_id
-  name = "enterprise services"
-  purpose = "enterprise-services"
+  source   = "../../modules/vpc_tagging"
+  vpc_id   = local.es_vpc_id
+  name     = "enterprise services"
+  purpose  = "enterprise-services"
   env_name = local.env_name
 }
 
@@ -86,6 +86,7 @@ module "public_subnets" {
     local.modified_tags,
     {
       "Name" = "${local.modified_name}-public"
+      "Type" = "PUBLIC"
     },
   )
 }
@@ -105,6 +106,7 @@ module "private_subnets" {
     local.modified_tags,
     {
       "Name" = "${local.modified_name}-private"
+      "Type" = "PRIVATE"
     },
   )
 }
@@ -241,9 +243,9 @@ output "private_subnet_cidrs" {
 }
 
 module "sshconfig" {
-  source         = "../../modules/ssh_config"
-  foundation_name = data.terraform_remote_state.paperwork.outputs.foundation_name
-  host_ips = module.nat.ssh_host_ips
-  host_type = "enterprise_services_nat"
+  source              = "../../modules/ssh_config"
+  foundation_name     = data.terraform_remote_state.paperwork.outputs.foundation_name
+  host_ips            = module.nat.ssh_host_ips
+  host_type           = "enterprise_services_nat"
   secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
 }

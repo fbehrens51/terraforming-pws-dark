@@ -298,6 +298,7 @@ module "isolation_segment_0" {
   default_instance_role_name = data.terraform_remote_state.paperwork.outputs.instance_tagger_role_name
   check_cloud_init           = data.terraform_remote_state.paperwork.outputs.check_cloud_init == "false" ? false : true
   operating_system           = data.terraform_remote_state.paperwork.outputs.amazon_operating_system_tag
+  global_vars                = var.global_vars
 }
 
 module "isolation_segment_1" {
@@ -423,7 +424,7 @@ output "iso_seg_3_nats" {
 }
 
 module "sshconfig" {
-  source         = "../../modules/ssh_config"
+  source          = "../../modules/ssh_config"
   foundation_name = data.terraform_remote_state.paperwork.outputs.foundation_name
   host_ips = merge(
     module.isolation_segment_0.ssh_host_ips,
@@ -431,6 +432,6 @@ module "sshconfig" {
     module.isolation_segment_2.ssh_host_ips,
     module.isolation_segment_3.ssh_host_ips,
   )
-  host_type = "isolation_segment_nat"
+  host_type           = "isolation_segment_nat"
   secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
 }

@@ -1,14 +1,3 @@
-data "terraform_remote_state" "enterprise-services" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "enterprise-services"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 data "terraform_remote_state" "paperwork" {
   backend = "s3"
 
@@ -125,11 +114,18 @@ data "aws_vpc" "pas_vpc" {
   id = data.terraform_remote_state.paperwork.outputs.pas_vpc_id
 }
 
+module "es_public_subnets" {
+  source      = "../../modules/get_subnets_by_tag"
+  global_vars = var.global_vars
+  vpc_id      = data.terraform_remote_state.paperwork.outputs.es_vpc_id
+  subnet_type = "PUBLIC"
+}
+
 module "bootstrap" {
   source        = "../../modules/eni_per_subnet"
   ingress_rules = local.bind_ingress_rules
   egress_rules  = local.bind_egress_rules
-  subnet_ids    = data.terraform_remote_state.enterprise-services.outputs.public_subnet_ids
+  subnet_ids    = module.es_public_subnets.subnet_ids_sorted_by_az
   eni_count     = "3"
   create_eip    = !var.internetless
   tags          = local.modified_tags

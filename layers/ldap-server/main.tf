@@ -36,7 +36,7 @@ data "terraform_remote_state" "enterprise-services" {
 
   config = {
     bucket  = var.remote_state_bucket
-    key     = "enterprise-services"
+    key     = "bootstrap_enterprise_services"
     region  = var.remote_state_region
     encrypt = true
   }

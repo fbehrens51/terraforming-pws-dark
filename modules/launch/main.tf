@@ -108,17 +108,17 @@ locals {
   #    cloud_init_done   = "" cloud_init_output = ""
   iso_nat_name = var.scale_vpc_key == "isolation-segment" ? "${replace(var.scale_vpc_key, "-", "_")}_${lower(replace(var.iso_seg_name, "/[ -]/", "_"))}" : "${replace(var.scale_vpc_key, "-", "_")}"
   om_name = (var.scale_service_key != "ops-manager" ? "" :
-    var.scale_vpc_key == "pas" ? "om" : "cp_om"
+  var.scale_vpc_key == "pas" ? "om" : "cp_om"
   )
   key = (
-    var.scale_service_key == "nat" ? "${local.iso_nat_name}_${var.scale_service_key}" :
-    var.scale_service_key == "ops-manager" ? local.om_name :
-    var.scale_service_key
+  var.scale_service_key == "nat" ? "${local.iso_nat_name}_${var.scale_service_key}" :
+  var.scale_service_key == "ops-manager" ? local.om_name :
+  var.scale_service_key
   )
   ssh_host_names = (
-    var.module_instance_count != 9999 ? formatlist("%s_%s_%d", var.tags["foundation_name"], local.key, [var.module_instance_count + 1]) :
-    var.instance_count != 1 ? formatlist("%s_%s_%d", var.tags["foundation_name"], local.key, range(1, var.instance_count + 1)) :
-    formatlist("%s_%s", var.tags["foundation_name"], local.key)
+  var.module_instance_count != 9999 ? formatlist("%s_%s_%d", var.tags["foundation_name"], local.key, [var.module_instance_count + 1]) :
+  var.instance_count != 1 ? formatlist("%s_%s_%d", var.tags["foundation_name"], local.key, range(1, var.instance_count + 1)) :
+  formatlist("%s_%s", var.tags["foundation_name"], local.key)
   )
 }
 
@@ -139,7 +139,7 @@ variable "availability_zone" {
   default = null
 }
 
-// pas_nats, enterprise_nats, iso_seg_nats, postfix, bind, ldap, ops-manager, control-plane-ops-manager
+//postfix, bind, ldap, ops-manager, control-plane-ops-manager
 
 resource "aws_instance" "instance" {
   count = var.ignore_tag_changes == false && var.check_cloud_init == true ? var.instance_count : 0

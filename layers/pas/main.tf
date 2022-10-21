@@ -134,6 +134,7 @@ module "infra" {
   public_bucket_name         = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url          = data.terraform_remote_state.paperwork.outputs.public_bucket_url
   default_instance_role_name = data.terraform_remote_state.paperwork.outputs.instance_tagger_role_name
+
 }
 
 module "om_key_pair" {

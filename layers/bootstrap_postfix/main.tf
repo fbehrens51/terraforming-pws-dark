@@ -1,14 +1,3 @@
-data "terraform_remote_state" "enterprise-services" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "enterprise-services"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 data "terraform_remote_state" "paperwork" {
   backend = "s3"
 
@@ -28,6 +17,13 @@ data "aws_vpc" "cp_vpc" {
   id = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
 }
 
+module "es_private_subnets" {
+  source      = "../../modules/get_subnets_by_tag"
+  global_vars = var.global_vars
+  vpc_id      = data.terraform_remote_state.paperwork.outputs.es_vpc_id
+  subnet_type = "PRIVATE"
+}
+
 locals {
   env_name      = var.global_vars.env_name
   modified_name = "${local.env_name} postfix"
@@ -38,9 +34,7 @@ locals {
     },
   )
 
-  subnets = data.terraform_remote_state.enterprise-services.outputs.private_subnet_ids
-
-  public_subnet = data.terraform_remote_state.enterprise-services.outputs.public_subnet_ids[0]
+  private_subnets = module.es_private_subnets.subnet_ids_sorted_by_az
 
   //allow dns to reach out anywhere. This is needed for CNAME records to external DNS
   postfix_egress_rules = [
@@ -120,7 +114,7 @@ module "bootstrap" {
   source        = "../../modules/eni_per_subnet"
   ingress_rules = local.postfix_ingress_rules
   egress_rules  = local.postfix_egress_rules
-  subnet_ids    = local.subnets
+  subnet_ids    = local.private_subnets
   eni_count     = "1"
   create_eip    = "false"
   tags          = local.modified_tags

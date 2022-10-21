@@ -1,14 +1,3 @@
-data "terraform_remote_state" "enterprise-services" {
-  backend = "s3"
-
-  config = {
-    bucket  = var.remote_state_bucket
-    key     = "enterprise-services"
-    region  = var.remote_state_region
-    encrypt = true
-  }
-}
-
 data "terraform_remote_state" "paperwork" {
   backend = "s3"
 
@@ -34,6 +23,20 @@ module "syslog_ports" {
 }
 
 
+module "es_public_subnets" {
+  source      = "../../modules/get_subnets_by_tag"
+  global_vars = var.global_vars
+  vpc_id      = data.terraform_remote_state.paperwork.outputs.es_vpc_id
+  subnet_type = "PUBLIC"
+}
+
+module "es_private_subnets" {
+  source      = "../../modules/get_subnets_by_tag"
+  global_vars = var.global_vars
+  vpc_id      = data.terraform_remote_state.paperwork.outputs.es_vpc_id
+  subnet_type = "PRIVATE"
+}
+
 locals {
   env_name      = var.global_vars.env_name
   modified_name = "${local.env_name} loki"
@@ -44,9 +47,9 @@ locals {
     },
   )
 
-  subnets = data.terraform_remote_state.enterprise-services.outputs.private_subnet_ids
-
-  public_subnet = data.terraform_remote_state.enterprise-services.outputs.public_subnet_ids[0]
+  private_subnets = module.es_private_subnets.subnet_ids_sorted_by_az
+  public_subnets  = module.es_public_subnets.subnet_ids_sorted_by_az
+  public_subnet   = module.es_public_subnets.subnet_ids_sorted_by_az[0]
 
   loki_ingress_rules = [
     {
@@ -100,8 +103,6 @@ locals {
     },
   ]
 
-  private_subnets = data.terraform_remote_state.enterprise-services.outputs.private_subnet_ids
-  public_subnets  = data.terraform_remote_state.enterprise-services.outputs.public_subnet_ids
 
   formatted_env_name = replace(local.env_name, " ", "-")
 
@@ -193,7 +194,7 @@ resource "aws_lb" "loki_lb" {
   name                             = local.loki_lb_name
   internal                         = true
   load_balancer_type               = "network"
-  subnets                          = data.terraform_remote_state.enterprise-services.outputs.public_subnet_ids
+  subnets                          = local.public_subnets
   enable_cross_zone_load_balancing = true
   tags = merge(
     local.modified_tags,
@@ -239,7 +240,7 @@ module "bootstrap" {
   ingress_rules  = local.loki_ingress_rules
   egress_rules   = local.loki_egress_rules
   internal_ports = local.loki_internal_ports
-  subnet_ids     = local.subnets
+  subnet_ids     = local.private_subnets
   create_eip     = "false"
   eni_count      = "3"
   tags           = local.modified_tags

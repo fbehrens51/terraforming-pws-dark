@@ -50,6 +50,10 @@ variable "check_cloud_init" {
 variable "operating_system" {
   type = string
 }
+#
+#variable "global_vars" {
+#  type = any
+#}
 
 //variable "nat_ami_map" {
 //  type = "map"
