@@ -1,5 +1,7 @@
 product-name: p-healthwatch2
 product-properties:
+  .grafana.enable_legacy_alerting:
+    value: false
   .properties.canary_exporter_targets:
     value:
     - address: ${canary_url}
@@ -42,8 +44,6 @@ product-properties:
         ${indent(8, chomp(grafana_server_cert))}
       private_key_pem: |
         ${indent(8, chomp(grafana_server_key))}
-  .properties.opsman_skip_ssl_validation:
-    value: false
   .properties.pks_cluster_discovery:
     selected_option: disabled
     value: disabled
