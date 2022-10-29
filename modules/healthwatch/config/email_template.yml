@@ -20,7 +20,7 @@ html: |
               <p><a href='{{ printf "%s&from=%d000&to=%d000" .Annotations.dashboard (.StartsAt.Add -900000000000).Unix (.StartsAt.Add 900000000000).Unix }}'>Dashboard Link</a></p>
             {{ end }}
           {{end}}
-        <p><a href='{{ template "slack.default.titlelink" . }}'>View {{ if gt $alertLength 1 }}these alerts{{ else }}this alert{{ end }} in Alertmanager</a> (Requires a <a href="https://docs.pivotal.io/healthwatch/2-0/troubleshooting.html#viewing-the-alertmanager-ui">BOSH SSH Tunnel</a>)</p>
+        <p><a href='{{ template "slack.default.titlelink" . }}'>View {{ if gt $alertLength 1 }}these alerts{{ else }}this alert{{ end }} in Alertmanager</a> (Requires a <a href="https://docs.pivotal.io/healthwatch/2-2/troubleshooting.html#viewing-the-alertmanager-ui">BOSH SSH Tunnel</a>)</p>
           {{ with index .Alerts 0 }}
           <p><strong>Summary:</strong> {{ .Annotations.summary }}</p>
             <div style="white-space: pre-wrap; padding-left: 22px; text-indent: -22px;">
