@@ -64,7 +64,7 @@ module "spring_gateway_config" {
   source                      = "../../modules/spring_gateway/config"
   scale                       = data.terraform_remote_state.scaling-params.outputs.instance_types
   secrets_bucket_name         = local.secrets_bucket_name
-  spring_gateway_config                  = var.spring_gateway_config
+  spring_gateway_config       = var.spring_gateway_config
   network_name                = data.terraform_remote_state.paperwork.outputs.pas_network_name
   availability_zones          = var.availability_zones
   singleton_availability_zone = var.singleton_availability_zone
