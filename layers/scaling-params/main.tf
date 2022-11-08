@@ -80,6 +80,10 @@ locals {
       spring-cloud-services = "m5.large"
     }
 
+    p-spring-gateway = {
+      spring-gateway = "m5.large"
+    }
+
     p-healthwatch2 = {
       grafana   = "m5.large"
       pxc       = "m5.large"
