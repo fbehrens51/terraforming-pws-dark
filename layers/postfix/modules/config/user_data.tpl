@@ -12,7 +12,9 @@ runcmd:
   - |
     set -ex
 
+    set +x
     echo "${smtp_pass}" | saslpasswd2 -c -u ${root_domain} ${smtp_user}
+    set -x
     chgrp postfix /etc/sasldb2
 
     postconf -e \
