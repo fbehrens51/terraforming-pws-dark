@@ -3,15 +3,27 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
         "type": "dashboard"
       },
       {
-        "datasource": "prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "P1809F7CD0C75ACF3"
+        },
         "enable": true,
         "expr": "timestamp(rate(node_boot_time_seconds[5m]) > 0 or ( (node_boot_time_seconds != 0 unless node_boot_time_seconds offset 15s) ))",
         "hide": false,
@@ -30,15 +42,18 @@
     ]
   },
   "editable": true,
-  "gnetId": null,
+  "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
   "id": 106,
-  "iteration": 1635865405908,
   "links": [],
+  "liveNow": false,
   "panels": [
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -47,18 +62,25 @@
       },
       "id": 14,
       "panels": [],
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
+          "refId": "A"
+        }
+      ],
       "title": "Service Health",
       "type": "row"
     },
     {
       "dashboardFilter": "",
       "dashboardTags": [],
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
       },
-      "folderId": null,
       "gridPos": {
         "h": 5,
         "w": 12,
@@ -69,17 +91,42 @@
       "limit": 10,
       "nameFilter": "",
       "onlyAlertsOnDashboard": true,
+      "options": {
+        "alertInstanceLabelFilter": "",
+        "alertName": "",
+        "dashboardAlerts": false,
+        "groupBy": [],
+        "groupMode": "default",
+        "maxItems": 20,
+        "sortOrder": 1,
+        "stateFilter": {
+          "error": true,
+          "firing": true,
+          "noData": false,
+          "normal": false,
+          "pending": true
+        }
+      },
       "show": "current",
       "sortOrder": 1,
       "stateFilter": [],
-      "timeFrom": null,
-      "timeShift": null,
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
+          "refId": "A"
+        }
+      ],
       "title": "Alert Status",
       "type": "alertlist"
     },
     {
-      "cacheTimeout": null,
-      "datasource": null,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
       "description": "These services are reporting 'failed' in systemd.",
       "fieldConfig": {
         "defaults": {
@@ -89,24 +136,20 @@
           "custom": {
             "align": "left",
             "displayMode": "color-text",
-            "filterable": false
+            "filterable": false,
+            "inspect": false
           },
           "mappings": [
             {
-              "from": "",
-              "id": 1,
-              "text": "Down",
-              "to": "",
-              "type": 1,
-              "value": "1"
+              "options": {
+                "0": {
+                  "text": "Up"
             },
-            {
-              "from": "",
-              "id": 2,
-              "text": "Up",
-              "to": "",
-              "type": 1,
-              "value": "0"
+                "1": {
+                  "text": "Down"
+                }
+              },
+              "type": "value"
             }
           ],
           "thresholds": {
@@ -179,13 +222,23 @@
       "id": 18,
       "links": [],
       "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
         "showHeader": false
       },
-      "pluginVersion": "7.5.11",
-      "repeat": null,
+      "pluginVersion": "9.0.6",
       "repeatDirection": "h",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
           "exemplar": true,
           "expr": "sum(node_systemd_unit_state{availability_zone=~\"${az:regex}\",name_tag=~\"${name:regex}\",state=\"failed\"}) by (instance, name_tag, availability_zone, name) > 0",
           "instant": true,
@@ -194,8 +247,6 @@
           "refId": "A"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Failed Systemd Units",
       "transformations": [
         {
@@ -211,8 +262,10 @@
       "type": "table"
     },
     {
-      "cacheTimeout": null,
-      "datasource": null,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
       "description": "TSDB is able to retrieve metrics from these instances, this means the instance is up and node_exporter is working. Check the systemd status to understand whether other services are working.",
       "fieldConfig": {
         "defaults": {
@@ -222,24 +275,20 @@
           "custom": {
             "align": "left",
             "displayMode": "color-text",
-            "filterable": true
+            "filterable": true,
+            "inspect": false
           },
           "mappings": [
             {
-              "from": "",
-              "id": 1,
-              "text": "Down",
-              "to": "",
-              "type": 1,
-              "value": "0"
+              "options": {
+                "0": {
+                  "text": "Down"
             },
-            {
-              "from": "",
-              "id": 2,
-              "text": "Up",
-              "to": "",
-              "type": 1,
-              "value": "1"
+                "1": {
+                  "text": "Up"
+                }
+              },
+              "type": "value"
             }
           ],
           "thresholds": {
@@ -316,13 +365,23 @@
       "id": 20,
       "links": [],
       "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
         "showHeader": false
       },
-      "pluginVersion": "7.5.11",
-      "repeat": null,
+      "pluginVersion": "9.0.6",
       "repeatDirection": "h",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
           "exemplar": true,
           "expr": "sum(up{availability_zone=~\"${az:regex}\",name_tag=~\"${name:regex}\"}) by (instance, name_tag, availability_zone) > 0",
           "instant": true,
@@ -331,8 +390,6 @@
           "refId": "A"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Up Instances",
       "transformations": [
         {
@@ -359,8 +416,10 @@
       "type": "table"
     },
     {
-      "cacheTimeout": null,
-      "datasource": null,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
       "description": "TSDB is unable to retrieve metrics from these instances, this likely means the instance is not correctly configured.",
       "fieldConfig": {
         "defaults": {
@@ -370,24 +429,20 @@
           "custom": {
             "align": "left",
             "displayMode": "color-text",
-            "filterable": false
+            "filterable": false,
+            "inspect": false
           },
           "mappings": [
             {
-              "from": "",
-              "id": 1,
-              "text": "Down",
-              "to": "",
-              "type": 1,
-              "value": "0"
+              "options": {
+                "0": {
+                  "text": "Down"
             },
-            {
-              "from": "",
-              "id": 2,
-              "text": "Up",
-              "to": "",
-              "type": 1,
-              "value": "1"
+                "1": {
+                  "text": "Up"
+                }
+              },
+              "type": "value"
             }
           ],
           "thresholds": {
@@ -464,13 +519,23 @@
       "id": 16,
       "links": [],
       "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
         "showHeader": false
       },
-      "pluginVersion": "7.5.11",
-      "repeat": null,
+      "pluginVersion": "9.0.6",
       "repeatDirection": "h",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
           "exemplar": true,
           "expr": "sum(up{availability_zone=~\"${az:regex}\",name_tag=~\"${name:regex}\"}) by (instance, name_tag, availability_zone) < 1",
           "instant": true,
@@ -479,8 +544,6 @@
           "refId": "A"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Down Instances",
       "transformations": [
         {
@@ -497,7 +560,10 @@
     },
     {
       "collapsed": true,
-      "datasource": null,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -511,7 +577,10 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": null,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
           "fieldConfig": {
             "defaults": {
               "links": []
@@ -551,14 +620,16 @@
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
-          "repeat": null,
-          "repeatDirection": null,
           "seriesOverrides": [],
           "spaceLength": 10,
           "stack": false,
           "steppedLine": false,
           "targets": [
             {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "P1809F7CD0C75ACF3"
+              },
               "expr": "1 - (avg by (instance, name_tag, availability_zone)  (irate(node_cpu_seconds_total{mode=\"idle\",name_tag=~\"${name:regex}\",availability_zone=~\"${az:regex}\"}[5m])))",
               "interval": "",
               "legendFormat": "{{instance}}",
@@ -566,9 +637,7 @@
             }
           ],
           "thresholds": [],
-          "timeFrom": null,
           "timeRegions": [],
-          "timeShift": null,
           "title": "CPU Usage",
           "tooltip": {
             "shared": true,
@@ -577,16 +646,13 @@
           },
           "type": "graph",
           "xaxis": {
-            "buckets": null,
             "mode": "time",
-            "name": null,
             "show": true,
             "values": []
           },
           "yaxes": [
             {
               "format": "percentunit",
-              "label": null,
               "logBase": 1,
               "max": "1",
               "min": "0",
@@ -594,16 +660,12 @@
             },
             {
               "format": "short",
-              "label": null,
               "logBase": 1,
-              "max": null,
-              "min": null,
               "show": true
             }
           ],
           "yaxis": {
-            "align": false,
-            "alignLevel": null
+            "align": false
           }
         },
         {
@@ -611,7 +673,10 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": null,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
           "fieldConfig": {
             "defaults": {
               "links": []
@@ -654,6 +719,10 @@
           "steppedLine": false,
           "targets": [
             {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "P1809F7CD0C75ACF3"
+              },
               "expr": "((node_memory_MemTotal_bytes - node_memory_MemFree_bytes - (node_memory_Buffers_bytes + node_memory_Cached_bytes)) / node_memory_MemTotal_bytes{name_tag=~\"${name:regex}\",availability_zone=~\"${az:regex}\"})",
               "interval": "",
               "legendFormat": "{{instance}}",
@@ -661,9 +730,7 @@
             }
           ],
           "thresholds": [],
-          "timeFrom": null,
           "timeRegions": [],
-          "timeShift": null,
           "title": "Memory Usage",
           "tooltip": {
             "shared": true,
@@ -672,16 +739,13 @@
           },
           "type": "graph",
           "xaxis": {
-            "buckets": null,
             "mode": "time",
-            "name": null,
             "show": true,
             "values": []
           },
           "yaxes": [
             {
               "format": "percentunit",
-              "label": null,
               "logBase": 1,
               "max": "1",
               "min": "0",
@@ -689,16 +753,12 @@
             },
             {
               "format": "short",
-              "label": null,
               "logBase": 1,
-              "max": null,
-              "min": null,
               "show": true
             }
           ],
           "yaxis": {
-            "align": false,
-            "alignLevel": null
+            "align": false
           }
         },
         {
@@ -706,8 +766,10 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": null,
-          "decimals": null,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
           "fieldConfig": {
             "defaults": {
               "links": []
@@ -754,6 +816,10 @@
           "steppedLine": false,
           "targets": [
             {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "P1809F7CD0C75ACF3"
+              },
               "exemplar": true,
               "expr": "avg((node_filesystem_size_bytes{name_tag=~\"${name:regex}\",availability_zone=~\"${az:regex}\"} - node_filesystem_avail_bytes{name_tag=~\"${name:regex}\",availability_zone=~\"${az:regex}\"}) / node_filesystem_size_bytes{name_tag=~\"${name:regex}\",availability_zone=~\"${az:regex}\"}) by (instance, name_tag, availability_zone, mountpoint)",
               "format": "time_series",
@@ -770,13 +836,10 @@
               "fill": true,
               "line": true,
               "op": "gt",
-              "value": null,
               "yaxis": "left"
             }
           ],
-          "timeFrom": null,
           "timeRegions": [],
-          "timeShift": null,
           "title": "Disk Usage",
           "tooltip": {
             "shared": true,
@@ -798,9 +861,7 @@
           ],
           "type": "graph",
           "xaxis": {
-            "buckets": null,
             "mode": "time",
-            "name": null,
             "show": true,
             "values": []
           },
@@ -808,7 +869,6 @@
             {
               "$$hashKey": "object:2025",
               "format": "percentunit",
-              "label": null,
               "logBase": 1,
               "max": "1",
               "min": "0",
@@ -817,17 +877,22 @@
             {
               "$$hashKey": "object:2026",
               "format": "short",
-              "label": null,
               "logBase": 1,
-              "max": null,
-              "min": null,
               "show": false
             }
           ],
           "yaxis": {
-            "align": false,
-            "alignLevel": null
+            "align": false
           }
+        }
+      ],
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
+          "refId": "A"
         }
       ],
       "title": "VM Stats",
@@ -835,7 +900,10 @@
     },
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -844,6 +912,15 @@
       },
       "id": 22,
       "panels": [],
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
+          "refId": "A"
+        }
+      ],
       "title": "Alert-Backing Metrics",
       "type": "row"
     },
@@ -888,7 +965,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
       "fieldConfig": {
         "defaults": {
           "links": []
@@ -921,7 +1001,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.11",
+      "pluginVersion": "9.0.6",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -931,6 +1011,10 @@
       "steppedLine": false,
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
           "exemplar": true,
           "expr": "node_systemd_unit_state{state=\"failed\"} > 0",
           "interval": "",
@@ -948,9 +1032,7 @@
           "visible": true
         }
       ],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Failed Systemd Units",
       "tooltip": {
         "shared": true,
@@ -959,9 +1041,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -969,7 +1049,6 @@
         {
           "$$hashKey": "object:2131",
           "format": "short",
-          "label": null,
           "logBase": 1,
           "max": "2",
           "min": "0",
@@ -978,29 +1057,24 @@
         {
           "$$hashKey": "object:2132",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     }
   ],
   "refresh": "10s",
-  "schemaVersion": 27,
+  "schemaVersion": 36,
   "style": "dark",
   "tags": [],
   "templating": {
     "list": [
       {
-        "allValue": null,
         "current": {
-          "selected": false,
+          "selected": true,
           "text": [
             "All"
           ],
@@ -1008,10 +1082,11 @@
             "$__all"
           ]
         },
-        "datasource": "prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "P1809F7CD0C75ACF3"
+        },
         "definition": "label_values(up, availability_zone)",
-        "description": null,
-        "error": null,
         "hide": 0,
         "includeAll": true,
         "label": "Availability Zone",
@@ -1027,13 +1102,11 @@
         "skipUrlSync": false,
         "sort": 1,
         "tagValuesQuery": "",
-        "tags": [],
         "tagsQuery": "",
         "type": "query",
         "useTags": false
       },
       {
-        "allValue": null,
         "current": {
           "selected": true,
           "text": [
@@ -1043,10 +1116,11 @@
             "$__all"
           ]
         },
-        "datasource": "prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "P1809F7CD0C75ACF3"
+        },
         "definition": "label_values(up, name_tag)",
-        "description": null,
-        "error": null,
         "hide": 0,
         "includeAll": true,
         "label": "Name",
@@ -1062,7 +1136,6 @@
         "skipUrlSync": false,
         "sort": 1,
         "tagValuesQuery": "",
-        "tags": [],
         "tagsQuery": "",
         "type": "query",
         "useTags": false
@@ -1089,5 +1162,6 @@
   "timezone": "",
   "title": "VM Resources",
   "uid": "HMJtNeCZz",
-  "version": 3
+  "version": 8,
+  "weekStart": ""
 }
