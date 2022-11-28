@@ -29,7 +29,7 @@ ingester:
   chunk_target_size: 153600
   max_chunk_age: 4h
   flush_check_period: 5s
-  flush_op_timeout: 5m
+  flush_op_timeout: 10m
   chunk_idle_period: 30m
   chunk_retain_period: 30s
   # This must be set to 0 to use the WAL
