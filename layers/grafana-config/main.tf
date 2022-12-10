@@ -249,6 +249,16 @@ resource "grafana_dashboard" "bind" {
   config_json = file("dashboards/bind.json")
 }
 
+# AWS Billing by Monitoring Artist, id=139
+resource "grafana_dashboard" "aws_billing" {
+  config_json = file("dashboards/aws-billing.json")
+}
+
+# AWS rds by Monitoring Artist, id=707
+resource "grafana_dashboard" "aws_rds" {
+  config_json = file("dashboards/aws-rds.json")
+}
+
 data "template_file" "clamav_dashboard" {
   template = file("dashboards/antivirus-alerts.json.tpl")
   vars = {
