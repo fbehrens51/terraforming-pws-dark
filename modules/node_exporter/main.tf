@@ -90,7 +90,7 @@ runcmd:
     else false
     fi
 
-    echo "OPTIONS=--collector.systemd --web.config=/etc/node_exporter/web-config.yml --web.listen-address=$LOCAL_IP:9100" > node_exporter_config
+    echo "OPTIONS=--collector.systemd --web.config.file=/etc/node_exporter/web-config.yml --web.listen-address=$LOCAL_IP:9100" > node_exporter_config
     install -m 644 -D node_exporter_config /etc/sysconfig/node_exporter
     rm node_exporter_config
 
