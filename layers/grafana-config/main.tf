@@ -260,8 +260,13 @@ resource "grafana_dashboard" "aws_rds" {
 }
 
 # alertmanager by Martin Chodur, id=9578
-resource "grafana_dashboard" "alertmanaager" {
+resource "grafana_dashboard" "alertmanager" {
   config_json = file("dashboards/alertmanager.json")
+}
+
+# node-exporter-full by rfmoz, id=1860
+resource "grafana_dashboard" "node_exporter_full" {
+  config_json = file("dashboards/node-exporter-full.json")
 }
 
 data "template_file" "clamav_dashboard" {
