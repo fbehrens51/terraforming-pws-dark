@@ -277,8 +277,8 @@ groups:
         expr: 'up{name_tag!=""} == 0'
         for: 5m
         annotations:
-          summary: "{{ $labels.name_tag }} down"
-          description: "{{ $labels.name_tag }} with id {{ $labels.instance_id }} has been down for more than 5 minutes."
+          summary: "{{ $labels.instance }} down"
+          description: "{{ $labels.instance }} with id {{ $labels.instance_id }} has been down for more than 5 minutes."
 
       - alert: LargeFluentdOutputBuffer
         expr: 'fluentd_output_status_buffer_queue_length > 3'
