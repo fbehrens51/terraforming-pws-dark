@@ -259,6 +259,11 @@ resource "grafana_dashboard" "aws_rds" {
   config_json = file("dashboards/aws-rds.json")
 }
 
+# alertmanager by Martin Chodur, id=9578
+resource "grafana_dashboard" "alertmanaager" {
+  config_json = file("dashboards/alertmanager.json")
+}
+
 data "template_file" "clamav_dashboard" {
   template = file("dashboards/antivirus-alerts.json.tpl")
   vars = {
