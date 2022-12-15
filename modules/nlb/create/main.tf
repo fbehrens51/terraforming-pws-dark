@@ -130,3 +130,7 @@ output "my_nlb_id" {
 output "target_security_group_id" {
   value = aws_security_group.target_security_group.id
 }
+
+output "target_group_arn" {
+  value = aws_lb_target_group.my_nlb_tg.arn
+}
