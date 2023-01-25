@@ -24,7 +24,7 @@ module "nat" {
   metrics_ingress_cidr_block = data.aws_vpc.vpc.cidr_block
   tags                       = { tags = local.modified_tags, instance_tags = local.instance_tags }
   public_subnet_ids          = aws_subnet.public_subnets.*.id
-  ssh_cidr_blocks            = [var.ssh_cidr_blocks]
+  ssh_cidr_blocks            = var.ssh_cidr_blocks
   internetless               = var.internetless
   instance_types             = var.instance_types
   scale_vpc_key              = "pas"
