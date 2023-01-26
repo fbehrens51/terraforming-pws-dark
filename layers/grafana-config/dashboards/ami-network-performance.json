@@ -22,27 +22,14 @@
     ]
   },
   "description": "A dashbaord for monitoring AWS Elastic Network Adapter performance using the Prometheus Node exporter.",
-  "editable": true,
+  "editable": false,
   "fiscalYearStartMonth": 0,
   "gnetId": 17244,
   "graphTooltip": 1,
-  "id": 63,
+  "id": 132,
   "links": [],
   "liveNow": true,
   "panels": [
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 0
-      },
-      "id": 18,
-      "panels": [],
-      "title": "Bandwidth",
-      "type": "row"
-    },
     {
       "datasource": {
         "type": "prometheus",
@@ -75,7 +62,7 @@
         "h": 3,
         "w": 4,
         "x": 0,
-        "y": 1
+        "y": 0
       },
       "id": 6,
       "options": {
@@ -146,7 +133,7 @@
         "h": 3,
         "w": 4,
         "x": 4,
-        "y": 1
+        "y": 0
       },
       "id": 7,
       "options": {
@@ -217,7 +204,7 @@
         "h": 3,
         "w": 4,
         "x": 8,
-        "y": 1
+        "y": 0
       },
       "id": 5,
       "options": {
@@ -288,7 +275,7 @@
         "h": 3,
         "w": 4,
         "x": 12,
-        "y": 1
+        "y": 0
       },
       "id": 8,
       "options": {
@@ -359,7 +346,7 @@
         "h": 3,
         "w": 4,
         "x": 16,
-        "y": 1
+        "y": 0
       },
       "id": 9,
       "options": {
@@ -426,7 +413,7 @@
         "h": 3,
         "w": 4,
         "x": 20,
-        "y": 1
+        "y": 0
       },
       "id": 11,
       "options": {
@@ -463,6 +450,19 @@
       "title": "ENA Driver",
       "transparent": true,
       "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 3
+      },
+      "id": 18,
+      "panels": [],
+      "title": "Bandwidth",
+      "type": "row"
     },
     {
       "datasource": {
@@ -1692,6 +1692,6 @@
   "timezone": "",
   "title": "AWS-ENA Network Performance",
   "uid": "Pq5VbwoVk",
-  "version": 1,
+  "version": 2,
   "weekStart": ""
 }
