@@ -196,6 +196,11 @@ resource "grafana_dashboard" "vm-resources" {
 }
 
 # Internal
+resource "grafana_dashboard" "ami-network-performance" {
+  config_json = file("dashboards/ami-network-performance.json")
+}
+
+# Internal
 resource "grafana_dashboard" "cloudwatch-log-forwarder" {
   config_json = file("dashboards/cloudwatch-log-forwarder.json")
 }
