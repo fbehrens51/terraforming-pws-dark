@@ -265,6 +265,14 @@ groups:
           summary: "Essential System Services"
           description: "One or more essential system services are not operational on host {{ $labels.instance }}"
 
+      - alert: GoRouterUsage
+        expr: 'sum( increase(total_requests[1m]) ) > ${go_router_threshold}'
+        for: 1m
+        annotations:
+          dashboard: "${grafana_root_url}/grafana.pcfeagledev.cf-app.com/d/hw2-router/router?orgId=1"
+          summary: "GoRouter traffic increase"
+          description: "GoRouter traffic increase exceeded alerting threshold"
+
       - alert: CredhubAdmin
         expr: 'max( rate( credhub_admin_usage_detected[15m] ) ) > 0'
         for: 1m

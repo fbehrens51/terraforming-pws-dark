@@ -49,6 +49,10 @@ variable "enable_loki" {
   default = false
 }
 
+variable "go_router_threshold" {
+  default = 10000
+}
+
 data "terraform_remote_state" "bootstrap_postfix" {
   backend = "s3"
 
@@ -169,6 +173,7 @@ module "healthwatch_config" {
   region                           = var.region
   metrics_key                      = data.terraform_remote_state.paperwork.outputs.metrics_key
   grafana_additional_cipher_suites = var.grafana_additional_cipher_suites
+  go_router_threshold              = var.go_router_threshold
 
   syslog_host    = module.domains.fluentd_fqdn
   syslog_port    = module.syslog_ports.syslog_port

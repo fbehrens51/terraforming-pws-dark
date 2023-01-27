@@ -89,6 +89,9 @@ variable "region" {
 variable "metrics_key" {
 }
 
+variable "go_router_threshold" {
+}
+
 variable "grafana_additional_cipher_suites" {
   type = list(string)
 }
@@ -159,10 +162,11 @@ locals {
 
     email_template_yml = file("${path.module}/email_template.yml")
     alerting_rules_yml = templatefile("${path.module}/alerting_rules.yml", {
-      grafana_root_url = "https://${module.domains.grafana_fqdn}"
-      log_group_name   = var.log_group_name
-      region           = var.region
-      dashboard_name   = replace("${var.env_tag_name} AntiVirus", " ", "_")
+      grafana_root_url    = "https://${module.domains.grafana_fqdn}"
+      log_group_name      = var.log_group_name
+      region              = var.region
+      dashboard_name      = replace("${var.env_tag_name} AntiVirus", " ", "_")
+      go_router_threshold = var.go_router_threshold
     })
   })
 }
