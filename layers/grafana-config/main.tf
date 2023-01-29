@@ -196,6 +196,11 @@ resource "grafana_dashboard" "vm-resources" {
 }
 
 # Internal
+resource "grafana_dashboard" "go-router-traffic-monitoring" {
+  config_json = file("dashboards/go-router-traffic-monitoring.json")
+}
+
+# Internal
 resource "grafana_dashboard" "ami-network-performance" {
   config_json = file("dashboards/ami-network-performance.json")
 }

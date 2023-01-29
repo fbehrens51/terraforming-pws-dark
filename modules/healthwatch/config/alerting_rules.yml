@@ -265,13 +265,21 @@ groups:
           summary: "Essential System Services"
           description: "One or more essential system services are not operational on host {{ $labels.instance }}"
 
-      - alert: GoRouterUsage
+      - alert: GoRouterRequests
         expr: 'sum( increase(total_requests[1m]) ) > ${go_router_threshold}'
         for: 1m
         annotations:
-          dashboard: "${grafana_root_url}/grafana.pcfeagledev.cf-app.com/d/hw2-router/router?orgId=1"
+          dashboard: "${grafana_root_url}/d/2JgI5zA4k/go-router-traffic-monitoring?orgId=1"
           summary: "GoRouter traffic increase"
-          description: "GoRouter traffic increase exceeded alerting threshold"
+          description: "GoRouter requests exceeded ${go_router_threshold} requests/minute"
+
+      - alert: GoRouterRequestBursts
+        expr: 'abs( avg_over_time(total_requests{exported_job=~"router"}[5m]) - avg_over_time(total_requests{exported_job=~"router"}[24h])) / stddev_over_time(total_requests{exported_job=~"router"}[24h]) > 3'
+        for: 1m
+        annotations:
+          dashboard: "${grafana_root_url}/d/2JgI5zA4k/go-router-traffic-monitoring?orgId=1"
+          summary: "GoRouter five minute traffic burst"
+          description: "GoRouter five minute traffic burst exceeds z_score for 24 lookback"
 
       - alert: CredhubAdmin
         expr: 'max( rate( credhub_admin_usage_detected[15m] ) ) > 0'
