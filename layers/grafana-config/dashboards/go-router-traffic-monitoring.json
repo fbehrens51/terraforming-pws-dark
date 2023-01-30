@@ -126,18 +126,10 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "abs(\n    avg_over_time(total_requests{exported_job=~\"router\"}[5m])\n    - \n    avg_over_time(total_requests{exported_job=~\"router\"}[24h])\n)\n    / \n    stddev_over_time(total_requests{exported_job=~\"router\"}[24h]) \n    > 3",
+          "expr": "abs(\n    avg_over_time(total_requests{exported_job=~\"router\"}[5m])\n    - \n    avg_over_time(total_requests{exported_job=~\"router\"}[24h])\n)\n    / \n    stddev_over_time(total_requests{exported_job=~\"router\"}[24h])",
           "legendFormat": "{{exported_job}}//{{index}} z_score > 3",
           "range": true,
           "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
-          },
-          "hide": false,
-          "refId": "B"
         }
       ],
       "title": "go router packets per minute standard deviation",
@@ -239,6 +231,112 @@
       "title": "Go Router Network Packets per Minute",
       "transparent": true,
       "type": "timeseries"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 13
+      },
+      "id": 10,
+      "panels": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "twsLokiDataSource"
+          },
+          "description": "Logs shows app deletions, app deployments, app-traffic, etc.",
+          "gridPos": {
+            "h": 22,
+            "w": 24,
+            "x": 0,
+            "y": 14
+          },
+          "id": 8,
+          "options": {
+            "dedupStrategy": "none",
+            "enableLogDetails": true,
+            "prettifyLogMessage": false,
+            "showCommonLabels": false,
+            "showLabels": false,
+            "showTime": true,
+            "sortOrder": "Ascending",
+            "wrapLogMessage": false
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "loki",
+                "uid": "twsLokiDataSource"
+              },
+              "editorMode": "builder",
+              "expr": "{ident=~\"gorouter\"} | json | line_format `{{.message}}`",
+              "legendFormat": "{{exported_job}}",
+              "maxLines": 2000,
+              "queryType": "range",
+              "refId": "A"
+            }
+          ],
+          "title": "Go Router Logs",
+          "type": "logs"
+        }
+      ],
+      "title": "Go Router Logs",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 14
+      },
+      "id": 12,
+      "panels": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "twsLokiDataSource"
+          },
+          "description": "Cloud Controller Audit events show what is happening in the foundation",
+          "gridPos": {
+            "h": 26,
+            "w": 24,
+            "x": 0,
+            "y": 15
+          },
+          "id": 14,
+          "options": {
+            "dedupStrategy": "none",
+            "enableLogDetails": true,
+            "prettifyLogMessage": false,
+            "showCommonLabels": false,
+            "showLabels": false,
+            "showTime": true,
+            "sortOrder": "Ascending",
+            "wrapLogMessage": false
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "loki",
+                "uid": "twsLokiDataSource"
+              },
+              "editorMode": "builder",
+              "expr": "{ident=\"system.system.cf-events-logger\"} != `GET /metrics` | json | line_format `{{.message}}`",
+              "queryType": "range",
+              "refId": "A"
+            }
+          ],
+          "title": "CC Audit Logs",
+          "type": "logs"
+        }
+      ],
+      "title": "CC Audit Logs",
+      "type": "row"
     }
   ],
   "refresh": false,
@@ -256,6 +354,6 @@
   "timezone": "",
   "title": "Go Router traffic monitoring",
   "uid": "2JgI5zA4k",
-  "version": 1,
+  "version": 3,
   "weekStart": ""
 }
