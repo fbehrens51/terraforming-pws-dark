@@ -73,6 +73,8 @@ product-properties:
           target_label: availability_zone
         - source_labels: [__meta_ec2_instance_id]
           target_label: instance_id
+        - source_labels: [__meta_ec2_private_ip]
+          target_label: private_ip
         - source_labels: [__meta_ec2_tag_ssh_host_name]
           target_label: instance
           action: replace
