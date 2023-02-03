@@ -96,12 +96,13 @@ data "template_cloudinit_config" "nat_user_data" {
 
 data "aws_route_tables" "cp_private_route_tables" {
   vpc_id = data.terraform_remote_state.paperwork.outputs.cp_vpc_id
-  tags = merge(var.global_vars["global_tags"],{"Type"="PRIVATE"})
+  tags   = merge(var.global_vars["global_tags"], { "Type" = "PRIVATE" })
 }
 
 module "iptables_rules" {
   source                     = "../../modules/iptables"
   nat                        = true
+  nat_log_new_connections    = var.nat_log_new_connections
   control_plane_subnet_cidrs = [data.aws_vpc.vpc.cidr_block]
 }
 
@@ -148,9 +149,9 @@ output "ssh_host_ips" {
 }
 
 module "sshconfig" {
-  source         = "../../modules/ssh_config"
-  foundation_name = data.terraform_remote_state.paperwork.outputs.foundation_name
-  host_ips = module.nat.ssh_host_ips
-  host_type = "cp_nat"
+  source              = "../../modules/ssh_config"
+  foundation_name     = data.terraform_remote_state.paperwork.outputs.foundation_name
+  host_ips            = module.nat.ssh_host_ips
+  host_type           = "cp_nat"
   secrets_bucket_name = data.terraform_remote_state.paperwork.outputs.secrets_bucket_name
 }

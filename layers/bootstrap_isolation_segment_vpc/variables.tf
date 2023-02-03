@@ -20,3 +20,8 @@ variable "internetless" {
 
 variable "remote_state_bucket" {}
 variable "remote_state_region" {}
+
+variable "nat_log_new_connections" {
+  type    = bool
+  default = false
+}

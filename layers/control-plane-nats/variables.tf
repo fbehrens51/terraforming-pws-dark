@@ -10,3 +10,8 @@ variable "global_vars" {
 
 variable "internetless" {
 }
+
+variable "nat_log_new_connections" {
+  type    = bool
+  default = false
+}

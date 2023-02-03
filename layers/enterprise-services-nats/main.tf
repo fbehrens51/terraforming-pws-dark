@@ -136,6 +136,7 @@ data "template_cloudinit_config" "nat_user_data" {
 module "iptables_rules" {
   source                     = "../../modules/iptables"
   nat                        = true
+  nat_log_new_connections    = var.nat_log_new_connections
   control_plane_subnet_cidrs = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs
 }
 
@@ -162,6 +163,11 @@ module "nat" {
   public_bucket_name = data.terraform_remote_state.paperwork.outputs.public_bucket_name
   public_bucket_url  = data.terraform_remote_state.paperwork.outputs.public_bucket_url
   role_name          = data.terraform_remote_state.paperwork.outputs.instance_tagger_role_name
+}
+
+variable "nat_log_new_connections" {
+  type    = bool
+  default = false
 }
 
 variable "internetless" {

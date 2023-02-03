@@ -100,6 +100,7 @@ data "aws_route_tables" "pas_private_route_tables" {
 module "iptables_rules" {
   source                     = "../../modules/iptables"
   nat                        = true
+  nat_log_new_connections    = var.nat_log_new_connections
   control_plane_subnet_cidrs = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs
 }
 
@@ -393,6 +394,11 @@ variable "pas_elb_idle_timeout" {
   type        = number
   default     = 600
   description = "idle timeout in seconds for the pas elb"
+}
+
+variable "nat_log_new_connections" {
+  type    = bool
+  default = false
 }
 
 locals {

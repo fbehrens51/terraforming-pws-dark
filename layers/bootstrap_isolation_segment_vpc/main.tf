@@ -205,6 +205,7 @@ data "template_cloudinit_config" "nat_user_data" {
 module "iptables_rules" {
   source                     = "../../modules/iptables"
   nat                        = true
+  nat_log_new_connections    = var.nat_log_new_connections
   control_plane_subnet_cidrs = data.terraform_remote_state.bootstrap_control_plane.outputs.control_plane_subnet_cidrs
 }
 

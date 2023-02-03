@@ -20,7 +20,9 @@ runcmd:
     %{~ if nat }
     # Enable NAT traffic
     iptables -A FORWARD -o eth0 -j ACCEPT
+    %{~ if nat_log_new_connections }
     iptables -t nat -A POSTROUTING -o eth0 -m state --state NEW -j LOG --log-prefix "Connection Forwarded: " --log-level 4
+    %{~ endif ~}
     iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
     %{~ endif ~}
 
