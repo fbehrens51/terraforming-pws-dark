@@ -1,0 +1,1242 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": 72,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 7,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisGridShow": true,
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "log": 2,
+                  "type": "log"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "max": 65536,
+              "min": 1,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byFrameRefID",
+                  "options": "D"
+                },
+                "properties": [
+                  {
+                    "id": "custom.fillOpacity",
+                    "value": 10
+                  },
+                  {
+                    "id": "custom.lineWidth",
+                    "value": 0
+                  },
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": true,
+                      "tooltip": true,
+                      "viz": false
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byFrameRefID",
+                  "options": "F"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": true,
+                      "tooltip": false,
+                      "viz": false
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 1
+          },
+          "id": 17,
+          "options": {
+            "legend": {
+              "calcs": [
+                "max"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "sortBy": "Max",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "P1809F7CD0C75ACF3"
+              },
+              "editorMode": "builder",
+              "expr": "increase(node_ethtool_pps_allowance_exceeded{instance=~\"$nat_one\"}[5m])",
+              "hide": false,
+              "legendFormat": "pps exceeded {{private_ip}}",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "P1809F7CD0C75ACF3"
+              },
+              "editorMode": "builder",
+              "expr": "increase(node_ethtool_bw_in_allowance_exceeded{instance=~\"$nat_one\"}[5m])",
+              "hide": false,
+              "legendFormat": "bw in {{private_ip}}",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "P1809F7CD0C75ACF3"
+              },
+              "editorMode": "builder",
+              "expr": "increase(node_ethtool_bw_out_allowance_exceeded{instance=~\"$nat_one\"}[5m])",
+              "hide": false,
+              "legendFormat": "bw out {{private_ip}}",
+              "range": true,
+              "refId": "C"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "P1809F7CD0C75ACF3"
+              },
+              "editorMode": "builder",
+              "exemplar": true,
+              "expr": "max_over_time(up{instance=~\"$nat_one\"}[$__interval]) * 65536",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "up {{private_ip}}",
+              "range": true,
+              "refId": "D"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "P1809F7CD0C75ACF3"
+              },
+              "editorMode": "builder",
+              "expr": "node_ethtool_conntrack_allowance_exceeded{instance=\"$nat_one\"}",
+              "hide": false,
+              "legendFormat": "ConnTrack {{private_ip}}",
+              "range": true,
+              "refId": "E"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "P1809F7CD0C75ACF3"
+              },
+              "editorMode": "builder",
+              "expr": "node_nf_conntrack_entries{instance=\"$nat_one\"}",
+              "hide": false,
+              "legendFormat": "connections {{private_ip}}",
+              "range": true,
+              "refId": "F"
+            }
+          ],
+          "title": "Bandwidth in/out or Packets/sec exceeded",
+          "transparent": true,
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "twsLokiDataSource"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "log": 2,
+                  "type": "log"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "max": 1024,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 1
+          },
+          "id": 1,
+          "options": {
+            "legend": {
+              "calcs": [
+                "max",
+                "sum"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "sortBy": "Total",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "loki",
+                "uid": "twsLokiDataSource"
+              },
+              "editorMode": "builder",
+              "expr": "sum by(dst, dpt) (count_over_time({ident=\"kernel\", source_address=~\"$ip_nat_one\"} |= `Connection Forwarded` |= `TCP` | json | line_format `{{.message}}` | regexp `Connection Forwarded: IN= OUT=eth0 SRC=[^ ]+ DST=(?P<dst>\\d+\\.\\d+\\.\\d+\\.\\d+) .* DPT=(?P<dpt>\\d+)` [1m]))",
+              "hide": false,
+              "key": "Q-bd87594f-1227-49de-ac8e-1b146db1d86f-0",
+              "legendFormat": "{{dst}}:{{dpt}}",
+              "queryType": "range",
+              "refId": "A",
+              "resolution": 1
+            }
+          ],
+          "title": "new connections per minute per destination IP",
+          "transparent": true,
+          "type": "timeseries"
+        }
+      ],
+      "title": "${nat_one}",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 1
+      },
+      "id": 13,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisGridShow": true,
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "log": 2,
+                  "type": "log"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "max": 65536,
+              "min": 1,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byFrameRefID",
+                  "options": "D"
+                },
+                "properties": [
+                  {
+                    "id": "custom.fillOpacity",
+                    "value": 10
+                  },
+                  {
+                    "id": "custom.lineWidth",
+                    "value": 0
+                  },
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": true,
+                      "tooltip": true,
+                      "viz": false
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byFrameRefID",
+                  "options": "F"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": true,
+                      "tooltip": false,
+                      "viz": false
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 2
+          },
+          "id": 22,
+          "options": {
+            "legend": {
+              "calcs": [
+                "max"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "sortBy": "Max",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "P1809F7CD0C75ACF3"
+              },
+              "editorMode": "builder",
+              "expr": "increase(node_ethtool_pps_allowance_exceeded{instance=~\"$nat_two\"}[5m])",
+              "hide": false,
+              "legendFormat": "pps exceeded {{private_ip}}",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "P1809F7CD0C75ACF3"
+              },
+              "editorMode": "builder",
+              "expr": "increase(node_ethtool_bw_in_allowance_exceeded{instance=~\"$nat_two\"}[5m])",
+              "hide": false,
+              "legendFormat": "bw in {{private_ip}}",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "P1809F7CD0C75ACF3"
+              },
+              "editorMode": "builder",
+              "expr": "increase(node_ethtool_bw_out_allowance_exceeded{instance=~\"$nat_two\"}[5m])",
+              "hide": false,
+              "legendFormat": "bw out {{private_ip}}",
+              "range": true,
+              "refId": "C"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "P1809F7CD0C75ACF3"
+              },
+              "editorMode": "builder",
+              "exemplar": true,
+              "expr": "max_over_time(up{instance=~\"$nat_two\"}[$__interval]) * 65536",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "up {{private_ip}}",
+              "range": true,
+              "refId": "D"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "P1809F7CD0C75ACF3"
+              },
+              "editorMode": "builder",
+              "expr": "node_ethtool_conntrack_allowance_exceeded{instance=\"$nat_two\"}",
+              "hide": false,
+              "legendFormat": "ConnTrack {{private_ip}}",
+              "range": true,
+              "refId": "E"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "P1809F7CD0C75ACF3"
+              },
+              "editorMode": "builder",
+              "expr": "node_nf_conntrack_entries{instance=\"$nat_two\"}",
+              "hide": false,
+              "legendFormat": "connections {{private_ip}}",
+              "range": true,
+              "refId": "F"
+            }
+          ],
+          "title": "Bandwidth in/out or Packets/sec exceeded",
+          "transparent": true,
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "twsLokiDataSource"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "log": 2,
+                  "type": "log"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "max": 1024,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 2
+          },
+          "id": 2,
+          "options": {
+            "legend": {
+              "calcs": [
+                "max",
+                "sum"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "sortBy": "Total",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "loki",
+                "uid": "twsLokiDataSource"
+              },
+              "editorMode": "builder",
+              "expr": "sum by(dst, dpt) (count_over_time({ident=\"kernel\", source_address=~\"$ip_nat_two\"} |= `Connection Forwarded` |= `TCP` | json | line_format `{{.message}}` | regexp `Connection Forwarded: IN= OUT=eth0 SRC=[^ ]+ DST=(?P<dst>\\d+\\.\\d+\\.\\d+\\.\\d+) .* DPT=(?P<dpt>\\d+)` [1m]))",
+              "key": "Q-bd87594f-1227-49de-ac8e-1b146db1d86f-0",
+              "legendFormat": "{{dst}}:{{dpt}}",
+              "queryType": "range",
+              "refId": "A",
+              "resolution": 1
+            }
+          ],
+          "title": "new connections per minute per destination IP",
+          "transparent": true,
+          "type": "timeseries"
+        }
+      ],
+      "title": "${nat_two}",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 2
+      },
+      "id": 5,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisGridShow": true,
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "log": 2,
+                  "type": "log"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "max": 65536,
+              "min": 1,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byFrameRefID",
+                  "options": "D"
+                },
+                "properties": [
+                  {
+                    "id": "custom.fillOpacity",
+                    "value": 10
+                  },
+                  {
+                    "id": "custom.lineWidth",
+                    "value": 0
+                  },
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": true,
+                      "tooltip": true,
+                      "viz": false
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byFrameRefID",
+                  "options": "F"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": true,
+                      "tooltip": false,
+                      "viz": false
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 3
+          },
+          "id": 23,
+          "options": {
+            "legend": {
+              "calcs": [
+                "max"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "sortBy": "Max",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "P1809F7CD0C75ACF3"
+              },
+              "editorMode": "builder",
+              "expr": "increase(node_ethtool_pps_allowance_exceeded{instance=~\"$nat_three\"}[5m])",
+              "hide": false,
+              "legendFormat": "pps exceeded {{private_ip}}",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "P1809F7CD0C75ACF3"
+              },
+              "editorMode": "builder",
+              "expr": "increase(node_ethtool_bw_in_allowance_exceeded{instance=~\"$nat_three\"}[5m])",
+              "hide": false,
+              "legendFormat": "bw in {{private_ip}}",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "P1809F7CD0C75ACF3"
+              },
+              "editorMode": "builder",
+              "expr": "increase(node_ethtool_bw_out_allowance_exceeded{instance=~\"$nat_three\"}[5m])",
+              "hide": false,
+              "legendFormat": "bw out {{private_ip}}",
+              "range": true,
+              "refId": "C"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "P1809F7CD0C75ACF3"
+              },
+              "editorMode": "builder",
+              "exemplar": true,
+              "expr": "max_over_time(up{instance=~\"$nat_three\"}[$__interval]) * 65536",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "up {{private_ip}}",
+              "range": true,
+              "refId": "D"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "P1809F7CD0C75ACF3"
+              },
+              "editorMode": "builder",
+              "expr": "node_ethtool_conntrack_allowance_exceeded{instance=\"$nat_three\"}",
+              "hide": false,
+              "legendFormat": "ConnTrack {{private_ip}}",
+              "range": true,
+              "refId": "E"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "P1809F7CD0C75ACF3"
+              },
+              "editorMode": "builder",
+              "expr": "node_nf_conntrack_entries{instance=\"$nat_three\"}",
+              "hide": false,
+              "legendFormat": "connections {{private_ip}}",
+              "range": true,
+              "refId": "F"
+            }
+          ],
+          "title": "Bandwidth in/out or Packets/sec exceeded",
+          "transparent": true,
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "twsLokiDataSource"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "log": 2,
+                  "type": "log"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "max": 1024,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
+            "x": 12,
+            "y": 3
+          },
+          "id": 21,
+          "options": {
+            "legend": {
+              "calcs": [
+                "max",
+                "sum"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "sortBy": "Total",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "loki",
+                "uid": "twsLokiDataSource"
+              },
+              "editorMode": "builder",
+              "expr": "sum by(dst, dpt) (count_over_time({ident=\"kernel\", source_address=~\"$ip_nat_three\"} |= `Connection Forwarded` |= `TCP` | json | line_format `{{.message}}` | regexp `Connection Forwarded: IN= OUT=eth0 SRC=[^ ]+ DST=(?P<dst>\\d+\\.\\d+\\.\\d+\\.\\d+) .* DPT=(?P<dpt>\\d+)` [1m]))",
+              "key": "Q-bd87594f-1227-49de-ac8e-1b146db1d86f-0",
+              "legendFormat": "{{dst}}:{{dpt}}",
+              "queryType": "range",
+              "refId": "A",
+              "resolution": 1
+            }
+          ],
+          "title": "new connections per minute per destination IP",
+          "transparent": true,
+          "type": "timeseries"
+        }
+      ],
+      "title": "${nat_three}",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 3
+      },
+      "id": 25,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
+          "description": "What are the dashboards reporting?\nIs this normal or is something broken?",
+          "gridPos": {
+            "h": 29,
+            "w": 24,
+            "x": 0,
+            "y": 4
+          },
+          "id": 27,
+          "options": {
+            "content": "**Note:** All of these notes were written in the commercial environments with minimal apps deployed.\nA production environment with apps deployed will behave differently as the volume of log data associated with deployed apps could be much higher.\n\n# Enable the dashboards\n\nThe `Event` dashboard(s) on the left uses node_exported metrics that are ingested into Prometheus and should always be functional.\n\nThe `logs` dashboard(s) on the right searches and parses log messages from the NAT servers via Loki.\n\nThe NAT servers must be configured to log new connections in the `iptables` firewall by configuring a boolean in the following files:\n\n- ~workspace/<EVN_REPO/live/<ENV>/control-plane-nats/terragrunt.hcl\n- ~workspace/<EVN_REPO/live/<ENV>/enterprise-services-nats/terragrunt.hcl\n- ~workspace/<EVN_REPO/live/<ENV>-foundation/bootstrap_isolation_segment_vpc_1/terragrunt.hcl\n- ~workspace/<EVN_REPO/live/<ENV>-foundation/pas/terragrunt.hcl\n\nAdd the following lines to the input section and commit to deploy the changes.\n```\ninputs = {\n   # WARNING: Produces a log message for EVERY new connection on the NAT vms.\n   # the additional messages will have an impact on fluentd, loki, and cloudwatch.\n   # this feature is production safe, but it is not recommended to be left on for long periods of time.\n  nat_log_new_connections = true\n}\n\n```\n# Interpret the Event dashboard.\nThe dashboard will change it's background color if the NAT server was repaved/re-deployed during the display duration.\nThe dashboard will report the number of connections tracked by the host firewall.\nThe dashboard will report the following AWS Ehnahnced Networking Adapter (ENA) counters from the node_exporter that \nindicate the count of AWS thresholds violations for the specific instance types.\n- `packets-per-second (pps)`\n- `Bandwidth (bw in)` and `Bandwidth (bw in)`\n- `conntrack limits`\nUse the Grafana time picker in the upper right corner and choose a time period to investigate.\nThe Event dashboard will easily process and display seven days of data.\nThe dashboard indicates any spikes OR max values in the legend then the AWS thresholds were exceeded.\n\n# Identify the destinations from the Logs dashboard.\nThe dashboard must search for, and parse the log messages generated by `IPTables` when new connections are created to \nextract the destination IP address and port.\nThese new variables are then counted for display in the graph, and summed by `ip:port` to for reporting in the table legend.\nThis query is expensive (CPU resources) for prometheus and there are limits (as configured by Healthwatch) that severely \nlimit the number of records that can be processed (reduced).\nIf you get a red triangle and with the message, `maximum of series (500) reached for a single query`, you'll have to reduce the time period (start/end) to reduce the volume of data searched.\n\n# Identify the source of the network traffic.\n\nExample: Find the source of `3.19.43.206:443`\n\nUse the Grafana Explore and select `Loki` as the datasource and construct a query to matching logs in the same time range as the dashboard.\n\"{source_address=\"10.2.227.183\"} |~ `DST=3.19.43.206 .* DPT=443` | json | line_format `{{.message}}`\"\n\nthat returns one or more records like:\n```\nFeb  6 18:35:17 ip-10-2-227-183 kernel: Connection Forwarded: IN= OUT=eth0 SRC=10.2.0.29 DST=3.19.43.206 LEN=60 TOS=0x00 PREC=0x00 TTL=63 ID=64749 DF PROTO=TCP SPT=58114 DPT=443 WINDOW=62727 RES=0x00 SYN URGP=0\n```\n\nNow you have the source address `SRC=10.2.0.29` and refactor the loki search to retrieve logs from that server.\n\n*CAVEAT*  Tracking network traffic back through `diego_cells`, the `overlay network` and to a `container` is outside the scope of this help document.\n\nIf you have a destination address/port that you don't recoganize, the following comands will show the certs.\n- `openssl s_client -connect host:port`\n- `openssl s_client -connect host:port -starttls mysql` (for mysql destination - port 3306 is the hint)\n\nExample:\n`openssl s_client -connect 3.19.43.206:443`\n\nReturns: (extra data omitted for clarity)\n```\nCertificate chain\n 0 s:/O=pws dark dev/CN=pws dark dev Router\n   i:/O=pws dark dev/CN=pws dark dev Root CA\n```\n\n\n\n\n",
+            "mode": "markdown"
+          },
+          "pluginVersion": "9.0.6",
+          "title": "Documentation",
+          "type": "text"
+        }
+      ],
+      "title": "Documentation",
+      "type": "row"
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 36,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": "pas",
+          "value": "pas"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "Nat Family",
+        "multi": false,
+        "name": "natfamily",
+        "options": [
+          {
+            "selected": false,
+            "text": "control_plane",
+            "value": "control_plane"
+          },
+          {
+            "selected": false,
+            "text": "enterprise_services",
+            "value": "enterprise_services"
+          },
+          {
+            "selected": false,
+            "text": "isolation_segment_customer_a",
+            "value": "isolation_segment_customer_a"
+          },
+          {
+            "selected": true,
+            "text": "pas",
+            "value": "pas"
+          }
+        ],
+        "query": "control_plane,enterprise_services,isolation_segment_customer_a,pas",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "dev_pas_nat_1",
+          "value": "dev_pas_nat_1"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "P1809F7CD0C75ACF3"
+        },
+        "definition": "label_values(node_exporter_build_info,instance)",
+        "hide": 2,
+        "includeAll": false,
+        "label": "NAT1",
+        "multi": false,
+        "name": "nat_one",
+        "options": [],
+        "query": {
+          "query": "label_values(node_exporter_build_info,instance)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "/(.*${natfamily}_nat_1)/",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "dev_pas_nat_2",
+          "value": "dev_pas_nat_2"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "P1809F7CD0C75ACF3"
+        },
+        "definition": "label_values(node_exporter_build_info, instance)",
+        "hide": 2,
+        "includeAll": false,
+        "label": "NAT2",
+        "multi": false,
+        "name": "nat_two",
+        "options": [],
+        "query": {
+          "query": "label_values(node_exporter_build_info, instance)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "/(.*${natfamily}_nat_2)/",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "dev_pas_nat_3",
+          "value": "dev_pas_nat_3"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "P1809F7CD0C75ACF3"
+        },
+        "definition": "label_values(node_exporter_build_info, instance)",
+        "hide": 2,
+        "includeAll": false,
+        "label": "NAT3",
+        "multi": false,
+        "name": "nat_three",
+        "options": [],
+        "query": {
+          "query": "label_values(node_exporter_build_info, instance)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "/(.*${natfamily}_nat_3)/",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "P1809F7CD0C75ACF3"
+        },
+        "definition": "query_result(resets(up{instance=\"$nat_one\"}[$__range]))",
+        "hide": 0,
+        "includeAll": true,
+        "label": "",
+        "multi": true,
+        "name": "ip_nat_one",
+        "options": [],
+        "query": {
+          "query": "query_result(resets(up{instance=\"$nat_one\"}[$__range]))",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "/.*private_ip=\"([^\"]+).*/",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "P1809F7CD0C75ACF3"
+        },
+        "definition": "query_result(resets(up{instance=\"$nat_two\"}[$__range]))",
+        "hide": 0,
+        "includeAll": true,
+        "multi": true,
+        "name": "ip_nat_two",
+        "options": [],
+        "query": {
+          "query": "query_result(resets(up{instance=\"$nat_two\"}[$__range]))",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "/.*private_ip=\"([^\"]+).*/",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "P1809F7CD0C75ACF3"
+        },
+        "definition": "query_result(resets(up{instance=\"$nat_three\"}[$__range]))",
+        "hide": 0,
+        "includeAll": true,
+        "multi": true,
+        "name": "ip_nat_three",
+        "options": [],
+        "query": {
+          "query": "query_result(resets(up{instance=\"$nat_three\"}[$__range]))",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "/.*private_ip=\"([^\"]+)/",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Nat Performance Troubleshooting",
+  "uid": "kGO8r004k",
+  "version": 1,
+  "weekStart": ""
+}

@@ -196,6 +196,11 @@ resource "grafana_dashboard" "vm-resources" {
 }
 
 # Internal
+resource "grafana_dashboard" "nat-performance-troubleshooting" {
+  config_json = file("dashboards/nat-performance-troubleshooting.json")
+}
+
+# Internal
 resource "grafana_dashboard" "go-router-traffic-monitoring" {
   config_json = file("dashboards/go-router-traffic-monitoring.json")
 }
