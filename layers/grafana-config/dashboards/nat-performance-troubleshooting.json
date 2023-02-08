@@ -234,6 +234,19 @@
               "legendFormat": "connections {{private_ip}}",
               "range": true,
               "refId": "F"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "P1809F7CD0C75ACF3"
+              },
+              "editorMode": "builder",
+              "exemplar": true,
+              "expr": "sum by(__name__) ({__name__=~\"node_ethtool_queue.*queue_stop\", instance=\"$nat_one\"})",
+              "hide": false,
+              "legendFormat": "queue stop {{private_ip}}",
+              "range": true,
+              "refId": "G"
             }
           ],
           "title": "Bandwidth in/out or Packets/sec exceeded",
@@ -551,6 +564,18 @@
               "legendFormat": "connections {{private_ip}}",
               "range": true,
               "refId": "F"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "P1809F7CD0C75ACF3"
+              },
+              "editorMode": "code",
+              "expr": "sum by(__name__) ({__name__=~\"node_ethtool_queue.*queue_stop\", instance=\"$nat_two\"})",
+              "hide": false,
+              "legendFormat": "queue stop {{private_ip}}",
+              "range": true,
+              "refId": "G"
             }
           ],
           "title": "Bandwidth in/out or Packets/sec exceeded",
@@ -866,6 +891,18 @@
               "legendFormat": "connections {{private_ip}}",
               "range": true,
               "refId": "F"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "P1809F7CD0C75ACF3"
+              },
+              "editorMode": "code",
+              "expr": "sum by(__name__) ({__name__=~\"node_ethtool_queue.*queue_stop\", instance=\"$nat_three\"})",
+              "hide": false,
+              "legendFormat": "queue stop {{private_ip}}",
+              "range": true,
+              "refId": "G"
             }
           ],
           "title": "Bandwidth in/out or Packets/sec exceeded",
@@ -1237,6 +1274,6 @@
   "timezone": "",
   "title": "Nat Performance Troubleshooting",
   "uid": "kGO8r004k",
-  "version": 1,
+  "version": 2,
   "weekStart": ""
 }
