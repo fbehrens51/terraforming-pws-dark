@@ -40,6 +40,19 @@ variable "global_vars" {
   type = any
 }
 
+variable "s3_vpc_endpoint_id" {
+}
+
+variable "create_private_route_tables" {
+  type    = bool
+  default = true
+}
+
+variable "enable_s3_vpc_endpoint" {
+  type    = bool
+  default = true
+}
+
 locals {
   modified_tags = merge(
     var.tags.tags,
@@ -74,6 +87,12 @@ resource "aws_route_table_association" "private_route_table_associations" {
   route_table_id = aws_route_table.private_route_tables[count.index].id
 }
 
+resource "aws_vpc_endpoint_route_table_association" "private_s3_vpc_endpoint" {
+  count           = (var.enable_s3_vpc_endpoint && var.create_private_route_tables) ? length(var.availability_zones) : 0
+  vpc_endpoint_id = var.s3_vpc_endpoint_id
+  route_table_id  = element(aws_route_table.private_route_tables.*.id, count.index)
+}
+
 locals {
   env_name      = var.global_vars.env_name
   modified_name = "${local.env_name} ${var.name} iso seg"
@@ -98,10 +117,10 @@ module "nat" {
   check_cloud_init           = var.check_cloud_init
   operating_system           = var.operating_system
 
-  public_bucket_name         = var.public_bucket_name
-  public_bucket_url          = var.public_bucket_url
-  role_name                  = var.default_instance_role_name
-  iso_seg_name               = var.name
+  public_bucket_name = var.public_bucket_name
+  public_bucket_url  = var.public_bucket_url
+  role_name          = var.default_instance_role_name
+  iso_seg_name       = var.name
 
 }
 

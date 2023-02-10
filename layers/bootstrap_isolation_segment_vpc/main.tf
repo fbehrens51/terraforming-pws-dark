@@ -300,6 +300,7 @@ module "isolation_segment_0" {
   check_cloud_init           = data.terraform_remote_state.paperwork.outputs.check_cloud_init == "false" ? false : true
   operating_system           = data.terraform_remote_state.paperwork.outputs.amazon_operating_system_tag
   global_vars                = var.global_vars
+  s3_vpc_endpoint_id         = lookup(local.iso_s3_endpoint_ids, var.vpc_id)
 }
 
 module "isolation_segment_1" {
