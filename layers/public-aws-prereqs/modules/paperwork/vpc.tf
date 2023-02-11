@@ -91,6 +91,9 @@ resource "aws_internet_gateway" "pas_igw" {
 resource "aws_vpc" "enterprise_services_vpc" {
   cidr_block = local.enterprise_services_vpc_cidr
 
+  enable_dns_support   = true
+  enable_dns_hostnames = true
+
   tags = {
     Name = "${var.env_name} | enterprise services vpc"
   }
