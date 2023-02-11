@@ -31,6 +31,9 @@ data "terraform_remote_state" "bootstrap_control_plane" {
   }
 }
 
+data "aws_region" "current" {
+}
+
 data "aws_route_tables" "es_private_route_tables" {
   vpc_id = data.terraform_remote_state.paperwork.outputs.es_vpc_id
   tags   = merge(var.global_vars["global_tags"], { "Type" = "PRIVATE" })
@@ -58,6 +61,73 @@ locals {
 
   public_cidr_block  = cidrsubnet(data.aws_vpc.this_vpc.cidr_block, 1, 0)
   private_cidr_block = cidrsubnet(data.aws_vpc.this_vpc.cidr_block, 1, 1)
+
+  logs_service_name = "${var.vpce_interface_prefix}${data.aws_region.current.name}.logs"
+  sqs_service_name  = "${var.vpce_interface_prefix}${data.aws_region.current.name}.sqs"
+}
+
+resource "aws_vpc_endpoint" "cp_logs" {
+  vpc_id              = local.es_vpc_id
+  service_name        = local.logs_service_name
+  vpc_endpoint_type   = "Interface"
+  security_group_ids  = [resource.aws_security_group.es_endpoint_sg.id]
+  subnet_ids          = module.private_subnets.subnet_ids
+  private_dns_enabled = true
+  tags                = local.modified_tags
+}
+
+resource "aws_vpc_endpoint" "cp_sqs" {
+  vpc_id              = local.es_vpc_id
+  service_name        = local.sqs_service_name
+  vpc_endpoint_type   = "Interface"
+  security_group_ids  = [resource.aws_security_group.es_endpoint_sg.id]
+  subnet_ids          = module.private_subnets.subnet_ids
+  private_dns_enabled = true
+  tags                = local.modified_tags
+}
+
+resource "aws_security_group" "es_endpoint_sg" {
+  name        = "vms_security_group"
+  description = "VMs Security Group"
+  vpc_id      = local.es_vpc_id
+
+  ingress {
+    description = "Allow all portocols/ports from enterprise services vpc"
+    cidr_blocks = [data.aws_vpc.this_vpc.cidr_block]
+    protocol    = "-1"
+    from_port   = 0
+    to_port     = 0
+  }
+
+  egress {
+    description = "Allow all portocols/ports to everywhere"
+    cidr_blocks = ["0.0.0.0/0"]
+    protocol    = "-1"
+    from_port   = 0
+    to_port     = 0
+  }
+
+  tags = merge(
+    local.modified_tags,
+    {
+      Name        = "${local.env_name}-vms-security-group"
+      Description = "Enterprise services vpc service endpoints"
+    },
+  )
+}
+
+resource "aws_vpc_dhcp_options" "es_dhcp_options" {
+  domain_name_servers = data.terraform_remote_state.paperwork.outputs.enterprise_dns
+  //  ntp_servers = []
+  tags = {
+    name = "ES DHCP Options"
+  }
+}
+
+resource "aws_vpc_dhcp_options_association" "es_dhcp_options_assoc" {
+  dhcp_options_id = aws_vpc_dhcp_options.es_dhcp_options.id
+  vpc_id          = local.es_vpc_id
+  depends_on      = [aws_vpc_dhcp_options.es_dhcp_options]
 }
 
 data "aws_vpc" "this_vpc" {
@@ -133,6 +203,7 @@ variable "availability_zones" {
   type = list(string)
 }
 
+variable "vpce_interface_prefix" {}
 
 output "public_subnet_ids" {
   value = module.public_subnets.subnet_ids
