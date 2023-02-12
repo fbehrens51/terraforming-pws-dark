@@ -437,19 +437,50 @@ data "aws_iam_policy_document" "kms_admin_user" {
 
 data "aws_iam_policy_document" "ec2_reader" {
   statement {
+    sid    = "AllowReadingMetricsFromCloudWatch"
     effect = "Allow"
-
     actions = [
-      "ec2:Get*",
-      "ec2:Describe*",
       "cloudwatch:DescribeAlarmsForMetric",
       "cloudwatch:DescribeAlarmHistory",
       "cloudwatch:DescribeAlarms",
       "cloudwatch:ListMetrics",
-      "cloudwatch:GetMetricStatistics",
       "cloudwatch:GetMetricData",
+      "cloudwatch:GetInsightRuleReport"
     ]
+    resources = ["*"]
+  }
 
+  statement {
+    sid    = "AllowReadingLogsFromCloudWatch"
+    effect = "Allow"
+    actions = [
+      "logs:DescribeLogGroups",
+      "logs:GetLogGroupFields",
+      "logs:StartQuery",
+      "logs:StopQuery",
+      "logs:GetQueryResults",
+      "logs:GetLogEvents"
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "AllowReadingTagsInstancesRegionsFromEC2"
+    effect = "Allow"
+    actions = [
+      "ec2:DescribeTags",
+      "ec2:DescribeInstances",
+      "ec2:DescribeRegions"
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "AllowReadingResourcesForTags"
+    effect = "Allow"
+    actions = [
+      "tag:GetResources"
+    ]
     resources = ["*"]
   }
 }
