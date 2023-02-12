@@ -81,6 +81,12 @@ locals {
   loki_url       = data.terraform_remote_state.bootstrap_loki[0].outputs.loki_url
   region         = data.aws_region.current.name
   dashboard_name = replace("${local.env_name} AntiVirus", " ", "_")
+  billing_region = (
+    local.region == "us-east-2" ? "us-east-1" :
+    local.region == "us-west-1" ? "us-east-1" :
+    local.region == "us-west-2" ? "us-east-1" :
+    local.region
+  )
 }
 
 
@@ -264,9 +270,16 @@ resource "grafana_dashboard" "bind" {
   config_json = file("dashboards/bind.json")
 }
 
-# AWS Billing by Monitoring Artist, id=139
+data "template_file" "aws_billing_dashboard" {
+  template = file("dashboards/aws-billing.json.tpl")
+  vars = {
+    billing_region = local.billing_region
+  }
+}
+
+# Internal - copied from AWS Billing by Monitoring Artist, id=139
 resource "grafana_dashboard" "aws_billing" {
-  config_json = file("dashboards/aws-billing.json")
+  config_json = data.template_file.aws_billing_dashboard.rendered
 }
 
 # AWS rds by Monitoring Artist, id=707
