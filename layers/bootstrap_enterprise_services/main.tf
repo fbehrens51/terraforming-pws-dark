@@ -66,7 +66,7 @@ locals {
   sqs_service_name  = "${var.vpce_interface_prefix}${data.aws_region.current.name}.sqs"
 }
 
-resource "aws_vpc_endpoint" "cp_logs" {
+resource "aws_vpc_endpoint" "es_logs" {
   vpc_id              = local.es_vpc_id
   service_name        = local.logs_service_name
   vpc_endpoint_type   = "Interface"
@@ -76,7 +76,7 @@ resource "aws_vpc_endpoint" "cp_logs" {
   tags                = local.modified_tags
 }
 
-resource "aws_vpc_endpoint" "cp_sqs" {
+resource "aws_vpc_endpoint" "es_sqs" {
   vpc_id              = local.es_vpc_id
   service_name        = local.sqs_service_name
   vpc_endpoint_type   = "Interface"
