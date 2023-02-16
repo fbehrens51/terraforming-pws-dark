@@ -225,15 +225,17 @@ resource "aws_s3_bucket_policy" "syslog_audit_archive_bucket_policy_attachment" 
 }
 
 resource "aws_cloudwatch_log_group" "fluentd_audit_syslog_group" {
-  name       = local.audit_log_group_name
-  kms_key_id = data.terraform_remote_state.paperwork.outputs.kms_key_arn
-  tags       = local.modified_tags
+  name              = local.audit_log_group_name
+  kms_key_id        = data.terraform_remote_state.paperwork.outputs.kms_key_arn
+  tags              = local.modified_tags
+  retention_in_days = var.cloudwatch_retention_days
 }
 
 resource "aws_cloudwatch_log_group" "fluentd_syslog_group" {
-  name       = local.log_group_name
-  kms_key_id = data.terraform_remote_state.paperwork.outputs.kms_key_arn
-  tags       = local.modified_tags
+  name              = local.log_group_name
+  kms_key_id        = data.terraform_remote_state.paperwork.outputs.kms_key_arn
+  tags              = local.modified_tags
+  retention_in_days = var.cloudwatch_retention_days
 }
 
 resource "aws_ebs_volume" "fluentd_data" {
@@ -355,6 +357,15 @@ variable "force_destroy_buckets" {
 
 variable "global_vars" {
   type = any
+}
+
+variable "cloudwatch_retention_days" {
+  type    = number
+  default = 90
+  validation {
+    condition     = contains([0, 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 2192, 2557, 2922, 3288, 3653], var.cloudwatch_retention_days)
+    error_message = "accepted values are: 0, 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 2192, 2557, 2922, 3288, 3653"
+  }
 }
 
 output "fluentd_eni_ids" {
