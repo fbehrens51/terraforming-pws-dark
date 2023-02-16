@@ -155,15 +155,15 @@ resource "grafana_data_source" "promloki" {
   url      = "${local.loki_url}/loki"
   username = data.terraform_remote_state.bootstrap_loki[0].outputs.loki_username
 
-  json_data {
+  json_data_encoded = jsonencode({
     tls_auth = true
-  }
+  })
 
-  secure_json_data {
+  secure_json_data_encoded = jsonencode({
     basic_auth_password = data.terraform_remote_state.bootstrap_loki[0].outputs.loki_password
     tls_client_cert     = data.terraform_remote_state.paperwork.outputs.loki_client_cert
     tls_client_key      = data.terraform_remote_state.paperwork.outputs.loki_client_key
-  }
+  })
 }
 
 resource "grafana_data_source" "loki" {
@@ -174,27 +174,28 @@ resource "grafana_data_source" "loki" {
   url      = local.loki_url
   username = data.terraform_remote_state.bootstrap_loki[0].outputs.loki_username
 
-  json_data {
+  json_data_encoded = jsonencode({
     tls_auth = true
-  }
+  })
 
-  secure_json_data {
+  secure_json_data_encoded = jsonencode({
     basic_auth_password = data.terraform_remote_state.bootstrap_loki[0].outputs.loki_password
     tls_client_cert     = data.terraform_remote_state.paperwork.outputs.loki_client_cert
     tls_client_key      = data.terraform_remote_state.paperwork.outputs.loki_client_key
-  }
+  })
 }
 
 resource "grafana_data_source" "cloudwatch" {
   type = "cloudwatch"
   name = "cloudwatch"
   uid  = "twsCloudWatchDataSource"
+  url  = "https://monitoring${trimprefix(data.aws_region.current.endpoint, "ec2")}"
 
-  json_data {
+  json_data_encoded = jsonencode({
     auth_type                 = ""
     default_region            = local.region
     custom_metrics_namespaces = var.namespaces
-  }
+  })
 }
 
 resource "grafana_dashboard" "vm-resources" {
