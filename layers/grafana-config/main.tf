@@ -283,9 +283,17 @@ resource "grafana_dashboard" "aws_billing" {
   config_json = data.template_file.aws_billing_dashboard.rendered
 }
 
-# AWS rds by Monitoring Artist, id=707
+data "template_file" "aws_rds_dashboard" {
+  template = file("dashboards/aws-rds.json.tpl")
+  vars = {
+    region   = local.region
+    env_name = replace(local.env_name, " ", "-")
+  }
+}
+
+# Internal - copied from AWS rds by Monitoring Artist, id=707
 resource "grafana_dashboard" "aws_rds" {
-  config_json = file("dashboards/aws-rds.json")
+  config_json = data.template_file.aws_rds_dashboard.rendered
 }
 
 # alertmanager by Martin Chodur, id=9578
