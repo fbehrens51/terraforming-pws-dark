@@ -175,7 +175,7 @@ resource "grafana_data_source" "loki" {
   username = data.terraform_remote_state.bootstrap_loki[0].outputs.loki_username
 
   json_data_encoded = jsonencode({
-    tls_auth = true
+    tlsAuth = true
   })
 
   secure_json_data_encoded = jsonencode({
