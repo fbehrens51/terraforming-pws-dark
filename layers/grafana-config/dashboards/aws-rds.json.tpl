@@ -22,7 +22,7 @@
     ]
   },
   "description": "Visualize AWS RDS metrics",
-  "editable": true,
+  "editable": false,
   "fiscalYearStartMonth": 0,
   "gnetId": 707,
   "graphTooltip": 1,
