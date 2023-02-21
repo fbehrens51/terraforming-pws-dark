@@ -147,25 +147,6 @@ resource "grafana_alert_notification" "email" {
   }
 }
 
-resource "grafana_data_source" "promloki" {
-  count    = var.enable_loki ? 1 : 0
-  type     = "prometheus"
-  name     = "PromLoki"
-  uid      = "twsPromLokiDataSource"
-  url      = "${local.loki_url}/loki"
-  username = data.terraform_remote_state.bootstrap_loki[0].outputs.loki_username
-
-  json_data_encoded = jsonencode({
-    tls_auth = true
-  })
-
-  secure_json_data_encoded = jsonencode({
-    basic_auth_password = data.terraform_remote_state.bootstrap_loki[0].outputs.loki_password
-    tls_client_cert     = data.terraform_remote_state.paperwork.outputs.loki_client_cert
-    tls_client_key      = data.terraform_remote_state.paperwork.outputs.loki_client_key
-  })
-}
-
 resource "grafana_data_source" "loki" {
   count    = var.enable_loki ? 1 : 0
   type     = "loki"
@@ -243,11 +224,6 @@ resource "grafana_dashboard" "concourse" {
 # Node Exporter Server Metrics by Knut Ytterhaug, id=405
 resource "grafana_dashboard" "server-metrics" {
   config_json = file("dashboards/server-metrics.json")
-}
-
-# Internal
-resource "grafana_dashboard" "lokiprom-demo" {
-  config_json = file("dashboards/lokiprom-demo.json")
 }
 
 # Internal
