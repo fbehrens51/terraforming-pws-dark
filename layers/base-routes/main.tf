@@ -34,6 +34,7 @@ module "bastion_vpc_route_tables" {
   availability_zones          = var.availability_zones
   enable_s3_vpc_endpoint      = var.enable_bastion_s3_vpc_endpoint
   create_private_route_tables = false
+  transit_gateway_id          = var.transit_gateway_id
 
   tags = merge(
     local.modified_tags,
@@ -50,6 +51,7 @@ module "es_vpc_route_tables" {
   s3_vpc_endpoint_id     = local.es_s3_vpc_endpoint_id
   availability_zones     = var.availability_zones
   enable_s3_vpc_endpoint = var.enable_es_s3_vpc_endpoint
+  transit_gateway_id     = var.transit_gateway_id
 
   tags = merge(
     local.modified_tags,
@@ -67,6 +69,7 @@ module "cp_vpc_route_tables" {
   s3_vpc_endpoint_id     = local.cp_s3_vpc_endpoint_id
   availability_zones     = var.availability_zones
   enable_s3_vpc_endpoint = var.enable_cp_s3_vpc_endpoint
+  transit_gateway_id     = var.transit_gateway_id
 
   tags = merge(
     local.modified_tags,
@@ -137,4 +140,9 @@ variable "enable_es_s3_vpc_endpoint" {
 variable "enable_bastion_s3_vpc_endpoint" {
   type    = bool
   default = true
+}
+
+variable "transit_gateway_id" {
+  type    = string
+  default = ""
 }

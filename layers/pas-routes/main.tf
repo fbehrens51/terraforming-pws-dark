@@ -9,14 +9,14 @@ data "terraform_remote_state" "paperwork" {
   }
 }
 
-data "aws_route_tables" "es_route_tables"{
+data "aws_route_tables" "es_route_tables" {
   vpc_id = local.es_vpc_id
-  tags = var.global_vars["global_tags"]
+  tags   = var.global_vars["global_tags"]
 }
 
-data "aws_route_tables" "cp_route_tables"{
+data "aws_route_tables" "cp_route_tables" {
   vpc_id = local.cp_vpc_id
-  tags = var.global_vars["global_tags"]
+  tags   = var.global_vars["global_tags"]
 }
 
 locals {
@@ -42,6 +42,7 @@ module "pas_vpc_route_tables" {
   s3_vpc_endpoint_id     = local.pas_s3_vpc_endpoint_id
   availability_zones     = var.availability_zones
   enable_s3_vpc_endpoint = var.enable_pas_s3_vpc_endpoint
+  transit_gateway_id     = var.transit_gateway_id
 
   tags = merge(
     local.modified_tags,
@@ -52,9 +53,9 @@ module "pas_vpc_route_tables" {
 }
 
 module "route_cp_pas" {
-  source           = "../../modules/routing"
-  accepter_vpc_id  = local.cp_vpc_id
-  requester_vpc_id = local.pas_vpc_id
+  source                   = "../../modules/routing"
+  accepter_vpc_id          = local.cp_vpc_id
+  requester_vpc_id         = local.pas_vpc_id
   accepter_route_table_ids = data.aws_route_tables.cp_route_tables.ids
   requester_route_table_ids = concat(
     module.pas_vpc_route_tables.private_route_table_ids,
@@ -72,7 +73,7 @@ module "route_pas_es" {
     [module.pas_vpc_route_tables.public_route_table_id],
   )
   requester_route_table_ids = data.aws_route_tables.es_route_tables.ids
-  availability_zones = var.availability_zones
+  availability_zones        = var.availability_zones
 }
 
 variable "remote_state_region" {
@@ -97,4 +98,9 @@ variable "availability_zones" {
 variable "enable_pas_s3_vpc_endpoint" {
   type    = bool
   default = true
+}
+
+variable "transit_gateway_id" {
+  type    = string
+  default = ""
 }

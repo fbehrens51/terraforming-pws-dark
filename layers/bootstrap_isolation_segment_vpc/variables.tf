@@ -25,3 +25,8 @@ variable "nat_log_new_connections" {
   type    = bool
   default = false
 }
+
+variable "transit_gateway_id" {
+  type    = string
+  default = ""
+}

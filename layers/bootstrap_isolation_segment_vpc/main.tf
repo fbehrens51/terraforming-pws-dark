@@ -133,6 +133,20 @@ resource "aws_route" "default_route" {
   }
 }
 
+data "aws_ec2_transit_gateway" "provided_tgw" {
+  count = var.transit_gateway_id != "" ? 1 : 0
+  id    = var.transit_gateway_id
+}
+
+resource "aws_route" "tgw_default_route" {
+  count                  = var.internetless ? (var.transit_gateway_id != "" ? 1 : 0) : 0
+  route_table_id         = aws_route_table.public_route_table.id
+  destination_cidr_block = "0.0.0.0/0"
+  transit_gateway_id     = data.aws_ec2_transit_gateway.provided_tgw[0].id
+  timeouts {
+    create = "5m"
+  }
+}
 
 resource "aws_vpc_endpoint_route_table_association" "iso_seg" {
   route_table_id  = aws_route_table.public_route_table.id
