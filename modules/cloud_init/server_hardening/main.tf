@@ -24,7 +24,7 @@ write_files:
         email_report=$( printf "%s\n\n%s" "$(awk '/^Start timestamp/,/Changed entries/ {print} /^End timestamp/ {print "\n" $0}' $report_file )" "Full report copied to $bucket_file" )
         rm $report_file
 
-        mailx -s "Aide Check <root@$ssh_host_name> /root/aide.bash" root <<< "$email_report"
+        ${local.mail_statement}
       fi
   - path: /root/aide-update.bash
     permissions: '0755'
@@ -79,8 +79,14 @@ variable "public_bucket_url" {
 variable "reporting_bucket" {
 }
 
+variable "email_enabled" {
+  type = bool
+  default = true
+}
+
 locals {
   bucket_key = "hardening-${md5(data.template_file.server_hardening_user_data_part.rendered)}-user-data.yml"
+  mail_statement = var.email_enabled ? "mailx -s \"Aide Check <root@$ssh_host_name> /root/aide.bash\" root <<< \"$email_report\"" : ""
 }
 
 resource "aws_s3_bucket_object" "user_data" {

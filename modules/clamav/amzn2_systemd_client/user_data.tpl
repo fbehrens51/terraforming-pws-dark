@@ -5,11 +5,11 @@ merge_how:
  - name: dict
    settings: [no_replace, recurse_list]
 write_files:
-  -   content: |
-        ${clam_freshclam}
-      path: /usr/lib/systemd/system/clam-freshclam.service
-      permissions: '0644'
-      owner: root:root
+  - content: |
+      ${clam_freshclam}
+    path: /usr/lib/systemd/system/clam-freshclam.service
+    permissions: '0644'
+    owner: root:root
   - content: |
       20 04 * * * root clamscan -ir / --exclude-dir=/sys/ --exclude-dir=/proc/ --exclude-dir=/opt/rapid7/ --stdout | logger -i -t antivirus -p auth.alert
     path: /etc/cron.d/antivirus
